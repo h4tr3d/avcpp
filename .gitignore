@@ -1,0 +1,9 @@
+*.pro.user
+CMakeLists.txt.user
+transcoders.db
+manage/transcoder-manager-build*/
+qtcreator-build/
+qtcreator-build-*/
+scripts/valgrind.txt
+transcoder-manager-*-win32.zip
+
