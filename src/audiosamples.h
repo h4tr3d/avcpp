@@ -1,6 +1,8 @@
 #ifndef AV_AUDIOSAMPLES_H
 #define AV_AUDIOSAMPLES_H
 
+#include <memory>
+
 #include "frame.h"
 
 namespace av {
@@ -37,7 +39,7 @@ public:
     // public virtual
     virtual int getSize() const;
     virtual bool isValid() const;
-    virtual boost::shared_ptr<Frame> clone();
+    virtual std::shared_ptr<Frame> clone();
 
     // Common
     // Override this methods: we want to have access to PTS but don't need change it in AVFrame
@@ -70,8 +72,8 @@ protected:
     void init(AVSampleFormat sampleFormat, int samplesCount, int channels, int samplesRate);
 };
 
-typedef boost::shared_ptr<AudioSamples> AudioSamplesPtr;
-typedef boost::weak_ptr<AudioSamples> AudioSamplesWPtr;
+typedef std::shared_ptr<AudioSamples> AudioSamplesPtr;
+typedef std::weak_ptr<AudioSamples> AudioSamplesWPtr;
 
 } // namespace av
 

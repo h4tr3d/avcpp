@@ -63,7 +63,7 @@ CodecPtr av::Codec::findDecodingCodec(const char *name)
 CodecPtr av::Codec::guessEncodingCodec(const char *name, const char *url, const char *mime)
 {
     // TODO: need to complete
-    boost::shared_ptr<Codec> result;
+    std::shared_ptr<Codec> result;
     //CodecID codecId = av_guess_codec();
     return result;
 }

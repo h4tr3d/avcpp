@@ -1,11 +1,15 @@
 #include <cassert>
+#include <iostream>
 
 #include "audiosamples.h"
 #include "streamcoder.h"
 #include "avutils.h"
 
+using namespace std;
+
 namespace av
 {
+
 
 StreamCoder::StreamCoder()
 {
@@ -107,7 +111,7 @@ ssize_t StreamCoder::decodeCommon(const FramePtr &outFrame, const PacketPtr &inP
 {
     assert(context);
 
-    boost::shared_ptr<AVFrame> frame(avcodec_alloc_frame(), AvDeleter());
+    std::shared_ptr<AVFrame> frame(avcodec_alloc_frame(), AvDeleter());
     if (!frame)
     {
         return -1;
@@ -127,7 +131,7 @@ ssize_t StreamCoder::decodeCommon(const FramePtr &outFrame, const PacketPtr &inP
 
     int frameFinished = 0;
 
-    boost::shared_ptr<AVPacket> pkt((AVPacket*)av_malloc(sizeof(AVPacket)), AvDeleter());
+    std::shared_ptr<AVPacket> pkt((AVPacket*)av_malloc(sizeof(AVPacket)), AvDeleter());
     av_init_packet(pkt.get());
     *pkt = *inPacket->getAVPacket();
     pkt->data     = const_cast<uint8_t*>(inPacket->getData());
@@ -200,7 +204,7 @@ ssize_t StreamCoder::encodeCommon(const PacketPtr &outPacket, const FramePtr &in
                               int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *),
                               const EncodedPacketHandler &onPacketHandler)
 {
-    if (!outPacket && !onPacketHandler.empty())
+    if (!outPacket)
     {
         cerr << "Null packet can't be used as target for encoded data\n";
         return -1;
@@ -239,7 +243,7 @@ ssize_t StreamCoder::encodeCommon(const PacketPtr &outPacket, const FramePtr &in
         // set timebase to coder timebase
         workPacket->setTimeBase(getTimeBase());
 
-        AudioSamplesPtr samples = boost::dynamic_pointer_cast<AudioSamples>(frame);
+        AudioSamplesPtr samples = std::dynamic_pointer_cast<AudioSamples>(frame);
 
         int gotPacket;
         int stat = encodeProc(context, workPacket->getAVPacket(), samples->getAVFrame(), &gotPacket);
@@ -261,7 +265,7 @@ ssize_t StreamCoder::encodeCommon(const PacketPtr &outPacket, const FramePtr &in
                                                     workPacket->getTimeBase()));
                 }
 
-                if (!onPacketHandler.empty())
+                if (onPacketHandler)
                 {
                     onPacketHandler(workPacket);
                 }
@@ -313,7 +317,7 @@ ssize_t StreamCoder::encodeCommon(const PacketPtr &outPacket, const FramePtr &in
                 workPacket->setKeyPacket(!!context->coded_frame->key_frame);
                 workPacket->setStreamIndex(frame->getStreamIndex());
 
-                if (!onPacketHandler.empty())
+                if (onPacketHandler)
                 {
                     onPacketHandler(workPacket);
                 }
@@ -796,7 +800,6 @@ bool StreamCoder::isValidForEncode()
 
     return true;
 }
-
 
 
 } // ::av

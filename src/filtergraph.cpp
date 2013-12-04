@@ -1,9 +1,10 @@
 #define __STDC_FORMAT_MACROS 1
 
 #include <list>
+#include <sstream>
+#include <cassert>
 
-#include <boost/format.hpp>
-
+#include "avutils.h"
 #include "filtergraph.h"
 #include "filterinout.h"
 
@@ -265,7 +266,7 @@ BufferSinkFilterContextPtr FilterGraph::getSinkFilter() const
     return sinkFilterContext;
 }
 
-boost::shared_ptr<FilterGraph> FilterGraph::createSimpleAudioFilterGraph(
+std::shared_ptr<FilterGraph> FilterGraph::createSimpleAudioFilterGraph(
         // Inputs
         const Rational             &srcTimeBase,
         int                         srcSampleRate,
@@ -296,14 +297,12 @@ boost::shared_ptr<FilterGraph> FilterGraph::createSimpleAudioFilterGraph(
         return FilterGraphPtr();
     }
 
-    string abufferArgs =
-            boost::str(boost::format("time_base=%d/%d:sample_rate=%d:sample_fmt=%s"
-                                     ":channel_layout=0x%"PRIx64)
-                       % srcTimeBase.getNumerator()
-                       % srcTimeBase.getDenominator()
-                       % srcSampleRate
-                       % av_get_sample_fmt_name(srcSampleFormat)
-                       % srcChannelLayout);
+    stringstream ss;
+    ss << "time_base=" << dec << srcTimeBase << ":sample_rate=" << srcSampleRate <<
+          ":sample_fmt=" << av_get_sample_fmt_name(srcSampleFormat) <<
+          ":channel_layout=0x" << hex << srcChannelLayout;
+
+    string abufferArgs = ss.str();
 
     clog << "abuffer args: " << abufferArgs << endl;
 
@@ -363,7 +362,10 @@ boost::shared_ptr<FilterGraph> FilterGraph::createSimpleAudioFilterGraph(
                 if (it != dstSampleRates.begin())
                     tmp = ",";
 
-                tmp += boost::str(boost::format("%d") % *it);
+                stringstream ss;
+                ss << dec << *it;
+
+                tmp += ss.str();
                 sampleRates += tmp;
             }
 
@@ -382,7 +384,9 @@ boost::shared_ptr<FilterGraph> FilterGraph::createSimpleAudioFilterGraph(
                 if (it != dstSampleFormats.begin())
                     tmp = ",";
 
-                tmp += boost::str(boost::format("%s") % av_get_sample_fmt_name(*it));
+                tmp += string(av_get_sample_fmt_name(*it));
+
+                //tmp += boost::str(boost::format("%s") % av_get_sample_fmt_name(*it));
                 sampleFormats += tmp;
             }
 
@@ -401,7 +405,12 @@ boost::shared_ptr<FilterGraph> FilterGraph::createSimpleAudioFilterGraph(
                 if (it != dstChannelLayouts.begin())
                     tmp = ",";
 
-                tmp += boost::str(boost::format("0x%"PRIx64) % *it);
+                stringstream ss;
+                ss << "0x" << hex << *it;
+
+                tmp += ss.str();
+
+                //tmp += boost::str(boost::format("0x%"PRIx64) % *it);
                 channelLayouts += tmp;
             }
 
@@ -452,7 +461,7 @@ boost::shared_ptr<FilterGraph> FilterGraph::createSimpleAudioFilterGraph(
     return graph;
 }
 
-boost::shared_ptr<FilterGraph> FilterGraph::createSimpleVideoFilterGraph(
+std::shared_ptr<FilterGraph> FilterGraph::createSimpleVideoFilterGraph(
         // Common
         const Rational &timeBase,
         const Rational &sampleAspectRatio,
@@ -489,7 +498,15 @@ boost::shared_ptr<FilterGraph> FilterGraph::createSimpleVideoFilterGraph(
         return FilterGraphPtr();
     }
 
-    string bufferArgs =
+    stringstream ss;
+    ss << "video_size=" << dec << srcWidth << "x" << srcHeight <<
+          ":pix_fmt=" << srcPixelFormat <<
+          ":time_base=" << timeBase <<
+          ":pixel_aspect=" << sampleAspectRatio <<
+          ":sws_param=flags=" << swsFlags;
+
+    string bufferArgs = ss.str();
+#if 0
             boost::str(boost::format("video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:"
                                      "pixel_aspect=%d/%d:sws_param=flags=%d")
                        % srcWidth
@@ -501,11 +518,14 @@ boost::shared_ptr<FilterGraph> FilterGraph::createSimpleVideoFilterGraph(
                        % sampleAspectRatio.getDenominator()
                        % swsFlags
                        );
+#endif
 
     if (frameRate.getDenominator() && frameRate.getNumerator())
     {
-        bufferArgs +=
-                boost::str(boost::format(":frame_rate=%d/%d") % frameRate.getNumerator() % frameRate.getDenominator());
+        ss.flush();
+        ss << ":frame_rate=" << frameRate;
+        bufferArgs += ss.str();
+                //boost::str(boost::format(":frame_rate=%d/%d") % frameRate.getNumerator() % frameRate.getDenominator());
     }
 
     clog << "buffer args: " << bufferArgs << endl;
@@ -559,8 +579,11 @@ boost::shared_ptr<FilterGraph> FilterGraph::createSimpleVideoFilterGraph(
             return FilterGraphPtr();
         }
 
-        string scaleArgs =
-                boost::str(boost::format("%d:%d:flags=0x%X") % dstWidth % dstHeight % swsFlags);
+        stringstream ss;
+        ss << dec << dstWidth << ":" << dstHeight << ":flags=0x" << hex << swsFlags;
+
+        string scaleArgs = ss.str();
+                //boost::str(boost::format("%d:%d:flags=0x%X") % dstWidth % dstHeight % swsFlags);
 
         if (graph->createFilter(scaleFilter, scaleFilterName, scaleArgs) < 0)
         {
@@ -585,8 +608,9 @@ boost::shared_ptr<FilterGraph> FilterGraph::createSimpleVideoFilterGraph(
             return FilterGraphPtr();
         }
 
-        string formatArgs =
-                boost::str(boost::format("%s") % av_get_pix_fmt_name(dstPixelFormat));
+
+        string formatArgs = string(av_get_pix_fmt_name(dstPixelFormat));
+                //boost::str(boost::format("%s") % av_get_pix_fmt_name(dstPixelFormat));
 
         if (graph->createFilter(formatFilter, formatFilterName, formatArgs) < 0)
         {

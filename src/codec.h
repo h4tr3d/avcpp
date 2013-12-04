@@ -2,8 +2,7 @@
 #define CODEC_H
 
 #include <list>
-
-#include <boost/smart_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 #include "rational.h"
@@ -12,8 +11,8 @@ namespace av {
 
 class Codec;
 
-typedef boost::shared_ptr<Codec> CodecPtr;
-typedef boost::weak_ptr<Codec>   CodecWPtr;
+typedef std::shared_ptr<Codec> CodecPtr;
+typedef std::weak_ptr<Codec>   CodecWPtr;
 
 class Codec
 {

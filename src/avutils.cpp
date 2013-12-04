@@ -49,7 +49,7 @@ void setFFmpegLoggingLevel(const string &level)
     {
         try
         {
-            setFFmpegLoggingLevel(boost::lexical_cast<int32_t>(level));
+            setFFmpegLoggingLevel(lexical_cast<int32_t>(level));
         }
         catch (...)
         {}
@@ -87,13 +87,13 @@ static int avcpp_lockmgr_cb(void **ctx, enum AVLockOp op)
     if (!ctx)
         return 1;
 
-    boost::mutex *mutex = static_cast<boost::mutex*>(*ctx);
+    std::mutex *mutex = static_cast<std::mutex*>(*ctx);
 
     int ret = 0;
     switch (op)
     {
         case AV_LOCK_CREATE:
-            mutex = new boost::mutex();
+            mutex = new std::mutex();
             *ctx = mutex;
             ret = !!mutex;
             break;

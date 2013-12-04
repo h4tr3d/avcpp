@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "filterbufferref.h"
 
 namespace av {

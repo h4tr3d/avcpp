@@ -14,13 +14,13 @@ using namespace std;
 
 
 class Stream;
-typedef boost::shared_ptr<Stream> StreamPtr;
-typedef boost::weak_ptr<Stream> StreamWPtr;
+typedef std::shared_ptr<Stream> StreamPtr;
+typedef std::weak_ptr<Stream> StreamWPtr;
 
 
 class Packet;
-typedef boost::shared_ptr<Packet> PacketPtr;
-typedef boost::weak_ptr<Packet> PacketWPtr;
+typedef std::shared_ptr<Packet> PacketPtr;
+typedef std::weak_ptr<Packet> PacketWPtr;
 
 
 class Packet

@@ -1,8 +1,7 @@
 #ifndef AV_FILTERCONTEXT_H
 #define AV_FILTERCONTEXT_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 #include "filter.h"
@@ -37,7 +36,7 @@ public:
 
     int  initFilter(const std::string &args, const FilterOpaque& opaque = FilterOpaque());
     int  configLinks();
-    int  link(unsigned srcPad, const boost::shared_ptr<FilterContext>& dstFilter, unsigned dstPad);
+    int  link(unsigned srcPad, const std::shared_ptr<FilterContext>& dstFilter, unsigned dstPad);
 
     // TODO:
     // int insertFilter()
@@ -61,14 +60,14 @@ private:
     detail::FilterContextSharedCounter  sharedCounter;
 };
 
-typedef boost::shared_ptr<FilterContext> FilterContextPtr;
-typedef boost::weak_ptr<FilterContext> FilterContextWPtr;
+typedef std::shared_ptr<FilterContext> FilterContextPtr;
+typedef std::weak_ptr<FilterContext> FilterContextWPtr;
 
 
 template <typename T>
-inline boost::shared_ptr<T> filter_cast(const FilterContextPtr&)
+inline std::shared_ptr<T> filter_cast(const FilterContextPtr&)
 {
-    return boost::shared_ptr<T>();
+    return std::shared_ptr<T>();
 }
 
 

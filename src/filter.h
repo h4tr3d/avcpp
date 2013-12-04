@@ -1,8 +1,7 @@
 #ifndef AV_FILTER_H
 #define AV_FILTER_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 #include "filterpad.h"
@@ -37,8 +36,6 @@ private:
     const AVFilter *filter;
 };
 
-//typedef boost::shared_ptr<Filter> FilterPtr;
-//typedef boost::weak_ptr<Filter>   FilterWPtr;
 
 } // namespace av
 

@@ -1,8 +1,7 @@
 #ifndef FILTERCONTEXT_HELPER_H
 #define FILTERCONTEXT_HELPER_H
 
-#include <boost/thread/mutex.hpp>
-
+#include <mutex>
 #include <iostream>
 
 namespace av {
@@ -22,27 +21,27 @@ struct SharedCounterImpl
 
     void increment()
     {
-        boost::mutex::scoped_lock lock(mutex);
+        std::lock_guard<std::mutex> guard(mutex);
         counter++;
     }
 
     void decrement()
     {
-        boost::mutex::scoped_lock lock(mutex);
+        std::lock_guard<std::mutex> guard(mutex);
         if (counter > 0)
             counter--;
     }
 
     T value() const
     {
-        boost::mutex::scoped_lock lock(mutex);
+        std::lock_guard<std::mutex> guard(mutex);
         return counter;
     }
 
 
 private:
     T counter;
-    mutable boost::mutex mutex;
+    mutable std::mutex mutex;
 };
 
 
@@ -55,19 +54,19 @@ struct SharedFlagImpl
 
     void setFlag(T value)
     {
-        boost::mutex::scoped_lock lock(mutex);
+        std::lock_guard<std::mutex> guard(mutex);
         flag = value;
     }
 
     T getFlag() const
     {
-        boost::mutex::scoped_lock lock(mutex);
+        std::lock_guard<std::mutex> guard(mutex);
         return flag;
     }
 
 private:
     T flag;
-    mutable boost::mutex mutex;
+    mutable std::mutex mutex;
 };
 
 

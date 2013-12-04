@@ -1,9 +1,8 @@
 #ifndef FILTEROPAQUE_H
 #define FILTEROPAQUE_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/function.hpp>
+#include <memory>
+#include <functional>
 
 #include <algorithm>
 
@@ -29,8 +28,8 @@ private:
 /**
  * Pointers
  */
-typedef boost::shared_ptr<FilterOpaque> FilterOpaquePtr;
-typedef boost::weak_ptr<FilterOpaque>   FilterOpaqueWPtr;
+typedef std::shared_ptr<FilterOpaque> FilterOpaquePtr;
+typedef std::weak_ptr<FilterOpaque>   FilterOpaqueWPtr;
 
 /**
  * Allocator interface for opaque data

@@ -1,6 +1,8 @@
 #ifndef AV_AUDIORESAMPLER_H
 #define AV_AUDIORESAMPLER_H
 
+#include <functional>
+
 #include "ffmpeg.h"
 #include "audiosamples.h"
 
@@ -43,8 +45,8 @@ private:
     AVSampleFormat srcFormat;
 };
 
-typedef boost::shared_ptr<AudioResampler> AudioResamplerPtr;
-typedef boost::weak_ptr<AudioResampler>   AudioResamplerWPtr;
+typedef std::shared_ptr<AudioResampler> AudioResamplerPtr;
+typedef std::weak_ptr<AudioResampler>   AudioResamplerWPtr;
 
 } // namespace av
 

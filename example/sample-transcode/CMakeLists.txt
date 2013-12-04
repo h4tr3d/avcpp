@@ -10,11 +10,9 @@ list(APPEND AV_TEST_TRANSCODE_HEADERS ${AV_HEADERS})
 
 set(AV_TEST_TRANSCODE_TARGET av-test-transcode)
 
-include_directories(${Boost_INCLUDE_DIRS})
 add_executable(${AV_TEST_TRANSCODE_TARGET} ${AV_TEST_TRANSCODE_SOURCES})
 target_link_libraries(${AV_TEST_TRANSCODE_TARGET}
     ${CMAKE_THREAD_LIBS_INIT}
-    ${Boost_LIBRARIES}
     ${FFMPEG_LIBRARIES}
     avcpp
 )

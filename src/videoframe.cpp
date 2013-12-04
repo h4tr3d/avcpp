@@ -1,6 +1,5 @@
 #include <iostream>
-
-#include <boost/format.hpp>
+#include <cstdio>
 
 #include "videoframe.h"
 
@@ -145,7 +144,7 @@ bool VideoFrame::isValid() const
     return false;
 }
 
-boost::shared_ptr<Frame> VideoFrame::clone()
+std::shared_ptr<Frame> VideoFrame::clone()
 {
     FramePtr frame(new VideoFrame(*this));
     return frame;
@@ -170,12 +169,12 @@ void VideoFrame::setupDataPointers(const AVFrame *frame)
     // This is error....
     if (size < 0)
     {
-        std::cout << boost::format("Can't allocate memory for video frame data: "
-                                   "empty picture (w:%d, h:%d, fmt:%d)") %
-                     frame->width %
-                     frame->height %
-                     frame->format
-                  << std::endl;
+
+        std::printf("Can't allocate memory for video frame data: "
+                    "empty picture (w:%d, h:%d, fmt:%d)",
+                    frame->width,
+                    frame->height,
+                    frame->format);
 
         return;
     }

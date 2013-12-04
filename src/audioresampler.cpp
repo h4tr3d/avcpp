@@ -1,3 +1,5 @@
+#include <cstdio>
+
 #include "audioresampler.h"
 
 namespace av {

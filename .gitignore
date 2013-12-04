@@ -6,4 +6,4 @@ qtcreator-build/
 qtcreator-build-*/
 scripts/valgrind.txt
 transcoder-manager-*-win32.zip
-
+build

@@ -2,8 +2,7 @@
 #define VIDEORESAMPLER_H
 
 #include <iostream>
-
-#include <boost/smart_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 #include "frame.h"
@@ -15,8 +14,8 @@ namespace av
 using namespace std;
 
 class VideoResampler;
-typedef boost::shared_ptr<VideoResampler> VideoResamplerPtr;
-typedef boost::weak_ptr<VideoResampler> VideoResamplerWPtr;
+typedef std::shared_ptr<VideoResampler> VideoResamplerPtr;
+typedef std::weak_ptr<VideoResampler> VideoResamplerWPtr;
 
 
 class VideoResampler

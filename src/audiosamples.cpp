@@ -1,6 +1,6 @@
+#include <cassert>
+#include <cstdio>
 #include <iostream>
-
-#include <boost/format.hpp>
 
 #include "audiosamples.h"
 
@@ -159,7 +159,7 @@ bool AudioSamples::isValid() const
     return false;
 }
 
-boost::shared_ptr<Frame> AudioSamples::clone()
+std::shared_ptr<Frame> AudioSamples::clone()
 {
     FramePtr result(new AudioSamples(*this));
     return result;
@@ -212,12 +212,21 @@ void AudioSamples::setupDataPointers(const AVFrame *frame)
     // This is error....
     if (size < 0)
     {
+        /*
         std::cout << boost::format("Can't allocate memory for audio sample data: "
                                    "empty audio sample (ch:%d, nb_samples:%d, fmt:%d)") %
                      getChannelsCount() %
                      frame->nb_samples %
                      frame->format
                   << std::endl;
+        */
+
+        std::printf("Can't allocate memory for audio sample data: "
+                    "empty audio sample (ch:%d, nb_samples:%d, fmt:%d)",
+                    getChannelsCount(),
+                    frame->nb_samples,
+                    frame->format);
+
         return;
     }
 

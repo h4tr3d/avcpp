@@ -1,7 +1,7 @@
 #ifndef STREAM_H
 #define STREAM_H
 
-#include <boost/smart_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 #include "rational.h"
@@ -12,13 +12,13 @@ namespace av
 
 // Forward decl
 class Container;
-typedef boost::shared_ptr<Container> ContainerPtr;
-typedef boost::weak_ptr<Container> ContainerWPtr;
+typedef std::shared_ptr<Container> ContainerPtr;
+typedef std::weak_ptr<Container> ContainerWPtr;
 
 
 class Stream;
-typedef boost::shared_ptr<Stream> StreamPtr;
-typedef boost::weak_ptr<Stream> StreamWPtr;
+typedef std::shared_ptr<Stream> StreamPtr;
+typedef std::weak_ptr<Stream> StreamWPtr;
 
 
 typedef enum

@@ -3,8 +3,7 @@
 
 #include <utility>
 #include <iostream>
-
-#include <boost/smart_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 
@@ -16,8 +15,8 @@ using namespace std;
 
 class Rational;
 
-typedef boost::shared_ptr<Rational> RationalPtr;
-typedef boost::weak_ptr<Rational> RationalWPtr;
+typedef std::shared_ptr<Rational> RationalPtr;
+typedef std::weak_ptr<Rational> RationalWPtr;
 
 
 enum

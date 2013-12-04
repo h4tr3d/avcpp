@@ -37,20 +37,20 @@ private:
 //
 // Pointers
 //
-typedef boost::shared_ptr<BufferSinkFilterContext> BufferSinkFilterContextPtr;
-typedef boost::weak_ptr<BufferSinkFilterContext> BufferSinkFilterContextWPtr;
+typedef std::shared_ptr<BufferSinkFilterContext> BufferSinkFilterContextPtr;
+typedef std::weak_ptr<BufferSinkFilterContext> BufferSinkFilterContextWPtr;
 
 
 //
 // Casting
 //
 template <>
-inline boost::shared_ptr<BufferSinkFilterContext> filter_cast(const FilterContextPtr &ctx)
+inline std::shared_ptr<BufferSinkFilterContext> filter_cast(const FilterContextPtr &ctx)
 {
     if (ctx && ctx->isValid() && BufferSinkFilterContext::isFilterValid(ctx->getFilter()))
     {
         BufferSinkFilterContextPtr result;
-        result = boost::dynamic_pointer_cast<BufferSinkFilterContext>(ctx);
+        result = std::dynamic_pointer_cast<BufferSinkFilterContext>(ctx);
         if (result)
         {
             return result;

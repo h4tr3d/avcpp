@@ -2,8 +2,7 @@
 #define FRAME_H
 
 #include <vector>
-
-#include <boost/smart_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 #include "rational.h"
@@ -46,7 +45,7 @@ public:
      * Make frame duplicate
      * @return new frame pointer or null if frame can not be created
      */
-    virtual boost::shared_ptr<Frame> clone()         = 0;
+    virtual std::shared_ptr<Frame> clone()         = 0;
 
     // common
     virtual int64_t  getPts() const;
@@ -104,8 +103,8 @@ protected:
     int64_t              fakePts;
 };
 
-typedef boost::shared_ptr<Frame> FramePtr;
-typedef boost::weak_ptr<Frame> FrameWPtr;
+typedef std::shared_ptr<Frame> FramePtr;
+typedef std::weak_ptr<Frame> FrameWPtr;
 
 } // ::av
 

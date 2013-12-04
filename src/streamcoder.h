@@ -2,8 +2,8 @@
 #define STREAMCODER_H
 
 #include <utility>
-
-#include <boost/smart_ptr.hpp>
+#include <memory>
+#include <functional>
 
 #include "ffmpeg.h"
 #include "stream.h"
@@ -18,21 +18,24 @@ namespace av
 
 // Forward decl
 class Frame;
-typedef boost::shared_ptr<Frame> FramePtr;
-typedef boost::weak_ptr<Frame> FrameWPtr;
+typedef std::shared_ptr<Frame> FramePtr;
+typedef std::weak_ptr<Frame> FrameWPtr;
 
 
 class StreamCoder;
-typedef boost::shared_ptr<StreamCoder> StreamCoderPtr;
-typedef boost::weak_ptr<StreamCoder> StreamCoderWPtr;
+typedef std::shared_ptr<StreamCoder> StreamCoderPtr;
+typedef std::weak_ptr<StreamCoder> StreamCoderWPtr;
 
 
 class StreamCoder
 {
 public:
-    typedef boost::function<void (const PacketPtr&)> EncodedPacketHandler;
+    typedef std::function<void (const PacketPtr&)> EncodedPacketHandler;
 
 public:
+
+    void foo();
+
     StreamCoder();
     ~StreamCoder();
     explicit StreamCoder(const StreamPtr& stream);
@@ -113,7 +116,6 @@ public:
                         const EncodedPacketHandler &onPacketHandler = EncodedPacketHandler());
 
     bool    isValidForEncode();
-
 
 private:
     void init();

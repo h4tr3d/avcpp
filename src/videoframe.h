@@ -35,7 +35,7 @@ public:
     // virtual
     virtual int getSize() const;
     virtual bool isValid() const;
-    virtual boost::shared_ptr<Frame> clone();
+    virtual std::shared_ptr<Frame> clone();
 
 protected:
     void init(PixelFormat pixelFormat, int width, int height);
@@ -43,8 +43,8 @@ protected:
 
 };
 
-typedef boost::shared_ptr<VideoFrame> VideoFramePtr;
-typedef boost::weak_ptr<VideoFrame>   VideoFrameWPtr;
+typedef std::shared_ptr<VideoFrame> VideoFramePtr;
+typedef std::weak_ptr<VideoFrame>   VideoFrameWPtr;
 
 } // namespace av
 

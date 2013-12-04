@@ -1,7 +1,7 @@
+#include <cassert>
 #include <exception>
 #include <stdexcept>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "container.h"
 #include "avutils.h"
@@ -141,7 +141,7 @@ bool Container::openInput(const char *uri, const ContainerFormatPtr &inputFormat
 
     {
         ScopedValue<uint64_t> scopedState(priv->state, ContainerPriv::STATE_OPENING, ContainerPriv::STATE_INIT);
-        lastStartReadFrameTime = boost::get_xtime(boost::get_system_time());
+        lastStartReadFrameTime = std::chrono::system_clock::now();
         int stat = -1;
         if (inputFormat && inputFormat->getInputFormat())
         {
@@ -196,7 +196,7 @@ int32_t Container::readNextPacket(const PacketPtr &pkt)
     const int retryCount = 5; // TODO: вынести в настройку класса
     do
     {
-        lastStartReadFrameTime = boost::get_xtime(boost::get_system_time());
+        lastStartReadFrameTime = std::chrono::system_clock::now();
         stat = av_read_frame(context, packet->getAVPacket());
         ++tries;
     }
@@ -266,7 +266,7 @@ bool Container::openOutput(const char *uri)
 
         //AVOutputFormat *fmt = format->getOutputFormat();
 
-        lastStartReadFrameTime = boost::get_xtime(boost::get_system_time());
+        lastStartReadFrameTime = std::chrono::system_clock::now();
         int stat = avio_open2(&context->pb, uri, AVIO_FLAG_WRITE, 0, 0);
         if (stat < 0)
             return false;
@@ -292,7 +292,7 @@ bool Container::openOutput(const AbstractWriteFunctor &writer)
         if (!format)
             return false;
 
-        lastStartReadFrameTime = boost::get_xtime(boost::get_system_time());
+        lastStartReadFrameTime = std::chrono::system_clock::now();
         int stat = avio_open_writer(&context->pb, writer);
         if (stat < 0)
             return false;
@@ -524,9 +524,10 @@ int Container::avioInterruptHandler()
     if (priv->flags & ContainerPriv::FLAG_READ &&
         (priv->state == ContainerPriv::STATE_OPENING || priv->state == ContainerPriv::STATE_READING))
     {
-        boost::xtime currentTime = boost::get_xtime(boost::get_system_time());
-        int64_t delta = currentTime.sec - lastStartReadFrameTime.sec;
-        if (delta > readingTimeout && readingTimeout > -1)
+        std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsedTime = currentTime - lastStartReadFrameTime;
+
+        if (elapsedTime.count() > readingTimeout && readingTimeout > -1)
         {
             std::cerr << "Reading timeout" << std::endl;
             return 1;

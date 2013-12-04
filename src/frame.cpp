@@ -1,5 +1,3 @@
-#include <boost/format.hpp>
-
 #include "frame.h"
 
 using namespace std;

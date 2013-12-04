@@ -1,8 +1,8 @@
 #include <iostream>
 #include <set>
 #include <map>
-
-#include <boost/smart_ptr.hpp>
+#include <memory>
+#include <functional>
 
 #include "av.h"
 #include "ffmpeg.h"
@@ -425,13 +425,13 @@ int main(int argc, char **argv)
                         frameref.copyToFrame(outFrame);
                         if (outFrame)
                         {
-                            VideoFramePtr outVideoFrame = boost::dynamic_pointer_cast<VideoFrame>(outFrame);
+                            VideoFramePtr outVideoFrame = std::static_pointer_cast<VideoFrame>(outFrame);
                             outVideoFrame->setStreamIndex(streamMapping[pkt->getStreamIndex()]);
                             outVideoFrame->setTimeBase(encoder->getTimeBase());
                             outVideoFrame->setPts(pkt->getTimeBase().rescale(pkt->getPts(), outVideoFrame->getTimeBase()));
 
                             outPkt = PacketPtr(new Packet());
-                            stat = encoder->encodeVideo(outPkt, outVideoFrame, boost::bind(formatWriter, writer, _1));
+                            stat = encoder->encodeVideo(outPkt, outVideoFrame, std::bind(formatWriter, writer, std::placeholders::_1));
                         }
                     }
                 }
@@ -489,7 +489,7 @@ int main(int argc, char **argv)
                         samplesref.copyToFrame(outFrame);
                         if (outFrame)
                         {
-                            AudioSamplesPtr outSamples = boost::dynamic_pointer_cast<AudioSamples>(outFrame);
+                            AudioSamplesPtr outSamples = std::static_pointer_cast<AudioSamples>(outFrame);
 
                             outSamples->setTimeBase(encoder->getTimeBase());
                             outSamples->setFakePts(pkt->getTimeBase().rescale(pkt->getPts(), outSamples->getTimeBase()));
@@ -502,7 +502,7 @@ int main(int argc, char **argv)
 
 
                             outPkt = PacketPtr(new Packet());
-                            stat = encoder->encodeAudio(outPkt, outSamples, boost::bind(formatWriter, writer, _1));
+                            stat = encoder->encodeAudio(outPkt, outSamples, std::bind(formatWriter, writer, std::placeholders::_1));
                         }
                     }
                 }

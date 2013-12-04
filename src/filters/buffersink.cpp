@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "buffersink.h"
 
 using namespace std;

@@ -2,9 +2,7 @@
 #define AV_FILTERPAD_H
 
 #include <iterator>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 #include "avutils.h"

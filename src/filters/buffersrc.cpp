@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "buffersrc.h"
 
 using namespace std;

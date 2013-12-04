@@ -30,15 +30,15 @@ public:
 //
 // Pointers
 //
-typedef boost::shared_ptr<BufferSrcFilterContext> BufferSrcFilterContextPtr;
-typedef boost::weak_ptr<BufferSrcFilterContext> BufferSrcFilterContextWPtr;
+typedef std::shared_ptr<BufferSrcFilterContext> BufferSrcFilterContextPtr;
+typedef std::weak_ptr<BufferSrcFilterContext> BufferSrcFilterContextWPtr;
 
 
 //
 // Casting
 //
 template <>
-inline boost::shared_ptr<BufferSrcFilterContext> filter_cast(const FilterContextPtr &ctx)
+inline std::shared_ptr<BufferSrcFilterContext> filter_cast(const FilterContextPtr &ctx)
 {
     if (ctx && ctx->isValid() && BufferSrcFilterContext::isFilterValid(ctx->getFilter()))
     {

@@ -2,9 +2,7 @@
 #define AV_FILTERGRAPH_H
 
 #include <map>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 #include "container.h"
@@ -19,9 +17,9 @@
 namespace av {
 
 class FilterInOutList;
-typedef boost::shared_ptr<FilterInOutList> FilterInOutListPtr;
+typedef std::shared_ptr<FilterInOutList> FilterInOutListPtr;
 
-class FilterGraph : public boost::enable_shared_from_this<FilterGraph>
+class FilterGraph : public std::enable_shared_from_this<FilterGraph>
 {
     friend class FilterInOut;
 
@@ -65,7 +63,7 @@ public:
     void setSrcFilter(const BufferSrcFilterContextPtr &filterCtx);
     void setSinkFilter(const BufferSinkFilterContextPtr &filterCtx);
 
-    static boost::shared_ptr<FilterGraph> createSimpleAudioFilterGraph(
+    static std::shared_ptr<FilterGraph> createSimpleAudioFilterGraph(
             const Rational&             srcTimeBase,
             int                         srcSampleRate,
             AVSampleFormat              srcSampleFormat,
@@ -75,7 +73,7 @@ public:
             const list<uint64_t>&       dstChannelLayouts,
             const std::string&          graphDescription);
 
-    static boost::shared_ptr<FilterGraph> createSimpleVideoFilterGraph(
+    static std::shared_ptr<FilterGraph> createSimpleVideoFilterGraph(
             const Rational&    timeBase,
             const Rational&    sampleAspectRatio,
             const Rational&    frameRate,
@@ -101,8 +99,8 @@ private:
     BufferSinkFilterContextPtr sinkFilterContext;
 };
 
-typedef boost::shared_ptr<FilterGraph> FilterGraphPtr;
-typedef boost::weak_ptr<FilterGraph>   FilterGraphWPtr;
+typedef std::shared_ptr<FilterGraph> FilterGraphPtr;
+typedef std::weak_ptr<FilterGraph>   FilterGraphWPtr;
 
 } // namespace av
 

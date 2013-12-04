@@ -181,9 +181,9 @@ bool ContainerFormat::isCodecSupportedForOutput(AVCodecID codecId)
     return false;
 }
 
-boost::shared_ptr<ContainerFormat> ContainerFormat::guessOutputFormat(const char *name, const char *url, const char *mime)
+std::shared_ptr<ContainerFormat> ContainerFormat::guessOutputFormat(const char *name, const char *url, const char *mime)
 {
-    boost::shared_ptr<ContainerFormat> result;
+    std::shared_ptr<ContainerFormat> result;
     AVOutputFormat *format = av_guess_format(name, url, mime);
     if (!format)
     {

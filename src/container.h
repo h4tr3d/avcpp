@@ -4,11 +4,10 @@
 #include <iostream>
 #include <vector>
 
-#include <boost/smart_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/function.hpp>
-#include <boost/thread.hpp>
-#include <boost/date_time.hpp>
+#include <thread>
+#include <functional>
+#include <memory>
+#include <chrono>
 
 
 #include "ffmpeg.h"
@@ -21,18 +20,18 @@ namespace av
 {
 
 class Container;
-typedef boost::shared_ptr<Container> ContainerPtr;
-typedef boost::weak_ptr<Container> ContainerWPtr;
+typedef std::shared_ptr<Container> ContainerPtr;
+typedef std::weak_ptr<Container> ContainerWPtr;
 
 
 class Stream;
-typedef boost::shared_ptr<Stream> StreamPtr;
-typedef boost::weak_ptr<Stream> StreamWPtr;
+typedef std::shared_ptr<Stream> StreamPtr;
+typedef std::weak_ptr<Stream> StreamWPtr;
 
 
 class Packet;
-typedef boost::shared_ptr<Packet> PacketPtr;
-typedef boost::weak_ptr<Packet> PacketWPtr;
+typedef std::shared_ptr<Packet> PacketPtr;
+typedef std::weak_ptr<Packet> PacketWPtr;
 
 
 
@@ -50,7 +49,7 @@ public:
 // private data
 struct ContainerPriv;
 
-class Container : public boost::enable_shared_from_this<Container>
+class Container : public std::enable_shared_from_this<Container>
 {
     friend int avioInterruptCallback(void *ptr);
 
@@ -109,7 +108,7 @@ private:
 
     string              uri;
 
-    boost::xtime lastStartReadFrameTime;
+    std::chrono::time_point<std::chrono::system_clock> lastStartReadFrameTime;
     int64_t     readingTimeout;
 
     ContainerPriv       *priv;

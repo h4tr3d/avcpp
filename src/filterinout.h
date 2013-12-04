@@ -1,8 +1,7 @@
 #ifndef AV_FILTERINOUT_H
 #define AV_FILTERINOUT_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 #include "filtercontext.h"
@@ -40,9 +39,6 @@ private:
     FilterGraphPtr    graph;
 };
 
-//typedef boost::shared_ptr<FilterInOut> FilterInOutPtr;
-//typedef boost::weak_ptr<FilterInOut>   FilterInOutWPtr;
-
 struct FilterInOutRawCast
 {
     AVFilterInOut* operator ()(FilterInOut& w)
@@ -55,7 +51,7 @@ typedef DefaultResetPtr<AVFilterInOut, FilterInOut> FilterInOutResetPtr;
 
 class FilterInOutList :
         public LinkedListWrapper<AVFilterInOut, FilterInOut, AvNextElement, FilterInOutRawCast, FilterInOutResetPtr, AvDeleter>,
-        private boost::noncopyable
+        private noncopyable
 {
 private:
     FilterGraphPtr graph;
@@ -101,8 +97,8 @@ public:
     }
 };
 
-typedef boost::shared_ptr<FilterInOutList> FilterInOutListPtr;
-typedef boost::weak_ptr<FilterInOutList> FilterInOutListWPtr;
+typedef std::shared_ptr<FilterInOutList> FilterInOutListPtr;
+typedef std::weak_ptr<FilterInOutList> FilterInOutListWPtr;
 
 
 } // namespace av

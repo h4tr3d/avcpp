@@ -1,7 +1,7 @@
 #ifndef CONTAINERFORMAT_H
 #define CONTAINERFORMAT_H
 
-#include <boost/smart_ptr.hpp>
+#include <memory>
 
 #include "ffmpeg.h"
 
@@ -10,8 +10,8 @@ namespace av
 
 class ContainerFormat;
 
-typedef boost::shared_ptr<ContainerFormat> ContainerFormatPtr;
-typedef boost::weak_ptr<ContainerFormat> ContainerFormatWPtr;
+typedef std::shared_ptr<ContainerFormat> ContainerFormatPtr;
+typedef std::weak_ptr<ContainerFormat> ContainerFormatWPtr;
 
 
 class ContainerFormat
@@ -60,9 +60,9 @@ public:
     AVCodecID       getOutputDefaultVideoCodec();
     bool            isCodecSupportedForOutput(AVCodecID codecId);
 
-    static boost::shared_ptr<ContainerFormat> guessOutputFormat(const char *name,
-                                                                const char *url,
-                                                                const char *mime);
+    static std::shared_ptr<ContainerFormat> guessOutputFormat(const char *name,
+                                                              const char *url,
+                                                              const char *mime);
 
 protected:
 

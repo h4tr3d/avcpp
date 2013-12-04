@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8)
-project(transcoder)
+project(AvCpp)
 
 include_directories(.)
 
@@ -11,25 +11,27 @@ if(CMAKE_CROSSCOMPILING)
     "${CMAKE_EXE_LINKER_FLAGS} -Wl,-subsystem,console -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc")
 endif()
 
-set(BOOST_COMPONENTS
-    system
-    date_time
-    filesystem
-)
-# Boost thread library is different on Win/Linux
-if(WIN32)
-  set(BOOST_COMPONENTS ${BOOST_COMPONENTS} thread_win32)
-else()
-  set(BOOST_COMPONENTS ${BOOST_COMPONENTS} thread)
+# C++11
+#list(APPEND CMAKE_CXX_FLAGS "-std=c++11")
+#set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_definitions(-std=c++11)
 endif()
 
-#set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-# -Weffc++
-add_definitions(-DBOOST_THREAD_USE_LIB=1 -D__STDC_CONSTANT_MACROS=1)
+# Compiler-specific C++11 activation.
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+    execute_process(
+        COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+    if (NOT (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7))
+        message(FATAL_ERROR "${PROJECT_NAME} requires g++ 4.7 or greater.")
+    endif ()
+elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+else ()
+    message(FATAL_ERROR "Your C++ compiler does not support C++11.")
+endif ()
 
 find_package(Threads)
-find_package(Boost COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
 find_package(PkgConfig)
 
 pkg_check_modules(FFMPEG REQUIRED libavformat libavcodec libswscale libswresample libavutil libavfilter)

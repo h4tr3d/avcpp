@@ -3,9 +3,10 @@
 
 #include <string>
 #include <vector>
-
-#include <boost/smart_ptr.hpp>
-#include <boost/thread/mutex.hpp>
+#include <memory>
+#include <mutex>
+#include <sstream>
+#include <algorithm>
 
 #include "ffmpeg.h"
 #include "packet.h"
@@ -16,6 +17,26 @@
 // Functions
 //
 namespace av {
+
+template<typename R, typename T>
+R lexical_cast(const T& v)
+{
+    R result;
+    stringstream ss;
+    ss << v;
+    ss >> result;
+    return result;
+}
+
+class noncopyable
+{
+protected:
+    noncopyable() {}
+    ~noncopyable() {}
+private:  // emphasize the following members are private
+    noncopyable( const noncopyable& );
+    const noncopyable& operator=( const noncopyable& );
+};
 
 /**
  * This method can be used to turn up or down FFmpeg's logging level.

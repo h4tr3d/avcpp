@@ -1,4 +1,5 @@
-#include <boost/thread/mutex.hpp>
+#include <mutex>
+#include <cassert>
 
 #include "filtercontext.h"
 
@@ -152,7 +153,7 @@ int FilterContext::configLinks()
     return avfilter_config_links(ctx);
 }
 
-int FilterContext::link(unsigned srcPad, const boost::shared_ptr<FilterContext> &dstFilterCtx, unsigned dstPad)
+int FilterContext::link(unsigned srcPad, const std::shared_ptr<FilterContext> &dstFilterCtx, unsigned dstPad)
 {
     if (!ctx || !dstFilterCtx)
     {

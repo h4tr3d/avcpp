@@ -156,9 +156,16 @@ public:
         iterator(element_type *ptr) : base_iterator(ptr) {}
         virtual ~iterator() {}
 
+        typedef element_wrapper_type* pointer;
+        typedef element_wrapper_type& reference;
+
         using base_iterator::wrapper;
-        using typename base_iterator::reference;
-        using typename base_iterator::pointer;
+        //using typename base_iterator::reference;
+        //using typename base_iterator::pointer;
+
+        //using typename base_iterator::core_iterator;
+        //using typename core_iterator::reference;
+        //using typename core_iterator::pointer;
 
         virtual reference operator*()
         {
@@ -177,9 +184,12 @@ public:
         const_iterator(element_type *ptr) : base_iterator(ptr) {}
         virtual ~const_iterator() {}
 
+        typedef element_wrapper_type* pointer;
+        typedef element_wrapper_type& reference;
+
         using base_iterator::wrapper;
-        using typename base_iterator::reference;
-        using typename base_iterator::pointer;
+        //using typename base_iterator::reference;
+        //using typename base_iterator::pointer;
 
         virtual const reference operator*()
         {
