@@ -14,12 +14,11 @@ pkg_search_module(SDL REQUIRED sdl)
 
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${SDL_INCLUDE_DIRS})
+link_directories(${FFMPEG_LIBRARY_DIRS})
 
 add_executable(${AV_TEST_VIEW_TARGET} ${AV_TEST_VIEW_SOURCES})
 target_link_libraries(${AV_TEST_VIEW_TARGET}
     ${CMAKE_THREAD_LIBS_INIT}
-    ${Boost_LIBRARIES}
-    ${FFMPEG_LIBRARIES}
     ${SDL_LIBRARIES}
     avcpp
 )

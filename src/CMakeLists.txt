@@ -7,6 +7,8 @@ set(AV_TARGET avcpp)
 
 add_library(${AV_TARGET} STATIC ${AV_SOURCES})
 
+link_directories(${FFMPEG_LIBRARY_DIRS})
+
 target_link_libraries(${AV_TARGET}
     ${CMAKE_THREAD_LIBS_INIT}
     ${FFMPEG_LIBRARIES}
