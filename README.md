@@ -24,7 +24,7 @@ At the current moment its possible to compile code with compilator without C++11
 Near future plans
 -----------------
 
-  - Building for Android (ready to commint but small code clean up is required)
+  - ~~Building for Android (ready to commint but small code clean up is required)~~
 
 
 Future plans (long and not)
@@ -36,3 +36,4 @@ Future plans (long and not)
   - Filters module complete rework
   - Add good samples
   - Make hight-level entities like av::Encoder, av::Decoder, av::Muxer, av::Demuxer and declare some API to combine them.
+  - More advanced Android building
