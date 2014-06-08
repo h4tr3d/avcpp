@@ -18,6 +18,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-std=c++11)
 endif()
 
+add_definitions(-D__STDC_CONSTANT_MACROS)
+
 # Compiler-specific C++11 activation.
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
     execute_process(
