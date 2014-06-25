@@ -34,19 +34,30 @@ public:
 
 public:
 
-    void foo();
-
     StreamCoder();
     ~StreamCoder();
-    explicit StreamCoder(const StreamPtr& stream);
+    explicit StreamCoder(const StreamPtr& m_stream);
 
 
     // Common
-    void setCodec(const CodecPtr &codec);
+    void setCodec(const CodecPtr &m_codec);
 
     bool open();
     bool close();
-    bool isOpened() { return isOpenedFlag; }
+    bool isOpened() { return m_openedFlag; }
+
+    /**
+     * Copy codec context from codec context associated with given stream or other codec context.
+     * This functionality useful for remuxing without deconding/encoding. In this case you need not
+     * open codecs, only copy context.
+     *
+     * @param other  stream or codec context
+     * @return true if context copied, false otherwise
+     */
+    /// @{
+    bool copyContextFrom(const StreamPtr &other);
+    bool copyContextFrom(const StreamCoderPtr &other);
+    /// @}
 
     Rational getTimeBase();
     void setTimeBase(const Rational &value);
@@ -103,7 +114,7 @@ public:
     void        clearFlags(int32_t flags);
     int32_t     getFlags();
 
-    AVCodecContext *getAVCodecContext() { return context; }
+    AVCodecContext *getAVCodecContext() { return m_context; }
 
     // Video
     ssize_t decodeVideo(const FramePtr  &outFrame,  const PacketPtr &inPacket, size_t offset = 0);
@@ -127,17 +138,17 @@ private:
                          const EncodedPacketHandler &onPacketHandler = EncodedPacketHandler());
 
 private:
-    Direction       direction;
-    Rational        fakePtsTimeBase;
-    int64_t         fakeNextPts;
-    int64_t         fakeCurrPts;
+    Direction       m_direction;
+    Rational        m_fakePtsTimeBase;
+    int64_t         m_fakeNextPts;
+    int64_t         m_fakeCurrPts;
 
-    int             defaultAudioFrameSize;
+    int             m_defaultAudioFrameSize;
 
-    StreamPtr       stream;
-    CodecPtr        codec;
-    AVCodecContext *context;
-    bool            isOpenedFlag;
+    StreamPtr       m_stream;
+    CodecPtr        m_codec;
+    AVCodecContext *m_context;
+    bool            m_openedFlag;
 };
 
 } // ::av

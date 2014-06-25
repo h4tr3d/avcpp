@@ -244,7 +244,7 @@ const StreamPtr Container::addNewStream(const CodecPtr &codec)
     // HACK
     st->pts.den = 1;
 
-    StreamPtr stream(new Stream(shared_from_this(), st, ENCODING, 0));
+    StreamPtr stream = make_shared<Stream>(shared_from_this(), st, ENCODING, nullptr);
     if (stream)
     {
         streams.push_back(stream);
@@ -595,9 +595,7 @@ void Container::setupInputStreams()
             st->time_base = timeBase.getValue();
         }
 
-        //StreamPtr stream(new Stream(this, st, WRITE, 0));
-        StreamPtr stream(new Stream(shared_from_this(), st, DECODING, 0));
-
+        StreamPtr stream = make_shared<Stream>(shared_from_this(), st, DECODING, nullptr);
         if (stream)
         {
             streams.push_back(stream);

@@ -31,13 +31,13 @@ public:
     const AVPicture&       getPicture() const;
 
     // virtual
-    virtual int getSize() const;
-    virtual bool isValid() const;
-    virtual std::shared_ptr<Frame> clone();
+    virtual int getSize() const override;
+    virtual bool isValid() const override;
+    virtual std::shared_ptr<Frame> clone() override;
 
 protected:
     void init(PixelFormat pixelFormat, int width, int height);
-    virtual void setupDataPointers(const AVFrame *m_frame);
+    virtual void setupDataPointers(const AVFrame *m_frame) override;
 
 };
 

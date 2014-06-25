@@ -188,7 +188,6 @@ void VideoFrame::setupDataPointers(const AVFrame *frame)
         m_frameBuffer.resize(size);
     }
 
-    //uint8_t* buffer = (uint8_t*)m_frameBuffer.data();
     uint8_t* buffer = m_frameBuffer.data();
     if (frame->data[0])
     {
@@ -200,13 +199,6 @@ void VideoFrame::setupDataPointers(const AVFrame *frame)
                            (PixelFormat)frame->format,
                            frame->width,
                            frame->height);
-#if 0
-            av_picture_copy(reinterpret_cast<AVPicture*>(this->m_frame),
-                            reinterpret_cast<const AVPicture*>(frame),
-                            (PixelFormat)frame->format,
-                            frame->width,
-                            frame->height);
-#endif
         }
     }
     else

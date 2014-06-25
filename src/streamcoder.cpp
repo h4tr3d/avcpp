@@ -25,24 +25,24 @@ StreamCoder::StreamCoder(const StreamPtr &stream)
 {
     init();
 
-    this->stream = stream;
-    context = stream->getAVStream()->codec;
+    this->m_stream = stream;
+    m_context = stream->getAVStream()->codec;
 
     CodecPtr codec;
     if (stream->getDirection() == DECODING)
     {
-        codec = Codec::findDecodingCodec(context->codec_id);
+        codec = Codec::findDecodingCodec(m_context->codec_id);
     }
     else
     {
-        codec = Codec::findEncodingCodec(context->codec_id);
+        codec = Codec::findEncodingCodec(m_context->codec_id);
     }
 
     if (codec)
         setCodec(codec);
 
-    direction = stream->getDirection();
-    setTimeBase(context->time_base);
+    m_direction = stream->getDirection();
+    setTimeBase(m_context->time_base);
 }
 
 
@@ -56,36 +56,36 @@ void StreamCoder::setCodec(const CodecPtr &codec)
 
     const AVCodec *avCodec = codec->getAVCodec();
 
-    if (!context)
+    if (!m_context)
     {
         cout << "Codec context does not allocated\n";
         return;
     }
 
-    if (context->codec_id != CODEC_ID_NONE && context->codec)
+    if (m_context->codec_id != CODEC_ID_NONE && m_context->codec)
     {
-        cout << "Codec already set to: " << context->codec_id << " / " << context->codec_name << ", ignoring." << endl;
+        cout << "Codec already set to: " << m_context->codec_id << " / " << m_context->codec_name << ", ignoring." << endl;
         return;
     }
 
-    if (this->codec == codec)
+    if (this->m_codec == codec)
     {
         cout << "Try set same codec\n";
         return;
     }
 
-    context->codec_id   = avCodec ? avCodec->id : CODEC_ID_NONE;
-    context->codec_type = avCodec ? avCodec->type : AVMEDIA_TYPE_UNKNOWN;
-    context->codec      = avCodec;
+    m_context->codec_id   = avCodec ? avCodec->id : CODEC_ID_NONE;
+    m_context->codec_type = avCodec ? avCodec->type : AVMEDIA_TYPE_UNKNOWN;
+    m_context->codec      = avCodec;
 
     if (avCodec->pix_fmts != 0)
     {
-        context->pix_fmt = *(avCodec->pix_fmts); // assign default value
+        m_context->pix_fmt = *(avCodec->pix_fmts); // assign default value
     }
 
     if (avCodec->sample_fmts != 0)
     {
-        context->sample_fmt = *(avCodec->sample_fmts);
+        m_context->sample_fmt = *(avCodec->sample_fmts);
     }
 
 //    else
@@ -93,23 +93,23 @@ void StreamCoder::setCodec(const CodecPtr &codec)
 //        context->pix_fmt = PIX_FMT_NONE;
 //    }
 
-    this->codec = codec;
+    this->m_codec = codec;
 }
 
 
 void StreamCoder::init()
 {
-    isOpenedFlag          = false;
-    fakePtsTimeBase       = Rational(1, AV_TIME_BASE);
-    context               = 0;
-    fakeCurrPts           = AV_NOPTS_VALUE;
-    fakeNextPts           = AV_NOPTS_VALUE;
-    defaultAudioFrameSize = 576;
+    m_openedFlag            = false;
+    m_fakePtsTimeBase       = Rational(1, AV_TIME_BASE);
+    m_context               = nullptr;
+    m_fakeCurrPts           = AV_NOPTS_VALUE;
+    m_fakeNextPts           = AV_NOPTS_VALUE;
+    m_defaultAudioFrameSize = 576;
 }
 
 ssize_t StreamCoder::decodeCommon(const FramePtr &outFrame, const PacketPtr &inPacket, size_t offset, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *))
 {
-    assert(context);
+    assert(m_context);
 
     std::shared_ptr<AVFrame> frame(av_frame_alloc(), AvDeleter());
     if (!frame)
@@ -140,13 +140,13 @@ ssize_t StreamCoder::decodeCommon(const FramePtr &outFrame, const PacketPtr &inP
     pkt.data += offset;
     pkt.size -= offset;
 
-    context->reordered_opaque = inPacket->getPts();
+    m_context->reordered_opaque = inPacket->getPts();
     ssize_t totalDecode = 0;
     int     iterations = 0;
     do
     {
         ++iterations;
-        int decoded = decodeProc(context, frame.get(), &frameFinished, &pkt);
+        int decoded = decodeProc(m_context, frame.get(), &frameFinished, &pkt);
         if (decoded < 0)
         {
             return totalDecode;
@@ -175,24 +175,24 @@ ssize_t StreamCoder::decodeCommon(const FramePtr &outFrame, const PacketPtr &inP
             //int64_t nextPts = fakePtsTimeBase.rescale(packetTs, outFrame->getTimeBase());
             int64_t nextPts = packetTs;
 
-            if (nextPts < fakeNextPts && inPacket->getPts() != AV_NOPTS_VALUE)
+            if (nextPts < m_fakeNextPts && inPacket->getPts() != AV_NOPTS_VALUE)
             {
                 nextPts = inPacket->getPts();
             }
 
-            fakeNextPts = nextPts;
+            m_fakeNextPts = nextPts;
         }
 
-        fakeCurrPts = fakeNextPts;
+        m_fakeCurrPts = m_fakeNextPts;
         //double frameDelay = inPacket->getTimeBase().getNumerator();
         double frameDelay = inPacket->getTimeBase().getDouble();
         frameDelay += outFrame->getAVFrame()->repeat_pict * (frameDelay * 0.5);
 
-        fakeNextPts += (int64_t) frameDelay;
+        m_fakeNextPts += (int64_t) frameDelay;
 
         outFrame->setStreamIndex(inPacket->getStreamIndex());
-        if (fakeCurrPts != AV_NOPTS_VALUE)
-            outFrame->setPts(inPacket->getTimeBase().rescale(fakeCurrPts, outFrame->getTimeBase()));
+        if (m_fakeCurrPts != AV_NOPTS_VALUE)
+            outFrame->setPts(inPacket->getTimeBase().rescale(m_fakeCurrPts, outFrame->getTimeBase()));
         outFrame->setComplete(true);
     }
 
@@ -229,12 +229,12 @@ ssize_t StreamCoder::encodeCommon(const FramePtr &inFrame,
     // set timebase to coder timebase
     workPacket->setTimeBase(getTimeBase());
 
-    if (context->codec_type == AVMEDIA_TYPE_AUDIO)
+    if (m_context->codec_type == AVMEDIA_TYPE_AUDIO)
     {
         AudioSamplesPtr samples = std::dynamic_pointer_cast<AudioSamples>(frame);
 
         int gotPacket;
-        int stat = encodeProc(context, workPacket->getAVPacket(), samples->getAVFrame(), &gotPacket);
+        int stat = encodeProc(m_context, workPacket->getAVPacket(), samples->getAVFrame(), &gotPacket);
 
         if (stat == 0)
         {
@@ -242,7 +242,7 @@ ssize_t StreamCoder::encodeCommon(const FramePtr &inFrame,
             {
                 // Change timebase to target stream timebase, it also recalculate all TS values
                 // (pts, dts, duration)
-                workPacket->setTimeBase(stream->getTimeBase());
+                workPacket->setTimeBase(m_stream->getTimeBase());
 
                 workPacket->setStreamIndex(samples->getStreamIndex());
 
@@ -262,12 +262,12 @@ ssize_t StreamCoder::encodeCommon(const FramePtr &inFrame,
         else
         {
             cerr << "Encode error:             " << stat << endl;
-            cerr << "coded_frame PTS:          " << context->coded_frame->pts << endl;
+            cerr << "coded_frame PTS:          " << m_context->coded_frame->pts << endl;
             cerr << "input_frame PTS:          " << inFrame->getPts() << endl;
             return stat;
         }
     }
-    else if (context->codec_type == AVMEDIA_TYPE_VIDEO)
+    else if (m_context->codec_type == AVMEDIA_TYPE_VIDEO)
     {
         AVPacket pkt;
         av_init_packet(&pkt);
@@ -275,18 +275,18 @@ ssize_t StreamCoder::encodeCommon(const FramePtr &inFrame,
         AVPacket *pktp = workPacket->getAVPacket();
 
         int gotPacket;
-        int stat = encodeProc(context, pktp, frame->getAVFrame(), &gotPacket);
+        int stat = encodeProc(m_context, pktp, frame->getAVFrame(), &gotPacket);
 
         if (stat == 0)
         {
             if (gotPacket)
             {
                 // Packet always must be in AVStream time base units
-                workPacket->setTimeBase(stream->getTimeBase());
+                workPacket->setTimeBase(m_stream->getTimeBase());
 
-                if (context->coded_frame->pts != AV_NOPTS_VALUE)
+                if (m_context->coded_frame->pts != AV_NOPTS_VALUE)
                 {
-                    workPacket->setPts(context->coded_frame->pts, getTimeBase());
+                    workPacket->setPts(m_context->coded_frame->pts, getTimeBase());
                 }
 
                 if (workPacket->getDts() == AV_NOPTS_VALUE)
@@ -294,7 +294,7 @@ ssize_t StreamCoder::encodeCommon(const FramePtr &inFrame,
                     workPacket->setDts(workPacket->getPts());
                 }
 
-                workPacket->setKeyPacket(!!context->coded_frame->key_frame);
+                workPacket->setKeyPacket(!!m_context->coded_frame->key_frame);
                 workPacket->setStreamIndex(frame->getStreamIndex());
 
                 if (onPacketHandler)
@@ -306,7 +306,7 @@ ssize_t StreamCoder::encodeCommon(const FramePtr &inFrame,
         else
         {
             cerr << "Encode error:             " << stat << ", " << error2string(stat) << endl;
-            cerr << "coded_frame PTS:          " << context->coded_frame->pts << endl;
+            cerr << "coded_frame PTS:          " << m_context->coded_frame->pts << endl;
             cerr << "input_frame PTS:          " << inFrame->getPts() << endl;
             return stat;
         }
@@ -318,7 +318,7 @@ ssize_t StreamCoder::encodeCommon(const FramePtr &inFrame,
 
 bool StreamCoder::open()
 {
-    if (context && codec)
+    if (m_context && m_codec)
     {
         // HACK: set threads to 1
         AVDictionary *opts = 0;
@@ -326,14 +326,14 @@ bool StreamCoder::open()
         ////////////////////////////////////////////////////////////////////////////////////////////
 
         bool ret = true;
-        int stat = avcodec_open2(context, codec->getAVCodec(), &opts);
+        int stat = avcodec_open2(m_context, m_codec->getAVCodec(), &opts);
         if (stat < 0)
         {
             ret = false;
         }
         else
         {
-            isOpenedFlag = true;
+            m_openedFlag = true;
         }
 
         av_dict_free(&opts);
@@ -346,59 +346,81 @@ bool StreamCoder::open()
 
 bool StreamCoder::close()
 {
-    if (context && codec && isOpenedFlag)
+    if (m_context && m_codec && m_openedFlag)
     {
-        avcodec_close(context);
-        isOpenedFlag = false;
+        avcodec_close(m_context);
+        m_openedFlag = false;
         return true;
     }
 
     return false;
 }
 
+bool StreamCoder::copyContextFrom(const StreamPtr &other)
+{
+    if (!other || !m_context)
+        return false;
+
+    int stat = avcodec_copy_context(m_context, other->getAVStream()->codec);
+    m_context->codec_tag = 0;
+
+    return stat < 0 ? false : true;
+}
+
+bool StreamCoder::copyContextFrom(const StreamCoderPtr &other)
+{
+    if (!other || !m_context)
+        return false;
+
+    int stat = avcodec_copy_context(m_context, other->getAVCodecContext());
+    m_context->codec_tag = 0;
+
+    return stat < 0 ? false : true;
+}
+
 Rational StreamCoder::getTimeBase()
 {
-    return (context ? context->time_base : Rational());
+    return (m_context ? m_context->time_base : Rational());
 }
 
 void StreamCoder::setTimeBase(const Rational &value)
 {
-    if (context)
+    if (m_context)
     {
-        context->time_base = value.getValue();
+        m_context->time_base = value.getValue();
     }
 }
 
 StreamPtr StreamCoder::getStream() const
 {
-    return stream;
+    return m_stream;
 }
 
 AVMediaType StreamCoder::getCodecType() const
 {
-    return (context ? context->codec_type : AVMEDIA_TYPE_UNKNOWN);
+    return (m_context ? m_context->codec_type : AVMEDIA_TYPE_UNKNOWN);
 }
 
 int StreamCoder::getWidth() const
 {
-    return (context ? context->width : -1);
+    return (m_context ? m_context->width : -1);
 }
 
 int StreamCoder::getHeight() const
 {
-    return (context ? context->height : -1);
+    return (m_context ? m_context->height : -1);
 }
 
 PixelFormat StreamCoder::getPixelFormat() const
 {
-    return (context ? context->pix_fmt : PIX_FMT_NONE);
+    return (m_context ? m_context->pix_fmt : PIX_FMT_NONE);
 }
 
 Rational StreamCoder::getFrameRate()
 {
-    if (!isOpenedFlag && stream)
+    if (!m_openedFlag && m_stream)
     {
-        return stream->getFrameRate();
+        return m_stream->getFrameRate();
     }
 
     return Rational();
@@ -406,84 +428,84 @@ Rational StreamCoder::getFrameRate()
 
 int32_t StreamCoder::getBitRate() const
 {
-    return (context ? context->bit_rate : 0);
+    return (m_context ? m_context->bit_rate : 0);
 }
 
 pair<int,int> StreamCoder::getBitRateRange() const
 {
-    return (context ? std::pair<int,int>(context->rc_min_rate, context->rc_max_rate) : std::pair<int,int>());
+    return (m_context ? std::pair<int,int>(m_context->rc_min_rate, m_context->rc_max_rate) : std::pair<int,int>());
 }
 
 int32_t StreamCoder::getGlobalQuality()
 {
-    return (context ? context->global_quality : FF_LAMBDA_MAX);
+    return (m_context ? m_context->global_quality : FF_LAMBDA_MAX);
 }
 
 int32_t StreamCoder::getGopSize()
 {
-    return (context ? context->gop_size : -1);
+    return (m_context ? m_context->gop_size : -1);
 }
 
 int StreamCoder::getBitRateTolerance() const
 {
-    return (context ? context->bit_rate_tolerance : -1);
+    return (m_context ? m_context->bit_rate_tolerance : -1);
 }
 
 int StreamCoder::getStrict() const
 {
-    return (context ? context->strict_std_compliance : 0);
+    return (m_context ? m_context->strict_std_compliance : 0);
 }
 
 int StreamCoder::getMaxBFrames() const
 {
-    return (context ? context->max_b_frames : 0);
+    return (m_context ? m_context->max_b_frames : 0);
 }
 
 int StreamCoder::getFrameSize() const
 {
-    assert(context);
+    assert(m_context);
 
-    return context->frame_size;
+    return m_context->frame_size;
 }
 
 void StreamCoder::setWidth(int w)
 {
-    if (context)
+    if (m_context)
     {
-        context->width = w;
+        m_context->width = w;
     }
 }
 
 void StreamCoder::setHeight(int h)
 {
-    if (context)
-        context->height = h;
+    if (m_context)
+        m_context->height = h;
 }
 
 void StreamCoder::setPixelFormat(PixelFormat pixelFormat)
 {
-    if (context)
-        context->pix_fmt = pixelFormat;
+    if (m_context)
+        m_context->pix_fmt = pixelFormat;
 }
 
 void StreamCoder::setFrameRate(const Rational &frameRate)
 {
-    if (!isOpenedFlag && stream)
-        stream->setFrameRate(frameRate);
+    if (!m_openedFlag && m_stream)
+        m_stream->setFrameRate(frameRate);
 }
 
 void StreamCoder::setBitRate(int32_t bitRate)
 {
-    if (context && !isOpenedFlag)
-        context->bit_rate = bitRate;
+    if (m_context && !m_openedFlag)
+        m_context->bit_rate = bitRate;
 }
 
 void StreamCoder::setBitRateRange(const std::pair<int, int> &bitRateRange)
 {
-    if (context && !isOpenedFlag)
+    if (m_context && !m_openedFlag)
     {
-        context->rc_min_rate = bitRateRange.first;
-        context->rc_max_rate = bitRateRange.second;
+        m_context->rc_min_rate = bitRateRange.first;
+        m_context->rc_max_rate = bitRateRange.second;
     }
 }
 
@@ -492,25 +514,25 @@ void StreamCoder::setGlobalQuality(int32_t quality)
     if (quality < 0 || quality > FF_LAMBDA_MAX)
         quality = FF_LAMBDA_MAX;
 
-    if (context)
-        context->global_quality = quality;
+    if (m_context)
+        m_context->global_quality = quality;
 }
 
 void StreamCoder::setGopSize(int32_t size)
 {
-    if (context)
-        context->gop_size = size;
+    if (m_context)
+        m_context->gop_size = size;
 }
 
 void StreamCoder::setBitRateTolerance(int bitRateTolerance)
 {
-    if (context)
-        context->bit_rate_tolerance = bitRateTolerance;
+    if (m_context)
+        m_context->bit_rate_tolerance = bitRateTolerance;
 }
 
 void StreamCoder::setStrict(int strict)
 {
-    if (context)
+    if (m_context)
     {
         if (strict < FF_COMPLIANCE_EXPERIMENTAL)
         {
@@ -521,36 +543,36 @@ void StreamCoder::setStrict(int strict)
             strict = FF_COMPLIANCE_VERY_STRICT;
         }
 
-        context->strict_std_compliance = strict;
+        m_context->strict_std_compliance = strict;
     }
 }
 
 void StreamCoder::setMaxBFrames(int maxBFrames)
 {
-    if (context)
-        context->max_b_frames = maxBFrames;
+    if (m_context)
+        m_context->max_b_frames = maxBFrames;
 }
 
 int StreamCoder::getSampleRate() const
 {
-    return (context ? context->sample_rate : -1);
+    return (m_context ? m_context->sample_rate : -1);
 }
 
 int StreamCoder::getChannels() const
 {
-    if (!context)
+    if (!m_context)
     {
         return 0;
     }
 
-    if (context->channels)
+    if (m_context->channels)
     {
-        return context->channels;
+        return m_context->channels;
     }
 
-    if (context->channel_layout)
+    if (m_context->channel_layout)
     {
-        return av_get_channel_layout_nb_channels(context->channel_layout);
+        return av_get_channel_layout_nb_channels(m_context->channel_layout);
     }
 
     return 0;
@@ -558,24 +580,24 @@ int StreamCoder::getChannels() const
 
 AVSampleFormat StreamCoder::getSampleFormat() const
 {
-    return (context ? context->sample_fmt : AV_SAMPLE_FMT_NONE);
+    return (m_context ? m_context->sample_fmt : AV_SAMPLE_FMT_NONE);
 }
 
 uint64_t StreamCoder::getChannelLayout() const
 {
-    if (!context)
+    if (!m_context)
     {
         return 0;
     }
 
-    if (context->channel_layout)
+    if (m_context->channel_layout)
     {
-        return context->channel_layout;
+        return m_context->channel_layout;
     }
 
-    if (context->channels)
+    if (m_context->channels)
     {
-        return av_get_default_channel_layout(context->channels);
+        return av_get_default_channel_layout(m_context->channels);
     }
 
     return 0;
@@ -584,19 +606,19 @@ uint64_t StreamCoder::getChannelLayout() const
 int StreamCoder::getAudioFrameSize() const
 {
     int result = 0;
-    if (codec && codec->getAVCodec()->type == AVMEDIA_TYPE_AUDIO)
+    if (m_codec && m_codec->getAVCodec()->type == AVMEDIA_TYPE_AUDIO)
     {
-        if (context)
+        if (m_context)
         {
-            if (context->frame_size <= 1)
+            if (m_context->frame_size <= 1)
             {
                 // Rats; some PCM encoders give a frame size of 1, which is too
                 //small.  We pick a more sensible value.
-                result = defaultAudioFrameSize;
+                result = m_defaultAudioFrameSize;
             }
             else
             {
-                result = context->frame_size;
+                result = m_context->frame_size;
             }
         }
     }
@@ -606,94 +628,94 @@ int StreamCoder::getAudioFrameSize() const
 
 int StreamCoder::getDefaultAudioFrameSize() const
 {
-    return defaultAudioFrameSize;
+    return m_defaultAudioFrameSize;
 }
 
 void StreamCoder::setSampleRate(int sampleRate)
 {
-    assert(context);
+    assert(m_context);
 
-    if (!isOpenedFlag)
+    if (!m_openedFlag)
     {
-        int sr = guessValue(sampleRate, context->codec->supported_samplerates, EqualComparator<int>(0));
+        int sr = guessValue(sampleRate, m_context->codec->supported_samplerates, EqualComparator<int>(0));
         clog << "========= Input sampleRate: " << sampleRate << ", guessed sample rate: " << sr << endl;
 
         if (sr > 0)
-            context->sample_rate = sr;
+            m_context->sample_rate = sr;
     }
 }
 
 void StreamCoder::setChannels(int channels)
 {
-    if (context && !isOpenedFlag && channels > 0)
+    if (m_context && !m_openedFlag && channels > 0)
     {
-        context->channels = channels;
+        m_context->channels = channels;
 
         // Make channels and channel_layout sync
-        if (context->channel_layout == 0 ||
-            av_get_channel_layout_nb_channels(context->channel_layout) != channels)
+        if (m_context->channel_layout == 0 ||
+            av_get_channel_layout_nb_channels(m_context->channel_layout) != channels)
         {
-            context->channel_layout = av_get_default_channel_layout(channels);
+            m_context->channel_layout = av_get_default_channel_layout(channels);
         }
     }
 }
 
 void StreamCoder::setSampleFormat(AVSampleFormat sampleFormat)
 {
-    if (context && !isOpenedFlag && sampleFormat >= 0)
+    if (m_context && !m_openedFlag && sampleFormat >= 0)
     {
-        context->sample_fmt = sampleFormat;
+        m_context->sample_fmt = sampleFormat;
     }
 }
 
 void StreamCoder::setChannelLayout(uint64_t layout)
 {
-    if (context && !isOpenedFlag && layout > 0)
+    if (m_context && !m_openedFlag && layout > 0)
     {
-        context->channel_layout = layout;
+        m_context->channel_layout = layout;
 
         // Make channels and channel_layout sync
-        if (context->channels == 0 ||
-            av_get_default_channel_layout(context->channels) != layout)
+        if (m_context->channels == 0 ||
+            av_get_default_channel_layout(m_context->channels) != layout)
         {
-            context->channels = av_get_channel_layout_nb_channels(layout);
+            m_context->channels = av_get_channel_layout_nb_channels(layout);
         }
     }
 }
 
 void StreamCoder::setAudioFrameSize(int frameSize)
 {
-    if (context)
-        context->frame_size = frameSize;
+    if (m_context)
+        m_context->frame_size = frameSize;
 }
 
 void StreamCoder::setDefaultAudioFrameSize(int frameSize)
 {
-    defaultAudioFrameSize = frameSize;
+    m_defaultAudioFrameSize = frameSize;
 }
 
 void StreamCoder::setFlags(int32_t flags)
 {
-    if (context)
-        context->flags = flags;
+    if (m_context)
+        m_context->flags = flags;
 }
 
 void StreamCoder::addFlags(int32_t flags)
 {
-    if (context)
-        context->flags |= flags;
+    if (m_context)
+        m_context->flags |= flags;
 }
 
 void StreamCoder::clearFlags(int32_t flags)
 {
-    if (context)
-        context->flags &= ~flags;
+    if (m_context)
+        m_context->flags &= ~flags;
 }
 
 
 int32_t StreamCoder::getFlags()
 {
-    return (context ? context->flags : 0);
+    return (m_context ? m_context->flags : 0);
 }
 
 
@@ -739,13 +761,13 @@ ssize_t StreamCoder::encodeAudio(const FramePtr &inFrame, const EncodedPacketHan
 
 bool StreamCoder::isValidForEncode()
 {
-    if (!isOpenedFlag)
+    if (!m_openedFlag)
     {
         cerr << "You must open coder before encoding\n";
         return false;
     }
 
-    if (!context)
+    if (!m_context)
     {
         cerr << "Codec context does not exists\n";
         return false;
@@ -757,26 +779,26 @@ bool StreamCoder::isValidForEncode()
 //        return false;
 //    }
 
-    if (direction == DECODING)
+    if (m_direction == DECODING)
     {
         cerr << "Decoding coder does not valid for encoding\n";
         return false;
     }
 
-    if (!codec)
+    if (!m_codec)
     {
         cerr << "Codec does not set\n";
         return false;
     }
 
-    if (!codec->canEncode())
+    if (!m_codec->canEncode())
     {
         cerr << "Codec can't be used for Encode\n";
         return false;
     }
 
-    fakeCurrPts = AV_NOPTS_VALUE;
-    fakeNextPts = AV_NOPTS_VALUE;
+    m_fakeCurrPts = AV_NOPTS_VALUE;
+    m_fakeNextPts = AV_NOPTS_VALUE;
 
     return true;
 }
