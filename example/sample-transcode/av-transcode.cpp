@@ -28,7 +28,7 @@ PacketTimeSynchronizer packetSync;
 inline static
 void usage(const string& appName)
 {
-    cout << "Usage: " << appName << " INPUT OUTPUT" << endl;
+    cout << "Usage: " << appName << " INPUT OUTPUT [filter description]" << endl;
 }
 
 
@@ -48,7 +48,7 @@ void formatWriter(const ContainerPtr& container, const PacketPtr& packet)
          << ", fakeTime: "  << packet->getTimeBase().getDouble() * packet->getFakePts()
          << endl;
 
-    container->writePacket(packet);
+    container->writePacket(packet, true);
 }
 
 int main(int argc, char **argv)
@@ -111,6 +111,7 @@ int main(int argc, char **argv)
 
     string srcUri;
     string dstUri;
+    string filterDescription = "";
 
     if (argc < 3)
     {
@@ -121,6 +122,10 @@ int main(int argc, char **argv)
     srcUri = string(argv[1]);
     dstUri = string(argv[2]);
 
+    if (argc > 3)
+    {
+        filterDescription = string(argv[3]);
+    }
 
     //
     // Prepare input
@@ -183,6 +188,8 @@ int main(int argc, char **argv)
 
                 if (inSampleAspectRatio == Rational(0, 1))
                     inSampleAspectRatio = coder->getAVCodecContext()->sample_aspect_ratio;
+
+                clog << "Aspect ratio: " << inSampleAspectRatio << endl;
             }
             else
             {
@@ -313,35 +320,41 @@ int main(int argc, char **argv)
     int stat = 0;
 
     // Audio filter graph
-    list<int>            dstSampleRates;    dstSampleRates.push_back(outSampleRate);
-    list<AVSampleFormat> dstSampleFormats;  dstSampleFormats.push_back(outSampleFmt);
-    list<uint64_t>       dstChannelLayouts; dstChannelLayouts.push_back(outChannelLayout);
+    list<int>            dstSampleRates    = {outSampleRate};
+    list<AVSampleFormat> dstSampleFormats  = {outSampleFmt};
+    list<uint64_t>       dstChannelLayouts = {outChannelLayout};
     BufferSrcFilterContextPtr srcAudioFilter;
     BufferSinkFilterContextPtr sinkAudioFilter;
-    FilterGraphPtr       audioFilterGraph =
-            FilterGraph::createSimpleAudioFilterGraph(Rational(1, inSampleRate),
-                                                      inSampleRate, inSampleFmt, inChannelLayout,
-                                                      dstSampleRates, dstSampleFormats, dstChannelLayouts,
-                                                      string());
+    FilterGraphPtr       audioFilterGraph;
 
-
-    sinkAudioFilter = filter_cast<BufferSinkFilterContext>(audioFilterGraph->getSinkFilter());
-    srcAudioFilter  = audioFilterGraph->getSrcFilter();
-
-    if (sinkAudioFilter)
+    if (!audio.empty())
     {
-        sinkAudioFilter->setFrameSize(outFrameSize);
+         audioFilterGraph = FilterGraph::createSimpleAudioFilterGraph(Rational(1, inSampleRate),
+                                                                      inSampleRate, inSampleFmt, inChannelLayout,
+                                                                      dstSampleRates, dstSampleFormats, dstChannelLayouts,
+                                                                      string());
+
+
+         sinkAudioFilter = filter_cast<BufferSinkFilterContext>(audioFilterGraph->getSinkFilter());
+         srcAudioFilter  = audioFilterGraph->getSrcFilter();
+
+         if (sinkAudioFilter)
+         {
+             sinkAudioFilter->setFrameSize(outFrameSize);
+         }
+
+         audioFilterGraph->dump();
     }
 
-    audioFilterGraph->dump();
-
-    //return 0;
 
     // Video filter graph
+#if 0
     string videoFilterDesc = "movie=http\\\\://camproc1/snapshots/logo.png [watermark]; [in][watermark] overlay=0:0:rgb=1,"
                              "drawtext=fontfile=/home/hatred/fifte.ttf:fontsize=20:"
                              "text='%F %T':x=(w-text_w-5):y=H-20 :fontcolor=white :box=0:boxcolor=0x00000000@1 [out]";
-
+#else
+    string &videoFilterDesc = filterDescription;
+#endif
 
     BufferSrcFilterContextPtr  srcVideoFilter;
     BufferSinkFilterContextPtr sinkVideoFilter;
@@ -367,8 +380,6 @@ int main(int argc, char **argv)
     packetSync.reset();
     while (in->readNextPacket(pkt) >= 0)
     {
-        PacketPtr outPkt;
-
         if (streamMapping.find(pkt->getStreamIndex()) == streamMapping.end())
         {
             continue;
@@ -392,13 +403,20 @@ int main(int argc, char **argv)
                 pkt->setPts(pkt->getDts());
             }
 
-
-            coder->decodeVideo(frame, pkt);
+            auto ret = coder->decodeVideo(frame, pkt);
             frame->setStreamIndex(streamMapping[pkt->getStreamIndex()]);
+
+            clog << "decoding ret: " << ret << ", pkt size: " << pkt->getSize() << endl;
 
             if (frame->isComplete())
             {
                 StreamCoderPtr &encoder = encoders[streamMapping[pkt->getStreamIndex()]];
+
+                clog << "Frame: aspect ratio: " << Rational(frame->getAVFrame()->sample_aspect_ratio)
+                     << ", size: " << frame->getWidth() << "x" << frame->getHeight()
+                     << ", pix_fmt: " << frame->getPixelFormat()
+                     << ", time_base: " << frame->getTimeBase()
+                     << endl;
 
                 stat = srcVideoFilter->addFrame(frame);
                 if (stat < 0)
@@ -430,8 +448,7 @@ int main(int argc, char **argv)
                             outVideoFrame->setTimeBase(encoder->getTimeBase());
                             outVideoFrame->setPts(pkt->getTimeBase().rescale(pkt->getPts(), outVideoFrame->getTimeBase()));
 
-                            outPkt = PacketPtr(new Packet());
-                            stat = encoder->encodeVideo(outPkt, outVideoFrame, std::bind(formatWriter, writer, std::placeholders::_1));
+                            stat = encoder->encodeVideo(outVideoFrame, std::bind(formatWriter, writer, std::placeholders::_1));
                         }
                     }
                 }
@@ -500,9 +517,7 @@ int main(int argc, char **argv)
 //                                 << ", tb:" << outSamples->getTimeBase()
 //                                 << endl;
 
-
-                            outPkt = PacketPtr(new Packet());
-                            stat = encoder->encodeAudio(outPkt, outSamples, std::bind(formatWriter, writer, std::placeholders::_1));
+                            stat = encoder->encodeAudio(outSamples, std::bind(formatWriter, writer, std::placeholders::_1));
                         }
                     }
                 }

@@ -17,10 +17,10 @@ typedef std::weak_ptr<Codec>   CodecWPtr;
 class Codec
 {
 public:
-    Codec(AVCodec *codec);
+    Codec(const AVCodec *codec);
     ~Codec();
 
-    AVCodec *getAVCodec() const {return codec;}
+    const AVCodec *getAVCodec() const {return codec;}
 
     static CodecPtr findEncodingCodec(AVCodecID id);
     static CodecPtr findEncodingCodec(const char *name);
@@ -42,7 +42,7 @@ private:
     Codec();
 
 private:
-    AVCodec *codec;
+    const AVCodec *codec;
 };
 
 } // ::fmpeg

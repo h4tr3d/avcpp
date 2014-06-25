@@ -33,6 +33,7 @@ private:
 public:
     Packet();
     Packet(const Packet &packet);
+    Packet(Packet &&packet);
     explicit Packet(const AVPacket *packet);
     explicit Packet(const vector<uint8_t> &data);
     Packet(const uint8_t *data, size_t size, bool doAllign = true);
@@ -40,8 +41,12 @@ public:
 
     bool setData(const vector<uint8_t> &newData);
     bool setData(const uint8_t *newData, size_t size);
-    const uint8_t* getData() const { return pkt ? pkt->data : 0; }
-    AVPacket *getAVPacket() const { return pkt; }
+
+    const uint8_t* getData() const { return m_pkt.data; }
+    uint8_t*       getData() { return m_pkt.data; }
+
+    const AVPacket *getAVPacket() const { return &m_pkt; }
+    AVPacket       *getAVPacket() {return &m_pkt;}
 
     int64_t getPts() const;
     int64_t getDts() const;
@@ -54,10 +59,12 @@ public:
      * encoded packets in any cases have AV_NOPTS_VALUE!
      *
      * @param pts new presentation timestamp value
+     * @param tsTimeBase  is a time base of setted timestamp, can be omited or sets to Rational(0,0)
+     *                    that means that time base equal to packet time base.
      */
-    void setPts(int64_t pts);
-    void setDts(int64_t dts);
-    void setFakePts(int64_t pts);
+    void setPts(int64_t pts,     const Rational &tsTimeBase = Rational(0, 0));
+    void setDts(int64_t dts,     const Rational &tsTimeBase = Rational(0, 0));
+    void setFakePts(int64_t pts, const Rational &tsTimeBase = Rational(0, 0));
 
     int     getStreamIndex() const;
     bool    isKeyPacket() const;
@@ -66,32 +73,35 @@ public:
 
     void    setStreamIndex(int idx);
     void    setKeyPacket(bool keyPacket);
-    void    setDuration(int duration);
+    void    setDuration(int duration, const Rational &durationTimeBase = Rational(0, 0));
     void    setComplete(bool complete);
 
     // Flags
-    int32_t     getFlags();
-    void        setFlags(int32_t flags);
-    void        addFlags(int32_t flags);
-    void        clearFlags(int32_t flags);
+    int getFlags();
+    void        setFlags(int flags);
+    void        addFlags(int flags);
+    void        clearFlags(int flags);
 
     void        dump(const StreamPtr &st, bool dumpPayload = false) const;
 
-    const Rational& getTimeBase() const { return timeBase; }
+    const Rational& getTimeBase() const { return m_timeBase; }
     void setTimeBase(const Rational &value);
 
-    Packet& operator= (const Packet &newPkt);
-    Packet& operator= (const AVPacket &newPkt);
+    Packet &operator =(const Packet &rhs);
+    Packet &operator= (Packet &&rhs);
+    Packet &operator =(const AVPacket &rhs);
+
+    void swap(Packet &other);
 
 private:
     int allocatePayload(int32_t   size);
     int reallocatePayload(int32_t newSize);
 
 private:
-    AVPacket        *pkt;
-    bool             isCompleteFlag;
-    Rational         timeBase;
-    int64_t          fakePts;
+    AVPacket         m_pkt;
+    bool             m_completeFlag;
+    Rational         m_timeBase;
+    int64_t          m_fakePts;
 };
 
 

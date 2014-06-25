@@ -34,6 +34,8 @@ public:
     FilterGraphPtr getFilterGraph() const;
     void           setFilterGraph(const FilterGraphPtr& graph);
 
+
+
 private:
     AVFilterInOut    *inout;
     FilterGraphPtr    graph;

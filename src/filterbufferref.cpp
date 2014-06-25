@@ -5,36 +5,36 @@
 namespace av {
 
 FilterBufferRef::FilterBufferRef()
-    : ref(0)
+    : m_ref(0)
 {
 }
 
 FilterBufferRef::FilterBufferRef(AVFilterBufferRef *ref, int mask)
-    : ref(0)
+    : m_ref(0)
 {
     if (ref)
-        this->ref = avfilter_ref_buffer(ref, mask);
+        this->m_ref = avfilter_ref_buffer(ref, mask);
 }
 
 FilterBufferRef::FilterBufferRef(const FilterBufferRef &ref, int mask)
-    : ref(0)
+    : m_ref(0)
 {
-    if (ref.ref)
-        this->ref = avfilter_ref_buffer(ref.ref, mask);
+    if (ref.m_ref)
+        this->m_ref = avfilter_ref_buffer(ref.m_ref, mask);
 }
 
 FilterBufferRef::~FilterBufferRef()
 {
-    if (ref)
-        avfilter_unref_buffer(ref);
+    if (m_ref)
+        avfilter_unref_buffer(m_ref);
 }
 
 FilterBufferRef &FilterBufferRef::operator =(const FilterBufferRef &rhs)
 {
-    if (ref != rhs.ref && rhs.ref)
+    if (m_ref != rhs.m_ref && rhs.m_ref)
     {
-        AVFilterBufferRef *tmp = ref;
-        ref = avfilter_ref_buffer(rhs.ref, 0);
+        AVFilterBufferRef *tmp = m_ref;
+        m_ref = avfilter_ref_buffer(rhs.m_ref, 0);
         avfilter_unref_buffer(tmp);
     }
 
@@ -43,10 +43,10 @@ FilterBufferRef &FilterBufferRef::operator =(const FilterBufferRef &rhs)
 
 FilterBufferRef &FilterBufferRef::operator =(AVFilterBufferRef *rhs)
 {
-    if (ref != rhs && rhs)
+    if (m_ref != rhs && rhs)
     {
-        AVFilterBufferRef *tmp = ref;
-        ref = avfilter_ref_buffer(rhs, 0);
+        AVFilterBufferRef *tmp = m_ref;
+        m_ref = avfilter_ref_buffer(rhs, 0);
         avfilter_unref_buffer(tmp);
     }
     return *this;
@@ -54,45 +54,45 @@ FilterBufferRef &FilterBufferRef::operator =(AVFilterBufferRef *rhs)
 
 void FilterBufferRef::copyProps(const FilterBufferRef &other)
 {
-    assert(ref);
-    assert(other.ref);
+    assert(m_ref);
+    assert(other.m_ref);
 
-    avfilter_copy_buffer_ref_props(ref, other.ref);
+    avfilter_copy_buffer_ref_props(m_ref, other.m_ref);
 }
 
 int FilterBufferRef::copyToFrame(FramePtr &dstFrame) const
 {
-    assert(ref);
+    assert(m_ref);
     //assert(ref->type == AVMEDIA_TYPE_AUDIO || ref->type == AVMEDIA_TYPE_VIDEO);
 
     FramePtr result;
 
-    if (ref->type == AVMEDIA_TYPE_AUDIO)
+    if (m_ref->type == AVMEDIA_TYPE_AUDIO)
     {
         result = AudioSamplesPtr(new AudioSamples(
-                                     (AVSampleFormat)ref->format,
-                                     ref->audio->nb_samples,
-                                     av_get_channel_layout_nb_channels(ref->audio->channel_layout),
-                                     ref->audio->sample_rate));
+                                     (AVSampleFormat)m_ref->format,
+                                     m_ref->audio->nb_samples,
+                                     av_get_channel_layout_nb_channels(m_ref->audio->channel_layout),
+                                     m_ref->audio->sample_rate));
     }
-    else if (ref->type == AVMEDIA_TYPE_VIDEO)
+    else if (m_ref->type == AVMEDIA_TYPE_VIDEO)
     {
         result = VideoFramePtr(new VideoFrame(
-                                   (PixelFormat)ref->format,
-                                   ref->video->w,
-                                   ref->video->h
+                                   (PixelFormat)m_ref->format,
+                                   m_ref->video->w,
+                                   m_ref->video->h
                                    ));
     }
     else
     {
-        clog << "Unsupported media type: (" << ref->type << ") " << av_get_media_type_string(ref->type) << endl;
+        clog << "Unsupported media type: (" << m_ref->type << ") " << av_get_media_type_string(m_ref->type) << endl;
         return -1;
     }
 
-    int stat = avfilter_copy_buf_props(result->getAVFrame(), ref);
+    int stat = avfilter_copy_buf_props(result->getAVFrame(), m_ref);
     if (stat >= 0)
     {
-        if (ref->type == AVMEDIA_TYPE_AUDIO)
+        if (m_ref->type == AVMEDIA_TYPE_AUDIO)
         {
             result->getAVFrame()->pts = AV_NOPTS_VALUE;
         }
@@ -132,28 +132,28 @@ int FilterBufferRef::makeFromFrame(const VideoFramePtr &frame, int perms)
 
 AVMediaType FilterBufferRef::getMediaType() const
 {
-    assert(ref);
-    return ref->type;
+    assert(m_ref);
+    return m_ref->type;
 }
 
 void FilterBufferRef::reset(AVFilterBufferRef *other)
 {
-    if (ref != other && other)
+    if (m_ref != other && other)
     {
-        AVFilterBufferRef *tmp = ref;
-        ref = other;
+        AVFilterBufferRef *tmp = m_ref;
+        m_ref = other;
         avfilter_unref_buffer(tmp);
     }
 }
 
 AVFilterBufferRef *FilterBufferRef::getAVFilterBufferRef()
 {
-    return ref;
+    return m_ref;
 }
 
 bool FilterBufferRef::isValid() const
 {
-    return !!ref;
+    return !!m_ref;
 }
 
 

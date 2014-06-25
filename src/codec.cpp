@@ -15,7 +15,7 @@ Codec::~Codec()
 }
 
 
-Codec::Codec(AVCodec *codec)
+Codec::Codec(const AVCodec *codec)
     : codec(codec)
 {
 }
@@ -131,7 +131,8 @@ list<PixelFormat> Codec::getSupportedPixelFormats() const
     }
 
     PixelFormat format;
-    while ((format = *(codec->pix_fmts++)) != -1)
+    const AVPixelFormat *pixFmts = codec->pix_fmts;
+    while ((format = *(pixFmts++)) != -1)
     {
         result.push_back(format);
     }

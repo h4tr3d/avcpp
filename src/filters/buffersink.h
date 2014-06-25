@@ -2,6 +2,7 @@
 #define AV_BUFFERSINK_H
 
 #include <stdint.h>
+#include <memory>
 
 #include "../ffmpeg.h"
 #include "../rational.h"
@@ -11,15 +12,13 @@
 
 namespace av {
 
-struct BufferSinkFilterContextPriv;
-
 class BufferSinkFilterContext : public FilterContext
 {
 public:
     BufferSinkFilterContext();
     explicit BufferSinkFilterContext(const Filter& filter, const std::string &name = std::string());
     explicit BufferSinkFilterContext(const FilterContext& baseContext);
-    virtual ~BufferSinkFilterContext();
+    ~BufferSinkFilterContext();
 
     virtual  int reinit(const Filter &filter, const string &name);
 
@@ -30,8 +29,11 @@ public:
 
     static bool isFilterValid(const Filter& filter);
 
+    BufferSinkFilterContext(const BufferSinkFilterContext &other) = delete;
+    void operator=(const BufferSinkFilterContext &rhs) = delete;
+
 private:
-    BufferSinkFilterContextPriv *priv;
+    std::unique_ptr<struct BufferSinkFilterContextPriv> m_priv;
 };
 
 //
@@ -57,7 +59,7 @@ inline std::shared_ptr<BufferSinkFilterContext> filter_cast(const FilterContextP
         }
         else
         {
-            return BufferSinkFilterContextPtr(new BufferSinkFilterContext(*ctx));
+            return std::make_shared<BufferSinkFilterContext>(*ctx);
         }
     }
     return BufferSinkFilterContextPtr();

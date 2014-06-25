@@ -6,11 +6,11 @@ namespace av
 {
 
 Frame::Frame()
-    : frame(0),
-      timeBase(AV_TIME_BASE_Q),
-      streamIndex(0),
-      isCompleteFlag(false),
-      fakePts(AV_NOPTS_VALUE)
+    : m_frame(0),
+      m_timeBase(AV_TIME_BASE_Q),
+      m_streamIndex(0),
+      m_completeFlag(false),
+      m_fakePts(AV_NOPTS_VALUE)
 {
     allocFrame();
 }
@@ -18,7 +18,8 @@ Frame::Frame()
 
 Frame::~Frame()
 {
-    avcodec_free_frame(&frame);
+    if (!m_frame)
+        av_frame_free(&m_frame);
 }
 
 
@@ -30,154 +31,139 @@ void Frame::initFromAVFrame(const AVFrame *frame)
         return;
     }
 
-    *(this->frame) = *(frame);
-
-    this->frame->extended_data = 0;
-    this->frame->thread_opaque = 0;
-    this->frame->owner         = 0;
-    this->frame->hwaccel_picture_private = 0;
-    this->frame->ref_index[0]  = 0;
-    this->frame->ref_index[1]  = 0;
-    this->frame->dct_coeff     = 0;
-    this->frame->pan_scan      = 0;
-    this->frame->opaque        = this;
-    this->frame->qscale_table  = 0;
-    this->frame->mbskip_table  = 0;
-    this->frame->mb_type       = 0;
-
-    for (int i = 0; i < AV_NUM_DATA_POINTERS; ++i)
-    {
-        this->frame->data[i] = 0;
-        this->frame->linesize[i] = 0;
-        this->frame->base[i] = 0;
-        this->frame->error[i] = 0;
-    }
-
+    // Setup pointers
     setupDataPointers(frame);
+
+    // Copy frame
+    av_frame_copy(m_frame, frame);
+    av_frame_copy_props(m_frame, frame);
 }
 
 
 int64_t Frame::getPts() const
 {
-    return (frame ? frame->pts : AV_NOPTS_VALUE);
+    return (m_frame ? m_frame->pts : AV_NOPTS_VALUE);
 }
 
 void Frame::setPts(int64_t pts)
 {
-    if (frame)
+    if (m_frame)
     {
-        frame->pts = pts;
+        m_frame->pts = pts;
         setFakePts(pts);
     }
 }
 
 int64_t Frame::getBestEffortTimestamp() const
 {
-    return (frame ? frame->best_effort_timestamp : AV_NOPTS_VALUE);
+    return (m_frame ? m_frame->best_effort_timestamp : AV_NOPTS_VALUE);
 }
 
 int64_t Frame::getFakePts() const
 {
-    return fakePts;
+    return m_fakePts;
 }
 
 void Frame::setFakePts(int64_t pts)
 {
-    fakePts = pts;
+    m_fakePts = pts;
 }
 
 void Frame::setTimeBase(const Rational &value)
 {
-    if (timeBase == value)
+    if (m_timeBase == value)
         return;
 
     int64_t rescaledPts          = AV_NOPTS_VALUE;
     int64_t rescaledFakePts      = AV_NOPTS_VALUE;
     int64_t rescaledBestEffortTs = AV_NOPTS_VALUE;
 
-    if (frame)
+    if (m_frame)
     {
-        if (timeBase != Rational() && value != Rational())
+        if (m_timeBase != Rational() && value != Rational())
         {
-            if (frame->pts != AV_NOPTS_VALUE)
-                rescaledPts = timeBase.rescale(frame->pts, value);
+            if (m_frame->pts != AV_NOPTS_VALUE)
+                rescaledPts = m_timeBase.rescale(m_frame->pts, value);
 
-            if (frame->best_effort_timestamp != AV_NOPTS_VALUE)
-                rescaledBestEffortTs = timeBase.rescale(frame->best_effort_timestamp, value);
+            if (m_frame->best_effort_timestamp != AV_NOPTS_VALUE)
+                rescaledBestEffortTs = m_timeBase.rescale(m_frame->best_effort_timestamp, value);
 
-            if (fakePts != AV_NOPTS_VALUE)
-                rescaledFakePts = timeBase.rescale(fakePts, value);
+            if (m_fakePts != AV_NOPTS_VALUE)
+                rescaledFakePts = m_timeBase.rescale(m_fakePts, value);
         }
         else
         {
-            rescaledPts          = frame->pts;
-            rescaledFakePts      = fakePts;
-            rescaledBestEffortTs = frame->best_effort_timestamp;
+            rescaledPts          = m_frame->pts;
+            rescaledFakePts      = m_fakePts;
+            rescaledBestEffortTs = m_frame->best_effort_timestamp;
         }
     }
 
-    timeBase = value;
+    m_timeBase = value;
 
-    if (frame)
+    if (m_frame)
     {
-        frame->pts                   = rescaledPts;
-        frame->best_effort_timestamp = rescaledBestEffortTs;
-        fakePts                      = rescaledFakePts;
+        m_frame->pts                   = rescaledPts;
+        m_frame->best_effort_timestamp = rescaledBestEffortTs;
+        m_fakePts                      = rescaledFakePts;
     }
 }
 
 int Frame::getStreamIndex() const
 {
-    return streamIndex;
+    return m_streamIndex;
 }
 
 void Frame::setStreamIndex(int streamIndex)
 {
-    this->streamIndex = streamIndex;
+    this->m_streamIndex = streamIndex;
 }
 
 
 const AVFrame *Frame::getAVFrame() const
 {
-    return frame;
+    return m_frame;
 }
 
 AVFrame *Frame::getAVFrame()
 {
-    return frame;
+    return m_frame;
 }
 
 const vector<uint8_t> &Frame::getFrameBuffer() const
 {
-    return frameBuffer;
+    return m_frameBuffer;
 }
 
 void Frame::setComplete(bool isComplete)
 {
-    isCompleteFlag = isComplete;
+    m_completeFlag = isComplete;
 }
 
 void Frame::dump()
 {
-    av_hex_dump(stdout, frameBuffer.data(), frameBuffer.size());
+    av_hex_dump(stdout, m_frameBuffer.data(), m_frameBuffer.size());
 }
 
 Frame &Frame::operator =(const AVFrame *frame)
 {
-    if (this->frame && frame)
+    if (m_frame && frame)
         initFromAVFrame(frame);
     return *this;
 }
 
 Frame &Frame::operator =(const Frame &frame)
 {
-    if (this->frame)
+    if (m_frame == frame.m_frame || this == &frame)
+        return *this;
+
+    if (this->m_frame)
     {
         initFromAVFrame(frame.getAVFrame());
-        timeBase       = frame.timeBase;
-        isCompleteFlag = frame.isCompleteFlag;
+        m_timeBase     = frame.m_timeBase;
+        m_completeFlag = frame.m_completeFlag;
         setPts(frame.getPts());
-        fakePts        = frame.fakePts;
+        m_fakePts      = frame.m_fakePts;
     }
     return *this;
 }
@@ -185,8 +171,8 @@ Frame &Frame::operator =(const Frame &frame)
 
 void Frame::allocFrame()
 {
-    frame = avcodec_alloc_frame();
-    frame->opaque = this;
+    m_frame = av_frame_alloc();
+    m_frame->opaque = this;
 }
 
 

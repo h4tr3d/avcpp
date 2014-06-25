@@ -107,12 +107,12 @@ public:
 
     // Video
     ssize_t decodeVideo(const FramePtr  &outFrame,  const PacketPtr &inPacket, size_t offset = 0);
-    ssize_t encodeVideo(const PacketPtr &outPacket, const VideoFramePtr &inFrame,
+    ssize_t encodeVideo(const VideoFramePtr &inFrame,
                         const EncodedPacketHandler &onPacketHandler = EncodedPacketHandler());
 
     // Audio
     ssize_t decodeAudio(const FramePtr &outFrame, const PacketPtr &inPacket, size_t offset = 0);
-    ssize_t encodeAudio(const PacketPtr &outPacket, const FramePtr  &inFrame,
+    ssize_t encodeAudio(const FramePtr  &inFrame,
                         const EncodedPacketHandler &onPacketHandler = EncodedPacketHandler());
 
     bool    isValidForEncode();
@@ -122,7 +122,7 @@ private:
 
     ssize_t decodeCommon(const FramePtr &outFrame, const PacketPtr &inPacket, size_t offset,
                          int (*decodeProc)(AVCodecContext*, AVFrame*,int *, const AVPacket *));
-    ssize_t encodeCommon(const PacketPtr &outPacket, const FramePtr  &inFrame,
+    ssize_t encodeCommon(const FramePtr  &inFrame,
                          int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*),
                          const EncodedPacketHandler &onPacketHandler = EncodedPacketHandler());
 

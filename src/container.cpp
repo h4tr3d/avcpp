@@ -177,7 +177,7 @@ const StreamPtr &Container::getStream(uint32_t index)
 }
 
 
-int32_t Container::readNextPacket(const PacketPtr &pkt)
+int32_t Container::readNextPacket(PacketPtr &pkt)
 {
     if (!priv ||
         priv->state == ContainerPriv::STATE_INIT ||
@@ -189,7 +189,8 @@ int32_t Container::readNextPacket(const PacketPtr &pkt)
 
     ScopedValue<uint64_t> scopedState(priv->state, ContainerPriv::STATE_READING, ContainerPriv::STATE_READY);
 
-    PacketPtr packet(new Packet());
+    //PacketPtr packet(new Packet());
+    Packet packet;
 
     int stat = 0;
     int tries = 0;
@@ -197,12 +198,15 @@ int32_t Container::readNextPacket(const PacketPtr &pkt)
     do
     {
         lastStartReadFrameTime = std::chrono::system_clock::now();
-        stat = av_read_frame(context, packet->getAVPacket());
+        stat = av_read_frame(context, packet.getAVPacket());
         ++tries;
     }
     while (stat == AVERROR(EAGAIN) && (retryCount < 0 || tries <= retryCount));
 
-    *pkt.get() = *packet.get();
+    //*(pkt.get()) = *(packet.get());
+    //pkt = std::move(packet);
+    //pkt = make_shared<Packet>(*packet);
+    *pkt = std::move(packet);
 
     if (pkt->getStreamIndex() >= 0)
     {
@@ -228,7 +232,7 @@ int64_t Container::getReadingTimeout() const
 
 const StreamPtr Container::addNewStream(const CodecPtr &codec)
 {
-    AVCodec *avCodec = codec ? codec->getAVCodec() : 0;
+    const AVCodec *avCodec = codec ? codec->getAVCodec() : 0;
     AVStream *st = 0;
 
     st = avformat_new_stream(context, avCodec);
@@ -315,7 +319,7 @@ bool Container::writeHeader()
     return false;
 }
 
-int Container::writePacket(const PacketPtr &packet, bool forceInterleaveWrite)
+int Container::writePacket(const PacketPtr &packet, bool interleaveWrite)
 {
     if (priv->state == ContainerPriv::STATE_INIT || !(priv->flags & ContainerPriv::FLAG_WRITE) || !context)
     {
@@ -338,7 +342,6 @@ int Container::writePacket(const PacketPtr &packet, bool forceInterleaveWrite)
     if (st->getTimeBase() != packet->getTimeBase())
     {
         packet->setTimeBase(st->getTimeBase());
-        //packet->setDts(AV_NOPTS_VALUE);
     }
 
 //    clog
@@ -359,7 +362,7 @@ int Container::writePacket(const PacketPtr &packet, bool forceInterleaveWrite)
         packet->setPts(packet->getFakePts());
 
     int stat;
-    if (forceInterleaveWrite)
+    if (interleaveWrite)
     {
         stat = av_interleaved_write_frame(context, packet->getAVPacket());
     }

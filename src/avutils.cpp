@@ -126,6 +126,13 @@ void init()
     setFFmpegLoggingLevel(AV_LOG_ERROR);
 }
 
+string error2string(int error)
+{
+    char errorBuf[AV_ERROR_MAX_STRING_SIZE] = {0};
+    av_strerror(error, errorBuf, AV_ERROR_MAX_STRING_SIZE);
+    return string(errorBuf);
+}
+
 
 } // ::av
 

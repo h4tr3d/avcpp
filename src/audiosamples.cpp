@@ -13,17 +13,17 @@ AudioSamples::AudioSamples()
 AudioSamples::AudioSamples(const AVFrame *frame)
 {
     initFromAVFrame(frame);
-    timeBase = Rational(AV_TIME_BASE_Q);
-    isCompleteFlag = true;
+    m_timeBase = Rational(AV_TIME_BASE_Q);
+    m_completeFlag = true;
 }
 
 AudioSamples::AudioSamples(const AudioSamples &frame)
 {
     initFromAVFrame(frame.getAVFrame());
-    timeBase       = frame.getTimeBase();
-    isCompleteFlag = frame.isComplete();
-    streamIndex    = frame.getStreamIndex();
-    fakePts        = frame.getFakePts();
+    m_timeBase     = frame.getTimeBase();
+    m_completeFlag = frame.isComplete();
+    m_streamIndex  = frame.getStreamIndex();
+    m_fakePts      = frame.getFakePts();
 }
 
 AudioSamples::AudioSamples(AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate)
@@ -31,9 +31,9 @@ AudioSamples::AudioSamples(AVSampleFormat sampleFormat, int samplesCount, int ch
     init(sampleFormat, samplesCount, channels, sampleRate);
     int size = getSize();
     if (size > 0)
-        frameBuffer.resize(size);
-    avcodec_fill_audio_frame(frame, channels, sampleFormat, frameBuffer.data(), frameBuffer.size(), 0);
-    timeBase = Rational(AV_TIME_BASE_Q);
+        m_frameBuffer.resize(size);
+    avcodec_fill_audio_frame(m_frame, channels, sampleFormat, m_frameBuffer.data(), m_frameBuffer.size(), 0);
+    m_timeBase = Rational(AV_TIME_BASE_Q);
 }
 
 AudioSamples::AudioSamples(const vector<uint8_t> &data, AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate)
@@ -41,9 +41,9 @@ AudioSamples::AudioSamples(const vector<uint8_t> &data, AVSampleFormat sampleFor
     init(sampleFormat, samplesCount, channels, sampleRate);
     // TODO: add check for data size
     //int size = getSize();
-    frameBuffer = data;
-    avcodec_fill_audio_frame(frame, channels, sampleFormat, frameBuffer.data(), frameBuffer.size(), 0);
-    timeBase = Rational(AV_TIME_BASE_Q);
+    m_frameBuffer = data;
+    avcodec_fill_audio_frame(m_frame, channels, sampleFormat, m_frameBuffer.data(), m_frameBuffer.size(), 0);
+    m_timeBase = Rational(AV_TIME_BASE_Q);
 }
 
 AudioSamples::~AudioSamples()
@@ -52,92 +52,92 @@ AudioSamples::~AudioSamples()
 
 AVSampleFormat AudioSamples::getSampleFormat() const
 {
-    return (frame ? (AVSampleFormat)frame->format : AV_SAMPLE_FMT_NONE);
+    return (m_frame ? (AVSampleFormat)m_frame->format : AV_SAMPLE_FMT_NONE);
 }
 
 void AudioSamples::setSampleFormat(AVSampleFormat sampleFormat)
 {
-    if (frame)
+    if (m_frame)
     {
-        frame->format = sampleFormat;
+        m_frame->format = sampleFormat;
     }
 }
 
 int AudioSamples::getSamplesCount() const
 {
-    return (frame ? frame->nb_samples : -1);
+    return (m_frame ? m_frame->nb_samples : -1);
 }
 
 void AudioSamples::setSamplesCount(int samples)
 {
-    if (frame)
+    if (m_frame)
     {
-        frame->nb_samples = samples;
+        m_frame->nb_samples = samples;
     }
 }
 
 int AudioSamples::getChannelsCount() const
 {
-    assert(frame);
+    assert(m_frame);
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(54,59,100) // 1.0
     return av_get_channel_layout_nb_channels(getChannelsLayout());
 #else
-    return av_frame_get_channels(frame);
+    return av_frame_get_channels(m_frame);
 #endif
 }
 
 void AudioSamples::setChannelsCount(int channels)
 {
-    assert(frame);
+    assert(m_frame);
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(54,59,100) // 1.0
     setChannelsLayout(av_get_default_channel_layout(channels));
 #else
-    av_frame_set_channels(frame, channels);
+    av_frame_set_channels(m_frame, channels);
 #endif
 }
 
 int64_t AudioSamples::getChannelsLayout() const
 {
-    assert(frame);
+    assert(m_frame);
 
-    return av_frame_get_channel_layout(frame);
+    return av_frame_get_channel_layout(m_frame);
 }
 
 void AudioSamples::setChannelsLayout(int64_t channelsLayout)
 {
-    assert(frame);
-    av_frame_set_channel_layout(frame, channelsLayout);
+    assert(m_frame);
+    av_frame_set_channel_layout(m_frame, channelsLayout);
 }
 
 int AudioSamples::getSampleRate() const
 {
-    return (frame ? av_frame_get_sample_rate(frame) : -1);
+    return (m_frame ? av_frame_get_sample_rate(m_frame) : -1);
 }
 
 void AudioSamples::setSampleRate(int rate)
 {
-    if (frame)
+    if (m_frame)
     {
-        av_frame_set_sample_rate(frame, rate);
+        av_frame_set_sample_rate(m_frame, rate);
     }
 }
 
 uint AudioSamples::getSampleBitDepth() const
 {
-    return (frame ? (av_get_bytes_per_sample(static_cast<AVSampleFormat>(frame->format))) << 3 : 0);
+    return (m_frame ? (av_get_bytes_per_sample(static_cast<AVSampleFormat>(m_frame->format))) << 3 : 0);
 }
 
 int AudioSamples::getSize() const
 {
-    if (frame &&
-        frame->format > -1 &&
-        frame->nb_samples > 0 &&
+    if (m_frame &&
+        m_frame->format > -1 &&
+        m_frame->nb_samples > 0 &&
         getChannelsCount() > 0)
     {
         return av_samples_get_buffer_size(0,
                                           getChannelsCount(),
-                                          frame->nb_samples,
-                                          static_cast<AVSampleFormat>(frame->format),
+                                          m_frame->nb_samples,
+                                          static_cast<AVSampleFormat>(m_frame->format),
                                           0);
     }
 
@@ -146,12 +146,12 @@ int AudioSamples::getSize() const
 
 bool AudioSamples::isValid() const
 {
-    if (frame &&
-        frame->format > -1 &&
-        frame->nb_samples > 0 &&
+    if (m_frame &&
+        m_frame->format > -1 &&
+        m_frame->nb_samples > 0 &&
         getChannelsCount() > 0 &&
-        frameBuffer.size() == getSize() &&
-        frameBuffer.data() == frame->data[0])
+        m_frameBuffer.size() == getSize() &&
+        m_frameBuffer.data() == m_frame->data[0])
     {
         return true;
     }
@@ -212,36 +212,35 @@ void AudioSamples::setupDataPointers(const AVFrame *frame)
     // This is error....
     if (size < 0)
     {
-        /*
-        std::cout << boost::format("Can't allocate memory for audio sample data: "
-                                   "empty audio sample (ch:%d, nb_samples:%d, fmt:%d)") %
-                     getChannelsCount() %
-                     frame->nb_samples %
-                     frame->format
-                  << std::endl;
-        */
-
-        std::printf("Can't allocate memory for audio sample data: "
-                    "empty audio sample (ch:%d, nb_samples:%d, fmt:%d)",
-                    getChannelsCount(),
-                    frame->nb_samples,
-                    frame->format);
+        std::fprintf(stderr,
+                     "Can't allocate memory for audio sample data: "
+                     "empty audio sample (ch:%d, nb_samples:%d, fmt:%d)",
+                     getChannelsCount(),
+                     frame->nb_samples,
+                     frame->format);
 
         return;
     }
 
-    if (frameBuffer.size() != (size_t)size)
+    m_frame->format         = frame->format;
+    m_frame->nb_samples     = frame->nb_samples;
+    m_frame->channels       = frame->channels;
+    m_frame->channel_layout = frame->channel_layout;
+
+    if (m_frameBuffer.size() != (size_t)size)
     {
-        frameBuffer.resize(size);
+        m_frameBuffer.resize(size);
     }
 
-    uint8_t* buffer = (uint8_t*)frameBuffer.data();
+    uint8_t* buffer = (uint8_t*)m_frameBuffer.data();
     if (frame->data[0])
     {
         if (buffer != frame->data[0])
         {
-            avcodec_fill_audio_frame(this->frame, getChannelsCount(), static_cast<AVSampleFormat>(frame->format), buffer, size, 0);
-            av_samples_copy(&this->frame->data[0], &frame->data[0], 0, 0, frame->nb_samples, getChannelsCount(), static_cast<AVSampleFormat>(frame->format));
+            avcodec_fill_audio_frame(this->m_frame, getChannelsCount(), static_cast<AVSampleFormat>(frame->format), buffer, size, 0);
+#if 0
+            av_samples_copy(&this->m_frame->data[0], &frame->data[0], 0, 0, frame->nb_samples, getChannelsCount(), static_cast<AVSampleFormat>(frame->format));
+#endif
         }
     }
     else
@@ -254,9 +253,9 @@ void AudioSamples::setupDataPointers(const AVFrame *frame)
 
 void AudioSamples::init(AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate)
 {
-    frame->format      = sampleFormat;
-    frame->sample_rate = sampleRate;
-    frame->nb_samples  = samplesCount;
+    m_frame->format      = sampleFormat;
+    m_frame->sample_rate = sampleRate;
+    m_frame->nb_samples  = samplesCount;
 
     setChannelsCount(channels);
 }

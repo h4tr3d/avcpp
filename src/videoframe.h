@@ -15,8 +15,6 @@ public:
     VideoFrame(const VideoFrame &frame);
     virtual ~VideoFrame();
 
-
-
     PixelFormat            getPixelFormat() const;
     void                   setPixelFormat(PixelFormat pixFmt);
     int                    getWidth() const;
@@ -39,7 +37,7 @@ public:
 
 protected:
     void init(PixelFormat pixelFormat, int width, int height);
-    virtual void setupDataPointers(const AVFrame *frame);
+    virtual void setupDataPointers(const AVFrame *m_frame);
 
 };
 

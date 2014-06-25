@@ -11,8 +11,8 @@ class AudioSamples : public Frame
 {
 public:
     AudioSamples();
-    AudioSamples(const AVFrame     *frame);
-    AudioSamples(const AudioSamples &frame);
+    AudioSamples(const AVFrame     *m_frame);
+    AudioSamples(const AudioSamples &m_frame);
     AudioSamples(AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate);
     AudioSamples(const vector<uint8_t> &data,
                 AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate);
@@ -53,7 +53,7 @@ public:
      * @param sampleRate   sample rate that those samples are recorded at.
      * @return duration in given timebase it would take to play that audio.
      */
-    static int64_t samplesToTimeDuration(int64_t samplesCount, int sampleRate, const Rational timeBase = Rational(1, 1000000));
+    static int64_t samplesToTimeDuration(int64_t samplesCount, int sampleRate, const Rational m_timeBase = Rational(1, 1000000));
 
     /**
      * Converts a duration in give time base into a number of samples, assuming a given sampleRate.
@@ -62,12 +62,12 @@ public:
      * @return The number of samples it would take (at the given sampleRate) to take duration
      *         in given timebase to play.
      */
-    static int64_t timeDurationToSamples(int64_t duration, int sampleRate, const Rational timeBase = Rational(1, 1000000));
+    static int64_t timeDurationToSamples(int64_t duration, int sampleRate, const Rational m_timeBase = Rational(1, 1000000));
 
 
 protected:
     // protected virtual
-    virtual void setupDataPointers(const AVFrame *frame);
+    virtual void setupDataPointers(const AVFrame *m_frame);
 
     void init(AVSampleFormat sampleFormat, int samplesCount, int channels, int samplesRate);
 };

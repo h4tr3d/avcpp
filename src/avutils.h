@@ -69,6 +69,14 @@ void setFFmpegLoggingLevel(const std::string& level);
  */
 void dumpBinaryBuffer(uint8_t *buffer, int buffer_size, int width = 16);
 
+
+/**
+ * C++ verstion of the av_err2str()
+ * @param error - error code to convert to string
+ * @return string representation of error code
+ */
+std::string error2string(int error);
+
 }
 
 

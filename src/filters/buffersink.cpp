@@ -16,12 +16,12 @@ struct BufferSinkFilterContextPriv
 };
 
 BufferSinkFilterContext::BufferSinkFilterContext()
-    : priv(new BufferSinkFilterContextPriv)
+    : m_priv(new BufferSinkFilterContextPriv)
 {
 }
 
 BufferSinkFilterContext::BufferSinkFilterContext(const Filter &filter, const string &name)
-    : priv(new BufferSinkFilterContextPriv)
+    : BufferSinkFilterContext()
 {
     if (isFilterValid(filter))
     {
@@ -30,7 +30,7 @@ BufferSinkFilterContext::BufferSinkFilterContext(const Filter &filter, const str
 }
 
 BufferSinkFilterContext::BufferSinkFilterContext(const FilterContext &baseContext)
-    : priv(new BufferSinkFilterContextPriv)
+    : BufferSinkFilterContext()
 {
     if (baseContext && isFilterValid(baseContext.getFilter()))
     {
@@ -39,9 +39,7 @@ BufferSinkFilterContext::BufferSinkFilterContext(const FilterContext &baseContex
 }
 
 BufferSinkFilterContext::~BufferSinkFilterContext()
-{
-    delete priv;
-}
+{}
 
 int BufferSinkFilterContext::reinit(const Filter &filter, const string &name)
 {
@@ -61,7 +59,7 @@ void BufferSinkFilterContext::setFrameSize(unsigned size)
     assert(isValid());
 
 #if LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,17,100) // 1.0
-    priv->frameSize = size;
+    m_priv->frameSize = size;
 #else
     av_buffersink_set_frame_size(getAVFilterContext(), size);
 #endif
@@ -76,7 +74,7 @@ int BufferSinkFilterContext::getBufferRef(FilterBufferRef &ref, int flags)
     int stat = -1;
 
 #if LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,17,100) // 1.0
-    if (priv->frameSize > 0)
+    if (m_priv->frameSize > 0)
     {
         stat = av_buffersink_read_samples(getAVFilterContext(), &rawRef, priv->frameSize);
     }

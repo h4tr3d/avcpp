@@ -27,7 +27,6 @@ public:
     Frame();
     virtual ~Frame();
 
-
     // virtual
     /**
      * Calculate size for frame data, it different for video (avpicture_get_size) and audio
@@ -61,15 +60,15 @@ public:
     virtual void    setFakePts(int64_t pts);
 
     // Non-virtual
-    Rational&       getTimeBase() { return timeBase; }
-    const Rational& getTimeBase() const { return timeBase; }
+    Rational&       getTimeBase() { return m_timeBase; }
+    const Rational& getTimeBase() const { return m_timeBase; }
     void            setTimeBase(const Rational &value);
 
     int             getStreamIndex() const;
-    void            setStreamIndex(int streamIndex);
+    void            setStreamIndex(int m_streamIndex);
 
     void            setComplete(bool isComplete);
-    bool            isComplete() const { return isCompleteFlag; }
+    bool            isComplete() const { return m_completeFlag; }
 
     void dump();
 
@@ -79,9 +78,8 @@ public:
 
 
     // Operators
-    Frame& operator= (const AVFrame *frame);
-    Frame& operator= (const Frame &frame);
-
+    Frame& operator= (const AVFrame *m_frame);
+    Frame& operator= (const Frame &m_frame);
 
 protected:
     // virtual
@@ -92,15 +90,15 @@ protected:
     void allocFrame();
 
 protected:
-    AVFrame*             frame;
-    std::vector<uint8_t> frameBuffer;
+    AVFrame*             m_frame;
+    std::vector<uint8_t> m_frameBuffer;
 
-    Rational             timeBase;
-    int                  streamIndex;
+    Rational             m_timeBase;
+    int                  m_streamIndex;
 
-    bool                 isCompleteFlag;
+    bool                 m_completeFlag;
 
-    int64_t              fakePts;
+    int64_t              m_fakePts;
 };
 
 typedef std::shared_ptr<Frame> FramePtr;

@@ -17,58 +17,58 @@ namespace av {
 
 FilterGraph::FilterGraph()
 {
-    graph = avfilter_graph_alloc();
+    m_graph = avfilter_graph_alloc();
 }
 
 FilterGraph::~FilterGraph()
 {
-    avfilter_graph_free(&graph);
+    avfilter_graph_free(&m_graph);
 }
 
 bool FilterGraph::isValid()
 {
-    return !!graph;
+    return !!m_graph;
 }
 
 void FilterGraph::setScaleSwsOptions(const string &opts)
 {
-    if (graph)
+    if (m_graph)
     {
-        if (graph->scale_sws_opts)
+        if (m_graph->scale_sws_opts)
         {
-             av_freep(graph->scale_sws_opts);
-             graph->scale_sws_opts = 0;
+             av_freep(m_graph->scale_sws_opts);
+             m_graph->scale_sws_opts = 0;
         }
 
-        graph->scale_sws_opts = av_strdup(opts.c_str());
+        m_graph->scale_sws_opts = av_strdup(opts.c_str());
     }
 }
 
 string FilterGraph::getScaleSwsOptions() const
 {
-    return (graph ? string(graph->scale_sws_opts) : string());
+    return (m_graph ? string(m_graph->scale_sws_opts) : string());
 }
 
 int FilterGraph::getFiltersCount() const
 {
-    return (graph ? graph->nb_filters : 0);
+    return (m_graph ? m_graph->nb_filters : 0);
 }
 
 void FilterGraph::setAutoConvert(unsigned flags)
 {
-    if (graph)
+    if (m_graph)
     {
-        avfilter_graph_set_auto_convert(graph, flags);
+        avfilter_graph_set_auto_convert(m_graph, flags);
     }
 }
 
 
 FilterContextPtr FilterGraph::getFilter(const string &name)
 {
-    if (!graph)
+    if (!m_graph)
         return FilterContextPtr();
 
-    AVFilterContext *ctx = avfilter_graph_get_filter(graph, const_cast<char*>(name.c_str()));
+    AVFilterContext *ctx = avfilter_graph_get_filter(m_graph, const_cast<char*>(name.c_str()));
 
     if (!ctx)
         return FilterContextPtr();
@@ -80,12 +80,12 @@ FilterContextPtr FilterGraph::getFilter(const string &name)
 
 FilterContextPtr FilterGraph::getFilter(unsigned idx)
 {
-    if (!graph)
+    if (!m_graph)
         return FilterContextPtr();
 
-    assert(idx < graph->nb_filters);
+    assert(idx < m_graph->nb_filters);
 
-    AVFilterContext *ctx = graph->filters[idx];
+    AVFilterContext *ctx = m_graph->filters[idx];
 
     if (!ctx)
         return FilterContextPtr();
@@ -98,9 +98,9 @@ FilterContextPtr FilterGraph::getFilter(unsigned idx)
 
 FilterContextPtr FilterGraph::addFilter(const Filter &filter, const std::string &name)
 {
-    assert(graph);
+    assert(m_graph);
     
-    AVFilterContext *ctx = avfilter_graph_alloc_filter(graph, filter.getAVFilter(), name.c_str());
+    AVFilterContext *ctx = avfilter_graph_alloc_filter(m_graph, filter.getAVFilter(), name.c_str());
     if (ctx)
     {
         addManagedWrapper(ctx);
@@ -112,18 +112,20 @@ FilterContextPtr FilterGraph::addFilter(const Filter &filter, const std::string 
 
 int FilterGraph::createFilter(const Filter &filter, const string &filterName, const string &filterArgs, const FilterOpaque &opaque)
 {
-    if (!graph || !filter.isValid())
+    if (!m_graph || !filter.isValid())
         return AVERROR(AVERROR_UNKNOWN);
 
-    AVFilterContext *ctx = 0;
+    AVFilterContext *ctx = nullptr;
 
     int stat = avfilter_graph_create_filter(&ctx,
-                                            // FIXME: remove const_cast when upstream will be fixed
-                                            const_cast<AVFilter*>(filter.getAVFilter()),
+                                            filter.getAVFilter(),
                                             filterName.c_str(),
-                                            filterArgs.empty() ? 0 : filterArgs.c_str(),
+                                            filterArgs.empty() ? nullptr : filterArgs.c_str(),
                                             opaque.getOpaque(),
-                                            graph);
+                                            m_graph);
+
+    clog << "create filter: " << filterName << ", stat: " << stat << ", " << error2string(stat) << endl;
+
     if (stat >= 0 && ctx)
     {
         addManagedWrapper(ctx);
@@ -136,7 +138,7 @@ int FilterGraph::parse(const string &graphDescription,
                        const FilterContextPtr &srcFilterCtx,
                        const FilterContextPtr &sinkFilterCtx)
 {
-    if (!graph || !srcFilterCtx || !sinkFilterCtx)
+    if (!m_graph || !srcFilterCtx || !sinkFilterCtx)
         return -1;
 
     if (filtersMapping.find(srcFilterCtx->getAVFilterContext()) == filtersMapping.end())
@@ -182,7 +184,7 @@ int FilterGraph::parse(const string &graphDescription,
         inputs->pad_idx     = 0;
         inputs->next        = 0;
 
-        int stat = avfilter_graph_parse(graph, graphDescription.c_str(), &inputs, &outputs, 0);
+        int stat = avfilter_graph_parse(m_graph, graphDescription.c_str(), &inputs, &outputs, 0);
         //if (stat < 0)
         {
             avfilter_inout_free(&outputs);
@@ -196,7 +198,7 @@ int FilterGraph::parse(const string &graphDescription,
                        FilterInOutListPtr &inputs,
                        FilterInOutListPtr &outputs)
 {
-    if (!graph || graphDescription.empty())
+    if (!m_graph || graphDescription.empty())
         return -1;
 
     AVFilterInOut *inputsRaw = 0;
@@ -211,11 +213,11 @@ int FilterGraph::parse(const string &graphDescription,
     // TODO add preprocessor directive to detect correct version where avfilter_graph_parse2() is present
     if (inputsRaw || outputsRaw)
     {
-        stat = avfilter_graph_parse(graph, graphDescription.c_str(), &inputsRaw, &outputsRaw, 0);
+        stat = avfilter_graph_parse(m_graph, graphDescription.c_str(), &inputsRaw, &outputsRaw, 0);
     }
     else
     {
-        stat = avfilter_graph_parse2(graph, graphDescription.c_str(), &inputsRaw, &outputsRaw);
+        stat = avfilter_graph_parse2(m_graph, graphDescription.c_str(), &inputsRaw, &outputsRaw);
     }
 
     inputs = FilterInOutListPtr();
@@ -235,10 +237,10 @@ int FilterGraph::parse(const string &graphDescription,
 
 int FilterGraph::config()
 {
-    if (!graph)
+    if (!m_graph)
         return -1;
 
-    int stat = avfilter_graph_config(graph, 0);
+    int stat = avfilter_graph_config(m_graph, 0);
     return stat;
 }
 
@@ -246,9 +248,9 @@ string FilterGraph::dump(bool doPrint, const string &options)
 {
     string result;
 
-    if (graph)
+    if (m_graph)
     {
-        result = avfilter_graph_dump(graph, options.c_str());
+        result = avfilter_graph_dump(m_graph, options.c_str());
         if (doPrint)
             clog << result;
     }

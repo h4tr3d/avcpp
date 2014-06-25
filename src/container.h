@@ -60,7 +60,7 @@ public:
 
 
     bool openInput(const char *uri, const ContainerFormatPtr &inputFormat = ContainerFormatPtr());
-    int32_t readNextPacket(const PacketPtr &pkt);
+    int32_t readNextPacket(PacketPtr &pkt);
 
     void setReadingTimeout(int64_t value);
     int64_t getReadingTimeout() const;
@@ -71,7 +71,7 @@ public:
     bool openOutput(const AbstractWriteFunctor &writer);
 
     bool writeHeader();
-    int writePacket(const PacketPtr &packet, bool forceInterleaveWrite = false);
+    int writePacket(const PacketPtr &packet, bool interleaveWrite = true);
     int writeTrailer();
 
 

@@ -91,7 +91,7 @@ private:
     FilterContextPtr getFilter(AVFilterContext *ctx);
 
 private:
-    AVFilterGraph *graph;
+    AVFilterGraph *m_graph;
 
     std::map<AVFilterContext *, FilterContextPtr> filtersMapping;
 

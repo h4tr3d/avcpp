@@ -36,7 +36,7 @@ public:
     AVMediaType getMediaType() const;
 
 private:
-    AVFilterBufferRef *ref;
+    AVFilterBufferRef *m_ref;
 };
 
 } // namespace av

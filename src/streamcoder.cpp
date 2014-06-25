@@ -54,7 +54,7 @@ void StreamCoder::setCodec(const CodecPtr &codec)
         return;
     }
 
-    AVCodec *avCodec = codec->getAVCodec();
+    const AVCodec *avCodec = codec->getAVCodec();
 
     if (!context)
     {
@@ -111,7 +111,7 @@ ssize_t StreamCoder::decodeCommon(const FramePtr &outFrame, const PacketPtr &inP
 {
     assert(context);
 
-    std::shared_ptr<AVFrame> frame(avcodec_alloc_frame(), AvDeleter());
+    std::shared_ptr<AVFrame> frame(av_frame_alloc(), AvDeleter());
     if (!frame)
     {
         return -1;
@@ -131,15 +131,14 @@ ssize_t StreamCoder::decodeCommon(const FramePtr &outFrame, const PacketPtr &inP
 
     int frameFinished = 0;
 
-    std::shared_ptr<AVPacket> pkt((AVPacket*)av_malloc(sizeof(AVPacket)), AvDeleter());
-    av_init_packet(pkt.get());
-    *pkt = *inPacket->getAVPacket();
-    pkt->data     = const_cast<uint8_t*>(inPacket->getData());
-    pkt->size     = inPacket->getSize();
-    pkt->destruct = 0; // prevent data free
+    AVPacket pkt;
+    av_init_packet(&pkt);
+    pkt      = *inPacket->getAVPacket();
+    pkt.data = inPacket->getData();
+    pkt.size = inPacket->getSize();
 
-    pkt->data += offset;
-    pkt->size -= offset;
+    pkt.data += offset;
+    pkt.size -= offset;
 
     context->reordered_opaque = inPacket->getPts();
     ssize_t totalDecode = 0;
@@ -147,17 +146,17 @@ ssize_t StreamCoder::decodeCommon(const FramePtr &outFrame, const PacketPtr &inP
     do
     {
         ++iterations;
-        int decoded = decodeProc(context, frame.get(), &frameFinished, pkt.get());
+        int decoded = decodeProc(context, frame.get(), &frameFinished, &pkt);
         if (decoded < 0)
         {
             return totalDecode;
         }
 
         totalDecode += decoded;
-        pkt->data   += decoded;
-        pkt->size   -= decoded;
+        pkt.data   += decoded;
+        pkt.size   -= decoded;
     }
-    while (frameFinished == 0 && pkt->size > 0);
+    while (frameFinished == 0 && pkt.size > 0);
 
     if (frameFinished)
     {
@@ -200,16 +199,10 @@ ssize_t StreamCoder::decodeCommon(const FramePtr &outFrame, const PacketPtr &inP
     return totalDecode;
 }
 
-ssize_t StreamCoder::encodeCommon(const PacketPtr &outPacket, const FramePtr &inFrame,
-                              int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *),
-                              const EncodedPacketHandler &onPacketHandler)
+ssize_t StreamCoder::encodeCommon(const FramePtr &inFrame,
+                                  int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *),
+                                  const EncodedPacketHandler &onPacketHandler)
 {
-    if (!outPacket)
-    {
-        cerr << "Null packet can't be used as target for encoded data\n";
-        return -1;
-    }
-
     if (!inFrame)
     {
         cerr << "Null frame can't be encoded\n";
@@ -232,17 +225,12 @@ ssize_t StreamCoder::encodeCommon(const PacketPtr &outPacket, const FramePtr &in
     // Change frame's pts and time base to coder's based values
     frame->setTimeBase(getTimeBase());
 
+    PacketPtr workPacket = make_shared<Packet>();
+    // set timebase to coder timebase
+    workPacket->setTimeBase(getTimeBase());
+
     if (context->codec_type == AVMEDIA_TYPE_AUDIO)
     {
-        PacketPtr workPacket = outPacket;
-        if (!workPacket)
-        {
-            workPacket = PacketPtr(new Packet());
-        }
-
-        // set timebase to coder timebase
-        workPacket->setTimeBase(getTimeBase());
-
         AudioSamplesPtr samples = std::dynamic_pointer_cast<AudioSamples>(frame);
 
         int gotPacket;
@@ -273,22 +261,21 @@ ssize_t StreamCoder::encodeCommon(const PacketPtr &outPacket, const FramePtr &in
         }
         else
         {
-            cout << "Encode error:             " << stat << endl;
-            cout << "coded_frame PTS:          " << context->coded_frame->pts << endl;
-            cout << "input_frame PTS:          " << inFrame->getPts() << endl;
+            cerr << "Encode error:             " << stat << endl;
+            cerr << "coded_frame PTS:          " << context->coded_frame->pts << endl;
+            cerr << "input_frame PTS:          " << inFrame->getPts() << endl;
             return stat;
         }
     }
     else if (context->codec_type == AVMEDIA_TYPE_VIDEO)
     {
-        PacketPtr workPacket = outPacket;
-        if (!workPacket)
-        {
-            workPacket = PacketPtr(new Packet());
-        }
+        AVPacket pkt;
+        av_init_packet(&pkt);
+
+        AVPacket *pktp = workPacket->getAVPacket();
 
         int gotPacket;
-        int stat = encodeProc(context, workPacket->getAVPacket(), frame->getAVFrame(), &gotPacket);
+        int stat = encodeProc(context, pktp, frame->getAVFrame(), &gotPacket);
 
         if (stat == 0)
         {
@@ -299,20 +286,13 @@ ssize_t StreamCoder::encodeCommon(const PacketPtr &outPacket, const FramePtr &in
 
                 if (context->coded_frame->pts != AV_NOPTS_VALUE)
                 {
-                    workPacket->setPts(getTimeBase().rescale(context->coded_frame->pts,
-                                                             workPacket->getTimeBase()));
+                    workPacket->setPts(context->coded_frame->pts, getTimeBase());
                 }
 
-                if (workPacket->getDts() == AV_NOPTS_VALUE && workPacket->getPts() != AV_NOPTS_VALUE)
+                if (workPacket->getDts() == AV_NOPTS_VALUE)
                 {
                     workPacket->setDts(workPacket->getPts());
                 }
-                else
-                {
-                    workPacket->setDts(getTimeBase().rescale(workPacket->getDts(),
-                                                             workPacket->getTimeBase()));
-                }
-
 
                 workPacket->setKeyPacket(!!context->coded_frame->key_frame);
                 workPacket->setStreamIndex(frame->getStreamIndex());
@@ -325,9 +305,9 @@ ssize_t StreamCoder::encodeCommon(const PacketPtr &outPacket, const FramePtr &in
         }
         else
         {
-            cout << "Encode error:             " << stat << endl;
-            cout << "coded_frame PTS:          " << context->coded_frame->pts << endl;
-            cout << "input_frame PTS:          " << inFrame->getPts() << endl;
+            cerr << "Encode error:             " << stat << ", " << error2string(stat) << endl;
+            cerr << "coded_frame PTS:          " << context->coded_frame->pts << endl;
+            cerr << "input_frame PTS:          " << inFrame->getPts() << endl;
             return stat;
         }
     }
@@ -723,7 +703,7 @@ ssize_t StreamCoder::decodeVideo(const FramePtr &outFrame, const PacketPtr &inPa
 }
 
 
-ssize_t StreamCoder::encodeVideo(const PacketPtr &outPacket, const VideoFramePtr &inFrame, const EncodedPacketHandler &onPacketHandler)
+ssize_t StreamCoder::encodeVideo(const VideoFramePtr &inFrame, const EncodedPacketHandler &onPacketHandler)
 {
     if (inFrame->getPixelFormat() != getPixelFormat())
     {
@@ -743,7 +723,7 @@ ssize_t StreamCoder::encodeVideo(const PacketPtr &outPacket, const VideoFramePtr
         return -1;
     }
 
-    return encodeCommon(outPacket, inFrame, avcodec_encode_video2, onPacketHandler);
+    return encodeCommon(inFrame, avcodec_encode_video2, onPacketHandler);
 }
 
 ssize_t StreamCoder::decodeAudio(const FramePtr &outFrame, const PacketPtr &inPacket, size_t offset)
@@ -751,10 +731,10 @@ ssize_t StreamCoder::decodeAudio(const FramePtr &outFrame, const PacketPtr &inPa
     return decodeCommon(outFrame, inPacket, offset, avcodec_decode_audio4);
 }
 
-ssize_t StreamCoder::encodeAudio(const PacketPtr &outPacket, const FramePtr &inFrame, const EncodedPacketHandler &onPacketHandler)
+ssize_t StreamCoder::encodeAudio(const FramePtr &inFrame, const EncodedPacketHandler &onPacketHandler)
 {
     // TODO: additional checks like encodeVideo()
-    return encodeCommon(outPacket, inFrame, avcodec_encode_audio2, onPacketHandler);
+    return encodeCommon(inFrame, avcodec_encode_audio2, onPacketHandler);
 }
 
 bool StreamCoder::isValidForEncode()

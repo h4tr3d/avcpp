@@ -1,90 +1,82 @@
-
-
 #include "packet.h"
 
 namespace av {
 
-
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(54,59,100) // <= 1.0
-#define DUP_DATA(dst, src, size, padding)                               \
-    do {                                                                \
-        void *data;                                                     \
-        if (padding) {                                                  \
-            if ((unsigned)(size) >                                      \
-                (unsigned)(size) + FF_INPUT_BUFFER_PADDING_SIZE)        \
-                goto failed_alloc;                                      \
-            data = av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE);      \
-        } else {                                                        \
-            data = av_malloc(size);                                     \
-        }                                                               \
-        if (!data)                                                      \
-            goto failed_alloc;                                          \
-        memcpy(data, src, size);                                        \
-        if (padding)                                                    \
-            memset((uint8_t *)data + size, 0,                           \
-                   FF_INPUT_BUFFER_PADDING_SIZE);                       \
-        reinterpret_cast<uint8_t*&>(dst) =                              \
-                   reinterpret_cast<uint8_t*>(data);                    \
-    } while (0)
-
-
-/* Makes duplicates of data, side_data, but does not copy any other fields */
-static
-int copy_packet_data_int(AVPacket *dst, AVPacket *src)
+Packet::Packet()
 {
-    dst->data      = NULL;
-    dst->side_data = NULL;
-    DUP_DATA(dst->data, src->data, dst->size, 1);
-    dst->destruct = av_destruct_packet;
+    ctorInitCommon();
+}
 
-    if (dst->side_data_elems) {
-        int i;
+Packet::Packet(const Packet &packet)
+    : Packet()
+{
+    ctorInitFromAVPacket(&packet.m_pkt);
+    m_completeFlag = packet.m_completeFlag;
+    m_timeBase = packet.m_timeBase;
+    m_fakePts = packet.m_fakePts;
+}
 
-        DUP_DATA(dst->side_data, src->side_data,
-                dst->side_data_elems * sizeof(*dst->side_data), 0);
-        memset(dst->side_data, 0,
-                dst->side_data_elems * sizeof(*dst->side_data));
-        for (i = 0; i < dst->side_data_elems; i++) {
-            DUP_DATA(dst->side_data[i].data, src->side_data[i].data,
-                    src->side_data[i].size, 1);
-            dst->side_data[i].size = src->side_data[i].size;
-            dst->side_data[i].type = src->side_data[i].type;
-        }
+Packet::Packet(Packet &&packet)
+    : m_pkt(packet.m_pkt),
+      m_completeFlag(packet.m_completeFlag),
+      m_timeBase(packet.m_timeBase),
+      m_fakePts(packet.m_fakePts)
+{
+    av_init_packet(&packet.m_pkt);
+    packet.m_pkt.data = nullptr;
+    packet.m_pkt.size = 0;
+}
+
+Packet::Packet(const AVPacket *packet)
+    : Packet()
+{
+    ctorInitFromAVPacket(packet);
+}
+
+Packet::Packet(const vector<uint8_t> &data)
+{
+    ctorInitCommon();
+
+    m_pkt.size = data.size();
+    m_pkt.data = reinterpret_cast<uint8_t*>(av_malloc(data.size() + FF_INPUT_BUFFER_PADDING_SIZE));
+    std::copy(data.begin(), data.end(), m_pkt.data);
+    std::fill_n(m_pkt.data + m_pkt.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0');
+
+    m_completeFlag = true;
+}
+
+Packet::Packet(const uint8_t *data, size_t size, bool doAllign)
+{
+    ctorInitCommon();
+
+    m_pkt.size = size;
+    if (doAllign)
+    {
+        m_pkt.data = reinterpret_cast<uint8_t*>(av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE));
+        std::fill_n(m_pkt.data + m_pkt.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0');
     }
-    return 0;
+    else
+        m_pkt.data = reinterpret_cast<uint8_t*>(av_malloc(size));
 
-failed_alloc:
-    av_destruct_packet(dst);
-    return AVERROR(ENOMEM);
+    std::copy(data, data + size, m_pkt.data);
+
+    m_completeFlag = true;
 }
 
-static
-int av_copy_packet_int(AVPacket *dst, AVPacket *src)
+Packet::~Packet()
 {
-    *dst = *src;
-    return copy_packet_data_int(dst, src);
+    av_free_packet(&m_pkt);
 }
-#else
-#define av_copy_packet_int av_copy_packet
-#endif
-
 
 void Packet::ctorInitCommon()
 {
-    pkt = (AVPacket*)av_malloc(sizeof(AVPacket));
-    if (!pkt)
-    {
-        throw std::bad_alloc();
-    }
+    av_init_packet(&m_pkt);
+    m_pkt.data = nullptr;
+    m_pkt.size = 0;
 
-    av_init_packet(pkt);
-    pkt->data     = 0;
-    pkt->size     = 0;
-    pkt->priv     = this;
-    pkt->destruct = av_destruct_packet;
-
-    isCompleteFlag = false;
-    fakePts        = AV_NOPTS_VALUE;
+    m_completeFlag = false;
+    m_timeBase     = Rational(0, 0);
+    m_fakePts      = AV_NOPTS_VALUE;
 }
 
 void Packet::ctorInitFromAVPacket(const AVPacket *packet)
@@ -94,90 +86,12 @@ void Packet::ctorInitFromAVPacket(const AVPacket *packet)
         return;
     }
 
-    const AVPacket *srcPkt     = packet;
-    uint8_t        *srcBuf     = srcPkt->data;
-    size_t          srcBufSize = srcPkt->size;
+    av_free_packet(&m_pkt);
+    av_init_packet(&m_pkt);
+    av_copy_packet(&m_pkt, const_cast<AVPacket*>(packet));
 
-    // Save some variavles from original packet
-    void (*origDestruct)(struct AVPacket *) = pkt->destruct;
-
-    // free memory, omit memory leak
-    if (pkt->data)
-    {
-        av_freep(&pkt->data);
-        pkt->size = 0;
-    }
-
-    av_copy_packet_int(pkt, const_cast<AVPacket*>(srcPkt));
-
-    // Restore/set out variables
-    pkt->destruct = origDestruct;
-    pkt->priv     = this;
-
-    fakePts       = packet->pts;
-    isCompleteFlag = true;
-}
-
-Packet::Packet()
-{
-    ctorInitCommon();
-}
-
-Packet::Packet(const Packet &packet)
-{
-    ctorInitCommon();
-    ctorInitFromAVPacket(packet.pkt);
-    timeBase = packet.timeBase;
-    isCompleteFlag = packet.isCompleteFlag;
-    fakePts = packet.fakePts;
-}
-
-Packet::Packet(const AVPacket *packet)
-{
-    ctorInitCommon();
-    ctorInitFromAVPacket(packet);
-}
-
-Packet::Packet(const vector<uint8_t> &data)
-{
-    ctorInitCommon();
-
-    pkt->size = data.size();
-    pkt->data = reinterpret_cast<uint8_t*>(av_malloc(data.size() + FF_INPUT_BUFFER_PADDING_SIZE));
-    //std::copy(data.data(), data.data() + data.size(), pkt->data);
-    std::copy(data.begin(), data.end(), pkt->data);
-    std::fill_n(pkt->data + pkt->size, FF_INPUT_BUFFER_PADDING_SIZE, '\0');
-
-    isCompleteFlag = true;
-}
-
-Packet::Packet(const uint8_t *data, size_t size, bool doAllign)
-{
-    ctorInitCommon();
-
-    pkt->size = size;
-    if (doAllign)
-    {
-        pkt->data = reinterpret_cast<uint8_t*>(av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE));
-        std::fill_n(pkt->data + pkt->size, FF_INPUT_BUFFER_PADDING_SIZE, '\0');
-    }
-    else
-        pkt->data = reinterpret_cast<uint8_t*>(av_malloc(size));
-    //std::copy(data.data(), data.data() + data.size(), pkt->data);
-    std::copy(data, data + size, pkt->data);
-
-    isCompleteFlag = true;
-}
-
-Packet::~Packet()
-{
-    if (pkt)
-    {
-        av_free_packet(pkt);
-        av_free(pkt);
-    }
-
-    pkt = 0;
+    m_fakePts      = packet->pts;
+    m_completeFlag = true;
 }
 
 bool Packet::setData(const vector<uint8_t> &newData)
@@ -187,139 +101,135 @@ bool Packet::setData(const vector<uint8_t> &newData)
 
 bool Packet::setData(const uint8_t *newData, size_t size)
 {
-    if (!pkt)
-        return false;
-
-    if (pkt->size != size || pkt->data == 0)
+    if (m_pkt.size != size || m_pkt.data == 0)
     {
-        av_freep(&pkt->data);
-        pkt->data = reinterpret_cast<uint8_t*>(av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE));
-        pkt->size = size;
+        if (m_pkt.buf)
+            av_buffer_unref(&m_pkt.buf);
+        else
+            av_freep(&m_pkt.data);
+        m_pkt.data = reinterpret_cast<uint8_t*>(av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE));
+        m_pkt.size = size;
 
-        std::fill_n(pkt->data + pkt->size, FF_INPUT_BUFFER_PADDING_SIZE, '\0'); // set padding memory to zero
+        std::fill_n(m_pkt.data + m_pkt.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0'); // set padding memory to zero
     }
 
-    std::copy(newData, newData + size, pkt->data);
+    std::copy(newData, newData + size, m_pkt.data);
 
-    isCompleteFlag = true;
+    m_completeFlag = true;
 
     return true;
 }
 
 int64_t Packet::getPts() const
 {
-    return (pkt ? pkt->pts : AV_NOPTS_VALUE);
+    return m_pkt.pts;
 }
 
 int64_t Packet::getDts() const
 {
-    return (pkt ? pkt->dts : AV_NOPTS_VALUE);
+    return m_pkt.dts;
 }
 
 int64_t Packet::getFakePts() const
 {
-    return fakePts;
+    return m_fakePts;
 }
 
 int32_t Packet::getSize() const
 {
-    return pkt ? pkt->size : 0;
+    return m_pkt.size;
 }
 
-void Packet::setPts(int64_t pts)
+void Packet::setPts(int64_t pts, const Rational &tsTimeBase)
 {
-    if (pkt)
-    {
-        pkt->pts = pts;
-        setFakePts(pts);
-    }
+    if (tsTimeBase == Rational(0,0))
+        m_pkt.pts = pts;
+    else
+        m_pkt.pts = tsTimeBase.rescale(pts, m_timeBase);
+    setFakePts(pts, tsTimeBase);
 }
 
-void Packet::setDts(int64_t dts)
+void Packet::setDts(int64_t dts, const Rational &tsTimeBase)
 {
-    if (pkt)
-        pkt->dts = dts;
+    if (tsTimeBase == Rational(0,0))
+        m_pkt.dts = dts;
+    else
+        m_pkt.dts = tsTimeBase.rescale(dts, m_timeBase);
 }
 
-void Packet::setFakePts(int64_t pts)
+void Packet::setFakePts(int64_t pts, const Rational &tsTimeBase)
 {
-    fakePts = pts;
+    if (tsTimeBase == Rational(0, 0))
+        m_fakePts = pts;
+    else
+        m_fakePts = tsTimeBase.rescale(pts, m_timeBase);
 }
 
 int Packet::getStreamIndex() const
 {
-    return (pkt ? pkt->stream_index : (int32_t)-1);
+    return  m_pkt.stream_index;
 }
 
-int32_t Packet::getFlags()
+int Packet::getFlags()
 {
-    return (pkt ? pkt->flags : 0);
+    return m_pkt.flags;
 }
 
 bool Packet::isKeyPacket() const
 {
-    return (pkt ? pkt->flags & AV_PKT_FLAG_KEY : false);
+    return (m_pkt.flags & AV_PKT_FLAG_KEY);
 }
 
 int Packet::getDuration() const
 {
-    return (pkt ? pkt->duration : (int64_t)-1);
+    return m_pkt.duration;
 }
 
 bool Packet::isComplete() const
 {
-    return isCompleteFlag && pkt && pkt->data;
+    return m_completeFlag && m_pkt.data;
 }
 
 void Packet::setStreamIndex(int idx)
 {
-    if (pkt)
-    {
-        pkt->stream_index = idx;
-    }
+    m_pkt.stream_index = idx;
 }
 
 void Packet::setKeyPacket(bool keyPacket)
 {
-    if (pkt)
-    {
-        if (keyPacket)
-            pkt->flags |= AV_PKT_FLAG_KEY;
-        else
-            pkt->flags = 0; // TODO: turn off only AV_PKT_FLAG_KEY!
-    }
+    if (keyPacket)
+        m_pkt.flags |= AV_PKT_FLAG_KEY;
+    else
+        m_pkt.flags &= ~AV_PKT_FLAG_KEY;
 }
 
-void Packet::setFlags(int32_t flags)
+void Packet::setFlags(int flags)
 {
-    if (pkt)
-        pkt->flags = flags;
+    m_pkt.flags = flags;
 }
 
-void Packet::addFlags(int32_t flags)
+void Packet::addFlags(int flags)
 {
-    if (pkt)
-        pkt->flags |= flags;
+    m_pkt.flags |= flags;
 }
 
-void Packet::clearFlags(int32_t flags)
+void Packet::clearFlags(int flags)
 {
-    if (pkt)
-        pkt->flags &= ~flags;
+    m_pkt.flags &= ~flags;
 }
 
 void Packet::dump(const StreamPtr &st, bool dumpPayload) const
 {
-    if (pkt && st)
+    if (st)
     {
         AVStream *stream = st->getAVStream();
-        av_pkt_dump2(stdout, pkt, dumpPayload ? 1 : 0, stream);
+        av_pkt_dump2(stdout, const_cast<AVPacket*>(&m_pkt), dumpPayload ? 1 : 0, stream);
     }
 }
 
 void Packet::setTimeBase(const Rational &value)
 {
-    if (timeBase == value)
+    if (m_timeBase == value)
         return;
 
     int64_t rescaledPts      = AV_NOPTS_VALUE;
@@ -327,93 +237,101 @@ void Packet::setTimeBase(const Rational &value)
     int64_t rescaledFakePts  = AV_NOPTS_VALUE;
     int     rescaledDuration = 0;
 
-    if (pkt)
+    if (m_timeBase != Rational() && value != Rational())
     {
-        if (timeBase != Rational() && value != Rational())
-        {
-            if (pkt->pts != AV_NOPTS_VALUE)
-                rescaledPts = timeBase.rescale(pkt->pts, value);
+        if (m_pkt.pts != AV_NOPTS_VALUE)
+            rescaledPts = m_timeBase.rescale(m_pkt.pts, value);
 
-            if (pkt->dts != AV_NOPTS_VALUE)
-                rescaledDts = timeBase.rescale(pkt->dts, value);
+        if (m_pkt.dts != AV_NOPTS_VALUE)
+            rescaledDts = m_timeBase.rescale(m_pkt.dts, value);
 
-            if (fakePts != AV_NOPTS_VALUE)
-                rescaledFakePts = timeBase.rescale(fakePts, value);
+        if (m_fakePts != AV_NOPTS_VALUE)
+            rescaledFakePts = m_timeBase.rescale(m_fakePts, value);
 
-            if (pkt->duration != 0)
-                rescaledDuration = timeBase.rescale(pkt->duration, value);
-        }
-        else // Do not rescale for invalid timeBases
-        {
-            rescaledPts      = pkt->pts;
-            rescaledDts      = pkt->dts;
-            rescaledFakePts  = fakePts;
-            rescaledDuration = pkt->duration;
-        }
-
+        if (m_pkt.duration != 0)
+            rescaledDuration = m_timeBase.rescale(m_pkt.duration, value);
+    }
+    else // Do not rescale for invalid timeBases
+    {
+        rescaledPts      = m_pkt.pts;
+        rescaledDts      = m_pkt.dts;
+        rescaledFakePts  = m_fakePts;
+        rescaledDuration = m_pkt.duration;
     }
 
     // may be throw
-    timeBase = value;
+    m_timeBase = value;
 
     // next operations non-thrown
-    if (pkt)
-    {
-        pkt->pts      = rescaledPts;
-        pkt->dts      = rescaledDts;
-        pkt->duration = rescaledDuration;
-        fakePts       = rescaledFakePts;
-    }
+    m_pkt.pts      = rescaledPts;
+    m_pkt.dts      = rescaledDts;
+    m_pkt.duration = rescaledDuration;
+    m_fakePts      = rescaledFakePts;
 }
 
 void Packet::setComplete(bool complete)
 {
-    isCompleteFlag = complete;
-    if (pkt)
-    {
-        // TODO: we need set packet size here - this is indicator for complete packet
-    }
+    m_completeFlag = complete;
+    // TODO: we need set packet size here - this is indicator for complete packet
 }
 
-Packet &Packet::operator =(const Packet &newPkt)
+Packet &Packet::operator =(const Packet &rhs)
 {
-    ctorInitFromAVPacket(newPkt.getAVPacket());
-    timeBase = newPkt.getTimeBase();
-    fakePts = newPkt.fakePts;
+    if (&rhs == this)
+        return *this;
+
+    Packet(rhs).swap(*this);
+
     return *this;
 }
 
-Packet &Packet::operator =(const AVPacket &newPkt)
+Packet &Packet::operator=(Packet &&rhs)
 {
-    ctorInitFromAVPacket(&newPkt);
-    timeBase = Rational();
+    if (&rhs == this)
+        return *this;
+
+    Packet(std::move(rhs)).swap(*this); // move ctor
+
     return *this;
+}
+
+Packet &Packet::operator =(const AVPacket &rhs)
+{
+    if (&rhs == &m_pkt)
+        return *this;
+
+    ctorInitFromAVPacket(&rhs);
+    m_timeBase = Rational();
+    return *this;
+}
+
+void Packet::swap(Packet &other)
+{
+    using std::swap;
+    swap(m_pkt,          other.m_pkt);
+    swap(m_completeFlag, other.m_completeFlag);
+    swap(m_timeBase,     other.m_timeBase);
+    swap(m_fakePts,      other.m_fakePts);
 }
 
 int Packet::allocatePayload(int32_t size)
 {
-    if (!pkt)
-        return -1;
-
-    if (pkt->data && pkt->size != size)
+    if (m_pkt.data && m_pkt.size != size)
     {
         return reallocatePayload(size);
     }
-
-
 }
 
 int Packet::reallocatePayload(int32_t newSize)
 {
 }
 
-void Packet::setDuration(int duration)
+void Packet::setDuration(int duration, const Rational &durationTimeBase)
 {
-    if (pkt)
-        pkt->duration = duration;
+    if (durationTimeBase == Rational())
+        m_pkt.duration = duration;
+    else
+        m_pkt.duration = durationTimeBase.rescale(duration, m_timeBase);
 }
-
-
-
 
 } // ::av
