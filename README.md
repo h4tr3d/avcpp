@@ -25,8 +25,6 @@ Requirements
     - libpostproc >= 52.x.x
   - GCC >= 4.8 (C++11)
   
-At the current moment it is possible to compile code with compilator without C++11 support but with Boost.Thread and Boost.SmartPtr. Simple code modifications is needed.
-
 
 ### Debian
 
