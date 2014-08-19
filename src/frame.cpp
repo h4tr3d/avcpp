@@ -2,6 +2,87 @@
 
 using namespace std;
 
+extern "C" {
+#include <libavutil/version.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/avassert.h>
+}
+
+
+namespace {
+
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(53,5,0)
+
+#define CHECK_CHANNELS_CONSISTENCY(frame) \
+    av_assert2(!(frame)->channel_layout || \
+               (frame)->channels == \
+               av_get_channel_layout_nb_channels((frame)->channel_layout))
+
+int frame_copy_video(AVFrame *dst, const AVFrame *src)
+{
+    const uint8_t *src_data[4];
+    int i, planes;
+
+    if (dst->width  < src->width ||
+        dst->height < src->height)
+        return AVERROR(EINVAL);
+
+    planes = av_pix_fmt_count_planes(static_cast<AVPixelFormat>(dst->format));
+    for (i = 0; i < planes; i++)
+        if (!dst->data[i] || !src->data[i])
+            return AVERROR(EINVAL);
+
+    memcpy(src_data, src->data, sizeof(src_data));
+    av_image_copy(dst->data, dst->linesize,
+                  src_data, src->linesize,
+                  static_cast<AVPixelFormat>(dst->format), src->width, src->height);
+
+    return 0;
+}
+
+int frame_copy_audio(AVFrame *dst, const AVFrame *src)
+{
+    int planar   = av_sample_fmt_is_planar(static_cast<AVSampleFormat>(dst->format));
+    int channels = dst->channels;
+    int planes   = planar ? channels : 1;
+    int i;
+
+    if (dst->nb_samples     != src->nb_samples ||
+        dst->channels       != src->channels ||
+        dst->channel_layout != src->channel_layout)
+        return AVERROR(EINVAL);
+
+    CHECK_CHANNELS_CONSISTENCY(src);
+
+    for (i = 0; i < planes; i++)
+        if (!dst->extended_data[i] || !src->extended_data[i])
+            return AVERROR(EINVAL);
+
+    av_samples_copy(dst->extended_data, src->extended_data, 0, 0,
+                    dst->nb_samples, channels, static_cast<AVSampleFormat>(dst->format));
+
+    return 0;
+}
+
+int av_frame_copy(AVFrame *dst, const AVFrame *src)
+{
+    if (dst->format != src->format || dst->format < 0)
+        return AVERROR(EINVAL);
+
+    if (dst->width > 0 && dst->height > 0)
+        return frame_copy_video(dst, src);
+    else if (dst->nb_samples > 0 && dst->channel_layout)
+        return frame_copy_audio(dst, src);
+
+    return AVERROR(EINVAL);
+}
+
+#undef CHECK_CHANNELS_CONSISTENCY
+
+#endif // LIBAVUTIL_VERSION_INT <= 53.5.0 (ffmpeg 2.2)
+
+} // anonymous namespace
+
 namespace av
 {
 
