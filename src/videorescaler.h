@@ -35,7 +35,7 @@ public:
     int getSrcHeight() const { return srcHeight; }
     AVPixelFormat getSrcPixelFormat() { return srcPixelFormat; }
 
-    int32_t resample(const VideoFramePtr &dstFrame, const VideoFramePtr &srcFrame);
+    int32_t rescale(const VideoFramePtr &dstFrame, const VideoFramePtr &srcFrame);
 
     bool isValid() const;
 

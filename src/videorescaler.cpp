@@ -80,7 +80,7 @@ VideoRescaler& VideoRescaler::operator=(VideoRescaler &&rhs)
 }
 
 
-int32_t VideoRescaler::resample(const VideoFramePtr &dstFrame, const VideoFramePtr &srcFrame)
+int32_t VideoRescaler::rescale(const VideoFramePtr &dstFrame, const VideoFramePtr &srcFrame)
 {
     if (!context)
     {
