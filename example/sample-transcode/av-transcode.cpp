@@ -11,7 +11,7 @@
 #include "container.h"
 #include "packet.h"
 #include "streamcoder.h"
-#include "videoresampler.h"
+#include "videorescaler.h"
 #include "audiosamples.h"
 #include "audioresampler.h"
 #include "avutils.h"
@@ -373,8 +373,7 @@ int main(int argc, char **argv)
     //return 0;
 
     // TODO may be fault
-    VideoResamplerPtr videoResampler(new VideoResampler(outW, outH, outPixFmt,
-                                                        inW, inH, inPF));
+    VideoRescaler videoRescaler {outW, outH, outPixFmt, inW, inH, inPF};
 
     uint64_t samplesCount = 0;
     packetSync.reset();

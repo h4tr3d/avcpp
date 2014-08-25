@@ -18,7 +18,8 @@ typedef std::shared_ptr<VideoResampler> VideoResamplerPtr;
 typedef std::weak_ptr<VideoResampler> VideoResamplerWPtr;
 
 
-class VideoResampler
+
+class attribute_deprecated VideoResampler
 {
 public:
     VideoResampler(int dstWidth, int dstHeight, PixelFormat dstPixelFormat,
