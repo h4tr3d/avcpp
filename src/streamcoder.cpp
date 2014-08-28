@@ -42,7 +42,6 @@ StreamCoder::StreamCoder(const StreamPtr &stream)
         setCodec(codec);
 
     m_direction = stream->getDirection();
-    setTimeBase(m_context->time_base);
 }
 
 
@@ -62,13 +61,7 @@ void StreamCoder::setCodec(const CodecPtr &codec)
         return;
     }
 
-    if (m_context->codec_id != CODEC_ID_NONE && m_context->codec)
-    {
-        cout << "Codec already set to: " << m_context->codec_id << " / " << m_context->codec_name << ", ignoring." << endl;
-        return;
-    }
-
-    if (this->m_codec == codec)
+    if (m_codec && (m_codec == codec || m_codec->getAVCodec() == avCodec))
     {
         cout << "Try set same codec\n";
         return;
@@ -406,9 +399,19 @@ int StreamCoder::getWidth() const
     return (m_context ? m_context->width : -1);
 }
 
+int StreamCoder::getCodedWidth() const
+{
+    return (m_context ? m_context->coded_width : -1);
+}
+
 int StreamCoder::getHeight() const
 {
     return (m_context ? m_context->height : -1);
+}
+
+int StreamCoder::getCodedHeight() const
+{
+    return (m_context ? m_context->coded_height : -1);
 }
 
 PixelFormat StreamCoder::getPixelFormat() const
@@ -472,15 +475,38 @@ void StreamCoder::setWidth(int w)
 {
     if (m_context)
     {
-        m_context->width = w;
+        m_context->width       = w;
+        // We set width/height only on encoding, so, force set coded_width too
+        m_context->coded_width = w;
     }
 }
 
 void StreamCoder::setHeight(int h)
 {
     if (m_context)
-        m_context->height = h;
+    {
+        m_context->height       = h;
+        // We set width/height only on encoding, so, force set coded_height too
+        m_context->coded_height = h;
+    }
 }
+
+void StreamCoder::setCodedWidth(int w)
+{
+    if (m_context)
+    {
+        m_context->coded_width = w;
+    }
+}
+
+void StreamCoder::setCodedHeight(int h)
+{
+    if (m_context)
+    {
+        m_context->coded_height = h;
+    }
+}
+
 
 void StreamCoder::setPixelFormat(PixelFormat pixelFormat)
 {
@@ -735,7 +761,8 @@ ssize_t StreamCoder::encodeVideo(const VideoFramePtr &inFrame, const EncodedPack
 
     if (inFrame->getWidth() != getWidth())
     {
-        cerr << "Frame does not have same Width to coder\n";
+        //cerr << "Frame does not have same Width to coder\n";
+        cerr << "Frame does not have same Width to coder: " << inFrame->getWidth() << " vs. " << getWidth() << '\n';
         return -1;
     }
 

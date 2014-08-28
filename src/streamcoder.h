@@ -69,6 +69,8 @@ public:
     // Video
     int         getWidth() const;
     int         getHeight() const;
+    int         getCodedWidth() const;
+    int         getCodedHeight() const;
     PixelFormat getPixelFormat() const;
     Rational    getFrameRate();
     int32_t     getBitRate() const;
@@ -80,8 +82,10 @@ public:
     int         getMaxBFrames() const;
     int         getFrameSize() const;
 
-    void        setWidth(int w);
-    void        setHeight(int h);
+    void        setWidth(int w); // Note, it also sets coded_width
+    void        setHeight(int h); // Note, it also sets coded_height
+    void        setCodedWidth(int w);
+    void        setCodedHeight(int h);
     void        setPixelFormat(PixelFormat pixelFormat);
     void        setFrameRate(const Rational &frameRate);
     void        setBitRate(int32_t bitRate);
