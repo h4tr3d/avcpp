@@ -140,5 +140,9 @@ list<PixelFormat> Codec::getSupportedPixelFormats() const
     return result;
 }
 
+AVCodecID Codec::getId() const
+{
+    return (codec ? codec->id : AV_CODEC_ID_NONE);
+}
 
 } // ::av

@@ -37,6 +37,8 @@ public:
 
     std::list<Rational>    getSupportedFramerates() const;
     std::list<PixelFormat> getSupportedPixelFormats() const;
+    
+    AVCodecID getId() const;
 
 private:
     Codec();
