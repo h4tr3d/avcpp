@@ -29,6 +29,15 @@ VideoFrame::VideoFrame(const vector<uint8_t> &data, PixelFormat pixelFormat, int
     m_timeBase = Rational(AV_TIME_BASE_Q);
 }
 
+VideoFrame::VideoFrame(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height)
+{
+    init(pixelFormat, width, height);
+    // TODO check size
+    m_frameBuffer.assign(data, data+size);
+    avpicture_fill(reinterpret_cast<AVPicture*>(m_frame), m_frameBuffer.data(), pixelFormat, width, height);
+    m_timeBase = Rational(AV_TIME_BASE_Q);
+}
+
 VideoFrame::VideoFrame(const AVFrame *frame)
 {
     initFromAVFrame(frame);
