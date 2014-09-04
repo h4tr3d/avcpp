@@ -394,6 +394,14 @@ AVMediaType StreamCoder::getCodecType() const
     return (m_context ? m_context->codec_type : AVMEDIA_TYPE_UNKNOWN);
 }
 
+void StreamCoder::setOption(const string& key, const string& val, int flags)
+{
+    if (m_context)
+    {
+        av_opt_set(m_context->priv_data, key.c_str(), val.c_str(), flags);
+    }
+}
+
 int StreamCoder::getWidth() const
 {
     return (m_context ? m_context->width : -1);
@@ -720,26 +728,26 @@ void StreamCoder::setDefaultAudioFrameSize(int frameSize)
     m_defaultAudioFrameSize = frameSize;
 }
 
-void StreamCoder::setFlags(int32_t flags)
+void StreamCoder::setFlags(int flags)
 {
     if (m_context)
         m_context->flags = flags;
 }
 
-void StreamCoder::addFlags(int32_t flags)
+void StreamCoder::addFlags(int flags)
 {
     if (m_context)
         m_context->flags |= flags;
 }
 
-void StreamCoder::clearFlags(int32_t flags)
+void StreamCoder::clearFlags(int flags)
 {
     if (m_context)
         m_context->flags &= ~flags;
 }
 
 
-int32_t StreamCoder::getFlags()
+int StreamCoder::getFlags()
 {
     return (m_context ? m_context->flags : 0);
 }

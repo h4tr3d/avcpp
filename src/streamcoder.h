@@ -66,6 +66,8 @@ public:
 
     AVMediaType getCodecType() const;
 
+    void        setOption(const std::string &key, const std::string &val, int flags = 0);
+
     // Video
     int         getWidth() const;
     int         getHeight() const;
@@ -113,10 +115,10 @@ public:
     void        setDefaultAudioFrameSize(int frameSize);
 
     // Flags
-    void        setFlags(int32_t flags);
-    void        addFlags(int32_t flags);
-    void        clearFlags(int32_t flags);
-    int32_t     getFlags();
+    void        setFlags(int flags);
+    void        addFlags(int flags);
+    void        clearFlags(int flags);
+    int         getFlags();
 
     AVCodecContext *getAVCodecContext() { return m_context; }
 
