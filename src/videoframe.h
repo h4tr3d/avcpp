@@ -10,7 +10,7 @@ class VideoFrame : public Frame
 public:
     VideoFrame();
     VideoFrame(PixelFormat pixelFormat, int width, int height);
-    VideoFrame(const vector<uint8_t> &data, PixelFormat pixelFormat, int width, int height);
+    VideoFrame(const std::vector<uint8_t> &data, PixelFormat pixelFormat, int width, int height);
     VideoFrame(const uint8_t *data, size_t dataSize, AVPixelFormat pixelFormat, int width, int height);
     VideoFrame(const AVFrame    *frame);
     VideoFrame(const VideoFrame &frame);

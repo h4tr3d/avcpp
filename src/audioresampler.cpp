@@ -2,6 +2,8 @@
 
 #include "audioresampler.h"
 
+using namespace std;
+
 namespace av {
 
 AudioResampler::AudioResampler()

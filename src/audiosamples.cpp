@@ -4,6 +4,8 @@
 
 #include "audiosamples.h"
 
+using namespace std;
+
 namespace av {
 
 AudioSamples::AudioSamples()

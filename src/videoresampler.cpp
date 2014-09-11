@@ -1,5 +1,7 @@
 #include "videoresampler.h"
 
+using namespace std;
+
 namespace av
 {
 

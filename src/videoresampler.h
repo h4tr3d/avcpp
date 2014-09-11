@@ -11,8 +11,6 @@
 namespace av
 {
 
-using namespace std;
-
 class VideoResampler;
 typedef std::shared_ptr<VideoResampler> VideoResamplerPtr;
 typedef std::weak_ptr<VideoResampler> VideoResamplerWPtr;

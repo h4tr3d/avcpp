@@ -192,7 +192,7 @@ public:
                 total += m_raw->buf[i]->size;
             }
         } else if (m_raw->data[0]) {
-            // TODO: calc size
+            // TODO
         }
         return total;
     }
@@ -220,6 +220,7 @@ class VideoFrame2 : public Frame2<VideoFrame2>
 public:
     using Frame2<VideoFrame2>::Frame2;
 
+    VideoFrame2() = default;
     VideoFrame2(AVPixelFormat pixelFormat, int width, int height, int align = 1);
     VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height, int align = 1) throw(std::length_error);
 
@@ -243,6 +244,7 @@ class AudioSamples2 : public Frame2<AudioSamples2>
 public:
     using Frame2<AudioSamples2>::Frame2;
 
+    AudioSamples2() = default;
     AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate, int align = 1);
     AudioSamples2(const uint8_t *data, size_t size,
                   AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate, int align = 1) throw(std::length_error);

@@ -10,9 +10,6 @@
 
 namespace av {
 
-using namespace std;
-
-
 typedef std::shared_ptr<class Stream> StreamPtr;
 typedef std::weak_ptr<class Stream> StreamWPtr;
 
@@ -32,11 +29,11 @@ public:
     Packet(const Packet &packet);
     Packet(Packet &&packet);
     explicit Packet(const AVPacket *packet);
-    explicit Packet(const vector<uint8_t> &data);
+    explicit Packet(const std::vector<uint8_t> &data);
     Packet(const uint8_t *data, size_t size, bool doAllign = true);
     ~Packet();
 
-    bool setData(const vector<uint8_t> &newData);
+    bool setData(const std::vector<uint8_t> &newData);
     bool setData(const uint8_t *newData, size_t size);
 
     const uint8_t* getData() const { return m_raw.data; }

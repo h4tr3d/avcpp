@@ -1,6 +1,8 @@
 #include "av.h"
 #include "avutils.h"
 
+using namespace std;
+
 //
 // Functions
 //

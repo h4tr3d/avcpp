@@ -17,7 +17,7 @@ public:
     explicit BufferSrcFilterContext(const Filter& filter, const std::string &name = std::string());
     explicit BufferSrcFilterContext(const FilterContext& baseContext);
 
-    virtual  int reinit(const Filter &filter, const string &name);
+    virtual  int reinit(const Filter &filter, const std::string &name);
 
     int      addFrame(const FramePtr& frame);
     int      addBufferRef(FilterBufferRef &ref, int flags = 0);

@@ -1,5 +1,7 @@
 #include "packet.h"
 
+using namespace std;
+
 namespace av {
 
 Packet::Packet()

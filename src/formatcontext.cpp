@@ -5,6 +5,8 @@
 
 #include "formatcontext.h"
 
+using namespace std;
+
 namespace av {
 
 FormatContext::FormatContext()
@@ -14,6 +16,7 @@ FormatContext::FormatContext()
 
 FormatContext::~FormatContext()
 {
+    close();
     avformat_free_context(m_raw);
 }
 
@@ -94,9 +97,10 @@ void FormatContext::close()
         }
         else
         {
+            closeCodecContexts();
             avformat_close_input(&m_raw);
             m_raw = avformat_alloc_context();
-
+            m_monitor.reset(new char);
         }
         m_isOpened = false;
     }
@@ -118,9 +122,9 @@ size_t FormatContext::streamsCount() const
 Stream2 FormatContext::stream(size_t idx)
 {
     if (!m_raw || idx >= m_raw->nb_streams)
-        return Stream2(shared_from_this());
+        return Stream2(m_monitor);
 
-    return Stream2(shared_from_this(), m_raw->streams[idx], isOutput() ? ENCODING : DECODING);
+    return Stream2(m_monitor, m_raw->streams[idx], isOutput() ? ENCODING : DECODING);
 }
 
 bool FormatContext::openInput(const std::string &uri, InputFormat format)
@@ -163,13 +167,6 @@ ssize_t FormatContext::readPacket(Packet &pkt)
         pkt.setTimeBase(m_raw->streams[pkt.getStreamIndex()]->time_base);
 
     return stat;
-}
-
-ssize_t FormatContext::readPacket(PacketPtr &pkt)
-{
-    if (!pkt)
-        return -1;
-    return readPacket(*pkt);
 }
 
 int FormatContext::avioInterruptCb(void *opaque)
@@ -227,6 +224,17 @@ void FormatContext::queryInputStreams()
     }
     else
         cerr << "Could not found streams in input container\n";
+}
+
+void FormatContext::closeCodecContexts()
+{
+    // HACK: This is hack to correct cleanup codec contexts in independ way
+    auto nb = m_raw->nb_streams;
+    for (auto i = 0; i < nb; ++i) {
+        auto st = m_raw->streams[i];
+        auto ctx = st->codec;
+        avcodec_close(ctx);
+    }
 }
 
 } // namespace av
