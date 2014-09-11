@@ -6,21 +6,20 @@
 
 #include "ffmpeg.h"
 #include "rational.h"
+#include "format.h"
 
 namespace av {
 
-class Codec;
+typedef std::shared_ptr<class Codec> CodecPtr;
+typedef std::weak_ptr<class Codec>   CodecWPtr;
 
-typedef std::shared_ptr<Codec> CodecPtr;
-typedef std::weak_ptr<Codec>   CodecWPtr;
-
-class Codec
+class Codec : public FFWrapperPtr<const AVCodec>
 {
 public:
-    Codec(const AVCodec *codec);
-    ~Codec();
+    using FFWrapperPtr<const AVCodec>::FFWrapperPtr;
 
-    const AVCodec *getAVCodec() const {return codec;}
+    // Compat
+    const AVCodec *getAVCodec() const {return m_raw;}
 
     static CodecPtr findEncodingCodec(AVCodecID id);
     static CodecPtr findEncodingCodec(const char *name);
@@ -34,18 +33,22 @@ public:
     const char *getLongName() const;
     bool        canEncode() const;
     bool        canDecode() const;
+    AVMediaType type() const;
 
     std::list<Rational>    getSupportedFramerates() const;
     std::list<PixelFormat> getSupportedPixelFormats() const;
     
     AVCodecID getId() const;
-
-private:
-    Codec();
-
-private:
-    const AVCodec *codec;
 };
+
+
+Codec findEncodingCodec(AVCodecID id);
+Codec findEncodingCodec(const std::string& name);
+
+Codec findDecodingCodec(AVCodecID id);
+Codec findDecodingCodec(const std::string& name);
+
+Codec guessEncodingCodec(OutputFormat format, const char *name, const char *url, const char* mime, AVMediaType mediaType);
 
 } // ::fmpeg
 

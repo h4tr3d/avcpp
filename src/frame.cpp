@@ -86,6 +86,141 @@ int av_frame_copy(AVFrame *dst, const AVFrame *src)
 namespace av
 {
 
+VideoFrame2::VideoFrame2(AVPixelFormat pixelFormat, int width, int height, int align)
+{
+    m_raw->format = pixelFormat;
+    m_raw->width  = width;
+    m_raw->height = height;
+    av_frame_get_buffer(m_raw, align);
+}
+
+VideoFrame2::VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height, int align) throw(std::length_error)
+    : VideoFrame2(pixelFormat, width, height, align)
+{
+    size_t calcSize = av_image_get_buffer_size(pixelFormat, width, height, align);
+    if (calcSize != size)
+        throw length_error("Data size and required buffer for this format/width/height/align not equal");
+
+    uint8_t *buf[4];
+    int      linesize[4];
+    av_image_fill_arrays(buf, linesize, data, pixelFormat, width, height, align);
+
+    // copy data
+    for (size_t i = 0; i < 4 && buf[i]; ++i) {
+        std::copy(buf[i], buf[i]+linesize[i], m_raw->data[i]);
+    }
+}
+
+AVPixelFormat VideoFrame2::pixelFormat() const
+{
+    return static_cast<AVPixelFormat>(m_raw->format);
+}
+
+int VideoFrame2::width() const
+{
+    return m_raw->width;
+}
+
+int VideoFrame2::height() const
+{
+    return m_raw->height;
+}
+
+bool VideoFrame2::isKeyFrame() const
+{
+    return m_raw->key_frame;
+}
+
+void VideoFrame2::setKeyFrame(bool isKey)
+{
+    m_raw->key_frame = isKey;
+}
+
+int VideoFrame2::quality() const
+{
+    return m_raw->quality;
+}
+
+void VideoFrame2::setQuality(int quality)
+{
+    m_raw->quality = quality;
+}
+
+AVPictureType VideoFrame2::pictureType() const
+{
+    return m_raw->pict_type;
+}
+
+void VideoFrame2::setPictureType(AVPictureType type)
+{
+    m_raw->pict_type = type;
+}
+
+
+AudioSamples2::AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate, int align)
+{
+    m_raw->format      = sampleFormat;
+    m_raw->sample_rate = sampleRate;
+    m_raw->nb_samples  = samplesCount;
+
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(54,59,100) // 1.0
+    av_frame_set_channel_layout(m_raw, av_get_default_channel_layout(channels));
+#else
+    av_frame_set_channels(m_raw, channels);
+#endif
+
+    av_frame_get_buffer(m_raw, align);
+}
+
+AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate, int align) throw(std::length_error)
+    : AudioSamples2(sampleFormat, samplesCount, channels, sampleRate, align)
+{
+    size_t calcSize = av_samples_get_buffer_size(nullptr, channels, samplesCount, sampleFormat, align);
+    if (calcSize > size)
+        throw length_error("Data size and required buffer for this format/nb_samples/nb_channels/align not equal");
+
+    uint8_t *buf[channels];
+    int      linesize[channels];
+    av_samples_fill_arrays(buf, linesize, data, channels, samplesCount, sampleFormat, align);
+
+    // copy data
+    for (size_t i = 0; i < channels && i < AV_NUM_DATA_POINTERS; ++i) {
+        std::copy(buf[i], buf[i]+linesize[i], m_raw->data[i]);
+    }
+}
+
+AVSampleFormat AudioSamples2::sampleFormat() const
+{
+    return static_cast<AVSampleFormat>(m_raw->format);
+}
+
+int AudioSamples2::samplesCount() const
+{
+    return m_raw->nb_samples;
+}
+
+int AudioSamples2::channelsCount() const
+{
+    return m_raw->channels;
+}
+
+int64_t AudioSamples2::channelsLayout() const
+{
+    return m_raw->channel_layout;
+}
+
+int AudioSamples2::sampleRate() const
+{
+    return m_raw->sample_rate;
+}
+
+uint AudioSamples2::sampleBitDepth() const
+{
+    return (av_get_bytes_per_sample(static_cast<AVSampleFormat>(m_raw->format))) << 3;
+}
+
+
+
 Frame::Frame()
     : m_frame(0),
       m_timeBase(AV_TIME_BASE_Q),
@@ -94,6 +229,8 @@ Frame::Frame()
       m_fakePts(AV_NOPTS_VALUE)
 {
     allocFrame();
+
+
 }
 
 

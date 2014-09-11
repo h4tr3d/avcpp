@@ -3,22 +3,6 @@
 
 namespace av {
 
-Codec::Codec()
-{
-    codec = 0;
-}
-
-
-Codec::~Codec()
-{
-    codec = 0;
-}
-
-
-Codec::Codec(const AVCodec *codec)
-    : codec(codec)
-{
-}
 
 CodecPtr Codec::findEncodingCodec(AVCodecID id)
 {
@@ -70,50 +54,49 @@ CodecPtr av::Codec::guessEncodingCodec(const char *name, const char *url, const 
 
 const char *Codec::getName() const
 {
-    if (codec)
-        return codec->name;
-    return 0;
+    return RAW_GET(name, nullptr);
 }
 
 const char *Codec::getLongName() const
 {
-    if (codec)
-        return codec->long_name;
-    return 0;
+    return RAW_GET(long_name, nullptr);
 }
 
 bool Codec::canEncode() const
 {
 #if LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(54,23,100) // 0.11.1
-    if (codec)
-        return (codec->encode || codec->encode2);
+    if (m_raw)
+        return (m_raw->encode || m_raw->encode2);
 #else
-    if (codec)
-        return codec->encode2;
+    if (m_raw)
+        return m_raw->encode2;
 #endif
     return false;
 }
 
 bool Codec::canDecode() const
 {
-    if (codec)
-        return codec->decode;
-    return false;
+    return RAW_GET(decode, nullptr);
+}
+
+AVMediaType Codec::type() const
+{
+    return RAW_GET(type, AVMEDIA_TYPE_UNKNOWN);
 }
 
 list<Rational> Codec::getSupportedFramerates() const
 {
     list<Rational> result;
-    if (!codec || !codec->supported_framerates)
+    if (!m_raw || !m_raw->supported_framerates)
     {
         std::cout << "No supported frame rates" << std::endl;
         return result;
     }
 
     int idx = 0;
-    while (Rational(codec->supported_framerates[idx]) != Rational())
+    while (Rational(m_raw->supported_framerates[idx]) != Rational())
     {
-        Rational value = codec->supported_framerates[idx];
+        Rational value = m_raw->supported_framerates[idx];
         std::cout << "Supported frame rate: " << value << std::endl;
         result.push_back(value);
         ++idx;
@@ -125,13 +108,13 @@ list<Rational> Codec::getSupportedFramerates() const
 list<PixelFormat> Codec::getSupportedPixelFormats() const
 {
     list<PixelFormat> result;
-    if (!codec || !codec->pix_fmts)
+    if (!m_raw || !m_raw->pix_fmts)
     {
         return result;
     }
 
     PixelFormat format;
-    const AVPixelFormat *pixFmts = codec->pix_fmts;
+    const AVPixelFormat *pixFmts = m_raw->pix_fmts;
     while ((format = *(pixFmts++)) != -1)
     {
         result.push_back(format);
@@ -142,7 +125,33 @@ list<PixelFormat> Codec::getSupportedPixelFormats() const
 
 AVCodecID Codec::getId() const
 {
-    return (codec ? codec->id : AV_CODEC_ID_NONE);
+    return RAW_GET(id, AV_CODEC_ID_NONE);
+}
+
+Codec findEncodingCodec(AVCodecID id)
+{
+    return Codec { avcodec_find_encoder(id) };
+}
+
+Codec findEncodingCodec(const string &name)
+{
+    return Codec { avcodec_find_encoder_by_name(name.c_str()) };
+}
+
+Codec findDecodingCodec(AVCodecID id)
+{
+    return Codec {avcodec_find_decoder(id)};
+}
+
+Codec findDecodingCodec(const string &name)
+{
+    return Codec { avcodec_find_decoder_by_name(name.c_str()) };
+}
+
+Codec guessEncodingCodec(OutputFormat format, const char *name, const char *url, const char *mime, AVMediaType mediaType)
+{
+    auto id = av_guess_codec(format.raw(), name, url, mime, mediaType);
+    return findEncodingCodec(id);
 }
 
 } // ::av

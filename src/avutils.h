@@ -87,6 +87,10 @@ std::string error2string(int error);
 //
 namespace av {
 
+struct EmptyDeleter
+{
+    void operator()(void *) {}
+};
 
 /**
  * @brief The AvDeleter struct

@@ -1,5 +1,5 @@
-#ifndef STREAM_H
-#define STREAM_H
+#ifndef AV_STREAM_H
+#define AV_STREAM_H
 
 #include <memory>
 
@@ -11,15 +11,14 @@ namespace av
 {
 
 // Forward decl
-class Container;
-typedef std::shared_ptr<Container> ContainerPtr;
-typedef std::weak_ptr<Container> ContainerWPtr;
+typedef std::shared_ptr<class Container> ContainerPtr;
+typedef std::weak_ptr<class Container> ContainerWPtr;
 
+typedef std::shared_ptr<class Stream> StreamPtr;
+typedef std::weak_ptr<class Stream> StreamWPtr;
 
-class Stream;
-typedef std::shared_ptr<Stream> StreamPtr;
-typedef std::weak_ptr<Stream> StreamWPtr;
-
+using FormatContextPtr  = std::shared_ptr<class FormatContext>;
+using FormatContextWPtr = std::weak_ptr<class FormatContext>;
 
 typedef enum
 {
@@ -28,6 +27,37 @@ typedef enum
     DECODING
 } Direction;
 
+
+class Stream2 : public FFWrapperPtr<AVStream>
+{
+private:
+    friend class FormatContext;
+    Stream2(const FormatContextPtr &fctx, AVStream *st = nullptr, Direction direction = INVALID);
+
+public:
+    bool isValid() const;
+
+    int index() const;
+    int id() const;
+
+    Rational    frameRate()          const;
+    Rational    timeBase()           const;
+    Rational    sampleAspectRatio()  const;
+    int64_t     startTime()          const;
+    int64_t     duration()           const;
+    int64_t     currentDts()         const;
+    AVMediaType mediaType()          const;
+
+    Direction   direction() const { return m_direction; }
+
+    void setTimeBase(const Rational &timeBase);
+    void setFrameRate(const Rational &frameRate);
+    void setSampleAspectRatio(const Rational &aspectRatio);
+
+private:
+    FormatContextWPtr m_parent;
+    Direction         m_direction;
+};
 
 
 class Stream

@@ -2,7 +2,6 @@
 #define CONTAINERFORMAT_H
 
 #include <memory>
-
 #include "ffmpeg.h"
 
 namespace av
