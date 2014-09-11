@@ -32,9 +32,11 @@ class Stream2 : public FFWrapperPtr<AVStream>
 {
 private:
     friend class FormatContext;
-    Stream2(const FormatContextPtr &fctx, AVStream *st = nullptr, Direction direction = INVALID);
+    Stream2(const std::shared_ptr<char> &monitor, AVStream *st = nullptr, Direction direction = INVALID);
 
 public:
+    Stream2() = default;
+
     bool isValid() const;
 
     int index() const;
@@ -55,8 +57,8 @@ public:
     void setSampleAspectRatio(const Rational &aspectRatio);
 
 private:
-    FormatContextWPtr m_parent;
-    Direction         m_direction;
+    std::weak_ptr<char> m_parentMonitor;
+    Direction           m_direction = INVALID;
 };
 
 

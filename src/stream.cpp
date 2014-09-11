@@ -4,16 +4,16 @@
 namespace av
 {
 
-Stream2::Stream2(const FormatContextPtr &fctx, AVStream *st, Direction direction)
+Stream2::Stream2(const std::shared_ptr<char> &monitor, AVStream *st, Direction direction)
     : FFWrapperPtr<AVStream>(st),
-      m_parent(fctx),
+      m_parentMonitor(monitor),
       m_direction(direction)
 {
 }
 
 bool Stream2::isValid() const
 {
-    return (!m_parent.expired() && !isNull());
+    return (!m_parentMonitor.expired() && !isNull());
 }
 
 int Stream2::index() const

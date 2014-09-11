@@ -11,7 +11,6 @@ namespace av
 {
 
 using namespace std::rel_ops;
-using namespace std;
 
 class Rational;
 
@@ -66,14 +65,14 @@ private:
 };
 
 
-inline ostream& operator<< (ostream &stream, const Rational &value)
+inline std::ostream& operator<< (std::ostream &stream, const Rational &value)
 {
     stream << value.getNumerator() << "/" << value.getDenominator();
     return stream;
 
 }
 
-inline istream& operator>> (istream &stream, Rational &value)
+inline std::istream& operator>> (std::istream &stream, Rational &value)
 {
     char       ch;
     AVRational temp;
@@ -87,7 +86,7 @@ inline istream& operator>> (istream &stream, Rational &value)
             value.setDenominator(temp.den);
         }
     }
-    catch (const exception &e)
+    catch (const std::exception &e)
     {}
 
     return stream;

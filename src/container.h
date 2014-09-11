@@ -33,11 +33,6 @@ class Packet;
 typedef std::shared_ptr<Packet> PacketPtr;
 typedef std::weak_ptr<Packet> PacketWPtr;
 
-
-
-using namespace std;
-
-
 struct AbstractWriteFunctor
 {
 public:
@@ -104,9 +99,9 @@ private:
 private:
     AVFormatContext    *context;
     ContainerFormatPtr  format;
-    vector<StreamPtr>   streams;
+    std::vector<StreamPtr>   streams;
 
-    string              uri;
+    std::string              uri;
 
     std::chrono::time_point<std::chrono::system_clock> lastStartReadFrameTime;
     int64_t     readingTimeout;

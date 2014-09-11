@@ -3,6 +3,8 @@
 
 #include "videoframe.h"
 
+using namespace std;
+
 namespace av {
 
 VideoFrame::VideoFrame()

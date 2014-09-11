@@ -20,7 +20,7 @@ public:
     explicit BufferSinkFilterContext(const FilterContext& baseContext);
     ~BufferSinkFilterContext();
 
-    virtual  int reinit(const Filter &filter, const string &name);
+    virtual  int reinit(const Filter &filter, const std::string &name);
 
     void     setFrameSize(unsigned size);
     int      getBufferRef(FilterBufferRef& ref, int flags = 0);

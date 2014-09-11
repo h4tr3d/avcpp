@@ -2,6 +2,8 @@
 
 #include "filterbufferref.h"
 
+using namespace std;
+
 namespace av {
 
 FilterBufferRef::FilterBufferRef()

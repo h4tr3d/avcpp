@@ -7,6 +7,7 @@
 #include "avutils.h"
 #include "avtime.h"
 
+using namespace std;
 
 namespace av
 {

@@ -22,7 +22,7 @@ template<typename R, typename T>
 R lexical_cast(const T& v)
 {
     R result;
-    stringstream ss;
+    std::stringstream ss;
     ss << v;
     ss >> result;
     return result;

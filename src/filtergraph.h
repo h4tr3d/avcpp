@@ -68,9 +68,9 @@ public:
             int                         srcSampleRate,
             AVSampleFormat              srcSampleFormat,
             uint64_t                    srcChannelLayout,
-            const list<int>&            dstSampleRates,
-            const list<AVSampleFormat>& dstSampleFormats,
-            const list<uint64_t>&       dstChannelLayouts,
+            const std::list<int>&            dstSampleRates,
+            const std::list<AVSampleFormat>& dstSampleFormats,
+            const std::list<uint64_t>&       dstChannelLayouts,
             const std::string&          graphDescription);
 
     static std::shared_ptr<FilterGraph> createSimpleVideoFilterGraph(

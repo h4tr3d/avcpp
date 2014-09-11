@@ -20,8 +20,7 @@ using FormatContextPtr  = std::shared_ptr<class FormatContext>;
 using FormatContextWPtr = std::weak_ptr<class FormatContext>;
 
 class FormatContext :
-        public FFWrapperPtr<AVFormatContext>,
-        public std::enable_shared_from_this<FormatContext>
+        public FFWrapperPtr<AVFormatContext>
 {
 public:
     FormatContext();
@@ -52,8 +51,6 @@ public:
 
     bool openInput(const std::string& uri, InputFormat format = InputFormat());
 
-    // Compat API
-    ssize_t readPacket(PacketPtr &pkt);
     ssize_t readPacket(Packet &pkt);
 
 private:
@@ -66,7 +63,10 @@ private:
 
     void        queryInputStreams();
 
+    void        closeCodecContexts();
+
 private:
+    std::shared_ptr<char>                              m_monitor {new char};
     std::chrono::time_point<std::chrono::system_clock> m_lastSocketAccess;
     int64_t                                            m_socketTimeout = -1;
     AvioInterruptCb                                    m_interruptCb;

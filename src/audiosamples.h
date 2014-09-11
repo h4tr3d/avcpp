@@ -14,7 +14,7 @@ public:
     AudioSamples(const AVFrame     *m_frame);
     AudioSamples(const AudioSamples &m_frame);
     AudioSamples(AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate);
-    AudioSamples(const vector<uint8_t> &data,
+    AudioSamples(const std::vector<uint8_t> &data,
                 AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate);
     virtual ~AudioSamples();
 

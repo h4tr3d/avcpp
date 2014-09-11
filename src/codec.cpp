@@ -3,6 +3,7 @@
 
 namespace av {
 
+using namespace std;
 
 CodecPtr Codec::findEncodingCodec(AVCodecID id)
 {

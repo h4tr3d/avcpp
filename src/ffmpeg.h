@@ -56,7 +56,7 @@ struct FFWrapperPtr
     const T* raw() const             { return m_raw; }
     T*       raw()                   { return m_raw; }
     void     reset(T *raw = nullptr) { m_raw = raw; }
-    bool     isNull() const          { return (m_raw != nullptr); }
+    bool     isNull() const          { return (m_raw == nullptr); }
 
 protected:
     T *m_raw = nullptr;
