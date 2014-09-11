@@ -4,91 +4,89 @@ namespace av {
 
 Packet::Packet()
 {
-    ctorInitCommon();
+    initCommon();
 }
 
 Packet::Packet(const Packet &packet)
     : Packet()
 {
-    ctorInitFromAVPacket(&packet.m_pkt);
+    initFromAVPacket(&packet.m_raw, false);
     m_completeFlag = packet.m_completeFlag;
     m_timeBase = packet.m_timeBase;
     m_fakePts = packet.m_fakePts;
 }
 
 Packet::Packet(Packet &&packet)
-    : m_pkt(packet.m_pkt),
-      m_completeFlag(packet.m_completeFlag),
+    : m_completeFlag(packet.m_completeFlag),
       m_timeBase(packet.m_timeBase),
       m_fakePts(packet.m_fakePts)
 {
-    av_init_packet(&packet.m_pkt);
-    packet.m_pkt.data = nullptr;
-    packet.m_pkt.size = 0;
+    // copy packet as is
+    m_raw = packet.m_raw;
+    av_init_packet(&packet.m_raw);
 }
 
 Packet::Packet(const AVPacket *packet)
     : Packet()
 {
-    ctorInitFromAVPacket(packet);
+    initFromAVPacket(packet, false);
 }
 
 Packet::Packet(const vector<uint8_t> &data)
+    : Packet(data.data(), data.size(), true)
 {
-    ctorInitCommon();
-
-    m_pkt.size = data.size();
-    m_pkt.data = reinterpret_cast<uint8_t*>(av_malloc(data.size() + FF_INPUT_BUFFER_PADDING_SIZE));
-    std::copy(data.begin(), data.end(), m_pkt.data);
-    std::fill_n(m_pkt.data + m_pkt.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0');
-
-    m_completeFlag = true;
 }
 
 Packet::Packet(const uint8_t *data, size_t size, bool doAllign)
+    : Packet()
 {
-    ctorInitCommon();
-
-    m_pkt.size = size;
+    m_raw.size = size;
     if (doAllign)
     {
-        m_pkt.data = reinterpret_cast<uint8_t*>(av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE));
-        std::fill_n(m_pkt.data + m_pkt.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0');
+        m_raw.data = reinterpret_cast<uint8_t*>(av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE));
+        std::fill_n(m_raw.data + m_raw.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0');
     }
     else
-        m_pkt.data = reinterpret_cast<uint8_t*>(av_malloc(size));
+        m_raw.data = reinterpret_cast<uint8_t*>(av_malloc(size));
 
-    std::copy(data, data + size, m_pkt.data);
+    std::copy(data, data + size, m_raw.data);
+
+    m_raw.buf = av_buffer_create(m_raw.data, m_raw.size, av_buffer_default_free, nullptr, 0);
 
     m_completeFlag = true;
 }
 
 Packet::~Packet()
 {
-    av_free_packet(&m_pkt);
+    av_free_packet(&m_raw);
 }
 
-void Packet::ctorInitCommon()
+void Packet::initCommon()
 {
-    av_init_packet(&m_pkt);
-    m_pkt.data = nullptr;
-    m_pkt.size = 0;
+    av_init_packet(&m_raw);
 
     m_completeFlag = false;
     m_timeBase     = Rational(0, 0);
     m_fakePts      = AV_NOPTS_VALUE;
 }
 
-void Packet::ctorInitFromAVPacket(const AVPacket *packet)
+void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy)
 {
     if (!packet || packet->size <= 0)
     {
         return;
     }
 
-    av_free_packet(&m_pkt);
-    av_init_packet(&m_pkt);
-    av_copy_packet(&m_pkt, const_cast<AVPacket*>(packet));
+    av_free_packet(&m_raw);
+    av_init_packet(&m_raw);
+
+    AVPacket tmp = *packet;
+    if (deepCopy) {
+        // Preven referencing instead of deep copy
+        tmp.buf = nullptr;
+    }
+
+    av_copy_packet(&m_raw, &tmp);
 
     m_fakePts      = packet->pts;
     m_completeFlag = true;
@@ -101,19 +99,20 @@ bool Packet::setData(const vector<uint8_t> &newData)
 
 bool Packet::setData(const uint8_t *newData, size_t size)
 {
-    if (m_pkt.size != size || m_pkt.data == 0)
+    if (m_raw.size != size || m_raw.data == 0)
     {
-        if (m_pkt.buf)
-            av_buffer_unref(&m_pkt.buf);
+        if (m_raw.buf)
+            av_buffer_unref(&m_raw.buf);
         else
-            av_freep(&m_pkt.data);
-        m_pkt.data = reinterpret_cast<uint8_t*>(av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE));
-        m_pkt.size = size;
+            av_freep(&m_raw.data);
+        m_raw.data = reinterpret_cast<uint8_t*>(av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE));
+        m_raw.size = size;
 
-        std::fill_n(m_pkt.data + m_pkt.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0'); // set padding memory to zero
+        std::fill_n(m_raw.data + m_raw.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0'); // set padding memory to zero
+        m_raw.buf = av_buffer_create(m_raw.data, m_raw.size, av_buffer_default_free, nullptr, 0);
     }
 
-    std::copy(newData, newData + size, m_pkt.data);
+    std::copy(newData, newData + size, m_raw.data);
 
     m_completeFlag = true;
 
@@ -122,12 +121,12 @@ bool Packet::setData(const uint8_t *newData, size_t size)
 
 int64_t Packet::getPts() const
 {
-    return m_pkt.pts;
+    return m_raw.pts;
 }
 
 int64_t Packet::getDts() const
 {
-    return m_pkt.dts;
+    return m_raw.dts;
 }
 
 int64_t Packet::getFakePts() const
@@ -135,26 +134,26 @@ int64_t Packet::getFakePts() const
     return m_fakePts;
 }
 
-int32_t Packet::getSize() const
+int Packet::getSize() const
 {
-    return m_pkt.size;
+    return m_raw.size;
 }
 
 void Packet::setPts(int64_t pts, const Rational &tsTimeBase)
 {
     if (tsTimeBase == Rational(0,0))
-        m_pkt.pts = pts;
+        m_raw.pts = pts;
     else
-        m_pkt.pts = tsTimeBase.rescale(pts, m_timeBase);
+        m_raw.pts = tsTimeBase.rescale(pts, m_timeBase);
     setFakePts(pts, tsTimeBase);
 }
 
 void Packet::setDts(int64_t dts, const Rational &tsTimeBase)
 {
     if (tsTimeBase == Rational(0,0))
-        m_pkt.dts = dts;
+        m_raw.dts = dts;
     else
-        m_pkt.dts = tsTimeBase.rescale(dts, m_timeBase);
+        m_raw.dts = tsTimeBase.rescale(dts, m_timeBase);
 }
 
 void Packet::setFakePts(int64_t pts, const Rational &tsTimeBase)
@@ -167,55 +166,55 @@ void Packet::setFakePts(int64_t pts, const Rational &tsTimeBase)
 
 int Packet::getStreamIndex() const
 {
-    return  m_pkt.stream_index;
+    return  m_raw.stream_index;
 }
 
 int Packet::getFlags()
 {
-    return m_pkt.flags;
+    return m_raw.flags;
 }
 
 bool Packet::isKeyPacket() const
 {
-    return (m_pkt.flags & AV_PKT_FLAG_KEY);
+    return (m_raw.flags & AV_PKT_FLAG_KEY);
 }
 
 int Packet::getDuration() const
 {
-    return m_pkt.duration;
+    return m_raw.duration;
 }
 
 bool Packet::isComplete() const
 {
-    return m_completeFlag && m_pkt.data;
+    return m_completeFlag && m_raw.data;
 }
 
 void Packet::setStreamIndex(int idx)
 {
-    m_pkt.stream_index = idx;
+    m_raw.stream_index = idx;
 }
 
 void Packet::setKeyPacket(bool keyPacket)
 {
     if (keyPacket)
-        m_pkt.flags |= AV_PKT_FLAG_KEY;
+        m_raw.flags |= AV_PKT_FLAG_KEY;
     else
-        m_pkt.flags &= ~AV_PKT_FLAG_KEY;
+        m_raw.flags &= ~AV_PKT_FLAG_KEY;
 }
 
 void Packet::setFlags(int flags)
 {
-    m_pkt.flags = flags;
+    m_raw.flags = flags;
 }
 
 void Packet::addFlags(int flags)
 {
-    m_pkt.flags |= flags;
+    m_raw.flags |= flags;
 }
 
 void Packet::clearFlags(int flags)
 {
-    m_pkt.flags &= ~flags;
+    m_raw.flags &= ~flags;
 }
 
 void Packet::dump(const StreamPtr &st, bool dumpPayload) const
@@ -223,7 +222,7 @@ void Packet::dump(const StreamPtr &st, bool dumpPayload) const
     if (st)
     {
         AVStream *stream = st->getAVStream();
-        av_pkt_dump2(stdout, const_cast<AVPacket*>(&m_pkt), dumpPayload ? 1 : 0, stream);
+        av_pkt_dump2(stdout, const_cast<AVPacket*>(&m_raw), dumpPayload ? 1 : 0, stream);
     }
 }
 
@@ -239,34 +238,61 @@ void Packet::setTimeBase(const Rational &value)
 
     if (m_timeBase != Rational() && value != Rational())
     {
-        if (m_pkt.pts != AV_NOPTS_VALUE)
-            rescaledPts = m_timeBase.rescale(m_pkt.pts, value);
+        if (m_raw.pts != AV_NOPTS_VALUE)
+            rescaledPts = m_timeBase.rescale(m_raw.pts, value);
 
-        if (m_pkt.dts != AV_NOPTS_VALUE)
-            rescaledDts = m_timeBase.rescale(m_pkt.dts, value);
+        if (m_raw.dts != AV_NOPTS_VALUE)
+            rescaledDts = m_timeBase.rescale(m_raw.dts, value);
 
         if (m_fakePts != AV_NOPTS_VALUE)
             rescaledFakePts = m_timeBase.rescale(m_fakePts, value);
 
-        if (m_pkt.duration != 0)
-            rescaledDuration = m_timeBase.rescale(m_pkt.duration, value);
+        if (m_raw.duration != 0)
+            rescaledDuration = m_timeBase.rescale(m_raw.duration, value);
     }
     else // Do not rescale for invalid timeBases
     {
-        rescaledPts      = m_pkt.pts;
-        rescaledDts      = m_pkt.dts;
+        rescaledPts      = m_raw.pts;
+        rescaledDts      = m_raw.dts;
         rescaledFakePts  = m_fakePts;
-        rescaledDuration = m_pkt.duration;
+        rescaledDuration = m_raw.duration;
     }
 
     // may be throw
     m_timeBase = value;
 
     // next operations non-thrown
-    m_pkt.pts      = rescaledPts;
-    m_pkt.dts      = rescaledDts;
-    m_pkt.duration = rescaledDuration;
+    m_raw.pts      = rescaledPts;
+    m_raw.dts      = rescaledDts;
+    m_raw.duration = rescaledDuration;
     m_fakePts      = rescaledFakePts;
+}
+
+bool Packet::isReferenced() const
+{
+    return m_raw.buf;
+}
+
+int Packet::refCount() const
+{
+    if (m_raw.buf)
+        return av_buffer_get_ref_count(m_raw.buf);
+    else
+        return 0;
+}
+
+AVPacket Packet::makeRef() const
+{
+    AVPacket pkt;
+    av_copy_packet(&pkt, &m_raw);
+    return pkt;
+}
+
+Packet Packet::clone() const
+{
+    Packet pkt;
+    pkt.initFromAVPacket(&m_raw, true);
+    return pkt;
 }
 
 void Packet::setComplete(bool complete)
@@ -297,10 +323,10 @@ Packet &Packet::operator=(Packet &&rhs)
 
 Packet &Packet::operator =(const AVPacket &rhs)
 {
-    if (&rhs == &m_pkt)
+    if (&rhs == &m_raw)
         return *this;
 
-    ctorInitFromAVPacket(&rhs);
+    initFromAVPacket(&rhs, false);
     m_timeBase = Rational();
     return *this;
 }
@@ -308,7 +334,7 @@ Packet &Packet::operator =(const AVPacket &rhs)
 void Packet::swap(Packet &other)
 {
     using std::swap;
-    swap(m_pkt,          other.m_pkt);
+    swap(m_raw,          other.m_raw);
     swap(m_completeFlag, other.m_completeFlag);
     swap(m_timeBase,     other.m_timeBase);
     swap(m_fakePts,      other.m_fakePts);
@@ -316,7 +342,7 @@ void Packet::swap(Packet &other)
 
 int Packet::allocatePayload(int32_t size)
 {
-    if (m_pkt.data && m_pkt.size != size)
+    if (m_raw.data && m_raw.size != size)
     {
         return reallocatePayload(size);
     }
@@ -329,9 +355,9 @@ int Packet::reallocatePayload(int32_t newSize)
 void Packet::setDuration(int duration, const Rational &durationTimeBase)
 {
     if (durationTimeBase == Rational())
-        m_pkt.duration = duration;
+        m_raw.duration = duration;
     else
-        m_pkt.duration = durationTimeBase.rescale(duration, m_timeBase);
+        m_raw.duration = durationTimeBase.rescale(duration, m_timeBase);
 }
 
 } // ::av

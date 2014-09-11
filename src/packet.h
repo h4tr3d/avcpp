@@ -13,22 +13,19 @@ namespace av {
 using namespace std;
 
 
-class Stream;
-typedef std::shared_ptr<Stream> StreamPtr;
-typedef std::weak_ptr<Stream> StreamWPtr;
+typedef std::shared_ptr<class Stream> StreamPtr;
+typedef std::weak_ptr<class Stream> StreamWPtr;
 
+typedef std::shared_ptr<class Packet> PacketPtr;
+typedef std::weak_ptr<class Packet> PacketWPtr;
 
-class Packet;
-typedef std::shared_ptr<Packet> PacketPtr;
-typedef std::weak_ptr<Packet> PacketWPtr;
-
-
-class Packet
+class Packet : public FFWrapper<AVPacket>
 {
 private:
-    void ctorInitCommon();
-    void ctorInitFromAVPacket(const AVPacket *avpacket);
+    void initCommon();
 
+    // if deepCopy true - make deep copy, instead - reference is created
+    void initFromAVPacket(const AVPacket *avpacket, bool deepCopy);
 
 public:
     Packet();
@@ -42,16 +39,17 @@ public:
     bool setData(const vector<uint8_t> &newData);
     bool setData(const uint8_t *newData, size_t size);
 
-    const uint8_t* getData() const { return m_pkt.data; }
-    uint8_t*       getData() { return m_pkt.data; }
+    const uint8_t* getData() const { return m_raw.data; }
+    uint8_t*       getData() { return m_raw.data; }
 
-    const AVPacket *getAVPacket() const { return &m_pkt; }
-    AVPacket       *getAVPacket() {return &m_pkt;}
+    // Compat
+    const AVPacket *getAVPacket() const { return &m_raw; }
+    AVPacket       *getAVPacket() {return &m_raw;}
 
     int64_t getPts() const;
     int64_t getDts() const;
     int64_t getFakePts() const;
-    int32_t getSize() const;
+    int     getSize() const;
 
     /**
      * Set packet PTS field. It also set fake pts value, so, if you need fake value, you should
@@ -77,7 +75,7 @@ public:
     void    setComplete(bool complete);
 
     // Flags
-    int getFlags();
+    int         getFlags();
     void        setFlags(int flags);
     void        addFlags(int flags);
     void        clearFlags(int flags);
@@ -86,6 +84,11 @@ public:
 
     const Rational& getTimeBase() const { return m_timeBase; }
     void setTimeBase(const Rational &value);
+
+    bool     isReferenced() const;
+    int      refCount() const;
+    AVPacket makeRef() const;
+    Packet   clone() const;
 
     Packet &operator =(const Packet &rhs);
     Packet &operator= (Packet &&rhs);
@@ -98,7 +101,6 @@ private:
     int reallocatePayload(int32_t newSize);
 
 private:
-    AVPacket         m_pkt;
     bool             m_completeFlag;
     Rational         m_timeBase;
     int64_t          m_fakePts;
