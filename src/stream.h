@@ -10,29 +10,19 @@
 namespace av
 {
 
-// Forward decl
-typedef std::shared_ptr<class Container> ContainerPtr;
-typedef std::weak_ptr<class Container> ContainerWPtr;
-
-typedef std::shared_ptr<class Stream> StreamPtr;
-typedef std::weak_ptr<class Stream> StreamWPtr;
-
-using FormatContextPtr  = std::shared_ptr<class FormatContext>;
-using FormatContextWPtr = std::weak_ptr<class FormatContext>;
-
-typedef enum
+enum class Direction
 {
     INVALID = -1,
     ENCODING,
     DECODING
-} Direction;
+};
 
 
 class Stream2 : public FFWrapperPtr<AVStream>
 {
 private:
     friend class FormatContext;
-    Stream2(const std::shared_ptr<char> &monitor, AVStream *st = nullptr, Direction direction = INVALID);
+    Stream2(const std::shared_ptr<char> &monitor, AVStream *st = nullptr, Direction direction = Direction::INVALID);
 
 public:
     Stream2() = default;
@@ -58,9 +48,15 @@ public:
 
 private:
     std::weak_ptr<char> m_parentMonitor;
-    Direction           m_direction = INVALID;
+    Direction           m_direction = Direction::INVALID;
 };
 
+// Forward decl
+typedef std::shared_ptr<class Container> ContainerPtr;
+typedef std::weak_ptr<class Container> ContainerWPtr;
+
+typedef std::shared_ptr<class Stream> StreamPtr;
+typedef std::weak_ptr<class Stream> StreamWPtr;
 
 class Stream
 {

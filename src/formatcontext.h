@@ -16,11 +16,7 @@ namespace av {
 
 using AvioInterruptCb = std::function<int()>;
 
-using FormatContextPtr  = std::shared_ptr<class FormatContext>;
-using FormatContextWPtr = std::weak_ptr<class FormatContext>;
-
-class FormatContext :
-        public FFWrapperPtr<AVFormatContext>
+class FormatContext : public FFWrapperPtr<AVFormatContext>
 {
 public:
     FormatContext();

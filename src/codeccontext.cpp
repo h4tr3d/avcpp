@@ -22,7 +22,7 @@ CodecContext::CodecContext(const Stream2 &st, const Codec &codec)
     Codec c = codec;
 
     if (codec.isNull()) {
-        if (st.direction() == DECODING)
+        if (st.direction() == Direction::DECODING)
             c = findDecodingCodec(m_raw->codec_id);
         else
             c = findEncodingCodec(m_raw->codec_id);
@@ -95,13 +95,13 @@ void CodecContext::setCodec(const Codec &codec)
         return;
     }
 
-    if (m_direction == ENCODING && codec.canEncode() == false)
+    if (m_direction == Direction::ENCODING && codec.canEncode() == false)
     {
         ptr_log(AV_LOG_WARNING, "Encoding context, but codec does not support encoding\n");
         return;
     }
 
-    if (m_direction == DECODING && codec.canDecode() == false)
+    if (m_direction == Direction::DECODING && codec.canDecode() == false)
     {
         ptr_log(AV_LOG_WARNING, "Decoding context, but codec does not support decoding\n");
         return;
@@ -605,7 +605,7 @@ bool CodecContext::isValidForEncode()
         return false;
     }
 
-    if (m_direction == DECODING)
+    if (m_direction == Direction::DECODING)
     {
         ptr_log(AV_LOG_WARNING, "Decoding coder does not valid for encoding\n");
         return false;

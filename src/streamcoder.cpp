@@ -29,7 +29,7 @@ StreamCoder::StreamCoder(const StreamPtr &stream)
     m_context = stream->getAVStream()->codec;
 
     CodecPtr codec;
-    if (stream->getDirection() == DECODING)
+    if (stream->getDirection() == Direction::DECODING)
     {
         codec = Codec::findDecodingCodec(m_context->codec_id);
     }
@@ -814,7 +814,7 @@ bool StreamCoder::isValidForEncode()
 //        return false;
 //    }
 
-    if (m_direction == DECODING)
+    if (m_direction == Direction::DECODING)
     {
         cerr << "Decoding coder does not valid for encoding\n";
         return false;

@@ -79,7 +79,7 @@ void Stream2::setSampleAspectRatio(const Rational &aspectRatio)
 
 Stream::Stream()
     : stream(0),
-      direction(INVALID)
+      direction(Direction::INVALID)
 {
 }
 

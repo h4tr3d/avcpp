@@ -124,7 +124,7 @@ Stream2 FormatContext::stream(size_t idx)
     if (!m_raw || idx >= m_raw->nb_streams)
         return Stream2(m_monitor);
 
-    return Stream2(m_monitor, m_raw->streams[idx], isOutput() ? ENCODING : DECODING);
+    return Stream2(m_monitor, m_raw->streams[idx], isOutput() ? Direction::ENCODING : Direction::DECODING);
 }
 
 bool FormatContext::openInput(const std::string &uri, InputFormat format)

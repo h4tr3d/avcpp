@@ -152,7 +152,7 @@ private:
     void warnIfNotAudio() const;
 
 private:
-    Direction       m_direction = INVALID;
+    Direction       m_direction = Direction::INVALID;
     Rational        m_fakePtsTimeBase;
     int64_t         m_fakeNextPts = AV_NOPTS_VALUE;
     int64_t         m_fakeCurrPts = AV_NOPTS_VALUE;
