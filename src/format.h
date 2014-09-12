@@ -2,6 +2,7 @@
 #define AV_FORMAT_H
 
 #include <memory>
+
 #include "ffmpeg.h"
 
 namespace av {
@@ -23,6 +24,10 @@ struct Format : public FFWrapperPtr<T>
         return RAW_GET(flags, 0);
     }
 
+    void setFormat(const T* format) {
+        reset(format);
+    }
+
 protected:
     using FFWrapperPtr<T>::m_raw;
 };
@@ -32,6 +37,7 @@ class InputFormat : public Format<AVInputFormat>
 {
 public:
     using Format<AVInputFormat>::Format;
+    using Format<AVInputFormat>::setFormat;
 
     bool setFormat(const std::string& name);
 
@@ -42,13 +48,14 @@ class OutputFormat : public Format<AVOutputFormat>
 {
 public:
     using Format<AVOutputFormat>::Format;
+    using Format<AVOutputFormat>::setFormat;
 
     bool        setFormat(const std::string& name,
                           const std::string& url  = std::string(),
                           const std::string& mime = std::string());
 
-    AVCodecID   defaultVideoCodec() const;
-    AVCodecID   defaultAudioCodec() const;
+    AVCodecID   defaultVideoCodecId() const;
+    AVCodecID   defaultAudioCodecId() const;
 };
 
 

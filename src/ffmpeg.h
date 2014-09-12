@@ -86,7 +86,7 @@ struct FFWrapper
     void     reset(const T &raw = T()) { m_raw = raw; }
     bool     isNull() const            {
         static const T empty{0};
-        auto res = memcmp(&m_raw, empty, sizeof(empty));
+        auto res = memcmp(&m_raw, &empty, sizeof(empty));
         return (res != 0);
     }
 

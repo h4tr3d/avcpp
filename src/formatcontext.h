@@ -16,6 +16,18 @@ namespace av {
 
 using AvioInterruptCb = std::function<int()>;
 
+struct CustomIO
+{
+    virtual ~CustomIO() {}
+    virtual ssize_t     write(const uint8_t *data, size_t size) { return -1; }
+    virtual ssize_t     read(uint8_t *data, size_t size)  { return -1; }
+    /// whence is a one of SEEK_* from stdio.h
+    virtual int64_t     seek(int64_t offset, int whence) { return -1; }
+    /// Return combination of AVIO_SEEKABLE_* flags or zero
+    virtual int         seekable() const { return 0; }
+    virtual const char* name() const { return ""; }
+};
+
 class FormatContext : public FFWrapperPtr<AVFormatContext>
 {
 public:
@@ -32,8 +44,8 @@ public:
     void setFormat(const InputFormat& format);
     void setFormat(const OutputFormat& format);
 
-    const InputFormat& inputFormat() const;
-    const OutputFormat& outputFormat() const;
+    InputFormat  inputFormat() const;
+    OutputFormat outputFormat() const;
 
     bool isOutput() const;
     bool isOpened() const;
@@ -42,24 +54,34 @@ public:
     void close();
     void dump() const;
 
-    size_t streamsCount() const;
+    // Streams
+    size_t  streamsCount() const;
     Stream2 stream(size_t idx);
+    Stream2 addStream(const Codec &codec);
 
+    // Input
     bool openInput(const std::string& uri, InputFormat format = InputFormat());
-
+    bool openInput(CustomIO *io, size_t internalBufferSize = 200000, InputFormat format = InputFormat());
     ssize_t readPacket(Packet &pkt);
+
+
+    // Output
+    bool openOutput(const std::string& uri);
+    bool openOutput(CustomIO *io, size_t internalBufferSize = 200000);
+
+    bool    writeHeader();
+    ssize_t writePacket(const Packet &pkt = Packet(), bool interleave = true);
+    ssize_t writeTrailer();
 
 private:
     static int  avioInterruptCb(void *opaque);
     int         avioInterruptCb();
     void        setupInterruptHandling();
     void        resetSocketAccess();
-
-    void        setFormat();
-
     void        queryInputStreams();
-
     void        closeCodecContexts();
+    ssize_t     checkPbError(ssize_t stat);
+    bool        openCustomIO(CustomIO *io, size_t internalBufferSize, bool isWritable);
 
 private:
     std::shared_ptr<char>                              m_monitor {new char};
@@ -67,10 +89,8 @@ private:
     int64_t                                            m_socketTimeout = -1;
     AvioInterruptCb                                    m_interruptCb;
 
-    InputFormat                                        m_iformat;
-    OutputFormat                                       m_oformat;
-
     bool                                               m_isOpened = false;
+    bool                                               m_customIO = false;
     std::string                                        m_uri;
 };
 

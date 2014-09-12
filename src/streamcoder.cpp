@@ -140,6 +140,7 @@ ssize_t StreamCoder::decodeCommon(const FramePtr &outFrame, const PacketPtr &inP
     {
         ++iterations;
         int decoded = decodeProc(m_context, frame.get(), &frameFinished, &pkt);
+        //int decoded = decodeProc(m_context, outFrame->getAVFrame(), &frameFinished, &pkt);
         if (decoded < 0)
         {
             return totalDecode;

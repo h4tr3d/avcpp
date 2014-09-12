@@ -39,6 +39,8 @@ int main(int argc, char **argv)
     CodecContext vdec;
     Stream2      vst;
 
+    int count = 0;
+
     {
 
         FormatContext ictx;
@@ -52,7 +54,7 @@ int main(int argc, char **argv)
             auto st = ictx.stream(i);
             if (st.mediaType() == AVMEDIA_TYPE_VIDEO) {
                 videoStream = i;
-                vst = std::move(st);
+                vst = st;
                 break;
             }
         }
@@ -73,36 +75,45 @@ int main(int argc, char **argv)
             vdec.setCodec(codec);
             vdec.setRefCountedFrames(true);
 
-
-
             if (!vdec.open()) {
                 cerr << "Can't open codec\n";
                 return 1;
             }
         }
 
-        Packet pkt;
-        while (ictx.readPacket(pkt) >= 0) {
+
+        while (true) {
+            Packet pkt;
+            if (ictx.readPacket(pkt) < 0)
+                break;
+
+            if (pkt.getStreamIndex() != videoStream) {
+                continue;
+            }
+
             clog << "Read packet: " << pkt.getPts() << " / " << pkt.getPts() * pkt.getTimeBase().getDouble() << " / " << pkt.getTimeBase() << " / st: " << pkt.getStreamIndex() << endl;
 
-            if (pkt.getStreamIndex() == videoStream) {
-                VideoFrame2 frame;
+            VideoFrame2 frame;
+            auto st = vdec.decodeVideo(frame, pkt);
 
-                auto st = vdec.decodeVideo(frame, pkt);
-                if (st < 0) {
-                    cerr << "Error: " << st << endl;
-                    return 1;
-                } else if (st == 0) {
-                    cerr << "Empty frame\n";
-                    continue;
-                }
+            count++;
+            if (count > 100)
+                break;
 
-                clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
+            if (st < 0) {
+                cerr << "Error: " << st << endl;
+                return 1;
+            } else if (st == 0) {
+                //cerr << "Empty frame\n";
+                //continue;
             }
+
+            clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
+
         }
 
         // NOTE: stream decodec must be closed/destroyed before
-        ictx.close();
-        vdec.close();
+        //ictx.close();
+        //vdec.close();
     }
 }

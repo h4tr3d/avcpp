@@ -30,7 +30,7 @@ public:
     // Common
     void setCodec(const Codec &codec);
 
-    bool open();
+    bool open(const Codec &codec = Codec());
     bool close();
     bool isOpened() const { return m_isOpened; }
     bool isValid() const;
@@ -52,8 +52,7 @@ public:
 
     const Stream2& stream() const;
 
-    const Codec    codec() const;
-
+    Codec       codec() const;
     AVMediaType codecType() const;
 
     void        setOption(const std::string &key, const std::string &val, int flags = 0);
@@ -136,9 +135,6 @@ public:
 //    ssize_t encodeAudio(const FramePtr  &inFrame,
 //                        const EncodedPacketHandler &onPacketHandler);
 
-    // Video
-    //ssize_t decode();
-
     bool    isValidForEncode();
 
 private:
@@ -148,9 +144,6 @@ private:
     ssize_t encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket,
                          int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*));
 
-    void warnIfNotVideo() const;
-    void warnIfNotAudio() const;
-
 private:
     Direction       m_direction = Direction::INVALID;
     Rational        m_fakePtsTimeBase;
@@ -158,7 +151,6 @@ private:
     int64_t         m_fakeCurrPts = AV_NOPTS_VALUE;
 
     Stream2         m_stream;
-    Codec           m_codec;
     bool            m_isOpened = false;
 };
 

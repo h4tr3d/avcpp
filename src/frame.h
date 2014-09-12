@@ -235,7 +235,7 @@ public:
     void                   setQuality(int quality);
 
     AVPictureType          pictureType() const;
-    void                   setPictureType(AVPictureType type);
+    void                   setPictureType(AVPictureType type = AV_PICTURE_TYPE_NONE);
 };
 
 
