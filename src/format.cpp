@@ -23,12 +23,12 @@ bool OutputFormat::setFormat(const std::string &name, const std::string &url, co
     return m_raw;
 }
 
-AVCodecID OutputFormat::defaultVideoCodec() const
+AVCodecID OutputFormat::defaultVideoCodecId() const
 {
     return RAW_GET(video_codec, AV_CODEC_ID_NONE);
 }
 
-AVCodecID OutputFormat::defaultAudioCodec() const
+AVCodecID OutputFormat::defaultAudioCodecId() const
 {
     return RAW_GET(audio_codec, AV_CODEC_ID_NONE);
 }

@@ -155,4 +155,12 @@ Codec guessEncodingCodec(OutputFormat format, const char *name, const char *url,
     return findEncodingCodec(id);
 }
 
+Codec findEncodingCodec(const OutputFormat &format, bool isVideo)
+{
+    if (isVideo)
+        return Codec { avcodec_find_encoder(format.defaultVideoCodecId()) };
+    else
+        return Codec { avcodec_find_encoder(format.defaultAudioCodecId()) };
+}
+
 } // ::av

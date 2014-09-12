@@ -42,6 +42,7 @@ public:
 };
 
 
+Codec findEncodingCodec(const OutputFormat &format, bool isVideo = true);
 Codec findEncodingCodec(AVCodecID id);
 Codec findEncodingCodec(const std::string& name);
 

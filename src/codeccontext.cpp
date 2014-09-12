@@ -9,6 +9,10 @@ using namespace std;
 
 namespace av {
 
+#define warnIfNotVideo() { if (isValid() && !isVideo()) ptr_log(AV_LOG_WARNING, "Try to set parameter for video but context not for video\n"); }
+#define warnIfNotAudio() { if (isValid() && !isAudio()) ptr_log(AV_LOG_WARNING, "Try to set parameter for audio but context not for audio\n"); }
+
+
 CodecContext::CodecContext()
 {
     m_raw = avcodec_alloc_context3(nullptr);
@@ -37,7 +41,6 @@ CodecContext::CodecContext(const Stream2 &st, const Codec &codec)
 CodecContext::CodecContext(const Codec &codec)
 {
     m_raw = avcodec_alloc_context3(codec.raw());
-    m_codec = codec;
 }
 
 CodecContext::~CodecContext()
@@ -71,7 +74,6 @@ void CodecContext::swap(CodecContext &other)
     swap(m_fakeCurrPts, other.m_fakeCurrPts);
     swap(m_fakeNextPts, other.m_fakeNextPts);
     swap(m_stream, other.m_stream);
-    swap(m_codec, other.m_codec);
     swap(m_raw, other.m_raw);
     swap(m_isOpened, other.m_isOpened);
 }
@@ -107,12 +109,20 @@ void CodecContext::setCodec(const Codec &codec)
         return;
     }
 
-    m_codec = codec;
-    avcodec_close(m_raw); // free allocated data
-    avcodec_get_context_defaults3(m_raw, codec.raw());
+    m_raw->codec_id   = !codec.isNull() ? codec.raw()->id : CODEC_ID_NONE;
+    m_raw->codec_type = !codec.isNull() ? codec.raw()->type : AVMEDIA_TYPE_UNKNOWN;
+    m_raw->codec      = codec.raw();
+
+    if (!codec.isNull()) {
+        if (codec.raw()->pix_fmts != 0)
+            m_raw->pix_fmt = *(codec.raw()->pix_fmts); // assign default value
+        if (codec.raw()->sample_fmts != 0)
+            m_raw->sample_fmt = *(codec.raw()->sample_fmts);
+    }
+
 }
 
-bool CodecContext::open()
+bool CodecContext::open(const Codec &codec)
 {
     if (m_isOpened || !isValid())
         return false;
@@ -123,7 +133,7 @@ bool CodecContext::open()
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     bool ret = true;
-    int stat = avcodec_open2(m_raw, m_codec.raw(), &opts);
+    int stat = avcodec_open2(m_raw, codec.isNull() ? m_raw->codec : codec.raw(), &opts);
     if (stat < 0)
         ret = false;
     else
@@ -151,7 +161,7 @@ bool CodecContext::close()
 
 bool CodecContext::isValid() const
 {
-    return (m_raw && !m_codec.isNull() && (m_stream.isValid() || m_stream.isNull()));
+    return (m_raw && m_raw->codec && (m_stream.isValid() || m_stream.isNull()));
 }
 
 bool CodecContext::copyContextFrom(const CodecContext &other)
@@ -194,9 +204,12 @@ const Stream2 &CodecContext::stream() const
     return m_stream;
 }
 
-const Codec CodecContext::codec() const
+Codec CodecContext::codec() const
 {
-    return m_codec;
+    if (isValid())
+        return Codec(m_raw->codec);
+    else
+        return Codec();
 }
 
 AVMediaType CodecContext::codecType() const
@@ -221,12 +234,12 @@ void CodecContext::setOption(const string &key, const string &val, int flags)
 
 bool CodecContext::isAudio() const
 {
-    return codecType() == AVMEDIA_TYPE_VIDEO;
+    return codecType() == AVMEDIA_TYPE_AUDIO;
 }
 
 bool CodecContext::isVideo() const
 {
-    return codecType() == AVMEDIA_TYPE_AUDIO;
+    return codecType() == AVMEDIA_TYPE_VIDEO;
 }
 
 int CodecContext::frameSize() const
@@ -448,7 +461,7 @@ void CodecContext::setSampleRate(int sampleRate)
     warnIfNotAudio();
     if (!isValid() || m_isOpened)
         return;
-    int sr = guessValue(sampleRate, m_codec.raw()->supported_samplerates, EqualComparator<int>(0));
+    int sr = guessValue(sampleRate, m_raw->codec->supported_samplerates, EqualComparator<int>(0));
     if (sr != sampleRate)
         ptr_log(AV_LOG_INFO, "Guess sample rate %d instead unsupported %d\n", sr, sampleRate);
     if (sr > 0)
@@ -558,8 +571,36 @@ ssize_t CodecContext::decodeVideo(VideoFrame2 &outFrame, const Packet &inPacket,
     if (!gotFrame)
         return 0;
 
-    outFrame.setTimeBase(inPacket.getTimeBase());
-    outFrame.setPts(inPacket.getPts());
+    outFrame.setTimeBase(timeBase());
+    outFrame.setStreamIndex(inPacket.getStreamIndex());
+    outFrame.setPictureType(AV_PICTURE_TYPE_I);
+    AVFrame *frame = outFrame.raw();
+
+    int64_t packetTs = frame->reordered_opaque;
+    if (packetTs == AV_NOPTS_VALUE)
+        packetTs = inPacket.getDts();
+
+    if (packetTs != AV_NOPTS_VALUE)
+    {
+        int64_t nextPts = packetTs;
+
+        if (nextPts < m_fakeNextPts && inPacket.getPts() != AV_NOPTS_VALUE)
+        {
+            nextPts = inPacket.getPts();
+        }
+
+        m_fakeNextPts = nextPts;
+    }
+
+    m_fakeCurrPts = m_fakeNextPts;
+    double frameDelay = inPacket.getTimeBase().getDouble();
+    frameDelay += outFrame.raw()->repeat_pict * (frameDelay * 0.5);
+
+    m_fakeNextPts += (int64_t) frameDelay;
+
+    if (m_fakeCurrPts != AV_NOPTS_VALUE)
+        outFrame.setPts(inPacket.getTimeBase().rescale(m_fakeCurrPts, outFrame.timeBase()));
+    outFrame.setComplete(true);
 }
 
 ssize_t CodecContext::encodeVideo(Packet &outPacket, const VideoFrame2 &inFrame)
@@ -595,7 +636,7 @@ bool CodecContext::isValidForEncode()
                  m_raw,
                  m_stream.isValid(),
                  m_stream.isNull(),
-                 m_codec.raw());
+                 codec().raw());
         return false;
     }
 
@@ -611,7 +652,7 @@ bool CodecContext::isValidForEncode()
         return false;
     }
 
-    if (!m_codec.canEncode())
+    if (!codec().canEncode())
     {
         ptr_log(AV_LOG_WARNING, "Codec can't be used for Encode\n");
         return false;
@@ -644,11 +685,10 @@ ssize_t CodecContext::decodeCommon(AVFrame *outFrame, const Packet &inPacket, si
     pkt.data += offset;
     pkt.size -= offset;
 
+    m_raw->reordered_opaque = inPacket.getPts();
     ssize_t totalDecode = 0;
-    int     iterations = 0;
     do
     {
-        ++iterations;
         int decoded = decodeProc(m_raw, outFrame, &frameFinished, &pkt);
         if (decoded < 0)
         {
@@ -720,22 +760,7 @@ ssize_t CodecContext::encodeCommon(Packet &outPacket, const AVFrame *inFrame, in
 }
 
 
-void CodecContext::warnIfNotVideo() const
-{
-    if (!isValid())
-        return;
-    if (!isVideo())
-        ptr_log(AV_LOG_WARNING, "Try to set parameter for video but context not for video\n");
-}
-
-void CodecContext::warnIfNotAudio() const
-{
-    if (!isValid())
-        return;
-    if (!isAudio())
-        ptr_log(AV_LOG_WARNING, "Try to set parameter for audio but context not for audio\n");
-}
-
-
+#undef warnIfNotAudio
+#undef warnIfNotVideo
 
 } // namespace av
