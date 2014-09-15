@@ -20,8 +20,15 @@ struct Format : public FFWrapperPtr<T>
         return RAW_GET(long_name, nullptr);
     }
 
-    int32_t     flags() const {
+    int32_t flags() const {
         return RAW_GET(flags, 0);
+    }
+
+    bool isFlags(int32_t flags) const {
+        if (m_raw) {
+            return (m_raw->flags & flags);
+        }
+        return false;
     }
 
     void setFormat(const T* format) {
