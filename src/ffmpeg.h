@@ -95,4 +95,14 @@ protected:
 };
 
 
+// Extended attributes
+#if AV_GCC_VERSION_AT_LEAST(3,1)
+#    define attribute_deprecated2(x) __attribute__((deprecated(x)))
+#elif defined(_MSC_VER)
+#    define attribute_deprecated2(x) __declspec(deprecated(x))
+#else
+#    define attribute_deprecated2(x)
+#endif
+
+
 #endif // FFMPEG_H

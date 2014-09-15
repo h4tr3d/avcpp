@@ -11,13 +11,15 @@
 namespace av
 {
 
-class VideoRescaler
+class VideoRescaler : public FFWrapperPtr<SwsContext>
 {
 public:
     VideoRescaler();
 
-    VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixelFormat,
-                  int srcWidth, int srcHeight, AVPixelFormat srcPixelFormat);
+    VideoRescaler(int m_dstWidth, int m_dstHeight, AVPixelFormat m_dstPixelFormat,
+                  int m_srcWidth, int m_srcHeight, AVPixelFormat m_srcPixelFormat) throw(std::invalid_argument);
+
+    VideoRescaler(int m_dstWidth, int m_dstHeight, AVPixelFormat m_dstPixelFormat);
 
     VideoRescaler(const VideoRescaler &other);
     VideoRescaler(VideoRescaler &&other);
@@ -27,31 +29,48 @@ public:
     VideoRescaler& operator=(const VideoRescaler &rhs);
     VideoRescaler& operator=(VideoRescaler &&rhs);
 
-    int getDstWidth() const { return dstWidth; }
-    int getDstHeight() const { return dstHeight; }
-    AVPixelFormat getDstPixelFormat() { return dstPixelFormat; }
+    attribute_deprecated2("Use dstWidth() instead")
+    int getDstWidth() const { return m_dstWidth; }
+    attribute_deprecated2("Use dstHeight() instead")
+    int getDstHeight() const { return m_dstHeight; }
+    attribute_deprecated2("Use dstPixelFormat() instead")
+    AVPixelFormat getDstPixelFormat() { return m_dstPixelFormat; }
 
-    int getSrcWidth() const { return srcWidth; }
-    int getSrcHeight() const { return srcHeight; }
-    AVPixelFormat getSrcPixelFormat() { return srcPixelFormat; }
+    int dstWidth() const { return m_dstWidth; }
+    int dstHeight() const { return m_dstHeight; }
+    AVPixelFormat dstPixelFormat() { return m_dstPixelFormat; }
 
+    attribute_deprecated2("Use srcWidth() instead")
+    int getSrcWidth() const { return m_srcWidth; }
+    attribute_deprecated2("Use srcHeight() instead")
+    int getSrcHeight() const { return m_srcHeight; }
+    attribute_deprecated2("Use srcPixelFormat() instead")
+    AVPixelFormat getSrcPixelFormat() { return m_srcPixelFormat; }
+
+    int srcWidth() const { return m_srcWidth; }
+    int srcHeight() const { return m_srcHeight; }
+    AVPixelFormat srcPixelFormat() { return m_srcPixelFormat; }
+
+    attribute_deprecated2("Use rescale(VideoFrame2 &dst, const VideoFrame2 &src) instead")
     int32_t rescale(const VideoFramePtr &dstFrame, const VideoFramePtr &srcFrame);
+
+    int32_t rescale(VideoFrame2 &dst, VideoFrame2 &src);
 
     bool isValid() const;
 
 private:
     void swap(VideoRescaler &other) noexcept;
 
+    void getContext();
+
 private:
-    SwsContext   *context        = nullptr;
+    int           m_dstWidth       = -1;
+    int           m_dstHeight      = -1;
+    AVPixelFormat m_dstPixelFormat = AV_PIX_FMT_NONE;
 
-    int           dstWidth       = -1;
-    int           dstHeight      = -1;
-    AVPixelFormat dstPixelFormat = AV_PIX_FMT_NONE;
-
-    int           srcWidth       = -1;
-    int           srcHeight      = -1;
-    AVPixelFormat srcPixelFormat = AV_PIX_FMT_NONE;
+    int           m_srcWidth       = -1;
+    int           m_srcHeight      = -1;
+    AVPixelFormat m_srcPixelFormat = AV_PIX_FMT_NONE;
 
 };
 
