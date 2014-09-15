@@ -163,7 +163,7 @@ int32_t VideoRescaler::rescale(const VideoFramePtr &dstFrame, const VideoFramePt
     return stat;
 }
 
-int32_t VideoRescaler::rescale(VideoFrame2 &dst, VideoFrame2 &src)
+int32_t VideoRescaler::rescale(VideoFrame2 &dst, const VideoFrame2 &src)
 {
     m_srcWidth       = src.width();
     m_srcHeight      = src.height();
@@ -183,7 +183,7 @@ int32_t VideoRescaler::rescale(VideoFrame2 &dst, VideoFrame2 &src)
 
     dst.setPts(src.pts());
 
-    AVFrame *inpFrame = src.raw();
+    const AVFrame *inpFrame = src.raw();
     AVFrame *outFrame = dst.raw();
 
     const uint8_t* srcFrameData[AV_NUM_DATA_POINTERS] = {
