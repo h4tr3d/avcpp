@@ -1,3 +1,5 @@
+#include <signal.h>
+
 #include "av.h"
 #include "avutils.h"
 
@@ -126,6 +128,9 @@ void init()
 
     av_lockmgr_register(avcpp_lockmgr_cb);
     setFFmpegLoggingLevel(AV_LOG_ERROR);
+
+    // Ignore sigpipe by default
+    signal(SIGPIPE, SIG_IGN);
 }
 
 string error2string(int error)
