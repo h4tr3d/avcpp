@@ -161,7 +161,8 @@ bool CodecContext::close()
 
 bool CodecContext::isValid() const
 {
-    return (m_raw && m_raw->codec && (m_stream.isValid() || m_stream.isNull()));
+    // Check parent stream first
+    return ((m_stream.isValid() || m_stream.isNull()) && m_raw && m_raw->codec);
 }
 
 bool CodecContext::copyContextFrom(const CodecContext &other)
