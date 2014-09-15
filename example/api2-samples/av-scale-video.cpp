@@ -1,3 +1,5 @@
+#include <signal.h>
+
 #include <iostream>
 #include <set>
 #include <map>
@@ -21,6 +23,7 @@
 #include "formatcontext.h"
 #include "codec.h"
 #include "codeccontext.h"
+#include "videorescaler.h"
 
 using namespace std;
 using namespace av;
@@ -90,12 +93,14 @@ int main(int argc, char **argv)
     CodecContext encoder {ost};
 
     // Settings
-    encoder.setWidth(vdec.width());
-    encoder.setHeight(vdec.height());
+    encoder.setWidth(vdec.width() * 2);
+    encoder.setHeight(vdec.height() * 2);
     encoder.setPixelFormat(vdec.pixelFormat());
     encoder.setTimeBase(Rational{1, 1000});
     encoder.setBitRate(vdec.bitRate());
+    encoder.addFlags(octx.outputFormat().isFlags(AVFMT_GLOBALHEADER) ? CODEC_FLAG_GLOBAL_HEADER : 0);
     ost.setFrameRate(vst.frameRate());
+    ost.setTimeBase(encoder.timeBase());
 
     if (!octx.openOutput(out)) {
         cerr << "Can't open output\n";
@@ -110,6 +115,11 @@ int main(int argc, char **argv)
     octx.dump();
     octx.writeHeader();
     octx.flush();
+
+    //
+    // RESCALER
+    //
+    VideoRescaler rescaler; // Rescaler will be inited on demaind
 
 
     //
@@ -129,10 +139,10 @@ int main(int argc, char **argv)
         clog << "Read packet: pts=" << pkt.getPts() << ", dts=" << pkt.getDts() << " / " << pkt.getPts() * pkt.getTimeBase().getDouble() << " / " << pkt.getTimeBase() << " / st: " << pkt.getStreamIndex() << endl;
 
         // DECODING
-        VideoFrame2 frame {vdec.pixelFormat(), vdec.width(), vdec.height(), 32};
-        clog << "RefCounted: " << frame.isReferenced() << endl;
+        VideoFrame2 inpFrame {vdec.pixelFormat(), vdec.width(), vdec.height()};
+        clog << "RefCounted: " << inpFrame.isReferenced() << endl;
 
-        auto st = vdec.decodeVideo(frame, pkt);
+        auto st = vdec.decodeVideo(inpFrame, pkt);
 
         count++;
         if (count > 200)
@@ -146,18 +156,34 @@ int main(int argc, char **argv)
             continue;
         }
 
-        clog << "Frame: pts=" << frame.pts() << " / " << frame.pts() * frame.timeBase().getDouble() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
+        clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts() * inpFrame.timeBase().getDouble() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
 
         // Change timebase
-        frame.setTimeBase(encoder.timeBase());
-        frame.setStreamIndex(0);
-        frame.setPictureType();
+        inpFrame.setTimeBase(encoder.timeBase());
+        inpFrame.setStreamIndex(0);
+        inpFrame.setPictureType();
 
-        clog << "Frame: pts=" << frame.pts() << " / " << frame.pts() * frame.timeBase().getDouble() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
+        clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts() * inpFrame.timeBase().getDouble() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
 
-        // Encode
+        // SCALE
+        VideoFrame2 outFrame {encoder.pixelFormat(), encoder.width(), encoder.height()};
+        st = rescaler.rescale(outFrame, inpFrame);
+        if (st < 0) {
+            cerr << "Can't rescale frame\n";
+            return 1;
+        }
+
+        clog << "outFrame: pts=" << outFrame.pts()
+             << " / " << outFrame.pts() * outFrame.timeBase().getDouble()
+             << " / " << outFrame.timeBase()
+             << ", " << outFrame.width() << "x" << outFrame.height()
+             << ", size=" << outFrame.size()
+             << ", ref=" << outFrame.isReferenced() << ":" << outFrame.refCount()
+             << " / type: " << outFrame.pictureType()  << endl;
+
+        // ENCODE
         Packet opkt;
-        st = encoder.encodeVideo(opkt, frame);
+        st = encoder.encodeVideo(opkt, outFrame);
         if (st < 0) {
             cerr << "Encoding error: " << st << endl;
             return 1;
@@ -175,8 +201,9 @@ int main(int argc, char **argv)
             cerr << "Error write packet\n";
             return 1;
         }
-
     }
 
     octx.writeTrailer();
+    ictx.close();
 }
+
