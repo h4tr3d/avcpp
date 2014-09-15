@@ -54,7 +54,7 @@ public:
     attribute_deprecated2("Use rescale(VideoFrame2 &dst, const VideoFrame2 &src) instead")
     int32_t rescale(const VideoFramePtr &dstFrame, const VideoFramePtr &srcFrame);
 
-    int32_t rescale(VideoFrame2 &dst, VideoFrame2 &src);
+    int32_t rescale(VideoFrame2 &dst, const VideoFrame2 &src);
 
     bool isValid() const;
 
