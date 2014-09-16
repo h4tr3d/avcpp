@@ -15,11 +15,18 @@ template<typename T>
 class Frame2 : public FFWrapperPtr<AVFrame>
 {
 protected:
-    void setupFrom(const T& other) {
-        m_timeBase    = other.m_timeBase;
-        m_streamIndex = other.m_streamIndex;
-        m_isComplete  = other.m_isComplete;
-        m_fakePts     = other.m_fakePts;
+    T& assignOperator(const T &rhs) {
+        if (this == &rhs)
+            return static_cast<T&>(*this);
+        T(rhs).swap(static_cast<T&>(*this));
+        return static_cast<T&>(*this);
+    }
+
+    T& moveOperator(T &&rhs) {
+        if (this == &rhs)
+            return static_cast<T&>(*this);
+        T(std::move(rhs)).swap(static_cast<T&>(*this));
+        return static_cast<T&>(*this);
     }
 
 public:
@@ -36,28 +43,18 @@ public:
         av_frame_ref(m_raw, frame);
     }
 
+    // Helper ctors to implement move/copy ctors
     Frame2(const T& other) : Frame2(other.m_raw) {
-        setupFrom(other);
+        copyInfoFrom(other);
     }
 
     Frame2(T&& other) : Frame2() {
         av_frame_move_ref(m_raw, other.m_raw);
-        setupFrom(other);
+        copyInfoFrom(other);
     }
 
-    T& operator=(const T &rhs) {
-        if (this == &rhs)
-            return *this;
-        T(rhs).swap(*this);
-        return static_cast<T&>(*this);
-    }
-
-    T& operator=(T &&rhs) {
-        if (this == &rhs)
-            return *this;
-        T(std::move(rhs)).swap(*this);
-        return static_cast<T&>(*this);
-    }
+    // You must implement operators in deveritive classes using assignOperator() and moveOperator()
+    void operator=(const Frame2&) = delete;
 
     void swap(Frame2 &other) {
         using std::swap;
@@ -68,6 +65,13 @@ public:
         FRAME_SWAP(m_isComplete);
         FRAME_SWAP(m_fakePts);
 #undef FRAME_SWAP
+    }
+
+    void copyInfoFrom(const T& other) {
+        m_timeBase    = other.m_timeBase;
+        m_streamIndex = other.m_streamIndex;
+        m_isComplete  = other.m_isComplete;
+        m_fakePts     = other.m_fakePts;
     }
 
     bool isReferenced() const {
@@ -85,7 +89,7 @@ public:
         return av_frame_clone(m_raw);
     }
 
-    T clone() const {
+    T clone(size_t align = 1) const {
         T result;
 
         // Setup data required for buffer allocation
@@ -96,7 +100,9 @@ public:
         result.m_raw->channel_layout = m_raw->channel_layout;
         result.m_raw->channels       = m_raw->channels;
 
-        av_frame_get_buffer(result.m_raw, 32);
+        result.copyInfoFrom(static_cast<const T&>(*this));
+
+        av_frame_get_buffer(result.m_raw, align);
         av_frame_copy(result.m_raw, m_raw);
         av_frame_copy_props(result.m_raw, m_raw);
         return result;
@@ -123,29 +129,28 @@ public:
         int64_t rescaledFakePts      = AV_NOPTS_VALUE;
         int64_t rescaledBestEffortTs = AV_NOPTS_VALUE;
 
-        if (m_raw) {
-            if (m_timeBase != Rational() && value != Rational()) {
-                if (m_raw->pts != AV_NOPTS_VALUE)
-                    rescaledPts = m_timeBase.rescale(m_raw->pts, value);
+        if (m_timeBase != Rational() && value != Rational()) {
+            if (m_raw->pts != AV_NOPTS_VALUE)
+                rescaledPts = m_timeBase.rescale(m_raw->pts, value);
 
-                if (m_raw->best_effort_timestamp != AV_NOPTS_VALUE)
-                    rescaledBestEffortTs = m_timeBase.rescale(m_raw->best_effort_timestamp, value);
+            if (m_raw->best_effort_timestamp != AV_NOPTS_VALUE)
+                rescaledBestEffortTs = m_timeBase.rescale(m_raw->best_effort_timestamp, value);
 
-                if (m_fakePts != AV_NOPTS_VALUE)
-                    rescaledFakePts = m_timeBase.rescale(m_fakePts, value);
-            } else {
-                rescaledPts          = m_raw->pts;
-                rescaledFakePts      = m_fakePts;
-                rescaledBestEffortTs = m_raw->best_effort_timestamp;
-            }
+            if (m_fakePts != AV_NOPTS_VALUE)
+                rescaledFakePts = m_timeBase.rescale(m_fakePts, value);
+        } else {
+            rescaledPts          = m_raw->pts;
+            rescaledFakePts      = m_fakePts;
+            rescaledBestEffortTs = m_raw->best_effort_timestamp;
+        }
+
+        if (m_timeBase != Rational()) {
+            m_raw->pts                   = rescaledPts;
+            m_raw->best_effort_timestamp = rescaledBestEffortTs;
+            m_fakePts                    = rescaledFakePts;
         }
 
         m_timeBase = value;
-
-
-        m_raw->pts                   = rescaledPts;
-        m_raw->best_effort_timestamp = rescaledBestEffortTs;
-        m_fakePts                    = rescaledFakePts;
     }
 
     int streamIndex() const {
@@ -225,6 +230,12 @@ public:
     VideoFrame2() = default;
     VideoFrame2(AVPixelFormat pixelFormat, int width, int height, int align = 1);
     VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height, int align = 1) throw(std::length_error);
+
+    VideoFrame2(const VideoFrame2 &other);
+    VideoFrame2(VideoFrame2 &&other);
+
+    VideoFrame2& operator=(const VideoFrame2 &rhs);
+    VideoFrame2& operator=(VideoFrame2 &&rhs);
 
     AVPixelFormat          pixelFormat() const;
     int                    width() const;
