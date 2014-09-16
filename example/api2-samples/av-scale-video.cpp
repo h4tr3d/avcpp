@@ -72,8 +72,10 @@ int main(int argc, char **argv)
         vdec = CodecContext(vst);
         vdec.setRefCountedFrames(true);
 
+        cerr << "PTR: " << (void*)vdec.raw()->codec << endl;
+
         if (!vdec.open()) {
-            cerr << "Can't open codec\n";
+            cerr << "Can't open decoder\n";
             return 1;
         }
     }
@@ -108,7 +110,7 @@ int main(int argc, char **argv)
     }
 
     if (!encoder.open()) {
-        cerr << "Can't opent encodec\n";
+        cerr << "Can't opent encoder\n";
         return 1;
     }
 
