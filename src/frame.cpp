@@ -111,6 +111,26 @@ VideoFrame2::VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFo
     }
 }
 
+VideoFrame2::VideoFrame2(const VideoFrame2 &other)
+    : Frame2<VideoFrame2>(other)
+{
+}
+
+VideoFrame2::VideoFrame2(VideoFrame2 &&other)
+    : Frame2<VideoFrame2>(move(other))
+{
+}
+
+VideoFrame2 &VideoFrame2::operator=(const VideoFrame2 &rhs)
+{
+    return assignOperator(rhs);
+}
+
+VideoFrame2 &VideoFrame2::operator=(VideoFrame2 &&rhs)
+{
+    return moveOperator(move(rhs));
+}
+
 AVPixelFormat VideoFrame2::pixelFormat() const
 {
     return static_cast<AVPixelFormat>(m_raw->format);
