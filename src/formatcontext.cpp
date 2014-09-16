@@ -46,7 +46,10 @@ FormatContext::FormatContext()
 
 FormatContext::~FormatContext()
 {
-    close();
+    if (isOpened())
+        close();
+    else if (m_raw)
+        closeCodecContexts();
     avformat_free_context(m_raw);
 }
 
