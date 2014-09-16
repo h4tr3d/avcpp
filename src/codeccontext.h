@@ -28,7 +28,7 @@ public:
     CodecContext& operator=(CodecContext &&rhs);
 
     // Common
-    void setCodec(const Codec &codec);
+    void setCodec(const Codec &codec, bool resetDefaults = false);
 
     bool open(const Codec &codec = Codec());
     bool close();

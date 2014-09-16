@@ -78,7 +78,7 @@ void CodecContext::swap(CodecContext &other)
     swap(m_isOpened, other.m_isOpened);
 }
 
-void CodecContext::setCodec(const Codec &codec)
+void CodecContext::setCodec(const Codec &codec, bool resetDefaults)
 {
     if (!m_raw || (!m_stream.isValid() && !m_stream.isNull()))
     {
@@ -109,17 +109,29 @@ void CodecContext::setCodec(const Codec &codec)
         return;
     }
 
-    m_raw->codec_id   = !codec.isNull() ? codec.raw()->id : CODEC_ID_NONE;
-    m_raw->codec_type = !codec.isNull() ? codec.raw()->type : AVMEDIA_TYPE_UNKNOWN;
-    m_raw->codec      = codec.raw();
+    if (resetDefaults) {
+        if (!m_raw->codec) {
+            avcodec_free_context(&m_raw);
+            m_raw = avcodec_alloc_context3(codec.raw());
+        } else {
+            avcodec_get_context_defaults3(m_raw, codec.raw());
+        }
+    } else {
+        m_raw->codec_id   = !codec.isNull() ? codec.raw()->id : CODEC_ID_NONE;
+        m_raw->codec_type = !codec.isNull() ? codec.raw()->type : AVMEDIA_TYPE_UNKNOWN;
+        m_raw->codec      = codec.raw();
 
-    if (!codec.isNull()) {
-        if (codec.raw()->pix_fmts != 0)
-            m_raw->pix_fmt = *(codec.raw()->pix_fmts); // assign default value
-        if (codec.raw()->sample_fmts != 0)
-            m_raw->sample_fmt = *(codec.raw()->sample_fmts);
+        if (!codec.isNull()) {
+            if (codec.raw()->pix_fmts != 0)
+                m_raw->pix_fmt = *(codec.raw()->pix_fmts); // assign default value
+            if (codec.raw()->sample_fmts != 0)
+                m_raw->sample_fmt = *(codec.raw()->sample_fmts);
+        }
     }
 
+    if (m_stream.isValid()) {
+        m_stream.raw()->codec = m_raw;
+    }
 }
 
 bool CodecContext::open(const Codec &codec)
@@ -620,6 +632,8 @@ ssize_t CodecContext::encodeVideo(Packet &outPacket, const VideoFrame2 &inFrame)
 
     if (m_stream.isValid()) {
         outPacket.setTimeBase(m_stream.timeBase());
+    } else {
+        outPacket.setTimeBase(inFrame.timeBase());
     }
 
     if (m_raw->coded_frame->pts != AV_NOPTS_VALUE)
