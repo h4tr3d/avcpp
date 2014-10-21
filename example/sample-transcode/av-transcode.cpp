@@ -15,10 +15,12 @@
 #include "audiosamples.h"
 #include "audioresampler.h"
 #include "avutils.h"
+#if 0
 #include "filtergraph.h"
 #include "filterbufferref.h"
 #include "filterinout.h"
 #include "filters/buffersink.h"
+#endif
 
 using namespace std;
 using namespace av;
@@ -319,6 +321,7 @@ int main(int argc, char **argv)
     PacketPtr pkt(new Packet());
     int stat = 0;
 
+#if 0
     // Audio filter graph
     list<int>            dstSampleRates    = {outSampleRate};
     list<AVSampleFormat> dstSampleFormats  = {outSampleFmt};
@@ -371,6 +374,7 @@ int main(int argc, char **argv)
     videoFilterGraph->dump();
 
     //return 0;
+#endif
 
     // TODO may be fault
     VideoRescaler videoRescaler {outW, outH, outPixFmt, inW, inH, inPF};
@@ -417,6 +421,7 @@ int main(int argc, char **argv)
                      << ", time_base: " << frame->getTimeBase()
                      << endl;
 
+#if 0
                 stat = srcVideoFilter->addFrame(frame);
                 if (stat < 0)
                 {
@@ -451,6 +456,15 @@ int main(int argc, char **argv)
                         }
                     }
                 }
+#else
+                FramePtr outFrame = frame;
+                VideoFramePtr outVideoFrame = std::static_pointer_cast<VideoFrame>(outFrame);
+                outVideoFrame->setStreamIndex(streamMapping[pkt->getStreamIndex()]);
+                outVideoFrame->setTimeBase(encoder->getTimeBase());
+                outVideoFrame->setPts(pkt->getTimeBase().rescale(pkt->getPts(), outVideoFrame->getTimeBase()));
+
+                stat = encoder->encodeVideo(outVideoFrame, std::bind(formatWriter, writer, std::placeholders::_1));
+#endif
             }
         }
         else if (audio.count(pkt->getStreamIndex()) > 0)
@@ -472,6 +486,7 @@ int main(int argc, char **argv)
             {
                 StreamCoderPtr &encoder = encoders[streamMapping[pkt->getStreamIndex()]];
 
+#if 0
                 stat = srcAudioFilter->addFrame(samples);
                 if (stat < 0)
                 {
@@ -520,6 +535,16 @@ int main(int argc, char **argv)
                         }
                     }
                 }
+#else
+                FramePtr outFrame = samples;
+                AudioSamplesPtr outSamples = std::static_pointer_cast<AudioSamples>(outFrame);
+
+                outSamples->setTimeBase(encoder->getTimeBase());
+                outSamples->setFakePts(pkt->getTimeBase().rescale(pkt->getPts(), outSamples->getTimeBase()));
+                outSamples->setStreamIndex(streamMapping[pkt->getStreamIndex()]);
+
+                stat = encoder->encodeAudio(outSamples, std::bind(formatWriter, writer, std::placeholders::_1));
+#endif
             }
         }
     }
