@@ -125,7 +125,7 @@ Container::~Container()
 }
 
 
-bool Container::openInput(const char *uri, const ContainerFormatPtr &inputFormat)
+bool Container::openInput(const char *uri, const ContainerFormatPtr &inputFormat, AVDictionary **options)
 {
     if (priv->state != ContainerPriv::STATE_INIT || context)
     {
@@ -146,11 +146,11 @@ bool Container::openInput(const char *uri, const ContainerFormatPtr &inputFormat
         int stat = -1;
         if (inputFormat && inputFormat->getInputFormat())
         {
-            stat = avformat_open_input(&context, uri, inputFormat->getInputFormat(), 0);
+            stat = avformat_open_input(&context, uri, inputFormat->getInputFormat(), options);
         }
         else
         {
-            stat = avformat_open_input(&context, uri, 0, 0);
+            stat = avformat_open_input(&context, uri, 0, options);
         }
 
         if (stat < 0)
