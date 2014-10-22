@@ -59,7 +59,7 @@ public:
     virtual ~Container();
 
 
-    bool openInput(const char *uri, const ContainerFormatPtr &inputFormat = ContainerFormatPtr());
+    bool openInput(const char *uri, const ContainerFormatPtr &inputFormat = ContainerFormatPtr(), AVDictionary **options = 0);
     int32_t readNextPacket(PacketPtr &pkt);
 
     void setReadingTimeout(int64_t value);
