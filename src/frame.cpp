@@ -11,7 +11,7 @@ extern "C" {
 
 namespace {
 
-#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(51,5,0)
+#if LIBAVUTIL_VERSION_INT <= AV_VERSION_INT(52,48,101)
 
 #define CHECK_CHANNELS_CONSISTENCY(frame) \
     av_assert2(!(frame)->channel_layout || \
