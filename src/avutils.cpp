@@ -98,8 +98,8 @@ static int avcpp_lockmgr_cb(void **ctx, enum AVLockOp op)
     {
         case AV_LOCK_CREATE:
             mutex = new std::mutex();
-            *ctx = mutex;
-            ret = !!mutex;
+            *ctx  = mutex;
+            ret   = !mutex;
             break;
         case AV_LOCK_OBTAIN:
             if (mutex)
