@@ -55,8 +55,8 @@ private:
 
 };
 
-typedef std::shared_ptr<VideoRescaler> VideoResamplerPtr;
-typedef std::weak_ptr<VideoRescaler> VideoResamplerWPtr;
+typedef std::shared_ptr<VideoRescaler> VideoRescalerPtr;
+typedef std::weak_ptr<VideoRescaler> VideoRescalerWPtr;
 
 } // ::av
 
