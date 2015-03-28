@@ -4,49 +4,67 @@
 #include <functional>
 
 #include "ffmpeg.h"
-#include "audiosamples.h"
+#include "frame.h"
+#include "avutils.h"
 
 namespace av {
 
-class AudioResampler
+class AudioResampler : public FFWrapperPtr<SwrContext>, public noncopyable
 {
 public:
     AudioResampler();
-    AudioResampler(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                   int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat);
+    AudioResampler(int64_t m_dstChannelsLayout, int m_dstRate, AVSampleFormat m_dstFormat,
+                   int64_t m_srcChannelsLayout, int m_srcRate, AVSampleFormat m_srcFormat);
     ~AudioResampler();
 
-    int64_t        getDstChannelLayout() const { return dstChannelsLayout; }
-    int            getDstChannels()      const { return av_get_channel_layout_nb_channels(dstChannelsLayout); }
-    int            getDstSampleRate()    const { return dstRate; }
-    AVSampleFormat getDstSampleFormat()  const { return dstFormat; }
+    AudioResampler(AudioResampler &&other);
+    AudioResampler& operator=(AudioResampler &&rhs);
 
-    int64_t        getSrcChannelLayout() const { return srcChannelsLayout; }
-    int            getSrcChannels()      const { return av_get_channel_layout_nb_channels(srcChannelsLayout); }
-    int            getSrcSampleRate()    const { return srcRate; }
-    AVSampleFormat getSrcSampleFormat()  const { return srcFormat; }
+    void swap(AudioResampler& other);
 
-    int32_t        resample(const AudioSamplesPtr& dst, const AudioSamplesPtr& src, uint samplesCount);
+    int64_t        dstChannelLayout() const { return m_dstChannelsLayout; }
+    int            dstChannels()      const { return av_get_channel_layout_nb_channels(m_dstChannelsLayout); }
+    int            dstSampleRate()    const { return m_dstRate; }
+    AVSampleFormat dstSampleFormat()  const { return m_dstFormat; }
+
+    int64_t        srcChannelLayout() const { return m_srcChannelsLayout; }
+    int            srcChannels()      const { return av_get_channel_layout_nb_channels(m_srcChannelsLayout); }
+    int            srcSampleRate()    const { return m_srcRate; }
+    AVSampleFormat srcSampleFormat()  const { return m_srcFormat; }
+
+    /**
+     * Push frame to the rescaler context. Note, signle push can produce multiple frames.
+     * @param src source frame
+     * @return 0 on success, error code otherwise
+     */
+    int32_t        push(const AudioSamples2 &src);
+
+    /**
+     * Pop frame from the rescaler context. Note, single push can produce multiple output frames.
+     * @param dst          frame to store audio data
+     * @param getAllAvail  if true and if avail data less then nb_samples return data as is
+     * @return 0 if no frame avail, less 0 - error code, otherwise - samples count per channel
+     */
+    int32_t        pop(AudioSamples2 &dst, bool getAllAvail = false);
 
     bool           isValid() const;
 
-    bool init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-              int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat);
+    bool init(int64_t m_dstChannelsLayout, int m_dstRate, AVSampleFormat m_dstFormat,
+              int64_t m_srcChannelsLayout, int m_srcRate, AVSampleFormat m_srcFormat);
 
 private:
-    SwrContext    *context;
+    int64_t        m_dstChannelsLayout;
+    int            m_dstRate;
+    AVSampleFormat m_dstFormat;
 
-    int64_t        dstChannelsLayout;
-    int            dstRate;
-    AVSampleFormat dstFormat;
+    int64_t        m_srcChannelsLayout;
+    int            m_srcRate;
+    AVSampleFormat m_srcFormat;
 
-    int64_t        srcChannelsLayout;
-    int            srcRate;
-    AVSampleFormat srcFormat;
+    int            m_streamIndex = -1;
+    int64_t        m_prevPts     = AV_NOPTS_VALUE;
+    int64_t        m_nextPts     = AV_NOPTS_VALUE;
 };
-
-typedef std::shared_ptr<AudioResampler> AudioResamplerPtr;
-typedef std::weak_ptr<AudioResampler>   AudioResamplerWPtr;
 
 } // namespace av
 

@@ -12,11 +12,11 @@ struct Format : public FFWrapperPtr<T>
 {
     using FFWrapperPtr<T>::FFWrapperPtr;
 
-    const char* formatName() const {
+    const char* name() const {
         return RAW_GET(name, nullptr);
     }
 
-    const char* longFormatName() const {
+    const char* longName() const {
         return RAW_GET(long_name, nullptr);
     }
 

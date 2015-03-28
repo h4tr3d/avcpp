@@ -10,13 +10,7 @@
 
 namespace av {
 
-typedef std::shared_ptr<class Stream> StreamPtr;
-typedef std::weak_ptr<class Stream> StreamWPtr;
-
-typedef std::shared_ptr<class Packet> PacketPtr;
-typedef std::weak_ptr<class Packet> PacketWPtr;
-
-class Packet : public FFWrapper<AVPacket>
+class Packet : public FFWrapperRef<AVPacket>
 {
 private:
     void initCommon();
@@ -36,17 +30,13 @@ public:
     bool setData(const std::vector<uint8_t> &newData);
     bool setData(const uint8_t *newData, size_t size);
 
-    const uint8_t* getData() const { return m_raw.data; }
-    uint8_t*       getData() { return m_raw.data; }
+    const uint8_t* data() const { return m_raw.data; }
+    uint8_t*       data() { return m_raw.data; }
 
-    // Compat
-    const AVPacket *getAVPacket() const { return &m_raw; }
-    AVPacket       *getAVPacket() {return &m_raw;}
-
-    int64_t getPts() const;
-    int64_t getDts() const;
-    int64_t getFakePts() const;
-    int     getSize() const;
+    int64_t pts() const;
+    int64_t dts() const;
+    int64_t fakePts() const;
+    int     size() const;
 
     /**
      * Set packet PTS field. It also set fake pts value, so, if you need fake value, you should
@@ -61,9 +51,9 @@ public:
     void setDts(int64_t dts,     const Rational &tsTimeBase = Rational(0, 0));
     void setFakePts(int64_t pts, const Rational &tsTimeBase = Rational(0, 0));
 
-    int     getStreamIndex() const;
+    int     streamIndex() const;
     bool    isKeyPacket() const;
-    int     getDuration() const;
+    int     duration() const;
     bool    isComplete() const;
 
     void    setStreamIndex(int idx);
@@ -72,14 +62,14 @@ public:
     void    setComplete(bool complete);
 
     // Flags
-    int         getFlags();
+    int         flags();
     void        setFlags(int flags);
     void        addFlags(int flags);
     void        clearFlags(int flags);
 
-    void        dump(const StreamPtr &st, bool dumpPayload = false) const;
+    void        dump(const Stream2 & st, bool dumpPayload = false) const;
 
-    const Rational& getTimeBase() const { return m_timeBase; }
+    const Rational& timeBase() const { return m_timeBase; }
     void setTimeBase(const Rational &value);
 
     bool     isReferenced() const;

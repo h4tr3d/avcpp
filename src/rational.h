@@ -14,10 +14,6 @@ using namespace std::rel_ops;
 
 class Rational;
 
-typedef std::shared_ptr<Rational> RationalPtr;
-typedef std::weak_ptr<Rational> RationalWPtr;
-
-
 enum
 {
     RationalMaxPrecision = 5

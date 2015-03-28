@@ -4,10 +4,12 @@
 #include "ffmpeg.h"
 #include "stream.h"
 #include "frame.h"
+#include "codec.h"
+#include "avutils.h"
 
 namespace av {
 
-class CodecContext : public FFWrapperPtr<AVCodecContext>
+class CodecContext : public FFWrapperPtr<AVCodecContext>, public noncopyable
 {
 private:
     void swap(CodecContext &other);
@@ -21,10 +23,7 @@ public:
     ~CodecContext();
 
     // Disable copy/Activate move
-    CodecContext(const CodecContext &other) = delete;
     CodecContext(CodecContext &&other);
-
-    CodecContext& operator=(const CodecContext &rhs) = delete;
     CodecContext& operator=(CodecContext &&rhs);
 
     // Common
@@ -131,9 +130,8 @@ public:
     ssize_t encodeVideo(Packet &outPacket, const VideoFrame2 &inFrame);
 
     // Audio
-//    ssize_t decodeAudio(const FramePtr &outFrame, const PacketPtr &inPacket, size_t offset = 0);
-//    ssize_t encodeAudio(const FramePtr  &inFrame,
-//                        const EncodedPacketHandler &onPacketHandler);
+    ssize_t decodeAudio(AudioSamples2 &outFrame, const Packet &inPacket, size_t offset = 0);
+    ssize_t encodeAudio(Packet &outPacket, const AudioSamples2 &inFrame);
 
     bool    isValidForEncode();
 
@@ -143,6 +141,19 @@ private:
 
     ssize_t encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket,
                          int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*));
+
+    template<typename T>
+    ssize_t decodeCommon(T &outFrame,
+                         const Packet &inPacket,
+                         size_t offset,
+                         int &frameFinished,
+                         int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *));
+
+    template<typename T>
+    ssize_t encodeCommon(Packet &outPacket,
+                         const T &inFrame,
+                         int &gotPacket,
+                         int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *));
 
 private:
     Direction       m_direction = Direction::INVALID;

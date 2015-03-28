@@ -19,7 +19,7 @@ VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixel
       m_srcPixelFormat(srcPixelFormat)
 {
     if (dstWidth <= 0 || dstHeight <= 0 || dstPixelFormat == AV_PIX_FMT_NONE) {
-        ptr_log(AV_LOG_FATAL,
+        fflog(AV_LOG_FATAL,
                 "Invalid destination parameters: w=%d, h=%d, pix_fmt=%s\n",
                 dstWidth,
                 dstHeight,
@@ -107,61 +107,6 @@ VideoRescaler& VideoRescaler::operator=(VideoRescaler &&rhs)
 }
 
 
-int32_t VideoRescaler::rescale(const VideoFramePtr &dstFrame, const VideoFramePtr &srcFrame)
-{
-    m_srcWidth       = srcFrame->getWidth();
-    m_srcHeight      = srcFrame->getHeight();
-    m_srcPixelFormat = srcFrame->getPixelFormat();
-
-    m_dstWidth       = dstFrame->getWidth();
-    m_dstHeight      = dstFrame->getHeight();
-    m_dstPixelFormat = dstFrame->getPixelFormat();
-
-    // Context can be allocated on demand
-    auto ptr = m_raw;
-    getContext();
-
-    if (!m_raw) {
-        ptr_log(AV_LOG_ERROR, "Can't allocate swsContext for given input/output parameters\n");
-        return -1;
-    }
-
-    if (ptr != m_raw) {
-        ptr_log(AV_LOG_DEBUG, "SwsScale Context was changed\n");
-    }
-
-    dstFrame->setPts(srcFrame->getPts());
-
-    AVFrame *inFrame = srcFrame->getAVFrame();
-    AVFrame *outFrame = dstFrame->getAVFrame();
-
-    const uint8_t* srcFrameData[AV_NUM_DATA_POINTERS] = {
-        inFrame->data[0],
-        inFrame->data[1],
-        inFrame->data[2],
-        inFrame->data[3]
-    #if AV_NUM_DATA_POINTERS == 8
-        ,
-        inFrame->data[4],
-        inFrame->data[5],
-        inFrame->data[6],
-        inFrame->data[7]
-    #endif
-    };
-
-    int stat = -1;
-    stat = sws_scale(m_raw, srcFrameData, inFrame->linesize, 0, m_srcHeight,
-                     outFrame->data, outFrame->linesize);
-
-    dstFrame->setQuality(srcFrame->getQuality());
-    dstFrame->setTimeBase(srcFrame->getTimeBase());
-    dstFrame->setPts(srcFrame->getPts());
-    dstFrame->setFakePts(srcFrame->getFakePts());
-    dstFrame->setStreamIndex(srcFrame->getStreamIndex());
-    dstFrame->setComplete(stat >= 0);
-
-    return stat;
-}
 
 int32_t VideoRescaler::rescale(VideoFrame2 &dst, const VideoFrame2 &src)
 {
@@ -177,7 +122,7 @@ int32_t VideoRescaler::rescale(VideoFrame2 &dst, const VideoFrame2 &src)
     getContext();
 
     if (!m_raw) {
-        ptr_log(AV_LOG_ERROR, "Can't allocate swsContext for given input/output parameters\n");
+        fflog(AV_LOG_ERROR, "Can't allocate swsContext for given input/output parameters\n");
         return -1;
     }
 

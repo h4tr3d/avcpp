@@ -5,60 +5,13 @@ namespace av {
 
 using namespace std;
 
-CodecPtr Codec::findEncodingCodec(AVCodecID id)
-{
-    CodecPtr result;
-    AVCodec *codec = avcodec_find_encoder(id);
-    if (codec)
-        result = CodecPtr(new Codec(codec));
 
-    return result;
-}
-
-CodecPtr av::Codec::findEncodingCodec(const char *name)
-{
-    CodecPtr result;
-    AVCodec *codec = avcodec_find_encoder_by_name(name);
-    if (codec)
-        result = CodecPtr(new Codec(codec));
-
-    return result;
-}
-
-CodecPtr av::Codec::findDecodingCodec(AVCodecID id)
-{
-    CodecPtr result;
-    AVCodec *codec = avcodec_find_decoder(id);
-    if (codec)
-        result = CodecPtr(new Codec(codec));
-
-    return result;
-}
-
-CodecPtr av::Codec::findDecodingCodec(const char *name)
-{
-    CodecPtr result;
-    AVCodec *codec = avcodec_find_decoder_by_name(name);
-    if (codec)
-        result = CodecPtr(new Codec(codec));
-
-    return result;
-}
-
-CodecPtr av::Codec::guessEncodingCodec(const char *name, const char *url, const char *mime)
-{
-    // TODO: need to complete
-    std::shared_ptr<Codec> result;
-    //CodecID codecId = av_guess_codec();
-    return result;
-}
-
-const char *Codec::getName() const
+const char *Codec::name() const
 {
     return RAW_GET(name, nullptr);
 }
 
-const char *Codec::getLongName() const
+const char *Codec::longName() const
 {
     return RAW_GET(long_name, nullptr);
 }
@@ -85,46 +38,46 @@ AVMediaType Codec::type() const
     return RAW_GET(type, AVMEDIA_TYPE_UNKNOWN);
 }
 
-list<Rational> Codec::getSupportedFramerates() const
+std::deque<Rational> Codec::supportedFramerates() const
 {
-    list<Rational> result;
-    if (!m_raw || !m_raw->supported_framerates)
-    {
-        std::cout << "No supported frame rates" << std::endl;
-        return result;
-    }
-
-    int idx = 0;
-    while (Rational(m_raw->supported_framerates[idx]) != Rational())
-    {
-        Rational value = m_raw->supported_framerates[idx];
-        std::cout << "Supported frame rate: " << value << std::endl;
-        result.push_back(value);
-        ++idx;
-    }
-
-    return result;
+    if (!m_raw)
+        return deque<Rational>();
+    return conditional_ends_array_to_deque<AVRational, Rational>(m_raw->supported_framerates, Rational());
 }
 
-list<PixelFormat> Codec::getSupportedPixelFormats() const
+std::deque<AVPixelFormat> Codec::supportedPixelFormats() const
 {
-    list<PixelFormat> result;
-    if (!m_raw || !m_raw->pix_fmts)
-    {
-        return result;
-    }
-
-    PixelFormat format;
-    const AVPixelFormat *pixFmts = m_raw->pix_fmts;
-    while ((format = *(pixFmts++)) != -1)
-    {
-        result.push_back(format);
-    }
-
-    return result;
+    if (!m_raw)
+        return deque<AVPixelFormat>();
+    else
+        return conditional_ends_array_to_deque(m_raw->pix_fmts, AV_PIX_FMT_NONE);
 }
 
-AVCodecID Codec::getId() const
+std::deque<int> Codec::supportedSamplerates() const
+{
+    if (!m_raw)
+        return deque<int>();
+    else
+        return conditional_ends_array_to_deque(m_raw->supported_samplerates, 0);
+}
+
+std::deque<AVSampleFormat> Codec::supportedSampleFormats() const
+{
+    if (!m_raw)
+        return deque<AVSampleFormat>();
+    else
+        return conditional_ends_array_to_deque(m_raw->sample_fmts, AV_SAMPLE_FMT_NONE);
+}
+
+std::deque<uint64_t> Codec::supportedChannelLayouts() const
+{
+    if (!m_raw)
+        return deque<uint64_t>();
+    else
+        return conditional_ends_array_to_deque(m_raw->channel_layouts, uint64_t(0));
+}
+
+AVCodecID Codec::id() const
 {
     return RAW_GET(id, AV_CODEC_ID_NONE);
 }

@@ -8,22 +8,24 @@ set(TARGETS
 api2-decode
 api2-decode-encode-video
 api2-scale-video
+api2-decode-audio
+api2-decode-rasample-audio
+api2-decode-encode-audio
 )
 
-add_executable(api2-decode av-decode.cpp)
-add_executable(api2-decode-encode-video av-decode-encode-video.cpp)
-add_executable(api2-scale-video av-scale-video.cpp)
-
 foreach(target ${TARGETS})
+   add_executable(${target} ${target}.cpp)
+
    target_link_libraries(${target}
       ${CMAKE_THREAD_LIBS_INIT}
       ${FFMPEG_LIBRARIES}
       avcpp
   )
+
   if(WIN32)
-  target_link_libraries(${AV_TARGET}
-    ws2_32
-  )
-endif()
+    target_link_libraries(${AV_TARGET}
+      ws2_32
+    )
+  endif()
 
 endforeach()

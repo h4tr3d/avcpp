@@ -9,12 +9,8 @@
 #include "av.h"
 #include "ffmpeg.h"
 #include "codec.h"
-#include "containerformat.h"
-#include "container.h"
 #include "packet.h"
-#include "streamcoder.h"
 #include "videorescaler.h"
-#include "audiosamples.h"
 #include "audioresampler.h"
 #include "avutils.h"
 
@@ -134,11 +130,11 @@ int main(int argc, char **argv)
         if (ictx.readPacket(pkt) < 0)
             break;
 
-        if (pkt.getStreamIndex() != videoStream) {
+        if (pkt.streamIndex() != videoStream) {
             continue;
         }
 
-        clog << "Read packet: pts=" << pkt.getPts() << ", dts=" << pkt.getDts() << " / " << pkt.getPts() * pkt.getTimeBase().getDouble() << " / " << pkt.getTimeBase() << " / st: " << pkt.getStreamIndex() << endl;
+        clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
         // DECODING
         VideoFrame2 inpFrame {vdec.pixelFormat(), vdec.width(), vdec.height()};
@@ -197,7 +193,7 @@ int main(int argc, char **argv)
         // Only one output stream
         opkt.setStreamIndex(0);
 
-        clog << "Write packet: pts=" << opkt.getPts() << ", dts=" << opkt.getDts() << " / " << opkt.getPts() * opkt.getTimeBase().getDouble() << " / " << opkt.getTimeBase() << " / st: " << opkt.getStreamIndex() << endl;
+        clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts() * opkt.timeBase().getDouble() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
         if (octx.writePacket(opkt) < 0) {
             cerr << "Error write packet\n";

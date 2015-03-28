@@ -5,7 +5,6 @@
 
 #include "ffmpeg.h"
 #include "rational.h"
-#include "container.h"
 
 namespace av
 {
@@ -40,6 +39,12 @@ public:
     int64_t     currentDts()         const;
     AVMediaType mediaType()          const;
 
+    bool isAudio()      const;
+    bool isVideo()      const;
+    bool isData()       const;
+    bool isSubtitle()   const;
+    bool isAttachment() const;
+
     Direction   direction() const { return m_direction; }
 
     void setTimeBase(const Rational &timeBase);
@@ -49,49 +54,6 @@ public:
 private:
     std::weak_ptr<char> m_parentMonitor;
     Direction           m_direction = Direction::INVALID;
-};
-
-// Forward decl
-typedef std::shared_ptr<class Container> ContainerPtr;
-typedef std::weak_ptr<class Container> ContainerWPtr;
-
-typedef std::shared_ptr<class Stream> StreamPtr;
-typedef std::weak_ptr<class Stream> StreamWPtr;
-
-class Stream
-{
-public:
-    Stream(const ContainerPtr &container, AVStream *stream, Direction direction, AVCodec *codec);
-
-    const AVStream *getAVStream() const { return stream; }
-    AVStream *getAVStream() { return stream; }
-
-    int getIndex();
-    int getId();
-
-    Rational    getFrameRate()          const;
-    Rational    getTimeBase()           const;
-    Rational    getSampleAspectRatio() const;
-    int64_t     getStartTime()          const;
-    int64_t     getDuration()           const;
-    int64_t     getCurrentDts()         const;
-    int         getStreamIndex()        const;
-    AVMediaType getMediaType()    const;
-
-    void setTimeBase(const Rational &timeBase);
-    void setFrameRate(const Rational &frameRate);
-    void setSampleAspectRatio(const Rational &aspectRatio);
-
-    Direction getDirection() { return direction; }
-
-protected:
-    Stream();
-
-private:
-    AVStream *stream;
-
-    ContainerWPtr container;
-    Direction     direction;
 };
 
 

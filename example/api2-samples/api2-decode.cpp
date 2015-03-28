@@ -7,12 +7,8 @@
 #include "av.h"
 #include "ffmpeg.h"
 #include "codec.h"
-#include "containerformat.h"
-#include "container.h"
 #include "packet.h"
-#include "streamcoder.h"
 #include "videorescaler.h"
-#include "audiosamples.h"
 #include "audioresampler.h"
 #include "avutils.h"
 
@@ -87,11 +83,11 @@ int main(int argc, char **argv)
             if (ictx.readPacket(pkt) < 0)
                 break;
 
-            if (pkt.getStreamIndex() != videoStream) {
+            if (pkt.streamIndex() != videoStream) {
                 continue;
             }
 
-            clog << "Read packet: " << pkt.getPts() << " / " << pkt.getPts() * pkt.getTimeBase().getDouble() << " / " << pkt.getTimeBase() << " / st: " << pkt.getStreamIndex() << endl;
+            clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
             VideoFrame2 frame;
             auto st = vdec.decodeVideo(frame, pkt);

@@ -58,11 +58,22 @@ struct FFWrapperPtr
     void     reset(T *raw = nullptr) { m_raw = raw; }
     bool     isNull() const          { return (m_raw == nullptr); }
 
+    void _log(int level, const char *fmt) const
+    {
+        av_log(m_raw, level, fmt);
+    }
+
+    template<typename... Args>
+    void _log(int level, const char* fmt, const Args&... args) const
+    {
+        av_log(m_raw, level, fmt, args...);
+    }
+
 protected:
     T *m_raw = nullptr;
 };
 
-#define RAW_GET(field, def) (m_raw ? m_raw->field : def)
+#define RAW_GET(field, def) (m_raw ? m_raw->field : (def))
 #define RAW_SET(field, val) if(m_raw) m_raw->field = (val)
 
 #define RAW_GET2(cond, field, def) (m_raw && (cond) ? m_raw->field : def)
@@ -75,10 +86,10 @@ protected:
 #define IF_SET2(cond, ptr, field, val) (if(ptr && (cond)) ptr->field = (val))
 
 template<typename T>
-struct FFWrapper
+struct FFWrapperRef
 {
-    FFWrapper() = default;
-    explicit FFWrapper(const T &raw)
+    FFWrapperRef() = default;
+    explicit FFWrapperRef(const T &raw)
         : m_raw(raw) {}
 
     const T* raw() const               { return &m_raw; }
@@ -88,6 +99,17 @@ struct FFWrapper
         static const T empty{0};
         auto res = memcmp(&m_raw, &empty, sizeof(empty));
         return (res != 0);
+    }
+
+    void _log(int level, const char *fmt) const
+    {
+        av_log(&m_raw, level, fmt);
+    }
+
+    template<typename... Args>
+    void _log(int level, const char* fmt, const Args&... args) const
+    {
+        av_log(&m_raw, level, fmt, args...);
     }
 
 protected:

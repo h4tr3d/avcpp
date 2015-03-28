@@ -8,6 +8,10 @@
 #include "ffmpeg.h"
 #include "rational.h"
 
+extern "C" {
+#include "libavutil/imgutils.h"
+}
+
 namespace av
 {
 
@@ -39,8 +43,12 @@ public:
         av_frame_free(&m_raw);
     }
 
-    Frame2(const AVFrame *frame) : Frame2() {
-        av_frame_ref(m_raw, frame);
+    Frame2(const AVFrame *frame) {
+        if (frame) {
+            m_raw = av_frame_alloc();
+            m_raw->opaque = this;
+            av_frame_ref(m_raw, frame);
+        }
     }
 
     // Helper ctors to implement move/copy ctors
@@ -114,6 +122,10 @@ public:
 
     void setPts(int64_t pts) {
         RAW_SET(pts, pts);
+    }
+
+    void setPts(int64_t pts, Rational ptsTimeBase) {
+        RAW_SET(pts, ptsTimeBase.rescale(pts, m_timeBase));
     }
 
     const Rational& timeBase() const { return m_timeBase; }
@@ -199,7 +211,18 @@ public:
                 total += m_raw->buf[i]->size;
             }
         } else if (m_raw->data[0]) {
-            // TODO
+            uint8_t data[4] = {0};
+            int     linesizes[4] = {
+                m_raw->linesize[0],
+                m_raw->linesize[1],
+                m_raw->linesize[2],
+                m_raw->linesize[3],
+            };
+            total = av_image_fill_pointers(reinterpret_cast<uint8_t**>(&data),
+                                           static_cast<AVPixelFormat>(m_raw->format),
+                                           m_raw->height,
+                                           nullptr,
+                                           linesizes);
         }
         return total;
     }
@@ -211,6 +234,8 @@ public:
             for (size_t i = 0; i < AV_NUM_DATA_POINTERS && m_raw->buf[i]; i++) {
                 av_hex_dump(stdout, m_raw->buf[i]->data, m_raw->buf[i]->size);
             }
+        } else if (m_raw->data[0]) {
+            av_hex_dump(stdout, m_raw->data[0], size());
         }
     }
 
@@ -258,9 +283,11 @@ public:
     using Frame2<AudioSamples2>::Frame2;
 
     AudioSamples2() = default;
-    AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate, int align = 1);
+    AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
     AudioSamples2(const uint8_t *data, size_t size,
-                  AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate, int align = 1) throw(std::length_error);
+                  AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1) throw(std::length_error);
+
+    int            init(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
 
     AVSampleFormat sampleFormat() const;
     int            samplesCount() const;
@@ -268,102 +295,13 @@ public:
     int64_t        channelsLayout() const;
     int            sampleRate() const;
     uint           sampleBitDepth() const;
+
+    std::string    channelsLayoutString() const;
+
+    void           setFakePts(int64_t pts);
+    int64_t        fakePts() const;
 };
 
-
-/**
- * Base class for VideoFrame and AudioSample. In low both of them is AVFrame, but with some
- * differences, like getSize(), validation logic, setting up data pointers.
- *
- */
-class Frame
-{
-public:
-    /**
-     * @brief Frame
-     *
-     * Default ctor
-     *
-     */
-    Frame();
-    virtual ~Frame();
-
-    // virtual
-    /**
-     * Calculate size for frame data, it different for video (avpicture_get_size) and audio
-     * (av_samples_get_buffer_size) frames so it need to implemented in extended classes.
-     *
-     * @return frame data size or -1 if it can not be calculated.
-     */
-    virtual int                      getSize() const = 0;
-    /**
-     * Check frame for valid
-     * @return true if frame valid false otherwise
-     */
-    virtual bool                     isValid() const = 0;
-    /**
-     * Make frame duplicate
-     * @return new frame pointer or null if frame can not be created
-     */
-    virtual std::shared_ptr<Frame> clone()         = 0;
-
-    // common
-    virtual int64_t  getPts() const;
-    virtual void     setPts(int64_t pts);
-
-    int64_t getBestEffortTimestamp() const;
-
-    // Some frames must have PTS value setted to AV_NOPTS_VALUE (like audio frames).
-    // But, in some situations we should have access to realc or calculated PTS values.
-    // So we use FakePts as a name for this PTS values. By default, setPts() methods also set
-    // fakePts value but setFakePts() method only set fakePts value.
-    virtual int64_t getFakePts() const;
-    virtual void    setFakePts(int64_t pts);
-
-    // Non-virtual
-    Rational&       getTimeBase() { return m_timeBase; }
-    const Rational& getTimeBase() const { return m_timeBase; }
-    void            setTimeBase(const Rational &value);
-
-    int             getStreamIndex() const;
-    void            setStreamIndex(int m_streamIndex);
-
-    void            setComplete(bool isComplete);
-    bool            isComplete() const { return m_completeFlag; }
-
-    void dump();
-
-    const AVFrame*              getAVFrame() const;
-    AVFrame*                    getAVFrame();
-    const std::vector<uint8_t>& getFrameBuffer() const;
-
-
-    // Operators
-    Frame& operator= (const AVFrame *m_frame);
-    Frame& operator= (const Frame &m_frame);
-
-protected:
-    // virtual
-    virtual void setupDataPointers(const AVFrame *frame) = 0;
-
-    // common
-    void initFromAVFrame(const AVFrame *frame);
-    void allocFrame();
-
-protected:
-    AVFrame*             m_frame;
-    std::vector<uint8_t> m_frameBuffer;
-
-    Rational             m_timeBase;
-    int                  m_streamIndex;
-
-    bool                 m_completeFlag;
-
-    int64_t              m_fakePts;
-};
-
-typedef std::shared_ptr<Frame> FramePtr;
-typedef std::weak_ptr<Frame> FrameWPtr;
 
 } // ::av
 

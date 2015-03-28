@@ -11,6 +11,7 @@
 #include "avutils.h"
 #include "stream.h"
 #include "packet.h"
+#include "codec.h"
 
 namespace av {
 
@@ -28,15 +29,11 @@ struct CustomIO
     virtual const char* name() const { return ""; }
 };
 
-class FormatContext : public FFWrapperPtr<AVFormatContext>
+class FormatContext : public FFWrapperPtr<AVFormatContext>, public noncopyable
 {
 public:
     FormatContext();
     ~FormatContext();
-
-    // Disable copy/move
-    FormatContext(const FormatContext&) = delete;
-    void operator=(const FormatContext&) = delete;
 
     void setSocketTimeout(int64_t timeout);
     void setInterruptCallback(const AvioInterruptCb& cb);

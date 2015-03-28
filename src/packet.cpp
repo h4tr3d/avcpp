@@ -121,22 +121,22 @@ bool Packet::setData(const uint8_t *newData, size_t size)
     return true;
 }
 
-int64_t Packet::getPts() const
+int64_t Packet::pts() const
 {
     return m_raw.pts;
 }
 
-int64_t Packet::getDts() const
+int64_t Packet::dts() const
 {
     return m_raw.dts;
 }
 
-int64_t Packet::getFakePts() const
+int64_t Packet::fakePts() const
 {
     return m_fakePts;
 }
 
-int Packet::getSize() const
+int Packet::size() const
 {
     return m_raw.size;
 }
@@ -166,12 +166,12 @@ void Packet::setFakePts(int64_t pts, const Rational &tsTimeBase)
         m_fakePts = tsTimeBase.rescale(pts, m_timeBase);
 }
 
-int Packet::getStreamIndex() const
+int Packet::streamIndex() const
 {
     return  m_raw.stream_index;
 }
 
-int Packet::getFlags()
+int Packet::flags()
 {
     return m_raw.flags;
 }
@@ -181,7 +181,7 @@ bool Packet::isKeyPacket() const
     return (m_raw.flags & AV_PKT_FLAG_KEY);
 }
 
-int Packet::getDuration() const
+int Packet::duration() const
 {
     return m_raw.duration;
 }
@@ -219,11 +219,11 @@ void Packet::clearFlags(int flags)
     m_raw.flags &= ~flags;
 }
 
-void Packet::dump(const StreamPtr &st, bool dumpPayload) const
+void Packet::dump(const Stream2 &st, bool dumpPayload) const
 {
-    if (st)
+    if (!st.isNull())
     {
-        AVStream *stream = st->getAVStream();
+        const AVStream *stream = st.raw();
         av_pkt_dump2(stdout, const_cast<AVPacket*>(&m_raw), dumpPayload ? 1 : 0, stream);
     }
 }

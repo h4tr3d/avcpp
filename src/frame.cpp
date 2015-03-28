@@ -177,24 +177,30 @@ void VideoFrame2::setPictureType(AVPictureType type)
 }
 
 
-AudioSamples2::AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate, int align)
+AudioSamples2::AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
 {
+    init(sampleFormat, samplesCount, channelLayout, sampleRate, align);
+}
+
+int AudioSamples2::init(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
+{
+    if (m_raw->data[0]) {
+        av_frame_free(&m_raw);
+    }
+
     m_raw->format      = sampleFormat;
-    m_raw->sample_rate = sampleRate;
     m_raw->nb_samples  = samplesCount;
 
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(54,59,100) // 1.0
-    av_frame_set_channel_layout(m_raw, av_get_default_channel_layout(channels));
-#else
-    av_frame_set_channels(m_raw, channels);
-#endif
+    av_frame_set_sample_rate(m_raw, sampleRate);
+    av_frame_set_channel_layout(m_raw, channelLayout);
 
     av_frame_get_buffer(m_raw, align);
 }
 
-AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, AVSampleFormat sampleFormat, int samplesCount, int channels, int sampleRate, int align) throw(std::length_error)
-    : AudioSamples2(sampleFormat, samplesCount, channels, sampleRate, align)
+AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align) throw(std::length_error)
+    : AudioSamples2(sampleFormat, samplesCount, channelLayout, sampleRate, align)
 {
+    const auto channels = av_get_channel_layout_nb_channels(channelLayout);
     size_t calcSize = av_samples_get_buffer_size(nullptr, channels, samplesCount, sampleFormat, align);
     if (calcSize > size)
         throw length_error("Data size and required buffer for this format/nb_samples/nb_channels/align not equal");
@@ -221,17 +227,17 @@ int AudioSamples2::samplesCount() const
 
 int AudioSamples2::channelsCount() const
 {
-    return m_raw->channels;
+    return av_frame_get_channels(m_raw);
 }
 
 int64_t AudioSamples2::channelsLayout() const
 {
-    return m_raw->channel_layout;
+    return av_frame_get_channel_layout(m_raw);
 }
 
 int AudioSamples2::sampleRate() const
 {
-    return m_raw->sample_rate;
+    return av_frame_get_sample_rate(m_raw);
 }
 
 uint AudioSamples2::sampleBitDepth() const
@@ -239,178 +245,24 @@ uint AudioSamples2::sampleBitDepth() const
     return (av_get_bytes_per_sample(static_cast<AVSampleFormat>(m_raw->format))) << 3;
 }
 
-
-
-Frame::Frame()
-    : m_frame(0),
-      m_timeBase(AV_TIME_BASE_Q),
-      m_streamIndex(0),
-      m_completeFlag(false),
-      m_fakePts(AV_NOPTS_VALUE)
+string AudioSamples2::channelsLayoutString() const
 {
-    allocFrame();
-
-
+    char buf[128] = {0};
+    av_get_channel_layout_string(buf,
+                                 sizeof(buf),
+                                 av_frame_get_channels(m_raw),
+                                 av_frame_get_channel_layout(m_raw));
+    return string(buf);
 }
 
-
-Frame::~Frame()
-{
-    if (!m_frame)
-        av_frame_free(&m_frame);
-}
-
-
-void Frame::initFromAVFrame(const AVFrame *frame)
-{
-    if (!frame)
-    {
-        std::cout << "Try init from NULL frame" << std::endl;
-        return;
-    }
-
-    // Setup pointers
-    setupDataPointers(frame);
-
-    // Copy frame
-    av_frame_copy(m_frame, frame);
-    av_frame_copy_props(m_frame, frame);
-}
-
-
-int64_t Frame::getPts() const
-{
-    return (m_frame ? m_frame->pts : AV_NOPTS_VALUE);
-}
-
-void Frame::setPts(int64_t pts)
-{
-    if (m_frame)
-    {
-        m_frame->pts = pts;
-        setFakePts(pts);
-    }
-}
-
-int64_t Frame::getBestEffortTimestamp() const
-{
-    return (m_frame ? m_frame->best_effort_timestamp : AV_NOPTS_VALUE);
-}
-
-int64_t Frame::getFakePts() const
-{
-    return m_fakePts;
-}
-
-void Frame::setFakePts(int64_t pts)
+void AudioSamples2::setFakePts(int64_t pts)
 {
     m_fakePts = pts;
 }
 
-void Frame::setTimeBase(const Rational &value)
+int64_t AudioSamples2::fakePts() const
 {
-    if (m_timeBase == value)
-        return;
-
-    int64_t rescaledPts          = AV_NOPTS_VALUE;
-    int64_t rescaledFakePts      = AV_NOPTS_VALUE;
-    int64_t rescaledBestEffortTs = AV_NOPTS_VALUE;
-
-    if (m_frame)
-    {
-        if (m_timeBase != Rational() && value != Rational())
-        {
-            if (m_frame->pts != AV_NOPTS_VALUE)
-                rescaledPts = m_timeBase.rescale(m_frame->pts, value);
-
-            if (m_frame->best_effort_timestamp != AV_NOPTS_VALUE)
-                rescaledBestEffortTs = m_timeBase.rescale(m_frame->best_effort_timestamp, value);
-
-            if (m_fakePts != AV_NOPTS_VALUE)
-                rescaledFakePts = m_timeBase.rescale(m_fakePts, value);
-        }
-        else
-        {
-            rescaledPts          = m_frame->pts;
-            rescaledFakePts      = m_fakePts;
-            rescaledBestEffortTs = m_frame->best_effort_timestamp;
-        }
-    }
-
-    m_timeBase = value;
-
-    if (m_frame)
-    {
-        m_frame->pts                   = rescaledPts;
-        m_frame->best_effort_timestamp = rescaledBestEffortTs;
-        m_fakePts                      = rescaledFakePts;
-    }
-}
-
-int Frame::getStreamIndex() const
-{
-    return m_streamIndex;
-}
-
-void Frame::setStreamIndex(int streamIndex)
-{
-    this->m_streamIndex = streamIndex;
-}
-
-
-const AVFrame *Frame::getAVFrame() const
-{
-    return m_frame;
-}
-
-AVFrame *Frame::getAVFrame()
-{
-    return m_frame;
-}
-
-const vector<uint8_t> &Frame::getFrameBuffer() const
-{
-    return m_frameBuffer;
-}
-
-void Frame::setComplete(bool isComplete)
-{
-    m_completeFlag = isComplete;
-}
-
-void Frame::dump()
-{
-    av_hex_dump(stdout, m_frameBuffer.data(), m_frameBuffer.size());
-}
-
-Frame &Frame::operator =(const AVFrame *frame)
-{
-    if (m_frame && frame)
-        initFromAVFrame(frame);
-    return *this;
-}
-
-Frame &Frame::operator =(const Frame &frame)
-{
-    if (m_frame == frame.m_frame || this == &frame)
-        return *this;
-
-    if (this->m_frame)
-    {
-        initFromAVFrame(frame.getAVFrame());
-        m_timeBase     = frame.m_timeBase;
-        m_completeFlag = frame.m_completeFlag;
-        setPts(frame.getPts());
-        m_fakePts      = frame.m_fakePts;
-    }
-    return *this;
-}
-
-
-void Frame::allocFrame()
-{
-    m_frame = av_frame_alloc();
-    m_frame->opaque = this;
+    return m_fakePts;
 }
 
 

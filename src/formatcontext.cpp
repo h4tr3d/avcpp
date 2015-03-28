@@ -237,15 +237,15 @@ ssize_t FormatContext::readPacket(Packet &pkt)
     do
     {
         resetSocketAccess();
-        stat = av_read_frame(m_raw, packet.getAVPacket());
+        stat = av_read_frame(m_raw, packet.raw());
         ++tries;
     }
     while (stat == AVERROR(EAGAIN) && (retryCount < 0 || tries <= retryCount));
 
     pkt = std::move(packet);
 
-    if (pkt.getStreamIndex() >= 0)
-        pkt.setTimeBase(m_raw->streams[pkt.getStreamIndex()]->time_base);
+    if (pkt.streamIndex() >= 0)
+        pkt.setTimeBase(m_raw->streams[pkt.streamIndex()]->time_base);
 
     return stat;
 }
@@ -265,7 +265,7 @@ bool FormatContext::openOutput(const string &uri)
         format = guessOutputFormat(string(), uri);
 
         if (format.isNull()) {
-            ptr_log(AV_LOG_ERROR, "Can't guess output format");
+            fflog(AV_LOG_ERROR, "Can't guess output format");
             return false;
         }
         setFormat(format);
@@ -291,7 +291,7 @@ bool FormatContext::openOutput(CustomIO *io, size_t internalBufferSize)
     if (m_raw) {
         OutputFormat format = outputFormat();
         if (format.isNull()) {
-            ptr_log(AV_LOG_ERROR, "You must set output format for use with custom IO\n");
+            fflog(AV_LOG_ERROR, "You must set output format for use with custom IO\n");
             return false;
         }
     }
@@ -322,21 +322,21 @@ ssize_t FormatContext::writePacket(const Packet &pkt, bool interleave)
         auto writePkt = pkt;
 
         if (!pkt.isNull()) {
-            auto streamIndex = pkt.getStreamIndex();
+            auto streamIndex = pkt.streamIndex();
             auto st = stream(streamIndex);
 
             if (st.isNull()) {
-                ptr_log(AV_LOG_WARNING, "Required stream does not exists: %d, total=%ld\n", streamIndex, streamsCount());
+                fflog(AV_LOG_WARNING, "Required stream does not exists: %d, total=%ld\n", streamIndex, streamsCount());
                 return -1;
             }
 
             // Set packet time base to stream one
-            if (st.timeBase() != pkt.getTimeBase()) {
+            if (st.timeBase() != pkt.timeBase()) {
                 writePkt.setTimeBase(st.timeBase());
             }
 
-            if (pkt.getPts() == AV_NOPTS_VALUE && pkt.getFakePts() != AV_NOPTS_VALUE)
-                writePkt.setPts(writePkt.getFakePts());
+            if (pkt.pts() == AV_NOPTS_VALUE && pkt.fakePts() != AV_NOPTS_VALUE)
+                writePkt.setPts(writePkt.fakePts());
         }
 
         resetSocketAccess();

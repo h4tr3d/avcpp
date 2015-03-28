@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 #include <memory>
 #include <mutex>
 #include <sstream>
@@ -31,11 +32,9 @@ R lexical_cast(const T& v)
 class noncopyable
 {
 protected:
-    noncopyable() {}
-    ~noncopyable() {}
-private:  // emphasize the following members are private
-    noncopyable( const noncopyable& );
-    const noncopyable& operator=( const noncopyable& );
+    noncopyable() = default;
+    noncopyable( const noncopyable& ) = delete;
+    void operator=( const noncopyable& ) = delete;
 };
 
 /**
@@ -309,13 +308,13 @@ public:
         using av::usleep;
         using av::gettime;
 
-        int64_t currentPts = syncObject->getPts();
+        int64_t currentPts = syncObject.getPts();
 
         if (currentPts == AV_NOPTS_VALUE)
         {
             if (useFakePts)
             {
-                currentPts = syncObject->getFakePts();
+                currentPts = syncObject.getFakePts();
             }
 
             if (currentPts == AV_NOPTS_VALUE)
@@ -325,7 +324,7 @@ public:
         }
 
         int64_t currentTime    = gettime() - startTime; // usec
-        int64_t currentPtsUsec = currentPts * syncObject->getTimeBase().getDouble() * 1000 * 1000; // usec
+        int64_t currentPtsUsec = currentPts * syncObject.getTimeBase().getDouble() * 1000 * 1000; // usec
 
         sleepDelta = currentPtsUsec - currentTime;
 
@@ -343,8 +342,7 @@ private:
 };
 
 /// typedefs for synchronizers for Packets and Frames
-typedef TimeSyncronizer<PacketPtr> PacketTimeSynchronizer;
-typedef TimeSyncronizer<FramePtr>  FrameTimeSynchronizer;
+typedef TimeSyncronizer<Packet>  PacketTimeSynchronizer;
 
 
 /**
@@ -382,8 +380,7 @@ private:
 
 };
 
-typedef TimeSyncronizerScopedUpdater<PacketPtr> PacketTimeSynchronizerScopedUpdater;
-typedef TimeSyncronizerScopedUpdater<FramePtr>  FrameTimeSynchronizerScopedUpdater;
+typedef TimeSyncronizerScopedUpdater<Packet> PacketTimeSynchronizerScopedUpdater;
 
 
 
@@ -486,9 +483,6 @@ private:
     bool    doOffsetUse;
 };
 
-typedef PtsRecalculator<FramePtr> FramePtsRecalculator;
-typedef PtsRecalculator<PacketPtr> PacketPtsRecalculator;
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -533,7 +527,7 @@ T guessValue(const T& value, const L * list, C endListComparator)
         return value;
 
     // move values to array
-    std::vector<T> values;
+    std::deque<T> values;
     for (const L * ptr = list; !endListComparator(*ptr); ++ptr)
     {
         T v = *ptr;
@@ -567,6 +561,24 @@ T guessValue(const T& value, const L * list, C endListComparator)
     }
 
     return values[end];
+}
+
+
+template<typename T, typename R = T>
+std::deque<R> conditional_ends_array_to_deque(const T* array, R endCondition)
+{
+    std::deque<R> result;
+    if (!array) {
+        return result;
+    }
+
+    R value;
+    const auto *values = array;
+    while ((value = *(values++)) != endCondition) {
+        result.push_back(value);
+    }
+
+    return result;
 }
 
 

@@ -2,6 +2,7 @@
 #define CODEC_H
 
 #include <list>
+#include <deque>
 #include <memory>
 
 #include "ffmpeg.h"
@@ -10,35 +11,24 @@
 
 namespace av {
 
-typedef std::shared_ptr<class Codec> CodecPtr;
-typedef std::weak_ptr<class Codec>   CodecWPtr;
-
 class Codec : public FFWrapperPtr<const AVCodec>
 {
 public:
     using FFWrapperPtr<const AVCodec>::FFWrapperPtr;
 
-    // Compat
-    const AVCodec *getAVCodec() const {return m_raw;}
-
-    static CodecPtr findEncodingCodec(AVCodecID id);
-    static CodecPtr findEncodingCodec(const char *name);
-
-    static CodecPtr findDecodingCodec(AVCodecID id);
-    static CodecPtr findDecodingCodec(const char *name);
-
-    static CodecPtr guessEncodingCodec(const char *name, const char *url, const char* mime);
-
-    const char *getName() const;
-    const char *getLongName() const;
+    const char *name() const;
+    const char *longName() const;
     bool        canEncode() const;
     bool        canDecode() const;
     AVMediaType type() const;
 
-    std::list<Rational>    getSupportedFramerates() const;
-    std::list<PixelFormat> getSupportedPixelFormats() const;
-    
-    AVCodecID getId() const;
+    std::deque<Rational>       supportedFramerates()    const;
+    std::deque<AVPixelFormat>  supportedPixelFormats()  const;
+    std::deque<int>            supportedSamplerates()   const;
+    std::deque<AVSampleFormat> supportedSampleFormats() const;
+    std::deque<uint64_t>       supportedChannelLayouts() const;
+
+    AVCodecID id() const;
 };
 
 
