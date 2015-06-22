@@ -194,7 +194,7 @@ Stream2 FormatContext::addStream(const Codec &codec)
     return Stream2(m_monitor, st, Direction::ENCODING);
 }
 
-bool FormatContext::openInput(const std::string &uri, InputFormat format)
+bool FormatContext::openInput(const std::string &uri, InputFormat format, AVDictionary **options)
 {
     if (m_isOpened)
         return false;
@@ -203,7 +203,7 @@ bool FormatContext::openInput(const std::string &uri, InputFormat format)
         format = InputFormat(m_raw->iformat);
 
     resetSocketAccess();
-    int ret = avformat_open_input(&m_raw, uri.empty() ? nullptr : uri.c_str(), format.raw(), nullptr);
+    int ret = avformat_open_input(&m_raw, uri.empty() ? nullptr : uri.c_str(), format.raw(), options);
     if (ret < 0)
         return false;
 

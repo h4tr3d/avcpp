@@ -57,7 +57,7 @@ public:
     Stream2 addStream(const Codec &codec);
 
     // Input
-    bool openInput(const std::string& uri, InputFormat format = InputFormat());
+    bool openInput(const std::string& uri, InputFormat format = InputFormat(), AVDictionary **options = nullptr);
     bool openInput(CustomIO *io, size_t internalBufferSize = 200000, InputFormat format = InputFormat());
     ssize_t readPacket(Packet &pkt);
 
