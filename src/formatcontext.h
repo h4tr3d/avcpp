@@ -20,10 +20,25 @@ using AvioInterruptCb = std::function<int()>;
 struct CustomIO
 {
     virtual ~CustomIO() {}
-    virtual ssize_t     write(const uint8_t *data, size_t size) { return -1; }
-    virtual ssize_t     read(uint8_t *data, size_t size)  { return -1; }
+    virtual ssize_t     write(const uint8_t *data, size_t size) 
+    {
+        static_cast<void>(data);
+        static_cast<void>(size);
+        return -1; 
+    }
+    virtual ssize_t     read(uint8_t *data, size_t size)
+    {
+        static_cast<void>(data);
+        static_cast<void>(size);
+        return -1;
+    }
     /// whence is a one of SEEK_* from stdio.h
-    virtual int64_t     seek(int64_t offset, int whence) { return -1; }
+    virtual int64_t     seek(int64_t offset, int whence)
+    {
+        static_cast<void>(offset);
+        static_cast<void>(whence);
+        return -1;
+    }
     /// Return combination of AVIO_SEEKABLE_* flags or zero
     virtual int         seekable() const { return 0; }
     virtual const char* name() const { return ""; }
