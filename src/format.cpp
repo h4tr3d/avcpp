@@ -4,7 +4,7 @@ namespace av {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 bool InputFormat::setFormat(const std::string &name) {
-    if (name.empty())
+    if (!name.empty())
         m_raw = av_find_input_format(name.c_str());
     else
         m_raw = nullptr;
