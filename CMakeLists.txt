@@ -30,7 +30,15 @@ endif ()
 find_package(Threads)
 find_package(PkgConfig)
 
-pkg_check_modules(FFMPEG REQUIRED libavdevice libavformat libavcodec libswscale libswresample libavutil libavfilter)
+pkg_check_modules(FFMPEG REQUIRED
+    libavformat
+    libavcodec
+    libswscale
+    libswresample
+    libavutil
+    libavfilter
+    libavdevice
+)
 
 
 add_subdirectory(src)
