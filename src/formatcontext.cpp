@@ -147,6 +147,7 @@ void FormatContext::close()
         m_raw = avformat_alloc_context();
         m_monitor.reset(new char);
         m_isOpened = false;
+        m_streamsInfoFound = false;
 
         // To prevent free not out custom IO, e.g. setted via raw pointer access
         if (m_customIO) {
@@ -194,6 +195,25 @@ Stream2 FormatContext::addStream(const Codec &codec)
     return Stream2(m_monitor, st, Direction::ENCODING);
 }
 
+bool FormatContext::openInput(const string &uri, InputFormat format)
+{
+    return openInput(uri, format, nullptr);
+}
+
+bool FormatContext::openInput(const string &uri, Dictionary &formatOptions, InputFormat format)
+{
+    auto dictptr = formatOptions.release();
+    bool result  = openInput(uri, format, &dictptr);
+    formatOptions.assign(dictptr);
+    return result;
+}
+
+bool FormatContext::openInput(const string &uri, Dictionary &&formatOptions, InputFormat format)
+{
+    // It calls non-movable vesion
+    return openInput(uri, formatOptions, format);
+}
+
 bool FormatContext::openInput(const std::string &uri, InputFormat format, AVDictionary **options)
 {
     if (m_isOpened)
@@ -209,25 +229,61 @@ bool FormatContext::openInput(const std::string &uri, InputFormat format, AVDict
 
     m_uri      = uri;
     m_isOpened = true;
-    queryInputStreams();
+    //queryInputStreams();
     return true;
 }
 
 bool FormatContext::openInput(CustomIO *io, size_t internalBufferSize, InputFormat format)
 {
-    if (isOpened())
-        return false;
-
     bool res = openCustomIO(io, internalBufferSize, false);
     if (!res)
         return false;
     return openInput(string(), format);
 }
 
+bool FormatContext::openInput(CustomIO *io, Dictionary &formatOptions, size_t internalBufferSize, InputFormat format)
+{
+    bool res = openCustomIO(io, internalBufferSize, false);
+    if (!res)
+        return false;
+    return openInput(string(), formatOptions, format);
+}
+
+bool FormatContext::openInput(CustomIO *io, Dictionary &&formatOptions, size_t internalBufferSize, InputFormat format)
+{
+    return openInput(io, formatOptions, internalBufferSize, format);
+}
+
+bool FormatContext::findStreamInfo()
+{
+    return findStreamInfo(nullptr);
+}
+
+bool FormatContext::findStreamInfo(DictionaryArray &streamsOptions)
+{
+    auto ptrs = streamsOptions.release();
+    auto count = streamsOptions.size();
+    auto result = findStreamInfo(ptrs);
+    streamsOptions.assign(ptrs, count);
+    return result;
+}
+
+bool FormatContext::findStreamInfo(DictionaryArray &&streamsOptions)
+{
+    return findStreamInfo(streamsOptions);
+}
+
+
 ssize_t FormatContext::readPacket(Packet &pkt)
 {
     if (!m_raw)
         return -1;
+
+    if (!m_streamsInfoFound)
+    {
+        fflog(AV_LOG_ERROR, "Streams does not found. Try call findStreamInfo()\n");
+        return -1;
+    }
 
     Packet packet;
 
@@ -251,6 +307,24 @@ ssize_t FormatContext::readPacket(Packet &pkt)
 }
 
 bool FormatContext::openOutput(const string &uri)
+{
+    return openOutput(uri, nullptr);
+}
+
+bool FormatContext::openOutput(const string &uri, Dictionary &options)
+{
+    auto ptr = options.release();
+    auto res = openOutput(uri, &ptr);
+    options.assign(ptr);
+    return res;
+}
+
+bool FormatContext::openOutput(const string &uri, Dictionary &&options)
+{
+    return openOutput(uri, options);
+}
+
+bool FormatContext::openOutput(const string &uri, AVDictionary **options)
 {
     if (!m_raw)
         return false;
@@ -285,18 +359,7 @@ bool FormatContext::openOutput(const string &uri)
 
 bool FormatContext::openOutput(CustomIO *io, size_t internalBufferSize)
 {
-    if (isOpened())
-        return false;
-
-    if (m_raw) {
-        OutputFormat format = outputFormat();
-        if (format.isNull()) {
-            fflog(AV_LOG_ERROR, "You must set output format for use with custom IO\n");
-            return false;
-        }
-    }
-
-    bool res = openCustomIO(io, internalBufferSize, true);
+    bool res = openCustomIOOutput(io, internalBufferSize);
     if (res) {
         m_isOpened = true;
         m_uri.clear();
@@ -307,9 +370,28 @@ bool FormatContext::openOutput(CustomIO *io, size_t internalBufferSize)
 
 bool FormatContext::writeHeader()
 {
+    return writeHeader(nullptr);
+}
+
+bool FormatContext::writeHeader(Dictionary &options)
+{
+    auto ptr = options.release();
+    auto res = writeHeader(&ptr);
+    options.assign(ptr);
+    return res;
+}
+
+bool FormatContext::writeHeader(Dictionary &&options)
+{
+    return writeHeader(options);
+}
+
+
+bool FormatContext::writeHeader(AVDictionary **options)
+{
     if (isOpened() && isOutput()) {
         resetSocketAccess();
-        int stat = avformat_write_header(m_raw, nullptr);
+        int stat = avformat_write_header(m_raw, options);
         return !!checkPbError(stat);
     }
     return false;
@@ -398,18 +480,20 @@ void FormatContext::resetSocketAccess()
     m_lastSocketAccess = std::chrono::system_clock::now();
 }
 
-void FormatContext::queryInputStreams()
+bool FormatContext::findStreamInfo(AVDictionary **options)
 {
     // Temporary disable socket timeout
     ScopedValue<int64_t> scopedTimeoutDisable(m_socketTimeout, -1, m_socketTimeout);
 
-    int stat = avformat_find_stream_info(m_raw, nullptr);
+    int stat = avformat_find_stream_info(m_raw, options);
+    m_streamsInfoFound = true;
     if (stat >= 0 && m_raw->nb_streams > 0)
     {
         av_dump_format(m_raw, 0, m_uri.c_str(), 0);
+        return true;
     }
-    else
-        cerr << "Could not found streams in input container\n";
+    cerr << "Could not found streams in input container\n";
+    return false;
 }
 
 void FormatContext::closeCodecContexts()
@@ -457,6 +541,29 @@ bool FormatContext::openCustomIO(CustomIO *io, size_t internalBufferSize, bool i
 
     m_raw->pb = ctx;
     return ctx;
+}
+
+bool FormatContext::openCustomIOInput(CustomIO *io, size_t internalBufferSize)
+{
+    if (isOpened())
+        return false;
+    return openCustomIO(io, internalBufferSize, false);
+}
+
+bool FormatContext::openCustomIOOutput(CustomIO *io, size_t internalBufferSize)
+{
+    if (isOpened())
+        return false;
+
+    if (m_raw) {
+        OutputFormat format = outputFormat();
+        if (format.isNull()) {
+            fflog(AV_LOG_ERROR, "You must set output format for use with custom IO\n");
+            return false;
+        }
+    }
+
+    return openCustomIO(io, internalBufferSize, true);
 }
 
 } // namespace av

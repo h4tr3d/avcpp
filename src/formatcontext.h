@@ -12,6 +12,12 @@
 #include "stream.h"
 #include "packet.h"
 #include "codec.h"
+#include "dictionary.h"
+
+extern "C" {
+#include <libavformat/avformat.h>
+//#include <libavformat/avio.h>
+}
 
 namespace av {
 
@@ -71,29 +77,64 @@ public:
     Stream2 stream(size_t idx);
     Stream2 addStream(const Codec &codec);
 
+    //
     // Input
-    bool openInput(const std::string& uri, InputFormat format = InputFormat(), AVDictionary **options = nullptr);
-    bool openInput(CustomIO *io, size_t internalBufferSize = 200000, InputFormat format = InputFormat());
+    //
+    bool openInput(const std::string& uri, InputFormat format = InputFormat());
+    bool openInput(const std::string& uri, Dictionary &formatOptions, InputFormat format = InputFormat());
+    bool openInput(const std::string& uri, Dictionary &&formatOptions, InputFormat format = InputFormat());
+
+    static const size_t CUSTOM_IO_DEFAULT_BUFFER_SIZE = 200000;
+
+    bool openInput(CustomIO    *io,
+                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE,
+                   InputFormat  format             = InputFormat());
+    bool openInput(CustomIO    *io,
+                   Dictionary  &formatOptions,
+                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE,
+                   InputFormat  format             = InputFormat());
+    bool openInput(CustomIO    *io,
+                   Dictionary &&formatOptions,
+                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE,
+                   InputFormat  format             = InputFormat());
+
+    bool findStreamInfo();
+    bool findStreamInfo(DictionaryArray &streamsOptions);
+    bool findStreamInfo(DictionaryArray &&streamsOptions);
+
     ssize_t readPacket(Packet &pkt);
 
 
     // Output
     bool openOutput(const std::string& uri);
+    bool openOutput(const std::string& uri, Dictionary &options);
+    bool openOutput(const std::string& uri, Dictionary &&options);
+
     bool openOutput(CustomIO *io, size_t internalBufferSize = 200000);
 
     bool    writeHeader();
+    bool    writeHeader(Dictionary &options);
+    bool    writeHeader(Dictionary &&options);
+
     ssize_t writePacket(const Packet &pkt = Packet(), bool interleave = true);
     ssize_t writeTrailer();
 
 private:
+    bool openInput(const std::string& uri, InputFormat format, AVDictionary **options);
+    bool openOutput(const std::string& uri, AVDictionary **options);
+    bool writeHeader(AVDictionary **options);
+
     static int  avioInterruptCb(void *opaque);
     int         avioInterruptCb();
     void        setupInterruptHandling();
     void        resetSocketAccess();
-    void        queryInputStreams();
+    bool        findStreamInfo(AVDictionary **options);
     void        closeCodecContexts();
     ssize_t     checkPbError(ssize_t stat);
+
     bool        openCustomIO(CustomIO *io, size_t internalBufferSize, bool isWritable);
+    bool        openCustomIOInput(CustomIO *io, size_t internalBufferSize);
+    bool        openCustomIOOutput(CustomIO *io, size_t internalBufferSize);
 
 private:
     std::shared_ptr<char>                              m_monitor {new char};
@@ -104,6 +145,7 @@ private:
     bool                                               m_isOpened = false;
     bool                                               m_customIO = false;
     std::string                                        m_uri;
+    bool                                               m_streamsInfoFound = false;
 };
 
 } // namespace av
