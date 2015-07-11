@@ -36,7 +36,7 @@ public:
     int64_t pts() const;
     int64_t dts() const;
     int64_t fakePts() const;
-    int     size() const;
+    size_t size() const;
 
     /**
      * Set packet PTS field. It also set fake pts value, so, if you need fake value, you should
@@ -84,8 +84,10 @@ public:
     void swap(Packet &other);
 
 private:
+#if 0
     int allocatePayload(int32_t   size);
     int reallocatePayload(int32_t newSize);
+#endif
 
 private:
     bool             m_completeFlag;

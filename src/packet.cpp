@@ -101,7 +101,7 @@ bool Packet::setData(const vector<uint8_t> &newData)
 
 bool Packet::setData(const uint8_t *newData, size_t size)
 {
-    if (m_raw.size != size || m_raw.data == 0)
+    if ((m_raw.size >= 0 && (size_t)m_raw.size != size) || m_raw.data == 0)
     {
         if (m_raw.buf)
             av_buffer_unref(&m_raw.buf);
@@ -136,9 +136,9 @@ int64_t Packet::fakePts() const
     return m_fakePts;
 }
 
-int Packet::size() const
+size_t Packet::size() const
 {
-    return m_raw.size;
+    return m_raw.size < 0 ? 0 : (size_t)m_raw.size;
 }
 
 void Packet::setPts(int64_t pts, const Rational &tsTimeBase)
@@ -342,6 +342,7 @@ void Packet::swap(Packet &other)
     swap(m_fakePts,      other.m_fakePts);
 }
 
+#if 0
 int Packet::allocatePayload(int32_t size)
 {
     if (m_raw.data && m_raw.size != size)
@@ -353,6 +354,7 @@ int Packet::allocatePayload(int32_t size)
 int Packet::reallocatePayload(int32_t newSize)
 {
 }
+#endif
 
 void Packet::setDuration(int duration, const Rational &durationTimeBase)
 {

@@ -195,6 +195,7 @@ int AudioSamples2::init(AVSampleFormat sampleFormat, int samplesCount, uint64_t 
     av_frame_set_channel_layout(m_raw, channelLayout);
 
     av_frame_get_buffer(m_raw, align);
+    return 0;
 }
 
 AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align) throw(std::length_error)
@@ -210,7 +211,7 @@ AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, AVSampleFormat sa
     av_samples_fill_arrays(buf, linesize, data, channels, samplesCount, sampleFormat, align);
 
     // copy data
-    for (size_t i = 0; i < channels && i < AV_NUM_DATA_POINTERS; ++i) {
+    for (size_t i = 0; i < size_t(channels) && i < size_t(AV_NUM_DATA_POINTERS); ++i) {
         std::copy(buf[i], buf[i]+linesize[i], m_raw->data[i]);
     }
 }

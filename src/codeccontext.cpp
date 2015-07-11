@@ -519,7 +519,7 @@ void CodecContext::setChannelLayout(uint64_t layout)
 
     // Make channels and channel_layout sync
     if (m_raw->channels == 0 ||
-        av_get_default_channel_layout(m_raw->channels) != layout)
+        (uint64_t)av_get_default_channel_layout(m_raw->channels) != layout)
     {
         m_raw->channels = av_get_channel_layout_nb_channels(layout);
     }

@@ -13,7 +13,7 @@ Rect::Rect(int width, int height)
 }
 
 Rect::Rect(int x, int y, int width, int height)
-    : x(x), y(x), width(width), height(height)
+    : x(x), y(y), width(width), height(height)
 {
 }
 

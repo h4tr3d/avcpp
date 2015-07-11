@@ -31,7 +31,7 @@ VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixel
 }
 
 VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixelFormat)
-    : VideoRescaler(dstWidth, dstWidth, dstPixelFormat, 0, 0, AV_PIX_FMT_NONE)
+    : VideoRescaler(dstWidth, dstHeight, dstPixelFormat, 0, 0, AV_PIX_FMT_NONE)
 {
 }
 

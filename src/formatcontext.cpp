@@ -347,7 +347,7 @@ bool FormatContext::openOutput(const string &uri, AVDictionary **options)
 
     resetSocketAccess();
     if (!(format.flags() & AVFMT_NOFILE)) {
-        int stat = avio_open2(&m_raw->pb, uri.c_str(), AVIO_FLAG_WRITE, nullptr, nullptr);
+        int stat = avio_open2(&m_raw->pb, uri.c_str(), AVIO_FLAG_WRITE, nullptr, options);
         if (stat < 0)
             return false;
     }
@@ -500,7 +500,7 @@ void FormatContext::closeCodecContexts()
 {
     // HACK: This is hack to correct cleanup codec contexts in independ way
     auto nb = m_raw->nb_streams;
-    for (auto i = 0; i < nb; ++i) {
+    for (size_t i = 0; i < nb; ++i) {
         auto st = m_raw->streams[i];
         auto ctx = st->codec;
         avcodec_close(ctx);

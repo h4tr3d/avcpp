@@ -25,6 +25,7 @@ Dictionary::~Dictionary()
 }
 
 Dictionary::Dictionary(const Dictionary & other)
+    : FFWrapperPtr<AVDictionary>()
 {
     copyFrom(other);
 }

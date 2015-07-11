@@ -95,7 +95,7 @@ struct FFWrapperRef
     T*       raw()                     { return &m_raw; }
     void     reset(const T &raw = T()) { m_raw = raw; }
     bool     isNull() const            {
-        static const T empty{0};
+        static const T empty = T();
         auto res = memcmp(&m_raw, &empty, sizeof(empty));
         return (res != 0);
     }
@@ -112,7 +112,7 @@ struct FFWrapperRef
     }
 
 protected:
-    T m_raw {0};
+    T m_raw = T();
 };
 
 

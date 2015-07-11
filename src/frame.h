@@ -174,7 +174,7 @@ public:
     }
 
     void setComplete(bool isComplete) {
-        m_isComplete = true;
+        m_isComplete = isComplete;
     }
 
     bool isComplete() const { return m_isComplete; }
