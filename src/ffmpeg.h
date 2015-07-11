@@ -8,8 +8,6 @@ extern "C"
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
 #include <libavutil/pixdesc.h>
-#include <libavcodec/avcodec.h>
-//#include <libavformat/avformat.h>
 #include <libavdevice/avdevice.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>

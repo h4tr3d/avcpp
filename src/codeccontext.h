@@ -5,7 +5,12 @@
 #include "stream.h"
 #include "frame.h"
 #include "codec.h"
+#include "dictionary.h"
 #include "avutils.h"
+
+extern "C" {
+#include <libavcodec/avcodec.h>
+}
 
 namespace av {
 
@@ -30,6 +35,10 @@ public:
     void setCodec(const Codec &codec, bool resetDefaults = false);
 
     bool open(const Codec &codec = Codec());
+    bool open(Dictionary &options, const Codec &codec = Codec());
+    bool open(Dictionary &&options, const Codec &codec = Codec());
+
+
     bool close();
     bool isOpened() const { return m_isOpened; }
     bool isValid() const;
@@ -136,6 +145,8 @@ public:
     bool    isValidForEncode();
 
 private:
+    bool open(const Codec &codec, AVDictionary **options);
+
     ssize_t decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished,
                          int (*decodeProc)(AVCodecContext*, AVFrame*,int *, const AVPacket *));
 

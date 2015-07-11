@@ -136,22 +136,34 @@ void CodecContext::setCodec(const Codec &codec, bool resetDefaults)
 
 bool CodecContext::open(const Codec &codec)
 {
+    return open(codec, nullptr);
+}
+
+bool CodecContext::open(Dictionary &options, const Codec &codec)
+{
+    auto prt = options.release();
+    auto res = open(codec, &prt);
+    options.assign(prt);
+    return res;
+}
+
+bool CodecContext::open(Dictionary &&options, const Codec &codec)
+{
+    return open(options, codec);
+}
+
+
+bool CodecContext::open(const Codec &codec, AVDictionary **options)
+{
     if (m_isOpened || !isValid())
         return false;
 
-    // HACK: set threads to 1
-    AVDictionary *opts = 0;
-    av_dict_set(&opts, "threads", "1", 0);
-    ////////////////////////////////////////////////////////////////////////////////////////////
-
     bool ret = true;
-    int stat = avcodec_open2(m_raw, codec.isNull() ? m_raw->codec : codec.raw(), &opts);
+    int stat = avcodec_open2(m_raw, codec.isNull() ? m_raw->codec : codec.raw(), options);
     if (stat < 0)
         ret = false;
     else
         m_isOpened = true;
-
-    av_dict_free(&opts);
 
     return ret;
 }
