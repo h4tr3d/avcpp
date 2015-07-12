@@ -279,7 +279,7 @@ ssize_t FormatContext::readPacket(Packet &pkt)
     if (!m_raw)
         return -1;
 
-    if (!m_streamsInfoFound)
+    if (!m_streamsInfoFound && streamsCount() == 0)
     {
         fflog(AV_LOG_ERROR, "Streams does not found. Try call findStreamInfo()\n");
         return -1;

@@ -47,6 +47,13 @@ int main(int argc, char **argv)
             return 1;
         }
 
+        cerr << "Streams: " << ictx.streamsCount() << endl;
+
+        if (!ictx.findStreamInfo()) {
+            cerr << "Can't find streams\n";
+            return 1;
+        }
+
         for (size_t i = 0; i < ictx.streamsCount(); ++i) {
             auto st = ictx.stream(i);
             if (st.mediaType() == AVMEDIA_TYPE_VIDEO) {
@@ -72,7 +79,8 @@ int main(int argc, char **argv)
             vdec.setCodec(codec);
             vdec.setRefCountedFrames(true);
 
-            vdec.open(ec);
+            vdec.open(ec, {{"threads", "1"}});
+            //vdec.open(ec);
             if (ec) {
                 cerr << "Can't open codec\n";
                 return 1;
@@ -98,7 +106,7 @@ int main(int argc, char **argv)
                 break;
 
             if (ec) {
-                cerr << "Error: " << ec << endl;
+                cerr << "Error: " << ec << ", " << ec.message() << endl;
                 return 1;
             } else if (!frame) {
                 //cerr << "Empty frame\n";
