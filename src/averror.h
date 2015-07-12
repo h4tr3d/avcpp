@@ -23,6 +23,9 @@ enum class AvError
     CodecInvalidForEncode = -11,
     CodecInvalidForDecoce = -12,
     FrameInvalid = -13,
+
+    DictOutOfRage = -14,
+    DictNoKey     = -15,
 };
 
 /**
@@ -40,12 +43,6 @@ public:
 private:
     std::error_code m_ec;
 };
-
-inline
-void throw_error_code(const std::error_code &ec)
-{
-    throw AvException(ec);
-}
 
 /**
  * @brief The AvcppCategory class
@@ -132,6 +129,18 @@ inline
 std::error_condition make_ffmpeg_condition(int code)
 {
     return std::error_condition(code, ffmpeg_category());
+}
+
+inline
+void throw_error_code(const std::error_code &ec)
+{
+    throw AvException(ec);
+}
+
+inline
+void throw_error_code(AvError errc)
+{
+    throw AvException(make_error_code(errc));
 }
 
 } // ::av

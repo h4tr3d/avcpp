@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "averror.h"
+
 #include "dictionary.h"
 
 using namespace std;
@@ -59,7 +61,7 @@ Dictionary::Dictionary(std::initializer_list<std::pair<const char *, const char 
 {
     for (auto const &item : list)
     {
-        set(std::get<0>(item), std::get<1>(item), flags);
+        set_priv(std::get<0>(item), std::get<1>(item), flags);
     }
 }
 
@@ -116,40 +118,36 @@ void Dictionary::assign(AVDictionary *dict, bool takeOwning) noexcept
     Dictionary(dict, takeOwning).swap(*this);
 }
 
-const char *Dictionary::operator[](size_t index) const throw(std::out_of_range)
+const char *Dictionary::operator[](size_t index) const throw(AvException)
 {
     if (index >= count())
-        throw std::out_of_range("AVDictionary index out of range");
+        throw_error_code(AvError::DictOutOfRage);
 
     // Take a first element
     auto entry = av_dict_get(m_raw, "", nullptr, FlagIgnoreSuffix);
-    if (!entry)
-        return nullptr;
     entry += index; // switch to next element
     return entry->value;
 }
 
-Dictionary::Entry Dictionary::operator[](size_t index) throw(std::out_of_range)
+Dictionary::Entry Dictionary::operator[](size_t index) throw(AvException)
 {
     Entry holder;
     if (index >= count())
-        throw std::out_of_range("AVDictionary index out of range");
+        throw_error_code(AvError::DictOutOfRage);
 
     // Take a first element
     auto entry = av_dict_get(m_raw, "", nullptr, FlagIgnoreSuffix);
-    if (!entry)
-        return holder;
     entry += index; // switch to next element
     holder.m_entry = entry;
     return holder;
 
 }
 
-const char *Dictionary::operator[](const char *key) const noexcept
+const char *Dictionary::operator[](const char *key) const throw(AvException)
 {
     auto entry = av_dict_get(m_raw, key, nullptr, 0);
     if (!entry)
-        return nullptr;
+        throw_error_code(AvError::DictNoKey);
     return entry->value;
 }
 
@@ -205,7 +203,66 @@ const char *Dictionary::get(const std::string & key, int flags) const noexcept
     return get(key.c_str(), flags);
 }
 
-int Dictionary::set(const char * key, const char * value, int flags) noexcept
+string Dictionary::toString(const char keyValSep, const char pairsSep) const throw(AvException)
+{
+    error_code ec;
+    auto result = toString(ec, keyValSep, pairsSep);
+    if (ec)
+        throw_error_code(ec);
+    return std::move(result);
+}
+
+string Dictionary::toString(error_code &ec, const char keyValSep, const char pairsSep) const noexcept
+{
+    string  str;
+    char   *buf = nullptr;
+
+    ec = make_error_code(AvError::NoError);
+
+    int sts = av_dict_get_string(m_raw, &buf, keyValSep, pairsSep);
+    if (sts >= 0)
+    {
+        str = buf;
+        av_freep(&buf);
+    }
+    else
+    {
+        ec = make_ffmpeg_error(sts);
+    }
+
+    return std::move(str);
+}
+
+Dictionary::RawStringPtr Dictionary::toRawStringPtr(const char keyValSep, const char pairsSep) const throw(AvException)
+{
+    error_code ec;
+    auto result = toRawStringPtr(ec, keyValSep, pairsSep);
+    if (ec)
+        throw_error_code(ec);
+    return result;
+}
+
+Dictionary::RawStringPtr Dictionary::toRawStringPtr(error_code &ec, const char keyValSep, const char pairsSep) const noexcept
+{
+    RawStringPtr  str;
+    char         *buf = nullptr;
+
+    ec = make_error_code(AvError::NoError);
+
+    int sts = av_dict_get_string(m_raw, &buf, keyValSep, pairsSep);
+    if (sts >= 0)
+    {
+        str.reset(buf); // take owning
+    }
+    else
+    {
+        ec = make_ffmpeg_error(sts);
+    }
+
+    return std::move(str);
+}
+
+int Dictionary::set_priv(const char * key, const char * value, int flags) noexcept
 {
     auto prev = m_raw;
     int sts = av_dict_set(&m_raw, key, value, flags);
@@ -215,14 +272,14 @@ int Dictionary::set(const char * key, const char * value, int flags) noexcept
     return sts;
 }
 
-int Dictionary::set(const std::string & key, const std::string & value, int flags) noexcept
+int Dictionary::set_priv(const std::string & key, const std::string & value, int flags) noexcept
 {
     // We MUST dup this keys/vals
     flags &= ~(FlagDontStrdupKey|FlagDontStrdupVal);
-    return set(key.c_str(), value.c_str(), flags);
+    return set_priv(key.c_str(), value.c_str(), flags);
 }
 
-int Dictionary::set(const char * key, int64_t value, int flags) noexcept
+int Dictionary::set_priv(const char * key, int64_t value, int flags) noexcept
 {
     auto prev = m_raw;
     int sts = av_dict_set_int(&m_raw, key, value, flags);
@@ -232,52 +289,33 @@ int Dictionary::set(const char * key, int64_t value, int flags) noexcept
     return sts;
 }
 
-int Dictionary::set(const std::string & key, int64_t value, int flags) noexcept
+int Dictionary::set_priv(const std::string & key, int64_t value, int flags) noexcept
 {
     // We MUST dup this key
     flags &= ~(FlagDontStrdupKey);
-    return set(key.c_str(), value, flags);
+    return set_priv(key.c_str(), value, flags);
 }
 
-int Dictionary::parseString(const char * str, const char * keyValSep, const char * pairsSep, int flags) noexcept
+int Dictionary::parseString_priv(const char *str, const char *keyvalSep, const char *pairsSep, int flags)
 {
-    return av_dict_parse_string(&m_raw, str, keyValSep, pairsSep, flags);
-}
-
-int Dictionary::parseString(const std::string & str, const std::string & keyValSep, const std::string & pairsSep, int flags) noexcept
-{
-    return parseString(str.c_str(), keyValSep.c_str(), pairsSep.c_str(), flags);
-}
-
-int Dictionary::getString(std::string &str, const char keyValSep, const char pairsSep) const noexcept
-{
-    char *buf = nullptr;
-    int sts = av_dict_get_string(m_raw, &buf, keyValSep, pairsSep);
-    if (sts >= 0)
-    {
-        str = std::move(std::string(buf));
-        av_freep(&buf);
-    }
-    else
-    {
-        str = std::string();
-    }
+    auto prev = m_raw;
+    int sts = av_dict_parse_string(&m_raw,
+                                   str,
+                                   keyvalSep,
+                                   pairsSep,
+                                   flags);
+    if (sts >= 0 && prev == nullptr)
+        m_owning = true;
     return sts;
 }
 
-int Dictionary::getString(RawStringPtr &ptr, const char keyValSep, const char pairsSep) const noexcept
+void Dictionary::parseString_priv(error_code &ec, const char *str, const char *keyvalSep, const char *pairsSep, int flags)
 {
-    char *buf = nullptr;
-    int sts = av_dict_get_string(m_raw, &buf, keyValSep, pairsSep);
-    if (sts >= 0)
-    {
-        ptr.reset(buf);
+    ec = make_error_code(AvError::NoError);
+    int sts;
+    if ((sts = parseString_priv(str, keyvalSep, pairsSep, flags)) < 0) {
+        ec = make_ffmpeg_error(sts);
     }
-    else
-    {
-        ptr.reset();
-    }
-    return sts;
 }
 
 void Dictionary::copyFrom(const Dictionary & other, int flags) noexcept
@@ -315,10 +353,10 @@ const char *Dictionary::Entry::value() const noexcept
     return (m_entry ? m_entry->value : nullptr);
 }
 
-int Dictionary::Entry::set(const char * value, int flags) noexcept
+void Dictionary::Entry::set(const char * value, int flags) noexcept
 {
     if (!m_entry)
-        return 0; // TODO: return error?
+        return; // TODO: return error?
 
     av_freep(&m_entry->value);
     if (flags & FlagDontStrdupVal)
@@ -329,13 +367,12 @@ int Dictionary::Entry::set(const char * value, int flags) noexcept
     {
         m_entry->value = av_strdup(value);
     }
-    return 0;
 }
 
-int Dictionary::Entry::set(const std::string & value, int flags) noexcept
+void Dictionary::Entry::set(const std::string & value, int flags) noexcept
 {
     flags &= ~FlagDontStrdupVal;
-    return set(value.c_str(), flags);
+    set(value.c_str(), flags);
 }
 
 bool Dictionary::Entry::isNull() const

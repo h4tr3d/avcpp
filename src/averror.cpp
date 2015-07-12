@@ -29,6 +29,8 @@ std::string AvcppCategory::message(int ev) const
         case AvError::CodecInvalidForEncode: return "Codec context can't encode data";
         case AvError::CodecInvalidForDecoce: return "Codec context can't decode data";
         case AvError::FrameInvalid: return "Frame invalid (unallocated)";
+        case AvError::DictOutOfRage: return "Dictionary index out of range";
+        case AvError::DictNoKey: return "Dictionary does not contain entry with given key";
     }
 
     return "Uknown AvCpp error";

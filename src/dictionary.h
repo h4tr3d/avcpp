@@ -12,6 +12,8 @@ extern "C" {
 #include <libavutil/dict.h>
 }
 
+#include "averror.h"
+
 #include "ffmpeg.h"
 
 namespace av {
@@ -100,11 +102,10 @@ public:
          * @brief set - change value of the current item
          * @param value new value
          * @param flags access flags, FlagDontStrdupVal only accepted, other flags ignored
-         * @return 0 on success, <0 on error
          */
         /// @{
-        int set(const char *value, int flags = 0) noexcept;
-        int set(const std::string& value, int flags = 0) noexcept;
+        void set(const char *value, int flags = 0) noexcept;
+        void set(const std::string& value, int flags = 0) noexcept;
         /// @}
 
         /**
@@ -151,47 +152,47 @@ public:
         Entry     m_entry;
 
     public:
-        DictionaryIterator(DictType &dict, const Entry& entry)
+        DictionaryIterator(DictType &dict, const Entry& entry) noexcept
             : m_dict(dict),
               m_entry(entry)
         {
         }
 
-        DictionaryIterator(DictType &dict)
+        DictionaryIterator(DictType &dict) noexcept
             : m_dict(dict)
         {
             operator++();
         }
 
-        DictionaryIterator& operator++()
+        DictionaryIterator& operator++() noexcept
         {
             m_entry.m_entry = av_dict_get(m_dict.raw(), "", m_entry.m_entry, FlagIgnoreSuffix);
             return *this;
         }
 
-        DictionaryIterator operator++(int)
+        DictionaryIterator operator++(int) noexcept
         {
             DictionaryIterator tmp(*this);
             operator++();
             return tmp;
         }
 
-        friend bool operator==(const DictionaryIterator& lhs, const DictionaryIterator& rhs)
+        friend bool operator==(const DictionaryIterator& lhs, const DictionaryIterator& rhs) noexcept
         {
             return lhs.m_entry == rhs.m_entry;
         }
 
-        friend bool operator!=(const DictionaryIterator& lhs, const DictionaryIterator& rhs)
+        friend bool operator!=(const DictionaryIterator& lhs, const DictionaryIterator& rhs) noexcept
         {
             return lhs.m_entry != rhs.m_entry;
         }
 
-        EntryType& operator*()
+        EntryType& operator*() noexcept
         {
             return m_entry;
         }
 
-        EntryType* operator->()
+        EntryType* operator->() noexcept
         {
             return &m_entry;
         }
@@ -330,8 +331,8 @@ public:
      * @return
      */
     /// @{
-    const char* operator[](size_t index) const throw(std::out_of_range);
-    Entry       operator[](size_t index) throw(std::out_of_range);
+    const char* operator[](size_t index) const throw(AvException);
+    Entry       operator[](size_t index) throw(AvException);
     /// @}
 
     /**
@@ -341,7 +342,7 @@ public:
      * @return
      */
     /// @{
-    const char* operator[](const char* key) const noexcept;
+    const char* operator[](const char* key) const throw(AvException);
     Entry       operator[](const char* key) noexcept;
     /// @}
 
@@ -370,17 +371,54 @@ public:
     /**
      * @brief set - set new value for key or add new dictionary item (or create dictionary)
      * If dictionary empty (null), it takes ownershipping too.
-     * @param key    key to change
-     * @param value  key value
+     *
+     * On error throws exception with error code;
+     *
+     * @param key    key to change (can be std::string or char*)
+     * @param value  key value (can be std::string, char* or integer)
      * @param flags  see Flags
-     * @return 0 on success, <0 on fail
+     *
      */
-    /// @{
-    int set(const char* key, const char *value, int flags = 0) noexcept;
-    int set(const std::string& key, const std::string& value, int flags = 0) noexcept;
-    int set(const char* key, int64_t value, int flags = 0) noexcept;
-    int set(const std::string& key, int64_t value, int flags = 0) noexcept;
-    /// @}
+    template<typename Key, typename Value = Key>
+    typename std::enable_if
+    <
+      (std::is_same<Key, std::string>::value || std::is_same<typename std::remove_cv<typename std::decay<Key>::type>::type, char*>::value) &&
+      (std::is_same<Value, std::string>::value || std::is_same<typename std::remove_cv<typename std::decay<Value>::type>::type, char*>::value || std::is_integral<Value>::value)
+      ,void
+    >::type
+    set(const Key& key, const Value& value, int flags = 0) throw(AvException)
+    {
+        std::error_code ec;
+        set<Key, Value>(ec, key, value, flags);
+        if (ec)
+            throw_error_code(ec);
+    }
+
+    /**
+     * @brief set - set new value for key or add new dictionary item (or create dictionary)
+     * If dictionary empty (null), it takes ownershipping too.
+     *
+     * @param ec     error code
+     * @param key    key to change (can be std::string or char*)
+     * @param value  key value (can be std::string, char* or integer)
+     * @param flags  see Flags
+     *
+     */
+    template<typename Key, typename Value = Key>
+    typename std::enable_if
+    <
+      (std::is_same<Key, std::string>::value || std::is_same<typename std::remove_cv<typename std::decay<Key>::type>::type, char*>::value) &&
+      (std::is_same<Value, std::string>::value || std::is_same<typename std::remove_cv<typename std::decay<Value>::type>::type, char*>::value || std::is_integral<Value>::value)
+      ,void
+    >::type
+    set(std::error_code &ec, const Key& key, const Value& value, int flags = 0) noexcept
+    {
+        ec = make_error_code(AvError::NoError);
+        int sts;
+        if ((sts = set_priv(key, value, flags)) < 0) {
+            ec = make_ffmpeg_error(sts);
+        }
+    }
 
     /**
      * @brief parseString - process string with options and fill dictionary
@@ -389,6 +427,9 @@ public:
      * foo=bar;foo2=bar2
      * foo:bar&foo2:bar2
      * @endcode
+     *
+     * This version throw AvException with error code on error.
+     *
      * @param str       string to process
      * @param keyValSep null-terminated string with chars that interprets as key and value separators
      *                  '=' and ':' in most cases.
@@ -397,37 +438,111 @@ public:
      * @param flags     See Flags. All flags that omit strdups ignores.
      * @return 0 on success, <0 on fail
      */
-    /// @{
-    int parseString(const char* str,
-                    const char* keyValSep,
-                    const char* pairsSep,
-                    int flags = 0) noexcept;
-
-    int parseString(const std::string& str,
-                    const std::string& keyValSep,
-                    const std::string& pairsSep,
-                    int flags = 0) noexcept;
-    /// @}
+    template<typename Str, typename Sep1, typename Sep2>
+    void parseString(const Str& str, const Sep1& keyvalSep, const Sep2& pairsSep, int flags = 0) throw(AvException)
+    {
+        std::error_code ec;
+        parseString(ec, str, keyvalSep, pairsSep, flags);
+        if (ec)
+            throw_error_code(ec);
+    }
 
     /**
-     * @brief getString - compose string line from dictionary items
+     * @brief parseString - process string with options and fill dictionary
+     * String examples:
+     * @code
+     * foo=bar;foo2=bar2
+     * foo:bar&foo2:bar2
+     * @endcode
+     *
+     * @param ec        error code storage, AvError::NoError on success
+     * @param str       string to process
+     * @param keyValSep null-terminated string with chars that interprets as key and value separators
+     *                  '=' and ':' in most cases.
+     * @param pairsSep  null-terminates string with chars that interprets as pairs (key and value)
+     *                  separators. ';' and ',' in most cases.
+     * @param flags     See Flags. All flags that omit strdups ignores.
+     * @return 0 on success, <0 on fail
+     */
+    template<typename Str, typename Sep1, typename Sep2>
+    void parseString(std::error_code &ec, const Str& str, const Sep1& keyvalSep, const Sep2& pairsSep, int flags = 0) throw(AvException)
+    {
+        parseString_priv(ec,
+                         _to_const_char_ptr(str),
+                         _to_const_char_ptr(keyvalSep),
+                         _to_const_char_ptr(pairsSep),
+                         flags);
+    }
+
+    /**
+     * @brief toString - converts dictionary to the string representation (serialize)
      *
      * This line can be processed via parseString() later.
      *
-     * RawStringPtr version has less memory copy overhead.
+     * On error AvException with error code thrown.
      *
-     * @param str        composed string holder. Allocates automatically.
-     * @param keyValSep  char to separate key and value
-     * @param pairsSep   chat to separate key-value pairs.
+     * FFmpeg internaly allocated buffer copies to the string and freed.
      *
-     * \\0 and \\n chars unapplicable.
+     * @param keyValSep   char to separate key and value
+     * @param pairsSep    chat to separate key-value pairs.
+     * @return valid string
      *
-     * @return 0 on success, <0 on fail
+     * @note \\0 and same separator chars unapplicable.
+     *
      */
-    /// @{
-    int getString(std::string&  str, const char keyValSep, const char pairsSep) const noexcept;
-    int getString(RawStringPtr& ptr, const char keyValSep, const char pairsSep) const noexcept;
-    /// @}
+    std::string toString(const char keyValSep, const char pairsSep) const throw(AvException);
+
+    /**
+     * @brief toString - converts dictionary to the string representation (serialize)
+     *
+     * This line can be processed via parseString() later.
+     *
+     * FFmpeg internaly allocated buffer copies to the string and freed.
+     *
+     * @param[out] ec          error code holder
+     * @param[in]  keyValSep   char to separate key and value
+     * @param[in] pairsSep    chat to separate key-value pairs.
+     * @return valid string, null-string (std::string()) on error
+     *
+     * @note \\0 and same separator chars unapplicable.
+     *
+     */
+    std::string toString(std::error_code &ec, const char keyValSep, const char pairsSep) const noexcept;
+
+    /**
+     * @brief toRawStringPtr - converts dictionary to the raw string (char*) and protect it with
+     * smart pointer (std::unique_ptr).
+     *
+     * This method omit data copy and returns raw pointer that allocated by av_dict_get_string(). For
+     * more safety this block wrapped with no-overhead smart pointer (std::unique_ptr).
+     *
+     * On error AvException thrown.
+     *
+     * @see toString()
+     *
+     * @param[in]  keyValSep   char to separate key and value
+     * @param[in] pairsSep    chat to separate key-value pairs.
+     *
+     * @return valid string
+     */
+    RawStringPtr toRawStringPtr(const char keyValSep, const char pairsSep) const throw(AvException);
+
+    /**
+     * @brief toRawStringPtr - converts dictionary to the raw string (char*) and protect it with
+     * smart pointer (std::unique_ptr).
+     *
+     * This method omit data copy and returns raw pointer that allocated by av_dict_get_string(). For
+     * more safety this block wrapped with no-overhead smart pointer (std::unique_ptr).
+     *
+     * @see toString()
+     *
+     * @param[out] ec          error code holder
+     * @param[in]  keyValSep   char to separate key and value
+     * @param[in]  pairsSep    chat to separate key-value pairs.
+     *
+     * @return valid string, null on error (check ec)
+     */
+    RawStringPtr toRawStringPtr(std::error_code &ec, const char keyValSep, const char pairsSep) const noexcept;
 
     /**
      * @brief copyFrom - copy data from other dictionary.
@@ -458,6 +573,25 @@ public:
 private:
     // Discard access to the reset() method
     using FFWrapperPtr<AVDictionary>::reset;
+
+    int set_priv(const char* key, const char *value, int flags = 0) noexcept;
+    int set_priv(const std::string& key, const std::string& value, int flags = 0) noexcept;
+    int set_priv(const char* key, int64_t value, int flags = 0) noexcept;
+    int set_priv(const std::string& key, int64_t value, int flags = 0) noexcept;
+
+    const char* _to_const_char_ptr(const char *str)
+    {
+        return str;
+    }
+
+    const char* _to_const_char_ptr(const std::string &str)
+    {
+        return str.c_str();
+    }
+
+    int  parseString_priv(const char* str, const char* keyvalSep, const char* pairsSep, int flags);
+    void parseString_priv(std::error_code &ec, const char* str, const char* keyvalSep, const char* pairsSep, int flags);
+
 
 private:
     bool m_owning = true;

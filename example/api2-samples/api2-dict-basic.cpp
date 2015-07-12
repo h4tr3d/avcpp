@@ -14,7 +14,7 @@ int main()
     }
 #endif
 
-#if 0
+#if 1
     {
         av::Dictionary dict;
         dict.set("test1", "test value");
@@ -28,7 +28,7 @@ int main()
             shared_ptr<char> sptr;
             {
                 av::Dictionary::RawStringPtr ptr;
-                dict.getString(ptr, '=', ';');
+                ptr = dict.toRawStringPtr('=', ';');
                 cout << ptr.get() << endl;
 
                 sptr = std::move(ptr);
@@ -168,6 +168,23 @@ int main()
         cout << e.get("i1") << ", " << f.get("i1") << endl;
 
     }
+
+    {
+        Dictionary dict;
+        dict.parseString("key1=val1;key2=val2", "=", ";");
+        dict.parseString("key3=val1;key4=val2", string("="), string(";"));
+
+        error_code ec;
+        cout << " str: " << dict.toString(ec, ':', ',') << endl;
+        cout << " err: " << ec << ", " << ec.message() << endl;
+        cout << " str: " << dict.toString(ec, ':', '\0') << endl;
+        cout << " err: " << ec << ", " << ec.message() << endl;
+
+        auto raw = dict.toRawStringPtr(ec, '=', ',');
+        cout << " str: " << raw.get() << endl;
+        cout << " err: " << ec << ", " << ec.message() << endl;
+
+    }
 #endif
 
 #if 1
@@ -218,7 +235,7 @@ int main()
     }
 #endif
 
-#if 1
+#if 0
     {
         DictionaryArray arr = {
             {
