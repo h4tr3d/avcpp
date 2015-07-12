@@ -10,10 +10,6 @@
 namespace av
 {
 
-using namespace std::rel_ops;
-
-class Rational;
-
 enum
 {
     RationalMaxPrecision = 5
@@ -45,6 +41,7 @@ public:
     void dump() const;
 
     bool      operator== (const Rational   &other) const;
+    bool      operator!= (const Rational   &other) const;
     bool      operator<  (const Rational   &other) const;
     Rational& operator=  (const AVRational &value);
     Rational& operator=  (double value);

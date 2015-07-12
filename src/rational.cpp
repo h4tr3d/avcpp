@@ -100,6 +100,11 @@ bool Rational::operator ==(const Rational &other) const
     return (av_cmp_q(value, other.getValue()) == 0 ? true : false);
 }
 
+bool Rational::operator!=(const Rational &other) const
+{
+    return !(*this == other);
+}
+
 bool Rational::operator <(const Rational &other) const
 {
     return (av_cmp_q(value, other.getValue()) == -1 ? true : false);
