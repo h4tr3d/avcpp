@@ -83,6 +83,8 @@ public:
 
     void swap(Packet &other);
 
+    operator bool() const { return isComplete(); }
+
 private:
 #if 0
     int allocatePayload(int32_t   size);

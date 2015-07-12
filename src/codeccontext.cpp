@@ -2,6 +2,7 @@
 
 #include "avlog.h"
 #include "avutils.h"
+#include <averror.h>
 
 #include "codeccontext.h"
 
@@ -45,7 +46,8 @@ CodecContext::CodecContext(const Codec &codec)
 
 CodecContext::~CodecContext()
 {
-    close();
+    error_code ec;
+    close(ec);
     if (m_stream.isNull())
         av_freep(&m_raw);
 }
@@ -78,11 +80,30 @@ void CodecContext::swap(CodecContext &other)
     swap(m_isOpened, other.m_isOpened);
 }
 
-void CodecContext::setCodec(const Codec &codec, bool resetDefaults)
+void CodecContext::setCodec(const Codec &codec, bool resetDefaults) throw(AvException)
 {
+    error_code ec;
+    setCodec(ec, codec, resetDefaults);
+    if (ec == av::AvError::Generic)
+    if (ec)
+        throw AvException(ec);
+}
+
+void CodecContext::setCodec(error_code &ec, const Codec &codec, bool resetDefaults) noexcept
+{
+    ec = make_error_code(AvError::NoError);
+
+    if (!m_raw)
+    {
+        fflog(AV_LOG_WARNING, "Codec context does not allocated\n");
+        ec = make_error_code(AvError::Unallocated);
+        return;
+    }
+
     if (!m_raw || (!m_stream.isValid() && !m_stream.isNull()))
     {
-        fflog(AV_LOG_WARNING, "Parent stream is not valid. Probably it or FormatContext destrayed\n");
+        fflog(AV_LOG_WARNING, "Parent stream is not valid. Probably it or FormatContext destroyed\n");
+        ec = make_error_code(AvError::CodecStreamInvalid);
         return;
     }
 
@@ -91,21 +112,17 @@ void CodecContext::setCodec(const Codec &codec, bool resetDefaults)
         fflog(AV_LOG_WARNING, "Try to set null codec\n");
     }
 
-    if (!m_raw)
-    {
-        fflog(AV_LOG_WARNING, "Codec context does not allocated\n");
-        return;
-    }
-
     if (m_direction == Direction::ENCODING && codec.canEncode() == false)
     {
         fflog(AV_LOG_WARNING, "Encoding context, but codec does not support encoding\n");
+        ec = make_error_code(AvError::CodecInvalidDirection);
         return;
     }
 
     if (m_direction == Direction::DECODING && codec.canDecode() == false)
     {
         fflog(AV_LOG_WARNING, "Decoding context, but codec does not support decoding\n");
+        ec = make_error_code(AvError::CodecInvalidDirection);
         return;
     }
 
@@ -134,84 +151,128 @@ void CodecContext::setCodec(const Codec &codec, bool resetDefaults)
     }
 }
 
-bool CodecContext::open(const Codec &codec)
+void CodecContext::open(const Codec &codec) throw(AvException)
 {
-    return open(codec, nullptr);
+    error_code ec;
+    open(ec, codec);
+    if (ec)
+        throw AvException(ec);
 }
 
-bool CodecContext::open(Dictionary &options, const Codec &codec)
+void CodecContext::open(Dictionary &options, const Codec &codec) throw(AvException)
+{
+    error_code ec;
+    open(ec, options, codec);
+    if (ec)
+        throw AvException(ec);
+}
+
+void CodecContext::open(Dictionary &&options, const Codec &codec) throw(AvException)
+{
+    error_code ec;
+    open(ec, std::move(options), codec);
+    if (ec)
+        throw AvException(ec);
+}
+
+void CodecContext::open(std::error_code &ec, const Codec &codec) noexcept
+{
+    open(codec, nullptr, ec);
+}
+
+void CodecContext::open(std::error_code &ec, Dictionary &options, const Codec &codec) noexcept
 {
     auto prt = options.release();
-    auto res = open(codec, &prt);
+    open(codec, &prt, ec);
     options.assign(prt);
-    return res;
 }
 
-bool CodecContext::open(Dictionary &&options, const Codec &codec)
+void CodecContext::open(std::error_code &ec, Dictionary &&options, const Codec &codec) noexcept
 {
-    return open(options, codec);
+    open(ec, options, codec);
 }
 
 
-bool CodecContext::open(const Codec &codec, AVDictionary **options)
+void CodecContext::open(const Codec &codec, AVDictionary **options, error_code &ec)
 {
-    if (m_isOpened || !isValid())
-        return false;
+    ec = make_avcpp_error(AvError::NoError);
 
-    bool ret = true;
+    if (m_isOpened || !isValid()) {
+        ec = make_avcpp_error(m_isOpened ? AvError::CodecAlreadyOpened : AvError::CodecInvalid);
+        return;
+    }
+
     int stat = avcodec_open2(m_raw, codec.isNull() ? m_raw->codec : codec.raw(), options);
     if (stat < 0)
-        ret = false;
+        ec = make_ffmpeg_error(stat);
     else
         m_isOpened = true;
-
-    return ret;
 }
 
-bool CodecContext::close()
+void CodecContext::close() throw(AvException)
 {
+    error_code ec;
+    close(ec);
+    if (ec)
+        throw_error_code(ec);
+}
+
+void CodecContext::close(error_code &ec) noexcept
+{
+    ec = make_error_code(AvError::NoError);
     if (m_isOpened)
     {
         if (isValid()) {
-                avcodec_close(m_raw);
+            avcodec_close(m_raw);
         }
         m_isOpened = false;
-        return true;
+        return;
     }
-
-
-    return false;
+    ec = make_error_code(AvError::CodecDoesNotOpened);
 }
 
-bool CodecContext::isValid() const
+bool CodecContext::isValid() const noexcept
 {
     // Check parent stream first
     return ((m_stream.isValid() || m_stream.isNull()) && m_raw && m_raw->codec);
 }
 
-bool CodecContext::copyContextFrom(const CodecContext &other)
+void CodecContext::copyContextFrom(const CodecContext &other) throw(AvException)
 {
+    error_code ec;
+    copyContextFrom(ec, other);
+    if (ec)
+        throw_error_code(ec);
+}
+
+void CodecContext::copyContextFrom(error_code &ec, const CodecContext &other) noexcept
+{
+    ec = make_avcpp_error(AvError::NoError);
     if (!isValid()) {
         fflog(AV_LOG_WARNING, "Invalid target context\n");
-        return false;
+        ec = make_avcpp_error(AvError::CodecInvalid);
+        return;
     }
     if (!other.isValid()) {
         fflog(AV_LOG_WARNING, "Invalid source context\n");
-        return false;
+        ec = make_avcpp_error(AvError::CodecInvalid);
+        return;
     }
     if (isOpened()) {
         fflog(AV_LOG_WARNING, "Try to copy context to opened target context\n");
-        return false;
+        ec = make_avcpp_error(AvError::CodecAlreadyOpened);
+        return;
     }
     if (this == &other) {
         fflog(AV_LOG_WARNING, "Same context\n");
-        return false;
+        // No error here, simple do nothig
+        return;
     }
 
     int stat = avcodec_copy_context(m_raw, other.m_raw);
     m_raw->codec_tag = 0;
-
-    return stat < 0 ? false : true;
+    if (stat < 0)
+        ec = make_ffmpeg_error(stat);
 }
 
 Rational CodecContext::timeBase() const
@@ -249,11 +310,25 @@ AVMediaType CodecContext::codecType() const
     return AVMEDIA_TYPE_UNKNOWN;
 }
 
-void CodecContext::setOption(const string &key, const string &val, int flags)
+void CodecContext::setOption(const string &key, const string &val, int flags) throw(AvException)
 {
+    error_code ec;
+    setOption(ec, key, val, flags);
+    if (ec)
+        throw_error_code(ec);
+}
+
+void CodecContext::setOption(error_code &ec, const string &key, const string &val, int flags) noexcept
+{
+    ec = make_avcpp_error(AvError::NoError);
     if (isValid())
     {
-        av_opt_set(m_raw->priv_data, key.c_str(), val.c_str(), flags);
+        auto sts = av_opt_set(m_raw->priv_data, key.c_str(), val.c_str(), flags);
+        ec = make_ffmpeg_error(sts);
+    }
+    else
+    {
+        ec = make_avcpp_error(AvError::CodecInvalid);
     }
 }
 
@@ -487,7 +562,9 @@ void CodecContext::setSampleRate(int sampleRate)
         return;
     int sr = guessValue(sampleRate, m_raw->codec->supported_samplerates, EqualComparator<int>(0));
     if (sr != sampleRate)
+    {
         fflog(AV_LOG_INFO, "Guess sample rate %d instead unsupported %d\n", sr, sampleRate);
+    }
     if (sr > 0)
         m_raw->sample_rate = sr;
 }
@@ -584,64 +661,151 @@ bool CodecContext::isFlags2(int flags)
     return false;
 }
 
-ssize_t CodecContext::decodeVideo(VideoFrame2 &outFrame, const Packet &inPacket, size_t offset)
+VideoFrame2 CodecContext::decodeVideo(const Packet &packet, bool autoAllocateFrame, size_t offset, size_t *decodedBytes) throw(AvException)
 {
-    int gotFrame = 0;
-    int st = decodeCommon(outFrame, inPacket, offset, gotFrame, avcodec_decode_video2);
-    if (st < 0)
-        return st;
+    error_code ec;
+    auto frame = decodeVideo(ec, packet, autoAllocateFrame, offset, decodedBytes);
+    if (ec)
+        throw_error_code(ec);
+    return frame;
+}
+
+VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, bool autoAllocateFrame, size_t offset, size_t *decodedBytes) noexcept
+{
+    ec = make_error_code(AvError::NoError);
+
+    VideoFrame2 outFrame;
+    if (!autoAllocateFrame)
+    {
+        outFrame = {pixelFormat(), width(), height(), 32};
+
+        if (!outFrame.isValid())
+        {
+            ec = make_error_code(AvError::FrameInvalid);
+            return VideoFrame2();
+        }
+    }
+
+    int         gotFrame = 0;
+    auto st = decodeCommon(outFrame, packet, offset, gotFrame, avcodec_decode_video2);
+
+    if (get<0>(st) < 0) {
+        ec = error_code(get<0>(st), *get<1>(st));
+        return VideoFrame2();
+    }
 
     if (!gotFrame)
-        return 0;
+        return VideoFrame2();
 
     outFrame.setPictureType(AV_PICTURE_TYPE_I);
 
-    return st;
+    if (decodedBytes)
+        *decodedBytes = get<0>(st);
+
+    return outFrame;
 }
 
-ssize_t CodecContext::encodeVideo(Packet &outPacket, const VideoFrame2 &inFrame)
+Packet CodecContext::encodeVideo(const VideoFrame2 &inFrame) throw (AvException)
 {
+    error_code ec;
+    auto result = encodeVideo(ec, inFrame);
+    if (ec)
+        throw_error_code(ec);
+    return result;
+}
+
+Packet CodecContext::encodeVideo(error_code &ec, const VideoFrame2 &inFrame) noexcept
+{
+    ec = make_error_code(AvError::NoError);
+
     int gotPacket = 0;
-    int st = encodeCommon(outPacket, inFrame, gotPacket, avcodec_encode_video2);
+    Packet packet;
+    auto st = encodeCommon(packet, inFrame, gotPacket, avcodec_encode_video2);
 
-    if (st < 0)
-        return st;
-
-    if (!gotPacket)
-        return 0;
-
-    outPacket.setKeyPacket(!!m_raw->coded_frame->key_frame);
-
-    return 1;
-}
-
-ssize_t CodecContext::decodeAudio(AudioSamples2 &outFrame, const Packet & inPacket, size_t offset)
-{
-    int gotFrame = 0;
-    auto st = decodeCommon(outFrame, inPacket, offset, gotFrame, avcodec_decode_audio4);
-    if (st < 0)
-        return st;
-    if (!gotFrame)
-        return 0;
-
-    return st;
-}
-
-ssize_t CodecContext::encodeAudio(Packet & outPacket, const AudioSamples2 & inFrame)
-{
-    int gotFrame = 0;
-    auto st = encodeCommon(outPacket, inFrame, gotFrame, avcodec_encode_audio2);
-    if (st < 0)
-        return st;
-    if (!gotFrame)
-        return 0;
-
-    // Fake PTS actual only for Audio
-    if (inFrame.fakePts() != AV_NOPTS_VALUE) {
-        outPacket.setFakePts(inFrame.fakePts(), inFrame.timeBase());
+    if (get<0>(st) < 0) {
+        ec = error_code(get<0>(st), *get<1>(st));
+        return Packet();
     }
 
-    return 1;
+    if (!gotPacket) {
+        packet.setComplete(false);
+        return packet;
+    }
+
+    packet.setKeyPacket(!!m_raw->coded_frame->key_frame);
+
+    return packet;
+
+}
+
+AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, size_t offset) throw (AvException)
+{
+    error_code ec;
+    auto result = decodeAudio(ec, inPacket, offset);
+    if (ec)
+        throw_error_code(ec);
+    return result;
+}
+
+AudioSamples2 CodecContext::decodeAudio(error_code &ec, const Packet &inPacket, size_t offset) noexcept
+{
+    ec = make_error_code(AvError::NoError);
+
+    AudioSamples2 outSamples;
+
+    int gotFrame = 0;
+    auto st = decodeCommon(outSamples, inPacket, offset, gotFrame, avcodec_decode_audio4);
+    if (get<0>(st) < 0)
+    {
+        ec = error_code(get<0>(st), *get<1>(st));
+        return AudioSamples2();
+    }
+
+    if (!gotFrame)
+    {
+        outSamples.setComplete(false);
+        return outSamples;
+    }
+
+    return outSamples;
+
+}
+
+Packet CodecContext::encodeAudio(const AudioSamples2 &inSamples) throw (AvException)
+{
+    error_code ec;
+    auto result = encodeAudio(ec, inSamples);
+    if (ec)
+        throw_error_code(ec);
+    return result;
+}
+
+Packet CodecContext::encodeAudio(error_code &ec, const AudioSamples2 &inSamples) noexcept
+{
+    ec = make_error_code(AvError::NoError);
+
+    Packet outPacket;
+
+    int gotFrame = 0;
+    auto st = encodeCommon(outPacket, inSamples, gotFrame, avcodec_encode_audio2);
+    if (get<0>(st) < 0)
+    {
+         ec = error_code(get<0>(st), *get<1>(st));
+        return Packet();
+    }
+
+    if (!gotFrame)
+    {
+        outPacket.setComplete(false);
+        return outPacket;
+    }
+
+    // Fake PTS actual only for Audio
+    if (inSamples.fakePts() != AV_NOPTS_VALUE) {
+        outPacket.setFakePts(inSamples.fakePts(), inSamples.timeBase());
+    }
+
+    return outPacket;
 }
 
 bool CodecContext::isValidForEncode()
@@ -678,23 +842,37 @@ bool CodecContext::isValidForEncode()
     return true;
 }
 
-ssize_t CodecContext::decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *))
+namespace {
+
+std::pair<ssize_t, const error_category*>
+make_error_pair(AvError errc)
+{
+    return make_pair(static_cast<ssize_t>(errc), &avcpp_category());
+}
+
+std::pair<ssize_t, const error_category*>
+make_error_pair(ssize_t status)
+{
+    if (status < 0)
+        return make_pair(status, &ffmpeg_category());
+    return make_pair(status, nullptr);
+}
+
+}
+
+std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *))
 {
     if (!isValid())
-        return -1;
+        return make_error_pair(AvError::CodecInvalid);
 
     if (!isOpened())
-        return -1;
+        return make_error_pair(AvError::CodecDoesNotOpened);
 
     if (!decodeProc)
-    {
-        return -1;
-    }
+        return make_error_pair(AvError::CodecInvalidDecodeProc);
 
     if (offset >= inPacket.size())
-    {
-        return -1;
-    }
+        return make_error_pair(AvError::CodecDecodingOffsetToLarge);
 
     frameFinished = 0;
 
@@ -703,6 +881,12 @@ ssize_t CodecContext::decodeCommon(AVFrame *outFrame, const Packet &inPacket, si
     pkt.size -= offset;
 
     m_raw->reordered_opaque = inPacket.pts();
+
+    int decoded = decodeProc(m_raw, outFrame, &frameFinished, &pkt);
+    return make_error_pair(decoded);
+
+#if 0
+    // TODO: need to review
     ssize_t totalDecode = 0;
     do
     {
@@ -717,43 +901,43 @@ ssize_t CodecContext::decodeCommon(AVFrame *outFrame, const Packet &inPacket, si
         pkt.size   -= decoded;
     }
     while (frameFinished == 0 && pkt.size > 0);
-
     return totalDecode;
+#endif
 }
 
-ssize_t CodecContext::encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket, int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *))
+std::pair<ssize_t, const error_category *> CodecContext::encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket, int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *))
 {
     if (!isValid()) {
         fflog(AV_LOG_ERROR, "Invalid context\n");
-        return -1;
+        return make_error_pair(AvError::CodecInvalid);
     }
 
     if (!isValidForEncode()) {
         fflog(AV_LOG_ERROR, "Context can't be used for encoding\n");
-        return -1;
+        return make_error_pair(AvError::CodecInvalidForEncode);
     }
 
     if (!encodeProc) {
         fflog(AV_LOG_ERROR, "Encoding proc is null\n");
-        return -1;
+        return make_error_pair(AvError::CodecInvalidEncodeProc);
     }
 
     int stat = encodeProc(m_raw, outPacket.raw(), inFrame, &gotPacket);
     if (stat) {
-        fflog(AV_LOG_ERROR, "Encode error: %d\n", stat);
+        fflog(AV_LOG_ERROR, "Encode error: %d, %s\n", stat, error2string(stat).c_str());
     }
-    return stat;
+    return make_error_pair(stat);;
 }
 
 template<typename T>
-ssize_t CodecContext::decodeCommon(T &outFrame, const Packet & inPacket, size_t offset, int & frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *))
+std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(T &outFrame, const Packet & inPacket, size_t offset, int & frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *))
 {
     auto st = decodeCommon(outFrame.raw(), inPacket, offset, frameFinished, decodeProc);
-    if (st < 0)
+    if (get<0>(st) < 0)
         return st;
 
     if (!frameFinished)
-        return 0;
+        return make_pair(0u, nullptr);
 
     outFrame.setTimeBase(timeBase());
     outFrame.setStreamIndex(inPacket.streamIndex());
@@ -789,13 +973,13 @@ ssize_t CodecContext::decodeCommon(T &outFrame, const Packet & inPacket, size_t 
 }
 
 template<typename T>
-ssize_t CodecContext::encodeCommon(Packet & outPacket, const T & inFrame, int & gotPacket, int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *))
+std::pair<ssize_t, const error_category *> CodecContext::encodeCommon(Packet & outPacket, const T & inFrame, int & gotPacket, int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *))
 {
     auto st = encodeCommon(outPacket, inFrame.raw(), gotPacket, encodeProc);
-    if (st < 0)
+    if (get<0>(st) < 0)
         return st;
     if (!gotPacket)
-        return 0;
+        return make_pair(0u, nullptr);
 
     outPacket.setStreamIndex(inFrame.streamIndex());
 
@@ -819,7 +1003,9 @@ ssize_t CodecContext::encodeCommon(Packet & outPacket, const T & inFrame, int & 
     if (outPacket.dts() == AV_NOPTS_VALUE)
         outPacket.setDts(outPacket.pts());
 
-    return 1;
+    outPacket.setComplete(true);
+
+    return st;
 }
 
 

@@ -32,6 +32,8 @@ int main(int argc, char **argv)
     string uri {argv[1]};
     string out {argv[2]};
 
+    error_code ec;
+
     //
     // INPUT
     //
@@ -65,7 +67,8 @@ int main(int argc, char **argv)
         vdec = CodecContext(vst);
         vdec.setRefCountedFrames(true);
 
-        if (!vdec.open()) {
+        vdec.open(ec);
+        if (ec) {
             cerr << "Can't open codec\n";
             return 1;
         }
@@ -98,7 +101,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    if (!encoder.open()) {
+    encoder.open(ec);
+    if (ec) {
         cerr << "Can't opent encodec\n";
         return 1;
     }
@@ -125,19 +129,17 @@ int main(int argc, char **argv)
         clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
         // DECODING
-        VideoFrame2 frame {vdec.pixelFormat(), vdec.width(), vdec.height(), 32};
-        clog << "RefCounted: " << frame.isReferenced() << endl;
-
-        auto st = vdec.decodeVideo(frame, pkt);
+        //VideoFrame2 frame {vdec.pixelFormat(), vdec.width(), vdec.height(), 32};
+        auto frame = vdec.decodeVideo(ec, pkt);
 
         count++;
         if (count > 200)
             break;
 
-        if (st < 0) {
-            cerr << "Decoding error: " << st << endl;
+        if (ec) {
+            cerr << "Decoding error: " << ec << endl;
             return 1;
-        } else if (st == 0) {
+        } else if (!frame) {
             cerr << "Empty frame\n";
             continue;
         }
@@ -152,12 +154,11 @@ int main(int argc, char **argv)
         clog << "Frame: pts=" << frame.pts() << " / " << frame.pts() * frame.timeBase().getDouble() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
 
         // Encode
-        Packet opkt;
-        st = encoder.encodeVideo(opkt, frame);
-        if (st < 0) {
-            cerr << "Encoding error: " << st << endl;
+        auto opkt = encoder.encodeVideo(ec, frame);
+        if (ec) {
+            cerr << "Encoding error: " << ec << endl;
             return 1;
-        } else if (st == 0) {
+        } else if (!opkt) {
             cerr << "Empty packet\n";
             continue;
         }

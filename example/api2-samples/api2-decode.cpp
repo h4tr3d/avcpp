@@ -34,6 +34,7 @@ int main(int argc, char **argv)
     ssize_t      videoStream = -1;
     CodecContext vdec;
     Stream2      vst;
+    error_code   ec;
 
     int count = 0;
 
@@ -71,7 +72,8 @@ int main(int argc, char **argv)
             vdec.setCodec(codec);
             vdec.setRefCountedFrames(true);
 
-            if (!vdec.open()) {
+            vdec.open(ec);
+            if (ec) {
                 cerr << "Can't open codec\n";
                 return 1;
             }
@@ -89,17 +91,16 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            VideoFrame2 frame;
-            auto st = vdec.decodeVideo(frame, pkt);
+            VideoFrame2 frame = vdec.decodeVideo(ec, pkt);
 
             count++;
             if (count > 100)
                 break;
 
-            if (st < 0) {
-                cerr << "Error: " << st << endl;
+            if (ec) {
+                cerr << "Error: " << ec << endl;
                 return 1;
-            } else if (st == 0) {
+            } else if (!frame) {
                 //cerr << "Empty frame\n";
                 //continue;
             }

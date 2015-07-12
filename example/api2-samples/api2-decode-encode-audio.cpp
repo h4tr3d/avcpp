@@ -35,6 +35,7 @@ int main(int argc, char **argv)
     ssize_t      audioStream = -1;
     CodecContext adec;
     Stream2      ast;
+    error_code   ec;
 
     int count = 0;
 
@@ -75,7 +76,9 @@ int main(int argc, char **argv)
             adec.setCodec(codec);
             adec.setRefCountedFrames(true);
 
-            if (!adec.open()) {
+            adec.open(ec);
+
+            if (ec) {
                 cerr << "Can't open codec\n";
                 return 1;
             }
@@ -140,7 +143,8 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        if (!enc.open()) {
+        enc.open(ec);
+        if (ec) {
             cerr << "Can't open encoder\n";
             return 1;
         }
@@ -171,17 +175,15 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            AudioSamples2 samples;
-            auto st = adec.decodeAudio(samples, pkt);
-
+            AudioSamples2 samples = adec.decodeAudio(ec, pkt);
             count++;
             //if (count > 200)
             //    break;
 
-            if (st < 0) {
-                cerr << "Error: " << st << endl;
+            if (ec) {
+                cerr << "Error: " << ec << endl;
                 return 1;
-            } else if (st == 0) {
+            } else if (!samples) {
                 //cerr << "Empty frame\n";
                 continue;
             }
@@ -194,7 +196,7 @@ int main(int argc, char **argv)
                  << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
                  << endl;
 
-            st = resampler.push(samples);
+            auto st = resampler.push(samples);
             if (st < 0) {
                 clog << "Resampler push error: " << st << ", text: " << av::error2string(st) << endl;
                 continue;
@@ -228,12 +230,11 @@ int main(int argc, char **argv)
                 ouSamples.setStreamIndex(0);
                 ouSamples.setTimeBase(enc.timeBase());
 
-                Packet opkt;
-                st = enc.encodeAudio(opkt, ouSamples);
-                if (st < 0) {
-                    cerr << "Encoding error: " << st << " / " << av::error2string(st) << endl;
+                Packet opkt = enc.encodeAudio(ec, ouSamples);
+                if (!ec) {
+                    cerr << "Encoding error: " << ec << endl;
                     return 1;
-                } else if (st == 0) {
+                } else if (!opkt) {
                     //cerr << "Empty packet\n";
                     continue;
                 }
@@ -257,10 +258,8 @@ int main(int argc, char **argv)
         clog << "Flush encoder:\n";
         while (true) {
             AudioSamples2 null(nullptr);
-            Packet        opkt;
-
-            auto st = enc.encodeAudio(opkt, null);
-            if (st <= 0)
+            Packet        opkt = enc.encodeAudio(ec, null);
+            if (ec || !opkt)
                 break;
 
             opkt.setStreamIndex(0);

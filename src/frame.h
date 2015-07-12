@@ -181,6 +181,8 @@ public:
 
     bool isValid() const { return (!isNull() && m_raw->data[0] && m_raw->linesize[0]); }
 
+    operator bool() const { return isValid() && isComplete(); }
+
     uint8_t *data(size_t plane = 0) {
         if (!m_raw || plane >= AV_NUM_DATA_POINTERS)
             return nullptr;

@@ -91,7 +91,7 @@ void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy)
     av_copy_packet(&m_raw, &tmp);
 
     m_fakePts      = packet->pts;
-    m_completeFlag = true;
+    m_completeFlag = m_raw.size > 0;
 }
 
 bool Packet::setData(const vector<uint8_t> &newData)
@@ -188,7 +188,7 @@ int Packet::duration() const
 
 bool Packet::isComplete() const
 {
-    return m_completeFlag && m_raw.data;
+    return m_completeFlag && m_raw.data && m_raw.size;
 }
 
 void Packet::setStreamIndex(int idx)
@@ -300,7 +300,6 @@ Packet Packet::clone() const
 void Packet::setComplete(bool complete)
 {
     m_completeFlag = complete;
-    // TODO: we need set packet size here - this is indicator for complete packet
 }
 
 Packet &Packet::operator =(const Packet &rhs)

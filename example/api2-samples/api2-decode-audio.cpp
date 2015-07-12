@@ -34,6 +34,7 @@ int main(int argc, char **argv)
     ssize_t      audioStream = -1;
     CodecContext adec;
     Stream2      ast;
+    error_code   ec;
 
     int count = 0;
 
@@ -71,7 +72,8 @@ int main(int argc, char **argv)
             adec.setCodec(codec);
             adec.setRefCountedFrames(true);
 
-            if (!adec.open()) {
+            adec.open(ec);
+            if (ec) {
                 cerr << "Can't open codec\n";
                 return 1;
             }
@@ -89,17 +91,16 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            AudioSamples2 samples;
-            auto st = adec.decodeAudio(samples, pkt);
+            AudioSamples2 samples = adec.decodeAudio(ec, pkt);
 
             count++;
             if (count > 100)
                 break;
 
-            if (st < 0) {
-                cerr << "Error: " << st << endl;
+            if (ec) {
+                cerr << "Error: " << ec << endl;
                 return 1;
-            } else if (st == 0) {
+            } else if (!samples) {
                 //cerr << "Empty frame\n";
                 //continue;
             }

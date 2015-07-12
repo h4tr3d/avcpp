@@ -7,6 +7,7 @@
 #include "codec.h"
 #include "dictionary.h"
 #include "avutils.h"
+#include "averror.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -32,16 +33,22 @@ public:
     CodecContext& operator=(CodecContext &&rhs);
 
     // Common
-    void setCodec(const Codec &codec, bool resetDefaults = false);
+    void setCodec(const Codec &codec, bool resetDefaults = false) throw(AvException);
+    void setCodec(std::error_code &ec, const Codec &codec, bool resetDefaults = false) noexcept;
 
-    bool open(const Codec &codec = Codec());
-    bool open(Dictionary &options, const Codec &codec = Codec());
-    bool open(Dictionary &&options, const Codec &codec = Codec());
+    void open(const Codec &codec = Codec()) throw(AvException);
+    void open(Dictionary &options, const Codec &codec = Codec()) throw(AvException);
+    void open(Dictionary &&options, const Codec &codec = Codec()) throw(AvException);
 
+    void open(std::error_code &ec, const Codec &codec = Codec()) noexcept;
+    void open(std::error_code &ec, Dictionary &options, const Codec &codec = Codec()) noexcept;
+    void open(std::error_code &ec, Dictionary &&options, const Codec &codec = Codec()) noexcept;
 
-    bool close();
-    bool isOpened() const { return m_isOpened; }
-    bool isValid() const;
+    void close() throw(AvException);
+    void close(std::error_code &ec) noexcept;
+
+    bool isOpened() const noexcept { return m_isOpened; }
+    bool isValid() const noexcept;
 
     /**
      * Copy codec context from codec context associated with given stream or other codec context.
@@ -52,29 +59,32 @@ public:
      * @return true if context copied, false otherwise
      */
     /// @{
-    bool copyContextFrom(const CodecContext &other);
+    void copyContextFrom(const CodecContext &other) throw(AvException);
+    void copyContextFrom(std::error_code &ec, const CodecContext &other) noexcept;
+
     /// @}
 
     Rational timeBase() const;
-    void setTimeBase(const Rational &value);
+    void     setTimeBase(const Rational &value);
 
     const Stream2& stream() const;
 
     Codec       codec() const;
     AVMediaType codecType() const;
 
-    void        setOption(const std::string &key, const std::string &val, int flags = 0);
+    void setOption(const std::string &key, const std::string &val, int flags = 0) throw(AvException);
+    void setOption(std::error_code &ec, const std::string &key, const std::string &val, int flags = 0) noexcept;
 
-    bool        isAudio() const;
-    bool        isVideo() const;
+    bool isAudio() const;
+    bool isVideo() const;
 
     // Common
-    int                 frameSize() const;
-    int                 frameNumber() const;
+    int frameSize() const;
+    int frameNumber() const;
 
     // Note, set ref counted to enable for multithreaded processing
-    bool                isRefCountedFrames() const;
-    void                setRefCountedFrames(bool refcounted) const;
+    bool isRefCountedFrames() const;
+    void setRefCountedFrames(bool refcounted) const;
 
     // Video
     int                 width() const;
@@ -134,37 +144,51 @@ public:
     bool        isFlags2(int flags2);
     /// @}
 
+    //
     // Video
-    ssize_t decodeVideo(VideoFrame2  &outFrame,  const Packet &inPacket, size_t offset = 0);
-    ssize_t encodeVideo(Packet &outPacket, const VideoFrame2 &inFrame);
+    //
+    VideoFrame2 decodeVideo(const Packet &packet, bool autoAllocateFrame = true, size_t offset = 0, size_t *decodedBytes = nullptr) throw (AvException);
+    VideoFrame2 decodeVideo(std::error_code &ec, const Packet &packet, bool autoAllocateFrame = true, size_t offset = 0, size_t *decodedBytes = nullptr) noexcept;
 
+    Packet encodeVideo(const VideoFrame2 &inFrame)                      throw (AvException);
+    Packet encodeVideo(std::error_code &ec, const VideoFrame2 &inFrame) noexcept;
+
+    //
     // Audio
-    ssize_t decodeAudio(AudioSamples2 &outFrame, const Packet &inPacket, size_t offset = 0);
-    ssize_t encodeAudio(Packet &outPacket, const AudioSamples2 &inFrame);
+    //
+    AudioSamples2 decodeAudio(const Packet &inPacket, size_t offset = 0) throw (AvException);
+    AudioSamples2 decodeAudio(std::error_code &ec, const Packet &inPacket, size_t offset = 0) noexcept;
+
+    Packet encodeAudio(const AudioSamples2 &inSamples) throw (AvException);
+    Packet encodeAudio(std::error_code &ec, const AudioSamples2 &inSamples) noexcept;
 
     bool    isValidForEncode();
 
 private:
-    bool open(const Codec &codec, AVDictionary **options);
+    void open(const Codec &codec, AVDictionary **options, std::error_code &ec);
 
-    ssize_t decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished,
-                         int (*decodeProc)(AVCodecContext*, AVFrame*,int *, const AVPacket *));
+    std::pair<ssize_t, const std::error_category*>
+    decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished,
+                 int (*decodeProc)(AVCodecContext*, AVFrame*,int *, const AVPacket *));
 
-    ssize_t encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket,
+    std::pair<ssize_t, const std::error_category*>
+    encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket,
                          int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*));
 
     template<typename T>
-    ssize_t decodeCommon(T &outFrame,
-                         const Packet &inPacket,
-                         size_t offset,
-                         int &frameFinished,
-                         int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *));
+    std::pair<ssize_t, const std::error_category*>
+    decodeCommon(T &outFrame,
+                 const Packet &inPacket,
+                 size_t offset,
+                 int &frameFinished,
+                 int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *));
 
     template<typename T>
-    ssize_t encodeCommon(Packet &outPacket,
-                         const T &inFrame,
-                         int &gotPacket,
-                         int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *));
+    std::pair<ssize_t, const std::error_category*>
+    encodeCommon(Packet &outPacket,
+                 const T &inFrame,
+                 int &gotPacket,
+                 int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *));
 
 private:
     Direction       m_direction = Direction::INVALID;
