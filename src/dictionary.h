@@ -331,8 +331,8 @@ public:
      * @return
      */
     /// @{
-    const char* operator[](size_t index) const throw(AvException);
-    Entry       operator[](size_t index) throw(AvException);
+    const char* operator[](size_t index) const;
+    Entry       operator[](size_t index);
     /// @}
 
     /**
@@ -342,7 +342,7 @@ public:
      * @return
      */
     /// @{
-    const char* operator[](const char* key) const throw(AvException);
+    const char* operator[](const char* key) const;
     Entry       operator[](const char* key) noexcept;
     /// @}
 
@@ -368,40 +368,16 @@ public:
     const char *get(const std::string& key, int flags = 0) const noexcept;
     /// @}
 
-    /**
-     * @brief set - set new value for key or add new dictionary item (or create dictionary)
-     * If dictionary empty (null), it takes ownershipping too.
-     *
-     * On error throws exception with error code;
-     *
-     * @param key    key to change (can be std::string or char*)
-     * @param value  key value (can be std::string, char* or integer)
-     * @param flags  see Flags
-     *
-     */
-    template<typename Key, typename Value = Key>
-    typename std::enable_if
-    <
-      (std::is_same<Key, std::string>::value || std::is_same<typename std::remove_cv<typename std::decay<Key>::type>::type, char*>::value) &&
-      (std::is_same<Value, std::string>::value || std::is_same<typename std::remove_cv<typename std::decay<Value>::type>::type, char*>::value || std::is_integral<Value>::value)
-      ,void
-    >::type
-    set(const Key& key, const Value& value, int flags = 0) throw(AvException)
-    {
-        std::error_code ec;
-        set<Key, Value>(ec, key, value, flags);
-        if (ec)
-            throw_error_code(ec);
-    }
 
     /**
      * @brief set - set new value for key or add new dictionary item (or create dictionary)
      * If dictionary empty (null), it takes ownershipping too.
      *
-     * @param ec     error code
-     * @param key    key to change (can be std::string or char*)
-     * @param value  key value (can be std::string, char* or integer)
-     * @param flags  see Flags
+     * @param[in]     key    key to change (can be std::string or char*)
+     * @param[in]     value  key value (can be std::string, char* or integer)
+     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
+     *                       av#throws the function will throw on error instead
+     * @param[in]     flags  see Flags
      *
      */
     template<typename Key, typename Value = Key>
@@ -411,12 +387,12 @@ public:
       (std::is_same<Value, std::string>::value || std::is_same<typename std::remove_cv<typename std::decay<Value>::type>::type, char*>::value || std::is_integral<Value>::value)
       ,void
     >::type
-    set(std::error_code &ec, const Key& key, const Value& value, int flags = 0) noexcept
+    set(const Key& key, const Value& value, std::error_code &ec = throws(), int flags = 0)
     {
-        ec = make_error_code(AvError::NoError);
+        clear_if(ec);
         int sts;
         if ((sts = set_priv(key, value, flags)) < 0) {
-            ec = make_ffmpeg_error(sts);
+            throws_if(ec, sts, ffmpeg_category());
         }
     }
 
@@ -428,44 +404,18 @@ public:
      * foo:bar&foo2:bar2
      * @endcode
      *
-     * This version throw AvException with error code on error.
-     *
      * @param str       string to process
      * @param keyValSep null-terminated string with chars that interprets as key and value separators
      *                  '=' and ':' in most cases.
      * @param pairsSep  null-terminates string with chars that interprets as pairs (key and value)
      *                  separators. ';' and ',' in most cases.
      * @param flags     See Flags. All flags that omit strdups ignores.
+     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
+     *                       av#throws the function will throw on error instead
      * @return 0 on success, <0 on fail
      */
     template<typename Str, typename Sep1, typename Sep2>
-    void parseString(const Str& str, const Sep1& keyvalSep, const Sep2& pairsSep, int flags = 0) throw(AvException)
-    {
-        std::error_code ec;
-        parseString(ec, str, keyvalSep, pairsSep, flags);
-        if (ec)
-            throw_error_code(ec);
-    }
-
-    /**
-     * @brief parseString - process string with options and fill dictionary
-     * String examples:
-     * @code
-     * foo=bar;foo2=bar2
-     * foo:bar&foo2:bar2
-     * @endcode
-     *
-     * @param ec        error code storage, AvError::NoError on success
-     * @param str       string to process
-     * @param keyValSep null-terminated string with chars that interprets as key and value separators
-     *                  '=' and ':' in most cases.
-     * @param pairsSep  null-terminates string with chars that interprets as pairs (key and value)
-     *                  separators. ';' and ',' in most cases.
-     * @param flags     See Flags. All flags that omit strdups ignores.
-     * @return 0 on success, <0 on fail
-     */
-    template<typename Str, typename Sep1, typename Sep2>
-    void parseString(std::error_code &ec, const Str& str, const Sep1& keyvalSep, const Sep2& pairsSep, int flags = 0) throw(AvException)
+    void parseString(const Str& str, const Sep1& keyvalSep, const Sep2& pairsSep, int flags = 0, std::error_code &ec = throws())
     {
         parseString_priv(ec,
                          _to_const_char_ptr(str),
@@ -479,53 +429,18 @@ public:
      *
      * This line can be processed via parseString() later.
      *
-     * On error AvException with error code thrown.
-     *
      * FFmpeg internaly allocated buffer copies to the string and freed.
      *
-     * @param keyValSep   char to separate key and value
-     * @param pairsSep    chat to separate key-value pairs.
-     * @return valid string
-     *
-     * @note \\0 and same separator chars unapplicable.
-     *
-     */
-    std::string toString(const char keyValSep, const char pairsSep) const throw(AvException);
-
-    /**
-     * @brief toString - converts dictionary to the string representation (serialize)
-     *
-     * This line can be processed via parseString() later.
-     *
-     * FFmpeg internaly allocated buffer copies to the string and freed.
-     *
-     * @param[out] ec          error code holder
      * @param[in]  keyValSep   char to separate key and value
      * @param[in] pairsSep    chat to separate key-value pairs.
+     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
+     *                       av#throws the function will throw on error instead
      * @return valid string, null-string (std::string()) on error
      *
      * @note \\0 and same separator chars unapplicable.
      *
      */
-    std::string toString(std::error_code &ec, const char keyValSep, const char pairsSep) const noexcept;
-
-    /**
-     * @brief toRawStringPtr - converts dictionary to the raw string (char*) and protect it with
-     * smart pointer (std::unique_ptr).
-     *
-     * This method omit data copy and returns raw pointer that allocated by av_dict_get_string(). For
-     * more safety this block wrapped with no-overhead smart pointer (std::unique_ptr).
-     *
-     * On error AvException thrown.
-     *
-     * @see toString()
-     *
-     * @param[in]  keyValSep   char to separate key and value
-     * @param[in] pairsSep    chat to separate key-value pairs.
-     *
-     * @return valid string
-     */
-    RawStringPtr toRawStringPtr(const char keyValSep, const char pairsSep) const throw(AvException);
+    std::string toString(const char keyValSep, const char pairsSep, std::error_code &ec = throws()) const;
 
     /**
      * @brief toRawStringPtr - converts dictionary to the raw string (char*) and protect it with
@@ -536,13 +451,14 @@ public:
      *
      * @see toString()
      *
-     * @param[out] ec          error code holder
      * @param[in]  keyValSep   char to separate key and value
      * @param[in]  pairsSep    chat to separate key-value pairs.
+     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
+     *                       av#throws the function will throw on error instead
      *
      * @return valid string, null on error (check ec)
      */
-    RawStringPtr toRawStringPtr(std::error_code &ec, const char keyValSep, const char pairsSep) const noexcept;
+    RawStringPtr toRawStringPtr(const char keyValSep, const char pairsSep, std::error_code &ec = throws()) const;
 
     /**
      * @brief copyFrom - copy data from other dictionary.

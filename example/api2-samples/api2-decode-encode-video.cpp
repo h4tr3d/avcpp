@@ -67,7 +67,7 @@ int main(int argc, char **argv)
         vdec = CodecContext(vst);
         vdec.setRefCountedFrames(true);
 
-        vdec.open(ec);
+        vdec.open(Codec(), ec);
         if (ec) {
             cerr << "Can't open codec\n";
             return 1;
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    encoder.open(ec);
+    encoder.open(Codec(), ec);
     if (ec) {
         cerr << "Can't opent encodec\n";
         return 1;
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 
         // DECODING
         //VideoFrame2 frame {vdec.pixelFormat(), vdec.width(), vdec.height(), 32};
-        auto frame = vdec.decodeVideo(ec, pkt);
+        auto frame = vdec.decodeVideo(pkt, ec);
 
         count++;
         if (count > 200)
@@ -154,7 +154,7 @@ int main(int argc, char **argv)
         clog << "Frame: pts=" << frame.pts() << " / " << frame.pts() * frame.timeBase().getDouble() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
 
         // Encode
-        auto opkt = encoder.encodeVideo(ec, frame);
+        auto opkt = encoder.encodeVideo(frame, ec);
         if (ec) {
             cerr << "Encoding error: " << ec << endl;
             return 1;

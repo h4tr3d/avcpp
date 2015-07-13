@@ -118,7 +118,7 @@ void Dictionary::assign(AVDictionary *dict, bool takeOwning) noexcept
     Dictionary(dict, takeOwning).swap(*this);
 }
 
-const char *Dictionary::operator[](size_t index) const throw(AvException)
+const char *Dictionary::operator[](size_t index) const
 {
     if (index >= count())
         throw_error_code(AvError::DictOutOfRage);
@@ -129,7 +129,7 @@ const char *Dictionary::operator[](size_t index) const throw(AvException)
     return entry->value;
 }
 
-Dictionary::Entry Dictionary::operator[](size_t index) throw(AvException)
+Dictionary::Entry Dictionary::operator[](size_t index)
 {
     Entry holder;
     if (index >= count())
@@ -143,7 +143,7 @@ Dictionary::Entry Dictionary::operator[](size_t index) throw(AvException)
 
 }
 
-const char *Dictionary::operator[](const char *key) const throw(AvException)
+const char *Dictionary::operator[](const char *key) const
 {
     auto entry = av_dict_get(m_raw, key, nullptr, 0);
     if (!entry)
@@ -203,21 +203,12 @@ const char *Dictionary::get(const std::string & key, int flags) const noexcept
     return get(key.c_str(), flags);
 }
 
-string Dictionary::toString(const char keyValSep, const char pairsSep) const throw(AvException)
-{
-    error_code ec;
-    auto result = toString(ec, keyValSep, pairsSep);
-    if (ec)
-        throw_error_code(ec);
-    return std::move(result);
-}
-
-string Dictionary::toString(error_code &ec, const char keyValSep, const char pairsSep) const noexcept
+string Dictionary::toString(const char keyValSep, const char pairsSep, error_code &ec) const
 {
     string  str;
     char   *buf = nullptr;
 
-    ec = make_error_code(AvError::NoError);
+    clear_if(ec);
 
     int sts = av_dict_get_string(m_raw, &buf, keyValSep, pairsSep);
     if (sts >= 0)
@@ -227,27 +218,18 @@ string Dictionary::toString(error_code &ec, const char keyValSep, const char pai
     }
     else
     {
-        ec = make_ffmpeg_error(sts);
+        throws_if(ec, sts, ffmpeg_category());
     }
 
     return std::move(str);
 }
 
-Dictionary::RawStringPtr Dictionary::toRawStringPtr(const char keyValSep, const char pairsSep) const throw(AvException)
-{
-    error_code ec;
-    auto result = toRawStringPtr(ec, keyValSep, pairsSep);
-    if (ec)
-        throw_error_code(ec);
-    return result;
-}
-
-Dictionary::RawStringPtr Dictionary::toRawStringPtr(error_code &ec, const char keyValSep, const char pairsSep) const noexcept
+Dictionary::RawStringPtr Dictionary::toRawStringPtr(const char keyValSep, const char pairsSep, error_code &ec) const
 {
     RawStringPtr  str;
     char         *buf = nullptr;
 
-    ec = make_error_code(AvError::NoError);
+    clear_if(ec);
 
     int sts = av_dict_get_string(m_raw, &buf, keyValSep, pairsSep);
     if (sts >= 0)
@@ -256,7 +238,7 @@ Dictionary::RawStringPtr Dictionary::toRawStringPtr(error_code &ec, const char k
     }
     else
     {
-        ec = make_ffmpeg_error(sts);
+        throws_if(ec, sts, ffmpeg_category());
     }
 
     return std::move(str);
@@ -311,10 +293,10 @@ int Dictionary::parseString_priv(const char *str, const char *keyvalSep, const c
 
 void Dictionary::parseString_priv(error_code &ec, const char *str, const char *keyvalSep, const char *pairsSep, int flags)
 {
-    ec = make_error_code(AvError::NoError);
+    clear_if(ec);
     int sts;
     if ((sts = parseString_priv(str, keyvalSep, pairsSep, flags)) < 0) {
-        ec = make_ffmpeg_error(sts);
+        throws_if(ec, sts, ffmpeg_category());
     }
 }
 

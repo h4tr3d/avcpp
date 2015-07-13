@@ -72,7 +72,7 @@ int main(int argc, char **argv)
             adec.setCodec(codec);
             adec.setRefCountedFrames(true);
 
-            adec.open(ec);
+            adec.open(Codec(), ec);
             if (ec) {
                 cerr << "Can't open codec\n";
                 return 1;
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            AudioSamples2 samples = adec.decodeAudio(ec, pkt);
+            AudioSamples2 samples = adec.decodeAudio(pkt, ec);
 
             count++;
             if (count > 100)

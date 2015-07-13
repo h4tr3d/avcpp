@@ -175,12 +175,12 @@ int main()
         dict.parseString("key3=val1;key4=val2", string("="), string(";"));
 
         error_code ec;
-        cout << " str: " << dict.toString(ec, ':', ',') << endl;
+        cout << " str: " << dict.toString(':', ',', ec) << endl;
         cout << " err: " << ec << ", " << ec.message() << endl;
-        cout << " str: " << dict.toString(ec, ':', '\0') << endl;
+        cout << " str: " << dict.toString(':', '\0', ec) << endl;
         cout << " err: " << ec << ", " << ec.message() << endl;
 
-        auto raw = dict.toRawStringPtr(ec, '=', ',');
+        auto raw = dict.toRawStringPtr('=', ',', ec);
         cout << " str: " << raw.get() << endl;
         cout << " err: " << ec << ", " << ec.message() << endl;
 

@@ -79,7 +79,7 @@ int main(int argc, char **argv)
             vdec.setCodec(codec);
             vdec.setRefCountedFrames(true);
 
-            vdec.open(ec, {{"threads", "1"}});
+            vdec.open({{"threads", "1"}}, Codec(), ec);
             //vdec.open(ec);
             if (ec) {
                 cerr << "Can't open codec\n";
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            VideoFrame2 frame = vdec.decodeVideo(ec, pkt);
+            VideoFrame2 frame = vdec.decodeVideo(pkt, ec);
 
             count++;
             if (count > 100)

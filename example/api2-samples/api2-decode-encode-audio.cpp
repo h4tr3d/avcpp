@@ -76,7 +76,7 @@ int main(int argc, char **argv)
             adec.setCodec(codec);
             adec.setRefCountedFrames(true);
 
-            adec.open(ec);
+            adec.open(Codec(), ec);
 
             if (ec) {
                 cerr << "Can't open codec\n";
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        enc.open(ec);
+        enc.open(Codec(), ec);
         if (ec) {
             cerr << "Can't open encoder\n";
             return 1;
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            AudioSamples2 samples = adec.decodeAudio(ec, pkt);
+            AudioSamples2 samples = adec.decodeAudio(pkt, ec);
             count++;
             //if (count > 200)
             //    break;
@@ -230,7 +230,7 @@ int main(int argc, char **argv)
                 ouSamples.setStreamIndex(0);
                 ouSamples.setTimeBase(enc.timeBase());
 
-                Packet opkt = enc.encodeAudio(ec, ouSamples);
+                Packet opkt = enc.encodeAudio(ouSamples, ec);
                 if (!ec) {
                     cerr << "Encoding error: " << ec << endl;
                     return 1;
@@ -258,7 +258,7 @@ int main(int argc, char **argv)
         clog << "Flush encoder:\n";
         while (true) {
             AudioSamples2 null(nullptr);
-            Packet        opkt = enc.encodeAudio(ec, null);
+            Packet        opkt = enc.encodeAudio(null, ec);
             if (ec || !opkt)
                 break;
 

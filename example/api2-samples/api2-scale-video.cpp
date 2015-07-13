@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 
         cerr << "PTR: " << (void*)vdec.raw()->codec << endl;
 
-        vdec.open(ec);
+        vdec.open(Codec(), ec);
         if (ec) {
             cerr << "Can't open decoder\n";
             return 1;
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    encoder.open(ec);
+    encoder.open(Codec(), ec);
     if (ec) {
         cerr << "Can't opent encoder\n";
         return 1;
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
         clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
         // DECODING
-        auto inpFrame = vdec.decodeVideo(ec, pkt);
+        auto inpFrame = vdec.decodeVideo(pkt, ec);
 
         count++;
         if (count > 200)
@@ -181,7 +181,7 @@ int main(int argc, char **argv)
              << " / type: " << outFrame.pictureType()  << endl;
 
         // ENCODE
-        Packet opkt = encoder.encodeVideo(ec, outFrame);
+        Packet opkt = encoder.encodeVideo(outFrame, ec);
         if (ec) {
             cerr << "Encoding error: " << ec << endl;
             return 1;

@@ -6,7 +6,6 @@
 
 namespace av
 {
-
 enum class AvError
 {
     NoError =  0,
@@ -23,7 +22,6 @@ enum class AvError
     CodecInvalidForEncode = -11,
     CodecInvalidForDecoce = -12,
     FrameInvalid = -13,
-
     DictOutOfRage = -14,
     DictNoKey     = -15,
 };
@@ -141,6 +139,61 @@ inline
 void throw_error_code(AvError errc)
 {
     throw AvException(make_error_code(errc));
+}
+
+namespace detail { inline std::error_code * throws() { return 0; } }
+// From Boost.System
+//  Misuse of the error_code object is turned into a noisy failure by
+//  poisoning the reference. This particular implementation doesn't
+//  produce warnings or errors from popular compilers, is very efficient
+//  (as determined by inspecting generated code), and does not suffer
+//  from order of initialization problems. In practice, it also seems
+//  cause user function error handling implementation errors to be detected
+//  very early in the development cycle.
+inline std::error_code& throws()
+{
+    return *detail::throws();
+}
+
+
+/**
+ * @brief Throws exception if ec is av::throws() or fill error code
+ */
+template<typename Category>
+void throws_if(std::error_code &ec, int errcode, const Category &cat)
+{
+    if (&ec == &throws())
+    {
+        throw av::AvException(std::error_code(errcode, cat));
+    }
+    else
+    {
+        ec = std::error_code(errcode, cat);
+    }
+}
+
+template<typename T>
+void throws_if(std::error_code &ec, T errcode)
+{
+    if (&ec == &throws())
+    {
+        throw av::AvException(make_error_code(errcode));
+    }
+    else
+    {
+        ec = make_error_code(errcode);
+    }
+}
+
+/**
+ * @brief clear_if - clear error code if it is not av::throws()
+ * @param ec error code to clear
+ */
+inline
+void clear_if(std::error_code &ec)
+{
+    if (&ec != &throws())
+        ec.clear();
 }
 
 } // ::av

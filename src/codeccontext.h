@@ -33,19 +33,17 @@ public:
     CodecContext& operator=(CodecContext &&rhs);
 
     // Common
-    void setCodec(const Codec &codec, bool resetDefaults = false) throw(AvException);
-    void setCodec(std::error_code &ec, const Codec &codec, bool resetDefaults = false) noexcept;
+    void setCodec(const Codec &codec, std::error_code &ec = throws());
+    void setCodec(const Codec &codec, bool resetDefaults, std::error_code &ec = throws());
 
-    void open(const Codec &codec = Codec()) throw(AvException);
-    void open(Dictionary &options, const Codec &codec = Codec()) throw(AvException);
-    void open(Dictionary &&options, const Codec &codec = Codec()) throw(AvException);
+    void open(std::error_code &ec = throws());
+    void open(const Codec &codec, std::error_code &ec = throws());
+    void open(Dictionary &options, std::error_code &ec = throws());
+    void open(Dictionary &&options, std::error_code &ec = throws());
+    void open(Dictionary &options, const Codec &codec, std::error_code &ec = throws());
+    void open(Dictionary &&options, const Codec &codec, std::error_code &ec = throws());
 
-    void open(std::error_code &ec, const Codec &codec = Codec()) noexcept;
-    void open(std::error_code &ec, Dictionary &options, const Codec &codec = Codec()) noexcept;
-    void open(std::error_code &ec, Dictionary &&options, const Codec &codec = Codec()) noexcept;
-
-    void close() throw(AvException);
-    void close(std::error_code &ec) noexcept;
+    void close(std::error_code &ec = throws());
 
     bool isOpened() const noexcept { return m_isOpened; }
     bool isValid() const noexcept;
@@ -59,8 +57,7 @@ public:
      * @return true if context copied, false otherwise
      */
     /// @{
-    void copyContextFrom(const CodecContext &other) throw(AvException);
-    void copyContextFrom(std::error_code &ec, const CodecContext &other) noexcept;
+    void copyContextFrom(const CodecContext &other, std::error_code &ec = throws());
 
     /// @}
 
@@ -72,8 +69,8 @@ public:
     Codec       codec() const;
     AVMediaType codecType() const;
 
-    void setOption(const std::string &key, const std::string &val, int flags = 0) throw(AvException);
-    void setOption(std::error_code &ec, const std::string &key, const std::string &val, int flags = 0) noexcept;
+    void setOption(const std::string &key, const std::string &val, std::error_code &ec = throws());
+    void setOption(const std::string &key, const std::string &val, int flags, std::error_code &ec = throws());
 
     bool isAudio() const;
     bool isVideo() const;
@@ -147,25 +144,84 @@ public:
     //
     // Video
     //
-    VideoFrame2 decodeVideo(const Packet &packet, bool autoAllocateFrame = true, size_t offset = 0, size_t *decodedBytes = nullptr) throw (AvException);
-    VideoFrame2 decodeVideo(std::error_code &ec, const Packet &packet, bool autoAllocateFrame = true, size_t offset = 0, size_t *decodedBytes = nullptr) noexcept;
 
-    Packet encodeVideo(const VideoFrame2 &inFrame)                      throw (AvException);
-    Packet encodeVideo(std::error_code &ec, const VideoFrame2 &inFrame) noexcept;
+    /**
+     * @brief decodeVideo  - decode video packet
+     *
+     * @param packet   packet to decode
+     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
+     *                       av#throws the function will throw on error instead
+     * @param autoAllocateFrame  it true - output will be allocated at the ffmpeg internal, otherwise
+     *                           it will be allocated before decode proc call.
+     * @return encoded video frame, if error: exception thrown or error code returns, in both cases
+     *         output undefined.
+     */
+    VideoFrame2 decodeVideo(const Packet    &packet,
+                            std::error_code &ec = throws(),
+                            bool             autoAllocateFrame = true);
+
+    /**
+     * @brief decodeVideo - decode video packet with additional parameters
+     *
+     * @param[in] packet         packet to decode
+     * @param[in] offset         data offset in packet
+     * @param[out] decodedBytes  amount of decoded bytes
+     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
+     *                       av#throws the function will throw on error instead
+     * @param autoAllocateFrame  it true - output will be allocated at the ffmpeg internal, otherwise
+     *                           it will be allocated before decode proc call.
+     * @return encoded video frame, if error: exception thrown or error code returns, in both cases
+     *         output undefined.
+     */
+    VideoFrame2 decodeVideo(const Packet &packet,
+                            size_t offset,
+                            size_t &decodedBytes,
+                            std::error_code &ec = throws(),
+                            bool    autoAllocateFrame = true);
+
+    /**
+     * @brief encodeVideo - Flush encoder
+     *
+     * Stop flushing when returns empty packets
+     *
+     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
+     *                       av#throws the function will throw on error instead
+     * @return
+     */
+    Packet encodeVideo(std::error_code &ec = throws());
+
+    /**
+     * @brief encodeVideo - encode video frame
+     *
+     * @note Some encoders need some amount of frames before beginning encoding, so it is normal,
+     *       that for some amount of frames returns empty packets.
+     *
+     * @param inFrame  frame to encode
+     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
+     *                       av#throws the function will throw on error instead
+     * @return
+     */
+    Packet encodeVideo(const VideoFrame2 &inFrame, std::error_code &ec = throws());
 
     //
     // Audio
     //
-    AudioSamples2 decodeAudio(const Packet &inPacket, size_t offset = 0) throw (AvException);
-    AudioSamples2 decodeAudio(std::error_code &ec, const Packet &inPacket, size_t offset = 0) noexcept;
+    AudioSamples2 decodeAudio(const Packet &inPacket, std::error_code &ec = throws());
+    AudioSamples2 decodeAudio(const Packet &inPacket, size_t offset, std::error_code &ec = throws());
 
-    Packet encodeAudio(const AudioSamples2 &inSamples) throw (AvException);
-    Packet encodeAudio(std::error_code &ec, const AudioSamples2 &inSamples) noexcept;
+    Packet encodeAudio(std::error_code &ec = throws());
+    Packet encodeAudio(const AudioSamples2 &inSamples, std::error_code &ec = throws());
 
     bool    isValidForEncode();
 
 private:
     void open(const Codec &codec, AVDictionary **options, std::error_code &ec);
+
+    VideoFrame2 decodeVideo(std::error_code &ec,
+                            const Packet &packet,
+                            size_t offset,
+                            size_t *decodedBytes,
+                            bool    autoAllocateFrame);
 
     std::pair<ssize_t, const std::error_category*>
     decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished,
