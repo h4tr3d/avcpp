@@ -148,6 +148,7 @@ void FormatContext::close()
         m_monitor.reset(new char);
         m_isOpened = false;
         m_streamsInfoFound = false;
+        m_headerWriten = false;
 
         // To prevent free not out custom IO, e.g. setted via raw pointer access
         if (m_customIO) {
@@ -180,44 +181,74 @@ Stream2 FormatContext::stream(size_t idx)
     return Stream2(m_monitor, m_raw->streams[idx], isOutput() ? Direction::ENCODING : Direction::DECODING);
 }
 
-Stream2 FormatContext::addStream(const Codec &codec)
+Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
 {
+    clear_if(ec);
     if (!m_raw)
+    {
+        throws_if(ec, AvError::Unallocated);
         return Stream2();
+    }
 
     auto rawcodec = codec.raw();
     AVStream *st = nullptr;
 
     st = avformat_new_stream(m_raw, rawcodec);
     if (!st)
+    {
+        throws_if(ec, AvError::FormatCantAddStream);
         return Stream2();
+    }
 
     return Stream2(m_monitor, st, Direction::ENCODING);
 }
 
-bool FormatContext::openInput(const string &uri, InputFormat format)
+void FormatContext::openInput(const string &uri, error_code &ec)
 {
-    return openInput(uri, format, nullptr);
+    openInput(uri, InputFormat(), ec);
 }
 
-bool FormatContext::openInput(const string &uri, Dictionary &formatOptions, InputFormat format)
+void FormatContext::openInput(const string &uri, Dictionary &formatOptions, error_code &ec)
+{
+    openInput(uri, formatOptions, InputFormat(), ec);
+}
+
+void FormatContext::openInput(const string &uri, Dictionary &&formatOptions, error_code &ec)
+{
+    openInput(uri, std::move(formatOptions), InputFormat(), ec);
+}
+
+void FormatContext::openInput(const string &uri, InputFormat format, error_code &ec)
+{
+    openInput(uri, format, nullptr, ec);
+}
+
+void FormatContext::openInput(const string &uri, Dictionary &formatOptions, InputFormat format, error_code &ec)
 {
     auto dictptr = formatOptions.release();
-    bool result  = openInput(uri, format, &dictptr);
-    formatOptions.assign(dictptr);
-    return result;
+
+    ScopeOutAction onReturn([&dictptr, &formatOptions](){
+        formatOptions.assign(dictptr);
+    });
+
+    openInput(uri, format, &dictptr, ec);
 }
 
-bool FormatContext::openInput(const string &uri, Dictionary &&formatOptions, InputFormat format)
+void FormatContext::openInput(const string &uri, Dictionary &&formatOptions, InputFormat format, error_code &ec)
 {
     // It calls non-movable vesion
-    return openInput(uri, formatOptions, format);
+    return openInput(uri, formatOptions, format, ec);
 }
 
-bool FormatContext::openInput(const std::string &uri, InputFormat format, AVDictionary **options)
+void FormatContext::openInput(const std::string &uri, InputFormat format, AVDictionary **options, error_code &ec)
 {
+    clear_if(ec);
+
     if (m_isOpened)
-        return false;
+    {
+        throws_if(ec, AvError::FormatAlreadyOpened);
+        return;
+    }
 
     if (format.isNull() && m_raw && m_raw->iformat)
         format = InputFormat(m_raw->iformat);
@@ -225,222 +256,446 @@ bool FormatContext::openInput(const std::string &uri, InputFormat format, AVDict
     resetSocketAccess();
     int ret = avformat_open_input(&m_raw, uri.empty() ? nullptr : uri.c_str(), format.raw(), options);
     if (ret < 0)
-        return false;
+    {
+        throws_if(ec, ret, ffmpeg_category());
+        return;
+    }
 
     m_uri      = uri;
     m_isOpened = true;
-    //queryInputStreams();
-    return true;
 }
 
-bool FormatContext::openInput(CustomIO *io, size_t internalBufferSize, InputFormat format)
+void FormatContext::openInput(CustomIO       *io,
+                              InputFormat     format,
+                              std::error_code &ec,
+                              size_t           internalBufferSize)
 {
-    bool res = openCustomIO(io, internalBufferSize, false);
-    if (!res)
-        return false;
-    return openInput(string(), format);
+    openCustomIOInput(io, internalBufferSize, ec);
+    if (!is_error(ec))
+        openInput(string(), format, ec);
 }
 
-bool FormatContext::openInput(CustomIO *io, Dictionary &formatOptions, size_t internalBufferSize, InputFormat format)
+void FormatContext::openInput(CustomIO        *io,
+                              Dictionary      &formatOptions,
+                              InputFormat      format,
+                              std::error_code &ec,
+                              size_t           internalBufferSize)
 {
-    bool res = openCustomIO(io, internalBufferSize, false);
-    if (!res)
-        return false;
-    return openInput(string(), formatOptions, format);
+    openCustomIOInput(io, internalBufferSize, ec);
+    if (!is_error(ec))
+        openInput(string(), formatOptions, format, ec);
 }
 
-bool FormatContext::openInput(CustomIO *io, Dictionary &&formatOptions, size_t internalBufferSize, InputFormat format)
+void FormatContext::openInput(CustomIO        *io,
+                              Dictionary     &&formatOptions,
+                              InputFormat      format,
+                              std::error_code  &ec,
+                              size_t            internalBufferSize)
 {
-    return openInput(io, formatOptions, internalBufferSize, format);
+    openInput(io, formatOptions, format, ec, internalBufferSize);
 }
 
-bool FormatContext::findStreamInfo()
+void FormatContext::findStreamInfo(error_code &ec)
 {
-    return findStreamInfo(nullptr);
+    findStreamInfo(nullptr, 0, ec);
 }
 
-bool FormatContext::findStreamInfo(DictionaryArray &streamsOptions)
+void FormatContext::findStreamInfo(DictionaryArray &streamsOptions, error_code &ec)
 {
     auto ptrs = streamsOptions.release();
     auto count = streamsOptions.size();
-    auto result = findStreamInfo(ptrs);
-    streamsOptions.assign(ptrs, count);
-    return result;
+
+    ScopeOutAction onReturn([&ptrs, count, &streamsOptions](){
+        streamsOptions.assign(ptrs, count);
+    });
+
+    findStreamInfo(ptrs, count, ec);
 }
 
-bool FormatContext::findStreamInfo(DictionaryArray &&streamsOptions)
+void FormatContext::findStreamInfo(DictionaryArray &&streamsOptions, error_code &ec)
 {
-    return findStreamInfo(streamsOptions);
+    findStreamInfo(streamsOptions, ec);
 }
 
-
-ssize_t FormatContext::readPacket(Packet &pkt)
+Packet FormatContext::readPacket(error_code &ec)
 {
+    clear_if(ec);
+
     if (!m_raw)
-        return -1;
+    {
+        throws_if(ec, AvError::Unallocated);
+        return Packet();
+    }
 
     if (!m_streamsInfoFound && streamsCount() == 0)
     {
         fflog(AV_LOG_ERROR, "Streams does not found. Try call findStreamInfo()\n");
-        return -1;
+        throws_if(ec, AvError::FormatNoStreams);
+        return Packet();
     }
 
     Packet packet;
 
-    int stat = 0;
+    int sts = 0;
     int tries = 0;
     const int retryCount = 5;
     do
     {
         resetSocketAccess();
-        stat = av_read_frame(m_raw, packet.raw());
+        sts = av_read_frame(m_raw, packet.raw());
         ++tries;
     }
-    while (stat == AVERROR(EAGAIN) && (retryCount < 0 || tries <= retryCount));
+    while (sts == AVERROR(EAGAIN) && (retryCount < 0 || tries <= retryCount));
 
-    pkt = std::move(packet);
+    // End of file
+    if (sts == AVERROR_EOF || avio_feof(m_raw->pb))
+        return Packet();
 
-    if (pkt.streamIndex() >= 0)
-        pkt.setTimeBase(m_raw->streams[pkt.streamIndex()]->time_base);
+    if (sts == 0)
+    {
+        auto pberr = m_raw->pb ? m_raw->pb->error : 0;
+        if (pberr)
+        {
+            // TODO: need verification
+            throws_if(ec, pberr, ffmpeg_category());
+            return Packet();
+        }
+    }
+    else
+    {
+        throws_if(ec, sts, ffmpeg_category());
+        return Packet();
+    }
 
-    return stat;
+    if (packet.streamIndex() >= 0)
+    {
+        if ((size_t)packet.streamIndex() > streamsCount())
+        {
+            throws_if(ec, AvError::FormatInvalidStreamIndex);
+            return std::move(packet);
+        }
+
+        packet.setTimeBase(m_raw->streams[packet.streamIndex()]->time_base);
+    }
+
+    packet.setComplete(true);
+
+    return std::move(packet);
 }
 
-bool FormatContext::openOutput(const string &uri)
+void FormatContext::openOutput(const string &uri, error_code &ec)
 {
-    return openOutput(uri, nullptr);
+    return openOutput(uri, nullptr, ec);
 }
 
-bool FormatContext::openOutput(const string &uri, Dictionary &options)
+void FormatContext::openOutput(const string &uri, Dictionary &options, error_code &ec)
 {
     auto ptr = options.release();
-    auto res = openOutput(uri, &ptr);
-    options.assign(ptr);
-    return res;
+    try
+    {
+        openOutput(uri, &ptr, ec);
+        options.assign(ptr);
+    }
+    catch (const AvException&)
+    {
+        options.assign(ptr);
+        throw;
+    }
 }
 
-bool FormatContext::openOutput(const string &uri, Dictionary &&options)
+void FormatContext::openOutput(const string &uri, Dictionary &&options, error_code &ec)
 {
-    return openOutput(uri, options);
+    return openOutput(uri, options, ec);
 }
 
-bool FormatContext::openOutput(const string &uri, AVDictionary **options)
+void FormatContext::openOutput(const string &uri, AVDictionary **options, error_code &ec)
 {
+    clear_if(ec);
     if (!m_raw)
-        return false;
+    {
+        throws_if(ec, AvError::Unallocated);
+        return;
+    }
 
     if (isOpened())
-        return false;
+    {
+        throws_if(ec, AvError::FormatAlreadyOpened);
+        return;
+    }
 
     OutputFormat format = outputFormat();
 
-    if (format.isNull()) {
+    if (format.isNull())
+    {
         // Guess format
         format = guessOutputFormat(string(), uri);
 
-        if (format.isNull()) {
+        if (format.isNull())
+        {
             fflog(AV_LOG_ERROR, "Can't guess output format");
-            return false;
+            throws_if(ec, AvError::FormatNullOutputFormat);
+            return;
         }
         setFormat(format);
     }
 
     resetSocketAccess();
-    if (!(format.flags() & AVFMT_NOFILE)) {
-        int stat = avio_open2(&m_raw->pb, uri.c_str(), AVIO_FLAG_WRITE, nullptr, options);
-        if (stat < 0)
-            return false;
+    if (!(format.flags() & AVFMT_NOFILE))
+    {
+        int sts = avio_open2(&m_raw->pb, uri.c_str(), AVIO_FLAG_WRITE, nullptr, options);
+        if (sts < 0)
+        {
+            throws_if(ec, sts, ffmpeg_category());
+            return;
+        }
     }
 
     m_uri = uri;
     m_isOpened = true;
-    return true;
 }
 
-bool FormatContext::openOutput(CustomIO *io, size_t internalBufferSize)
+void FormatContext::openOutput(CustomIO *io, error_code &ec, size_t internalBufferSize)
 {
-    bool res = openCustomIOOutput(io, internalBufferSize);
-    if (res) {
+    openCustomIOOutput(io, internalBufferSize, ec);
+    if (!is_error(ec))
+    {
         m_isOpened = true;
         m_uri.clear();
     }
-
-    return res;
 }
 
-bool FormatContext::writeHeader()
+void FormatContext::writeHeader(error_code &ec)
 {
-    return writeHeader(nullptr);
+    writeHeader(nullptr, ec);
 }
 
-bool FormatContext::writeHeader(Dictionary &options)
+void FormatContext::writeHeader(Dictionary &options, error_code &ec)
 {
     auto ptr = options.release();
-    auto res = writeHeader(&ptr);
-    options.assign(ptr);
-    return res;
+
+    // Be exception safe
+    ScopeOutAction onReturn([&ptr, &options](){
+        options.assign(ptr);
+    });
+
+    writeHeader(&ptr, ec);
 }
 
-bool FormatContext::writeHeader(Dictionary &&options)
+void FormatContext::writeHeader(Dictionary &&options, error_code &ec)
 {
-    return writeHeader(options);
+    writeHeader(options, ec);
 }
 
 
-bool FormatContext::writeHeader(AVDictionary **options)
+void FormatContext::writeHeader(AVDictionary **options, error_code &ec)
 {
-    if (isOpened() && isOutput()) {
-        resetSocketAccess();
-        int stat = avformat_write_header(m_raw, options);
-        return !!checkPbError(stat);
+    clear_if(ec);
+
+    if (!isOpened())
+    {
+        throws_if(ec, AvError::FormatNotOpened);
+        return;
     }
-    return false;
+
+    if (!isOutput())
+    {
+        throws_if(ec, AvError::FormatInvalidDirection);
+        return;
+    }
+
+    resetSocketAccess();
+    int sts = avformat_write_header(m_raw, options);
+    sts = checkPbError(sts);
+    if (sts < 0)
+        throws_if(ec, sts, ffmpeg_category());
+
+    m_headerWriten = true;
 }
 
-ssize_t FormatContext::writePacket(const Packet &pkt, bool interleave)
+void FormatContext::writePacket(error_code &ec)
 {
-    if (isOpened() && isOutput()) {
-        // Make reference to packet
-        auto writePkt = pkt;
+    writePacket(Packet(), ec);
+}
 
-        if (!pkt.isNull()) {
-            auto streamIndex = pkt.streamIndex();
-            auto st = stream(streamIndex);
+void FormatContext::writePacket(const Packet &pkt, error_code &ec)
+{
+    writePacket(pkt, ec, av_write_frame);
+}
 
-            if (st.isNull()) {
-                fflog(AV_LOG_WARNING, "Required stream does not exists: %d, total=%ld\n", streamIndex, streamsCount());
-                return -1;
-            }
+void FormatContext::writePacketDirect(error_code &ec)
+{
+    writePacketDirect(Packet(), ec);
+}
 
-            // Set packet time base to stream one
-            if (st.timeBase() != pkt.timeBase()) {
-                writePkt.setTimeBase(st.timeBase());
-            }
+void FormatContext::writePacketDirect(const Packet &pkt, error_code &ec)
+{
+    writePacket(pkt, ec, av_interleaved_write_frame);
+}
 
-            if (pkt.pts() == AV_NOPTS_VALUE && pkt.fakePts() != AV_NOPTS_VALUE)
-                writePkt.setPts(writePkt.fakePts());
+bool FormatContext::checkUncodedFrameWriting(size_t streamIndex, error_code &ec) noexcept
+{
+    ec.clear();
+
+    if (!m_raw)
+    {
+        ec = make_avcpp_error(AvError::Unallocated);
+        return false;
+    }
+
+    if (!isOpened())
+    {
+        ec = make_avcpp_error(AvError::FormatNotOpened);
+        return false;
+    }
+
+    if (!m_headerWriten)
+    {
+        fflog(AV_LOG_ERROR, "Header not writen to output. Try to call writeHeader()\n");
+        ec = make_avcpp_error(AvError::FormatHeaderNotWriten);
+        return false;
+    }
+
+    int sts = av_write_uncoded_frame_query(m_raw, streamIndex);
+    bool result = sts < 0 ? false : true;
+    if (!result)
+        ec = make_ffmpeg_error(sts);
+
+    return result;
+}
+
+bool FormatContext::checkUncodedFrameWriting(size_t streamIndex) noexcept
+{
+    error_code ec;
+    return checkUncodedFrameWriting(streamIndex, ec);
+}
+
+void FormatContext::writeUncodedFrame(VideoFrame2 &frame, size_t streamIndex, error_code &ec)
+{
+    writeFrame(frame.raw(), streamIndex, ec, av_interleaved_write_uncoded_frame);
+}
+
+void FormatContext::writeUncodedFrameDirect(VideoFrame2 &frame, size_t streamIndex, error_code &ec)
+{
+    writeFrame(frame.raw(), streamIndex, ec, av_write_uncoded_frame);
+}
+
+void FormatContext::writeUncodedFrame(AudioSamples2 &frame, size_t streamIndex, error_code &ec)
+{
+    writeFrame(frame.raw(), streamIndex, ec, av_interleaved_write_uncoded_frame);
+}
+
+void FormatContext::writeUncodedFrameDirect(AudioSamples2 &frame, size_t streamIndex, error_code &ec)
+{
+    writeFrame(frame.raw(), streamIndex, ec, av_write_uncoded_frame);
+}
+
+void FormatContext::writePacket(const Packet &pkt, error_code &ec, int(*write_proc)(AVFormatContext *, AVPacket *))
+{
+    clear_if(ec);
+
+    if (!isOpened())
+    {
+        throws_if(ec, AvError::FormatNotOpened);
+        return;
+    }
+
+    if (!isOutput())
+    {
+        throws_if(ec, AvError::FormatInvalidDirection);
+        return;
+    }
+
+    if (!m_headerWriten)
+    {
+        throws_if(ec, AvError::FormatHeaderNotWriten);
+        return;
+    }
+
+    // Make reference to packet
+    auto writePkt = pkt;
+
+    if (!pkt.isNull()) {
+        auto streamIndex = pkt.streamIndex();
+        auto st = stream(streamIndex);
+
+        if (st.isNull()) {
+            fflog(AV_LOG_WARNING, "Required stream does not exists: %d, total=%ld\n", streamIndex, streamsCount());
+            throws_if(ec, AvError::FormatInvalidStreamIndex);
+            return;
         }
 
-        resetSocketAccess();
-        int stat = -1;
-        if (interleave)
-            stat = av_interleaved_write_frame(m_raw, writePkt.raw());
-        else
-            stat = av_write_frame(m_raw, writePkt.raw());
+        // Set packet time base to stream one
+        if (st.timeBase() != pkt.timeBase()) {
+            writePkt.setTimeBase(st.timeBase());
+        }
 
-        return checkPbError(stat);
+        if (pkt.pts() == AV_NOPTS_VALUE && pkt.fakePts() != AV_NOPTS_VALUE)
+            writePkt.setPts(writePkt.fakePts());
     }
-    return -1;
+
+    resetSocketAccess();
+    int sts = write_proc(m_raw, writePkt.raw());
+    sts = checkPbError(sts);
+    if (sts < 0)
+        throws_if(ec, sts, ffmpeg_category());
 }
 
-ssize_t FormatContext::writeTrailer()
+void FormatContext::writeFrame(AVFrame *frame, int streamIndex, error_code &ec, int (*write_proc)(AVFormatContext *, int, AVFrame *))
 {
-    if (isOpened() && isOutput()) {
-        resetSocketAccess();
-        auto stat = av_write_trailer(m_raw);
-        return checkPbError(stat);
+    clear_if(ec);
+
+    if (!isOpened())
+    {
+        throws_if(ec, AvError::FormatNotOpened);
+        return;
     }
-    return -1;
+
+    if (!isOutput())
+    {
+        throws_if(ec, AvError::FormatInvalidDirection);
+        return;
+    }
+
+    if (streamIndex < 0 || (size_t)streamIndex > streamsCount())
+    {
+        throws_if(ec, AvError::FormatInvalidStreamIndex);
+        return;
+    }
+
+    resetSocketAccess();
+    int sts = write_proc(m_raw, streamIndex, frame);
+    sts = checkPbError(sts);
+    if (sts < 0)
+        throws_if(ec, sts, ffmpeg_category());
+}
+
+void FormatContext::writeTrailer(error_code &ec)
+{
+    clear_if(ec);
+
+    if (!isOpened())
+    {
+        throws_if(ec, AvError::FormatNotOpened);
+        return;
+    }
+
+    if (!isOutput())
+    {
+        throws_if(ec, AvError::FormatInvalidDirection);
+        return;
+    }
+
+    if (!m_headerWriten)
+    {
+        throws_if(ec, AvError::FormatHeaderNotWriten);
+        return;
+    }
+
+    resetSocketAccess();
+    auto sts = av_write_trailer(m_raw);
+    sts = checkPbError(sts);
+    if (sts < 0)
+        throws_if(ec, sts, ffmpeg_category());
 }
 
 int FormatContext::avioInterruptCb(void *opaque)
@@ -480,20 +735,28 @@ void FormatContext::resetSocketAccess()
     m_lastSocketAccess = std::chrono::system_clock::now();
 }
 
-bool FormatContext::findStreamInfo(AVDictionary **options)
+void FormatContext::findStreamInfo(AVDictionary **options, size_t optionsCount, error_code &ec)
 {
+    clear_if(ec);
+
+    if (options && optionsCount != streamsCount())
+    {
+        throws_if(ec, AvError::FormatWrongCountOfStreamOptions);
+        return;
+    }
+
     // Temporary disable socket timeout
     ScopedValue<int64_t> scopedTimeoutDisable(m_socketTimeout, -1, m_socketTimeout);
 
-    int stat = avformat_find_stream_info(m_raw, options);
+    int sts = avformat_find_stream_info(m_raw, options);
     m_streamsInfoFound = true;
-    if (stat >= 0 && m_raw->nb_streams > 0)
+    if (sts >= 0 && m_raw->nb_streams > 0)
     {
         av_dump_format(m_raw, 0, m_uri.c_str(), 0);
-        return true;
+        return;
     }
     cerr << "Could not found streams in input container\n";
-    return false;
+    throws_if(ec, sts, ffmpeg_category());
 }
 
 void FormatContext::closeCodecContexts()
@@ -518,52 +781,78 @@ ssize_t FormatContext::checkPbError(ssize_t stat)
     return stat;
 }
 
-bool FormatContext::openCustomIO(CustomIO *io, size_t internalBufferSize, bool isWritable)
+void FormatContext::openCustomIO(CustomIO *io, size_t internalBufferSize, bool isWritable, error_code &ec)
 {
+    clear_if(ec);
+
     if (!m_raw)
-        return false;
+    {
+        throws_if(ec, AvError::Unallocated);
+        return;
+    }
 
     if (isOpened())
-        return false;
+    {
+        throws_if(ec, AvError::FormatAlreadyOpened);
+        return;
+    }
 
     resetSocketAccess();
 
     AVIOContext *ctx = nullptr;
     // Note: buffer must be allocated only with av_malloc() and friends
     uint8_t *internalBuffer = (uint8_t*)av_mallocz(internalBufferSize);
-    ctx = avio_alloc_context(internalBuffer, internalBufferSize, isWritable, (void*)(io), custom_io_read, custom_io_write, custom_io_seek);
+    if (!internalBuffer)
+    {
+        throws_if(ec, ENOMEM, std::system_category());
+        return;
+    }
 
-    if (ctx) {
+    ctx = avio_alloc_context(internalBuffer, internalBufferSize, isWritable, (void*)(io), custom_io_read, custom_io_write, custom_io_seek);
+    if (ctx)
+    {
         ctx->seekable = io->seekable();
         m_raw->flags |= AVFMT_FLAG_CUSTOM_IO;
         m_customIO = true;
     }
-
-    m_raw->pb = ctx;
-    return ctx;
-}
-
-bool FormatContext::openCustomIOInput(CustomIO *io, size_t internalBufferSize)
-{
-    if (isOpened())
-        return false;
-    return openCustomIO(io, internalBufferSize, false);
-}
-
-bool FormatContext::openCustomIOOutput(CustomIO *io, size_t internalBufferSize)
-{
-    if (isOpened())
-        return false;
-
-    if (m_raw) {
-        OutputFormat format = outputFormat();
-        if (format.isNull()) {
-            fflog(AV_LOG_ERROR, "You must set output format for use with custom IO\n");
-            return false;
-        }
+    else
+    {
+        throws_if(ec, ENOMEM, std::system_category());
+        return;
     }
 
-    return openCustomIO(io, internalBufferSize, true);
+    m_raw->pb = ctx;
+}
+
+void FormatContext::openCustomIOInput(CustomIO *io, size_t internalBufferSize, error_code &ec)
+{
+    if (isOpened())
+    {
+        throws_if(ec, AvError::FormatAlreadyOpened);
+        return;
+    }
+    openCustomIO(io, internalBufferSize, false, ec);
+}
+
+void FormatContext::openCustomIOOutput(CustomIO *io, size_t internalBufferSize, error_code &ec)
+{
+    if (isOpened())
+    {
+        throws_if(ec, AvError::FormatAlreadyOpened);
+        return;
+    }
+
+    if (m_raw)
+    {
+        OutputFormat format = outputFormat();
+        if (format.isNull())
+        {
+            fflog(AV_LOG_ERROR, "You must set output format for use with custom IO\n");
+            throws_if(ec, AvError::FormatNullOutputFormat);
+            return;
+        }
+    }
+    openCustomIO(io, internalBufferSize, true, ec);
 }
 
 } // namespace av

@@ -47,7 +47,8 @@ int main(int argc, char **argv)
 
     int count = 0;
 
-    if (!ictx.openInput(uri)) {
+    ictx.openInput(uri, ec);
+    if (ec) {
         cerr << "Can't open input\n";
         return 1;
     }
@@ -103,12 +104,13 @@ int main(int argc, char **argv)
     ost.setFrameRate(vst.frameRate());
     ost.setTimeBase(encoder.timeBase());
 
-    if (!octx.openOutput(out)) {
+    octx.openOutput(out, ec);
+    if (ec) {
         cerr << "Can't open output\n";
         return 1;
     }
 
-    encoder.open(Codec(), ec);
+    encoder.open(ec);
     if (ec) {
         cerr << "Can't opent encoder\n";
         return 1;
@@ -130,9 +132,12 @@ int main(int argc, char **argv)
     while (true) {
 
         // READING
-        Packet pkt;
-        if (ictx.readPacket(pkt) < 0)
+        Packet pkt = ictx.readPacket(ec);
+        if (ec)
+        {
+            clog << "Packet reading error: " << ec << ", " << ec.message() << endl;
             break;
+        }
 
         if (pkt.streamIndex() != videoStream) {
             continue;
@@ -195,8 +200,9 @@ int main(int argc, char **argv)
 
         clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts() * opkt.timeBase().getDouble() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
-        if (octx.writePacket(opkt) < 0) {
-            cerr << "Error write packet\n";
+        octx.writePacket(opkt, ec);
+        if (ec) {
+            cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
             return 1;
         }
     }

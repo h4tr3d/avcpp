@@ -42,15 +42,17 @@ int main(int argc, char **argv)
 
         FormatContext ictx;
 
-        if (!ictx.openInput(uri)) {
+        ictx.openInput(uri, ec);
+        if (ec) {
             cerr << "Can't open input\n";
             return 1;
         }
 
         cerr << "Streams: " << ictx.streamsCount() << endl;
 
-        if (!ictx.findStreamInfo()) {
-            cerr << "Can't find streams\n";
+        ictx.findStreamInfo(ec);
+        if (ec) {
+            cerr << "Can't find streams: " << ec << ", " << ec.message() << endl;
             return 1;
         }
 
@@ -88,32 +90,36 @@ int main(int argc, char **argv)
         }
 
 
-        while (true) {
-            Packet pkt;
-            if (ictx.readPacket(pkt) < 0)
-                break;
+        while (Packet pkt = ictx.readPacket(ec)) {
+            if (ec)
+            {
+                clog << "Packet reading error: " << ec << ", " << ec.message() << endl;
+                return 1;
+            }
 
             if (pkt.streamIndex() != videoStream) {
                 continue;
             }
 
-            clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+            auto ts = pkt.ts();
+            clog << "Read packet: " << ts << " / " << ts * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
             VideoFrame2 frame = vdec.decodeVideo(pkt, ec);
 
             count++;
-            if (count > 100)
-                break;
+            //if (count > 100)
+            //    break;
 
             if (ec) {
                 cerr << "Error: " << ec << ", " << ec.message() << endl;
                 return 1;
             } else if (!frame) {
-                //cerr << "Empty frame\n";
+                cerr << "Empty frame\n";
                 //continue;
             }
 
-            clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
+            ts = frame.pts();
+            clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << "/" << ts*frame.timeBase().getDouble() << "/" << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
 
         }
 

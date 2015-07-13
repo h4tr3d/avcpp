@@ -46,10 +46,13 @@ int main(int argc, char **argv)
         //
         FormatContext ictx;
 
-        if (!ictx.openInput(uri)) {
+        ictx.openInput(uri, ec);
+        if (ec) {
             cerr << "Can't open input\n";
             return 1;
         }
+
+        ictx.findStreamInfo();
 
         for (size_t i = 0; i < ictx.streamsCount(); ++i) {
             auto st = ictx.stream(i);
@@ -138,12 +141,13 @@ int main(int argc, char **argv)
         enc.setTimeBase(Rational(1, enc.sampleRate()));
         enc.setBitRate(adec.bitRate());
 
-        if (!octx.openOutput(out)) {
+        octx.openOutput(out, ec);
+        if (ec) {
             cerr << "Can't open output\n";
             return 1;
         }
 
-        enc.open(Codec(), ec);
+        enc.open(ec);
         if (ec) {
             cerr << "Can't open encoder\n";
             return 1;
@@ -165,9 +169,12 @@ int main(int argc, char **argv)
         // PROCESS
         //
         while (true) {
-            Packet pkt;
-            if (ictx.readPacket(pkt) < 0)
+            Packet pkt = ictx.readPacket(ec);
+            if (ec)
+            {
+                clog << "Packet reading error: " << ec << ", " << ec.message() << endl;
                 break;
+            }
 
             if (pkt.streamIndex() != audioStream) {
                 continue;
@@ -243,8 +250,9 @@ int main(int argc, char **argv)
 
                 clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts() * opkt.timeBase().getDouble() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
-                if (octx.writePacket(opkt) < 0) {
-                    cerr << "Error write packet\n";
+                octx.writePacket(opkt, ec);
+                if (ec) {
+                    cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
                     return 1;
                 }
 
@@ -266,8 +274,9 @@ int main(int argc, char **argv)
 
             clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts() * opkt.timeBase().getDouble() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
-            if (octx.writePacket(opkt) < 0) {
-                cerr << "Error write packet\n";
+            octx.writePacket(opkt, ec);
+            if (ec) {
+                cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
                 return 1;
             }
 

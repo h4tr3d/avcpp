@@ -8,6 +8,7 @@
 #include <mutex>
 #include <sstream>
 #include <algorithm>
+#include <functional>
 
 #include "ffmpeg.h"
 #include "packet.h"
@@ -238,6 +239,55 @@ private:
 };
 
 
+/**
+ * @brief The ScopeOutAction class - guard-type class that allows points callback that will be called
+ * at the scope out
+ *
+ * Example:
+ * @code
+ * void foo()
+ * {
+ *     int fd = open(...some args...);
+ *     ScopeOutAction action([fd](){
+ *         close(fd);
+ *     });
+ *
+ *     try
+ *     {
+ *         // some actions that can throw exception
+ *     }
+ *     catch(...)
+ *     {
+ *         throw; // Not best-practice, only for example
+ *     }
+ * }
+ * @endcode
+ *
+ * In example above dtor of the action will be called before fd and we correctly close descriptor.
+ *
+ */
+class ScopeOutAction
+{
+public:
+    template<typename Proc>
+    ScopeOutAction(const Proc& proc)
+        : m_proc(proc)
+    {}
+
+    template<typename Proc>
+    ScopeOutAction(Proc&& proc)
+        : m_proc(std::forward<Proc>(proc))
+    {}
+
+    ~ScopeOutAction()
+    {
+        if (m_proc)
+            m_proc();
+    }
+
+private:
+    std::function<void()> m_proc;
+};
 
 
 /**

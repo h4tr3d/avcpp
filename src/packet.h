@@ -35,6 +35,7 @@ public:
 
     int64_t pts() const;
     int64_t dts() const;
+    int64_t ts() const;
     int64_t fakePts() const;
     size_t size() const;
 

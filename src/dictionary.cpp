@@ -396,7 +396,7 @@ DictionaryArray::DictionaryArray(std::initializer_list<Dictionary> dicts)
     for (auto& d : dicts)
     {
         m_dicts.push_back(std::move(d));
-        m_raws.push_back(m_dicts.end()->raw());
+        m_raws.push_back(m_dicts.back().raw());
     }
 }
 

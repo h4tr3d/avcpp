@@ -14,6 +14,10 @@ const char *AvcppCategory::name() const noexcept
 std::string AvcppCategory::message(int ev) const
 {
     auto ec = static_cast<AvError>(ev);
+
+#define CASE(code, text) \
+    case AvError::code: return text
+
     switch (ec) {
         case AvError::NoError: return "Success";
         case AvError::Generic: return "Generic error";
@@ -22,7 +26,7 @@ std::string AvcppCategory::message(int ev) const
         case AvError::CodecInvalidDirection: return "Action impossible with given codec context direction";
         case AvError::CodecAlreadyOpened: return "Codec context already opened";
         case AvError::CodecInvalid: return "Codec context invalid";
-        case AvError::CodecDoesNotOpened: return "Codec context does not opened";
+        case AvError::CodecNotOpened: return "Codec context does not opened";
         case AvError::CodecInvalidDecodeProc: return "Provided null decode proc";
         case AvError::CodecInvalidEncodeProc: return "Provided null encode proc";
         case AvError::CodecDecodingOffsetToLarge: return "Decoding packet offset biggest packet size";
@@ -31,7 +35,19 @@ std::string AvcppCategory::message(int ev) const
         case AvError::FrameInvalid: return "Frame invalid (unallocated)";
         case AvError::DictOutOfRage: return "Dictionary index out of range";
         case AvError::DictNoKey: return "Dictionary does not contain entry with given key";
+
+            CASE(FormatCantAddStream, "Can't add stream to output format");
+            CASE(FormatAlreadyOpened, "Format already opened");
+            CASE(FormatNullOutputFormat, "Output format for format context not specified");
+            CASE(FormatWrongCountOfStreamOptions, "Incorrect count of stream options (findStreamInfo())");
+            CASE(FormatNoStreams, "Format has no streams");
+            CASE(FormatInvalidStreamIndex, "There is not streams with given index");
+            CASE(FormatNotOpened, "Format not opened");
+            CASE(FormatInvalidDirection, "Incorrect operation for current format direction (input/output)");
+            CASE(FormatHeaderNotWriten, "Header must be writen before");
     }
+
+#undef CASE
 
     return "Uknown AvCpp error";
 }

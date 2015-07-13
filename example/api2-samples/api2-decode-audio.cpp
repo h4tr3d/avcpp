@@ -42,7 +42,8 @@ int main(int argc, char **argv)
 
         FormatContext ictx;
 
-        if (!ictx.openInput(uri)) {
+        ictx.openInput(uri, ec);
+        if (ec) {
             cerr << "Can't open input\n";
             return 1;
         }
@@ -81,9 +82,12 @@ int main(int argc, char **argv)
 
 
         while (true) {
-            Packet pkt;
-            if (ictx.readPacket(pkt) < 0)
+            Packet pkt = ictx.readPacket(ec);
+            if (ec)
+            {
+                clog << "Packet reading error: " << ec << ", " << ec.message() << endl;
                 break;
+            }
 
             if (pkt.streamIndex() != audioStream) {
                 continue;

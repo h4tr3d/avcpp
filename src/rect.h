@@ -10,7 +10,6 @@ public:
     Rect(int width, int height);
     Rect(int x, int y, int width, int height);
 
-
     void setX(int x) { this->x = x; }
     void setY(int y) { this->y = y; }
     void setWidth(int w) { width = w; }

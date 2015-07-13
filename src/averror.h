@@ -15,7 +15,7 @@ enum class AvError
     CodecInvalidDirection = -4,
     CodecAlreadyOpened = -5,
     CodecInvalid = -6,
-    CodecDoesNotOpened = -7,
+    CodecNotOpened = -7,
     CodecInvalidDecodeProc = -8,
     CodecInvalidEncodeProc = -9,
     CodecDecodingOffsetToLarge = -10,
@@ -24,6 +24,16 @@ enum class AvError
     FrameInvalid = -13,
     DictOutOfRage = -14,
     DictNoKey     = -15,
+
+    FormatCantAddStream = -16,
+    FormatAlreadyOpened = -17,
+    FormatNullOutputFormat = -18,
+    FormatWrongCountOfStreamOptions = -19,
+    FormatNoStreams = -20,
+    FormatInvalidStreamIndex = -21,
+    FormatNotOpened = -22,
+    FormatInvalidDirection = -23,
+    FormatHeaderNotWriten = -24,
 };
 
 /**
@@ -159,12 +169,12 @@ inline std::error_code& throws()
 /**
  * @brief Throws exception if ec is av::throws() or fill error code
  */
-template<typename Category>
+template<typename Category, typename Exception = av::AvException>
 void throws_if(std::error_code &ec, int errcode, const Category &cat)
 {
     if (&ec == &throws())
     {
-        throw av::AvException(std::error_code(errcode, cat));
+        throw Exception(std::error_code(errcode, cat));
     }
     else
     {
@@ -172,18 +182,19 @@ void throws_if(std::error_code &ec, int errcode, const Category &cat)
     }
 }
 
-template<typename T>
+template<typename T, typename Exception = av::AvException>
 void throws_if(std::error_code &ec, T errcode)
 {
     if (&ec == &throws())
     {
-        throw av::AvException(make_error_code(errcode));
+        throw Exception(make_error_code(errcode));
     }
     else
     {
         ec = make_error_code(errcode);
     }
 }
+
 
 /**
  * @brief clear_if - clear error code if it is not av::throws()
@@ -194,6 +205,14 @@ void clear_if(std::error_code &ec)
 {
     if (&ec != &throws())
         ec.clear();
+}
+
+inline
+bool is_error(std::error_code &ec)
+{
+    if (&ec == &throws())
+        return false;
+    return (bool)ec;
 }
 
 } // ::av

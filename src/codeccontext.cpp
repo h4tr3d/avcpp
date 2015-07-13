@@ -207,7 +207,7 @@ void CodecContext::close(error_code &ec)
         m_isOpened = false;
         return;
     }
-    throws_if(ec, AvError::CodecDoesNotOpened);
+    throws_if(ec, AvError::CodecNotOpened);
 }
 
 bool CodecContext::isValid() const noexcept
@@ -824,7 +824,7 @@ std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(AVFrame *o
         return make_error_pair(AvError::CodecInvalid);
 
     if (!isOpened())
-        return make_error_pair(AvError::CodecDoesNotOpened);
+        return make_error_pair(AvError::CodecNotOpened);
 
     if (!decodeProc)
         return make_error_pair(AvError::CodecInvalidDecodeProc);

@@ -131,6 +131,11 @@ int64_t Packet::dts() const
     return m_raw.dts;
 }
 
+int64_t Packet::ts() const
+{
+    return m_raw.pts != AV_NOPTS_VALUE ? m_raw.pts : m_raw.dts;
+}
+
 int64_t Packet::fakePts() const
 {
     return m_fakePts;
