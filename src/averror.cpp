@@ -21,8 +21,10 @@ std::string AvcppCategory::message(int ev) const
     switch (ec) {
         case Errors::NoError: return "Success";
         case Errors::Generic: return "Generic error";
-        case Errors::CodecStreamInvalid: return "Codec's context parent stream invalid";
         case Errors::Unallocated: return "Action on unallocated object";
+        case Errors::InvalidArgument: return "Invalid function or method argument";
+        case Errors::CantAllocateFrame: return "Can't allocate frame";
+        case Errors::CodecStreamInvalid: return "Codec's context parent stream invalid";
         case Errors::CodecInvalidDirection: return "Action impossible with given codec context direction";
         case Errors::CodecAlreadyOpened: return "Codec context already opened";
         case Errors::CodecInvalid: return "Codec context invalid";
@@ -35,16 +37,19 @@ std::string AvcppCategory::message(int ev) const
         case Errors::FrameInvalid: return "Frame invalid (unallocated)";
         case Errors::DictOutOfRage: return "Dictionary index out of range";
         case Errors::DictNoKey: return "Dictionary does not contain entry with given key";
-
-            CASE(FormatCantAddStream, "Can't add stream to output format");
-            CASE(FormatAlreadyOpened, "Format already opened");
-            CASE(FormatNullOutputFormat, "Output format for format context not specified");
-            CASE(FormatWrongCountOfStreamOptions, "Incorrect count of stream options (findStreamInfo())");
-            CASE(FormatNoStreams, "Format has no streams");
-            CASE(FormatInvalidStreamIndex, "There is not streams with given index");
-            CASE(FormatNotOpened, "Format not opened");
-            CASE(FormatInvalidDirection, "Incorrect operation for current format direction (input/output)");
-            CASE(FormatHeaderNotWriten, "Header must be writen before");
+        case Errors::FormatCantAddStream: return "Can't add stream to output format";
+        case Errors::FormatAlreadyOpened: return "Format already opened";
+        case Errors::FormatNullOutputFormat: return "Output format for format context not specified";
+        case Errors::FormatWrongCountOfStreamOptions: return "Incorrect count of stream options (findStreamInfo())";
+        case Errors::FormatNoStreams: return "Format has no streams";
+        case Errors::FormatInvalidStreamIndex: return "There is not streams with given index";
+        case Errors::FormatNotOpened: return "Format not opened";
+        case Errors::FormatInvalidDirection: return "Incorrect operation for current format direction (input/output)";
+        case Errors::FormatHeaderNotWriten: return "Header must be writen before";
+        case Errors::ResamplerInvalidParameters: return "Provided invalid parameters for resampler";
+        case Errors::ResamplerNotInited: return "Resampler not inited";
+        case Errors::ResamplerInputChanges: return "Resampler input parameters changed (mismatch with provided frame)";
+        case Errors::ResamplerOutputChanges: return "Resampler output parameters changed (mismatch with provided frame)";
     }
 
 #undef CASE

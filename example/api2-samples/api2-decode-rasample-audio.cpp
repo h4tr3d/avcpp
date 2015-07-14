@@ -51,6 +51,8 @@ int main(int argc, char **argv)
             return 1;
         }
 
+        ictx.findStreamInfo();
+
         for (size_t i = 0; i < ictx.streamsCount(); ++i) {
             auto st = ictx.stream(i);
             if (st.isAudio()) {
@@ -128,23 +130,24 @@ int main(int argc, char **argv)
                  << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
                  << endl;
 
-            auto st = resampler.push(samples);
-            if (st < 0) {
-                clog << "Resampler push error: " << st << ", text: " << av::error2string(st) << endl;
+            resampler.push(samples, ec);
+            if (ec) {
+                clog << "Resampler push error: " << ec << ", text: " << ec.message() << endl;
                 continue;
             }
 
             // Pop resampler data
+#if 0
             while (true) {
                 AudioSamples2 ouSamples(adec.sampleFormat(), samples.samplesCount()/2, adec.channelLayout(), 48000);
 
                 // Resample:
                 //st = resampler.resample(ouSamples, samples);
-                st = resampler.pop(ouSamples);
-                if (st < 0) {
-                    clog << "Resampling status: " << st << ", text: " << av::error2string(st) << endl;
+                bool hasFrame = resampler.pop(ouSamples, false, ec);
+                if (ec) {
+                    clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
                     break;
-                } else if (st == 0) {
+                } else if (!hasFrame) {
                     break;
                 } else
                     clog << "  Samples [ou]: " << ouSamples.samplesCount()
@@ -155,6 +158,22 @@ int main(int argc, char **argv)
                          << ", ref=" << ouSamples.isReferenced() << ":" << ouSamples.refCount()
                          << endl;
             }
+#else
+            auto ouSamples = AudioSamples2::null();
+            while (ouSamples = resampler.pop(samples.samplesCount()/2, ec)) {
+                clog << "  Samples [ou]: " << ouSamples.samplesCount()
+                     << ", ch: " << ouSamples.channelsCount()
+                     << ", freq: " << ouSamples.sampleRate()
+                     << ", name: " << ouSamples.channelsLayoutString()
+                     << ", pts: " << (ouSamples.timeBase().getDouble() * ouSamples.pts())
+                     << ", ref=" << ouSamples.isReferenced() << ":" << ouSamples.refCount()
+                     << endl;
+            }
+
+            if (ec) {
+                clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
+            }
+#endif
         }
 
         // Flush samples
@@ -162,14 +181,14 @@ int main(int argc, char **argv)
             clog << "Flush resampler:\n";
             while (true) {
                 AudioSamples2 ouSamples(adec.sampleFormat(), 576, adec.channelLayout(), 48000);
-                auto st = resampler.pop(ouSamples);
-                if (st == 0)
-                    st = resampler.pop(ouSamples, true);
+                auto hasFrame = resampler.pop(ouSamples, false, ec);
+                if (!ec && !hasFrame)
+                    hasFrame = resampler.pop(ouSamples, true, ec);
 
-                if (st < 0) {
-                    clog << "Resampling status: " << st << ", text: " << av::error2string(st) << endl;
+                if (ec) {
+                    clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
                     break;
-                } else if (st == 0)
+                } else if (hasFrame == false)
                     break;
                 else
                     clog << "  Samples [ou]: " << ouSamples.samplesCount()

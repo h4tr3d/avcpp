@@ -203,9 +203,9 @@ int main(int argc, char **argv)
                  << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
                  << endl;
 
-            auto st = resampler.push(samples);
-            if (st < 0) {
-                clog << "Resampler push error: " << st << ", text: " << av::error2string(st) << endl;
+            resampler.push(samples, ec);
+            if (ec) {
+                clog << "Resampler push error: " << ec << ", text: " << ec.message() << endl;
                 continue;
             }
 
@@ -217,12 +217,11 @@ int main(int argc, char **argv)
                                         enc.sampleRate());
 
                 // Resample:
-                //st = resampler.resample(ouSamples, samples);
-                st = resampler.pop(ouSamples);
-                if (st < 0) {
-                    clog << "Resampling status: " << st << ", text: " << av::error2string(st) << endl;
+                bool hasFrame = resampler.pop(ouSamples, false, ec);
+                if (ec) {
+                    clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
                     break;
-                } else if (st == 0) {
+                } else if (!hasFrame) {
                     break;
                 } else
                     clog << "  Samples [ou]: " << ouSamples.samplesCount()

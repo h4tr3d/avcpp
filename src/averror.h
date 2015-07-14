@@ -11,8 +11,10 @@ enum class Errors
 {
     NoError = 0,
     Generic,
-    CodecStreamInvalid,
     Unallocated,
+    InvalidArgument,
+    CantAllocateFrame,
+    CodecStreamInvalid,
     CodecInvalidDirection,
     CodecAlreadyOpened,
     CodecInvalid,
@@ -34,6 +36,11 @@ enum class Errors
     FormatNotOpened,
     FormatInvalidDirection,
     FormatHeaderNotWriten,
+
+    ResamplerInvalidParameters,
+    ResamplerNotInited,
+    ResamplerInputChanges,
+    ResamplerOutputChanges,
 };
 
 /**
