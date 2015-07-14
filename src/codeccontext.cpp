@@ -92,14 +92,14 @@ void CodecContext::setCodec(const Codec &codec, bool resetDefaults, error_code &
     if (!m_raw)
     {
         fflog(AV_LOG_WARNING, "Codec context does not allocated\n");
-        throws_if(ec, AvError::Unallocated);
+        throws_if(ec, Errors::Unallocated);
         return;
     }
 
     if (!m_raw || (!m_stream.isValid() && !m_stream.isNull()))
     {
         fflog(AV_LOG_WARNING, "Parent stream is not valid. Probably it or FormatContext destroyed\n");
-        throws_if(ec, AvError::CodecStreamInvalid);
+        throws_if(ec, Errors::CodecStreamInvalid);
         return;
     }
 
@@ -111,14 +111,14 @@ void CodecContext::setCodec(const Codec &codec, bool resetDefaults, error_code &
     if (m_direction == Direction::ENCODING && codec.canEncode() == false)
     {
         fflog(AV_LOG_WARNING, "Encoding context, but codec does not support encoding\n");
-        throws_if(ec, AvError::CodecInvalidDirection);
+        throws_if(ec, Errors::CodecInvalidDirection);
         return;
     }
 
     if (m_direction == Direction::DECODING && codec.canDecode() == false)
     {
         fflog(AV_LOG_WARNING, "Decoding context, but codec does not support decoding\n");
-        throws_if(ec, AvError::CodecInvalidDirection);
+        throws_if(ec, Errors::CodecInvalidDirection);
         return;
     }
 
@@ -185,7 +185,7 @@ void CodecContext::open(const Codec &codec, AVDictionary **options, error_code &
     clear_if(ec);
 
     if (m_isOpened || !isValid()) {
-        throws_if(ec, m_isOpened ? AvError::CodecAlreadyOpened : AvError::CodecInvalid);
+        throws_if(ec, m_isOpened ? Errors::CodecAlreadyOpened : Errors::CodecInvalid);
         return;
     }
 
@@ -207,7 +207,7 @@ void CodecContext::close(error_code &ec)
         m_isOpened = false;
         return;
     }
-    throws_if(ec, AvError::CodecNotOpened);
+    throws_if(ec, Errors::CodecNotOpened);
 }
 
 bool CodecContext::isValid() const noexcept
@@ -221,17 +221,17 @@ void CodecContext::copyContextFrom(const CodecContext &other, error_code &ec)
     clear_if(ec);
     if (!isValid()) {
         fflog(AV_LOG_WARNING, "Invalid target context\n");
-        throws_if(ec, AvError::CodecInvalid);
+        throws_if(ec, Errors::CodecInvalid);
         return;
     }
     if (!other.isValid()) {
         fflog(AV_LOG_WARNING, "Invalid source context\n");
-        throws_if(ec, AvError::CodecInvalid);
+        throws_if(ec, Errors::CodecInvalid);
         return;
     }
     if (isOpened()) {
         fflog(AV_LOG_WARNING, "Try to copy context to opened target context\n");
-        throws_if(ec, AvError::CodecAlreadyOpened);
+        throws_if(ec, Errors::CodecAlreadyOpened);
         return;
     }
     if (this == &other) {
@@ -296,7 +296,7 @@ void CodecContext::setOption(const string &key, const string &val, int flags, er
     }
     else
     {
-        throws_if(ec, AvError::CodecInvalid);
+        throws_if(ec, Errors::CodecInvalid);
     }
 }
 
@@ -655,7 +655,7 @@ VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size
 
         if (!outFrame.isValid())
         {
-            throws_if(ec, AvError::FrameInvalid);
+            throws_if(ec, Errors::FrameInvalid);
             return VideoFrame2();
         }
     }
@@ -803,7 +803,7 @@ bool CodecContext::isValidForEncode()
 namespace {
 
 std::pair<ssize_t, const error_category*>
-make_error_pair(AvError errc)
+make_error_pair(Errors errc)
 {
     return make_pair(static_cast<ssize_t>(errc), &avcpp_category());
 }
@@ -821,16 +821,16 @@ make_error_pair(ssize_t status)
 std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *))
 {
     if (!isValid())
-        return make_error_pair(AvError::CodecInvalid);
+        return make_error_pair(Errors::CodecInvalid);
 
     if (!isOpened())
-        return make_error_pair(AvError::CodecNotOpened);
+        return make_error_pair(Errors::CodecNotOpened);
 
     if (!decodeProc)
-        return make_error_pair(AvError::CodecInvalidDecodeProc);
+        return make_error_pair(Errors::CodecInvalidDecodeProc);
 
     if (offset >= inPacket.size())
-        return make_error_pair(AvError::CodecDecodingOffsetToLarge);
+        return make_error_pair(Errors::CodecDecodingOffsetToLarge);
 
     frameFinished = 0;
 
@@ -867,17 +867,17 @@ std::pair<ssize_t, const error_category *> CodecContext::encodeCommon(Packet &ou
 {
     if (!isValid()) {
         fflog(AV_LOG_ERROR, "Invalid context\n");
-        return make_error_pair(AvError::CodecInvalid);
+        return make_error_pair(Errors::CodecInvalid);
     }
 
     if (!isValidForEncode()) {
         fflog(AV_LOG_ERROR, "Context can't be used for encoding\n");
-        return make_error_pair(AvError::CodecInvalidForEncode);
+        return make_error_pair(Errors::CodecInvalidForEncode);
     }
 
     if (!encodeProc) {
         fflog(AV_LOG_ERROR, "Encoding proc is null\n");
-        return make_error_pair(AvError::CodecInvalidEncodeProc);
+        return make_error_pair(Errors::CodecInvalidEncodeProc);
     }
 
     int stat = encodeProc(m_raw, outPacket.raw(), inFrame, &gotPacket);

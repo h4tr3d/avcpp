@@ -6,7 +6,7 @@
 
 namespace av
 {
-enum class AvError
+enum class Errors
 {
     NoError =  0,
     Generic = -1,
@@ -42,14 +42,10 @@ enum class AvError
  *
  * Simple wrap error code value and category
  */
-class AvException : public std::exception
+class Exception : public std::system_error
 {
 public:
-    AvException(const std::error_code ec);
-    virtual const char *what() const noexcept override;
-
-private:
-    std::error_code m_ec;
+    using std::system_error::system_error;
 };
 
 /**
@@ -88,41 +84,25 @@ inline FfmpegCategory& ffmpeg_category()
 }
 
 inline
-std::error_condition make_error_condition(av::AvError errc) noexcept
+std::error_condition make_error_condition(av::Errors errc) noexcept
 {
     return std::error_condition(static_cast<int>(errc), av::avcpp_category());
 }
 
 inline
-std::error_code make_error_code(av::AvError errc) noexcept
+std::error_code make_error_code(av::Errors errc) noexcept
 {
     return std::error_code(static_cast<int>(errc), av::avcpp_category());
 }
 
 inline
-std::error_code make_avcpp_error(int code)
-{
-    if (code > 0)
-        return std::error_code(static_cast<int>(AvError::NoError), avcpp_category());
-    return std::error_code(code, avcpp_category());
-}
-
-inline
-std::error_condition make_avcpp_condition(int code)
-{
-    if (code > 0)
-        return std::error_condition(static_cast<int>(AvError::NoError), avcpp_category());
-    return std::error_condition(code, avcpp_category());
-}
-
-inline
-std::error_code make_avcpp_error(AvError code)
+std::error_code make_avcpp_error(Errors code)
 {
     return std::error_code(static_cast<int>(code), avcpp_category());
 }
 
 inline
-std::error_condition make_avcpp_condition(AvError code)
+std::error_condition make_avcpp_condition(Errors code)
 {
     return std::error_condition(static_cast<int>(code), avcpp_category());
 }
@@ -139,16 +119,16 @@ std::error_condition make_ffmpeg_condition(int code)
     return std::error_condition(code, ffmpeg_category());
 }
 
-inline
+template<typename Exception = av::Exception>
 void throw_error_code(const std::error_code &ec)
 {
-    throw AvException(ec);
+    throw Exception(ec);
 }
 
-inline
-void throw_error_code(AvError errc)
+template<typename Exception = av::Exception>
+void throw_error_code(Errors errc)
 {
-    throw AvException(make_error_code(errc));
+    throw Exception(make_error_code(errc));
 }
 
 namespace detail { inline std::error_code * throws() { return 0; } }
@@ -169,7 +149,7 @@ inline std::error_code& throws()
 /**
  * @brief Throws exception if ec is av::throws() or fill error code
  */
-template<typename Category, typename Exception = av::AvException>
+template<typename Category, typename Exception = av::Exception>
 void throws_if(std::error_code &ec, int errcode, const Category &cat)
 {
     if (&ec == &throws())
@@ -182,7 +162,7 @@ void throws_if(std::error_code &ec, int errcode, const Category &cat)
     }
 }
 
-template<typename T, typename Exception = av::AvException>
+template<typename T, typename Exception = av::Exception>
 void throws_if(std::error_code &ec, T errcode)
 {
     if (&ec == &throws())
@@ -218,7 +198,7 @@ bool is_error(std::error_code &ec)
 } // ::av
 
 namespace std {
-template<> struct is_error_condition_enum<av::AvError> : public true_type {};
+template<> struct is_error_condition_enum<av::Errors> : public true_type {};
 // Commented out for future invertigations. Note, for correct comparation, users error enum must
 // declared only as is_error_condition_enum<> or is_error_code_enum<>
 //template<> struct is_error_code_enum<av::AvError> : public true_type {};

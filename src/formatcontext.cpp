@@ -186,7 +186,7 @@ Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
     clear_if(ec);
     if (!m_raw)
     {
-        throws_if(ec, AvError::Unallocated);
+        throws_if(ec, Errors::Unallocated);
         return Stream2();
     }
 
@@ -196,7 +196,7 @@ Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
     st = avformat_new_stream(m_raw, rawcodec);
     if (!st)
     {
-        throws_if(ec, AvError::FormatCantAddStream);
+        throws_if(ec, Errors::FormatCantAddStream);
         return Stream2();
     }
 
@@ -246,7 +246,7 @@ void FormatContext::openInput(const std::string &uri, InputFormat format, AVDict
 
     if (m_isOpened)
     {
-        throws_if(ec, AvError::FormatAlreadyOpened);
+        throws_if(ec, Errors::FormatAlreadyOpened);
         return;
     }
 
@@ -323,14 +323,14 @@ Packet FormatContext::readPacket(error_code &ec)
 
     if (!m_raw)
     {
-        throws_if(ec, AvError::Unallocated);
+        throws_if(ec, Errors::Unallocated);
         return Packet();
     }
 
     if (!m_streamsInfoFound && streamsCount() == 0)
     {
         fflog(AV_LOG_ERROR, "Streams does not found. Try call findStreamInfo()\n");
-        throws_if(ec, AvError::FormatNoStreams);
+        throws_if(ec, Errors::FormatNoStreams);
         return Packet();
     }
 
@@ -371,7 +371,7 @@ Packet FormatContext::readPacket(error_code &ec)
     {
         if ((size_t)packet.streamIndex() > streamsCount())
         {
-            throws_if(ec, AvError::FormatInvalidStreamIndex);
+            throws_if(ec, Errors::FormatInvalidStreamIndex);
             return std::move(packet);
         }
 
@@ -396,7 +396,7 @@ void FormatContext::openOutput(const string &uri, Dictionary &options, error_cod
         openOutput(uri, &ptr, ec);
         options.assign(ptr);
     }
-    catch (const AvException&)
+    catch (const Exception&)
     {
         options.assign(ptr);
         throw;
@@ -413,13 +413,13 @@ void FormatContext::openOutput(const string &uri, AVDictionary **options, error_
     clear_if(ec);
     if (!m_raw)
     {
-        throws_if(ec, AvError::Unallocated);
+        throws_if(ec, Errors::Unallocated);
         return;
     }
 
     if (isOpened())
     {
-        throws_if(ec, AvError::FormatAlreadyOpened);
+        throws_if(ec, Errors::FormatAlreadyOpened);
         return;
     }
 
@@ -433,7 +433,7 @@ void FormatContext::openOutput(const string &uri, AVDictionary **options, error_
         if (format.isNull())
         {
             fflog(AV_LOG_ERROR, "Can't guess output format");
-            throws_if(ec, AvError::FormatNullOutputFormat);
+            throws_if(ec, Errors::FormatNullOutputFormat);
             return;
         }
         setFormat(format);
@@ -493,13 +493,13 @@ void FormatContext::writeHeader(AVDictionary **options, error_code &ec)
 
     if (!isOpened())
     {
-        throws_if(ec, AvError::FormatNotOpened);
+        throws_if(ec, Errors::FormatNotOpened);
         return;
     }
 
     if (!isOutput())
     {
-        throws_if(ec, AvError::FormatInvalidDirection);
+        throws_if(ec, Errors::FormatInvalidDirection);
         return;
     }
 
@@ -538,20 +538,20 @@ bool FormatContext::checkUncodedFrameWriting(size_t streamIndex, error_code &ec)
 
     if (!m_raw)
     {
-        ec = make_avcpp_error(AvError::Unallocated);
+        ec = make_avcpp_error(Errors::Unallocated);
         return false;
     }
 
     if (!isOpened())
     {
-        ec = make_avcpp_error(AvError::FormatNotOpened);
+        ec = make_avcpp_error(Errors::FormatNotOpened);
         return false;
     }
 
     if (!m_headerWriten)
     {
         fflog(AV_LOG_ERROR, "Header not writen to output. Try to call writeHeader()\n");
-        ec = make_avcpp_error(AvError::FormatHeaderNotWriten);
+        ec = make_avcpp_error(Errors::FormatHeaderNotWriten);
         return false;
     }
 
@@ -595,19 +595,19 @@ void FormatContext::writePacket(const Packet &pkt, error_code &ec, int(*write_pr
 
     if (!isOpened())
     {
-        throws_if(ec, AvError::FormatNotOpened);
+        throws_if(ec, Errors::FormatNotOpened);
         return;
     }
 
     if (!isOutput())
     {
-        throws_if(ec, AvError::FormatInvalidDirection);
+        throws_if(ec, Errors::FormatInvalidDirection);
         return;
     }
 
     if (!m_headerWriten)
     {
-        throws_if(ec, AvError::FormatHeaderNotWriten);
+        throws_if(ec, Errors::FormatHeaderNotWriten);
         return;
     }
 
@@ -620,7 +620,7 @@ void FormatContext::writePacket(const Packet &pkt, error_code &ec, int(*write_pr
 
         if (st.isNull()) {
             fflog(AV_LOG_WARNING, "Required stream does not exists: %d, total=%ld\n", streamIndex, streamsCount());
-            throws_if(ec, AvError::FormatInvalidStreamIndex);
+            throws_if(ec, Errors::FormatInvalidStreamIndex);
             return;
         }
 
@@ -646,19 +646,19 @@ void FormatContext::writeFrame(AVFrame *frame, int streamIndex, error_code &ec, 
 
     if (!isOpened())
     {
-        throws_if(ec, AvError::FormatNotOpened);
+        throws_if(ec, Errors::FormatNotOpened);
         return;
     }
 
     if (!isOutput())
     {
-        throws_if(ec, AvError::FormatInvalidDirection);
+        throws_if(ec, Errors::FormatInvalidDirection);
         return;
     }
 
     if (streamIndex < 0 || (size_t)streamIndex > streamsCount())
     {
-        throws_if(ec, AvError::FormatInvalidStreamIndex);
+        throws_if(ec, Errors::FormatInvalidStreamIndex);
         return;
     }
 
@@ -675,19 +675,19 @@ void FormatContext::writeTrailer(error_code &ec)
 
     if (!isOpened())
     {
-        throws_if(ec, AvError::FormatNotOpened);
+        throws_if(ec, Errors::FormatNotOpened);
         return;
     }
 
     if (!isOutput())
     {
-        throws_if(ec, AvError::FormatInvalidDirection);
+        throws_if(ec, Errors::FormatInvalidDirection);
         return;
     }
 
     if (!m_headerWriten)
     {
-        throws_if(ec, AvError::FormatHeaderNotWriten);
+        throws_if(ec, Errors::FormatHeaderNotWriten);
         return;
     }
 
@@ -741,7 +741,7 @@ void FormatContext::findStreamInfo(AVDictionary **options, size_t optionsCount, 
 
     if (options && optionsCount != streamsCount())
     {
-        throws_if(ec, AvError::FormatWrongCountOfStreamOptions);
+        throws_if(ec, Errors::FormatWrongCountOfStreamOptions);
         return;
     }
 
@@ -787,13 +787,13 @@ void FormatContext::openCustomIO(CustomIO *io, size_t internalBufferSize, bool i
 
     if (!m_raw)
     {
-        throws_if(ec, AvError::Unallocated);
+        throws_if(ec, Errors::Unallocated);
         return;
     }
 
     if (isOpened())
     {
-        throws_if(ec, AvError::FormatAlreadyOpened);
+        throws_if(ec, Errors::FormatAlreadyOpened);
         return;
     }
 
@@ -828,7 +828,7 @@ void FormatContext::openCustomIOInput(CustomIO *io, size_t internalBufferSize, e
 {
     if (isOpened())
     {
-        throws_if(ec, AvError::FormatAlreadyOpened);
+        throws_if(ec, Errors::FormatAlreadyOpened);
         return;
     }
     openCustomIO(io, internalBufferSize, false, ec);
@@ -838,7 +838,7 @@ void FormatContext::openCustomIOOutput(CustomIO *io, size_t internalBufferSize, 
 {
     if (isOpened())
     {
-        throws_if(ec, AvError::FormatAlreadyOpened);
+        throws_if(ec, Errors::FormatAlreadyOpened);
         return;
     }
 
@@ -848,7 +848,7 @@ void FormatContext::openCustomIOOutput(CustomIO *io, size_t internalBufferSize, 
         if (format.isNull())
         {
             fflog(AV_LOG_ERROR, "You must set output format for use with custom IO\n");
-            throws_if(ec, AvError::FormatNullOutputFormat);
+            throws_if(ec, Errors::FormatNullOutputFormat);
             return;
         }
     }

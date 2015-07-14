@@ -13,28 +13,28 @@ const char *AvcppCategory::name() const noexcept
 
 std::string AvcppCategory::message(int ev) const
 {
-    auto ec = static_cast<AvError>(ev);
+    auto ec = static_cast<Errors>(ev);
 
 #define CASE(code, text) \
-    case AvError::code: return text
+    case Errors::code: return text
 
     switch (ec) {
-        case AvError::NoError: return "Success";
-        case AvError::Generic: return "Generic error";
-        case AvError::CodecStreamInvalid: return "Codec's context parent stream invalid";
-        case AvError::Unallocated: return "Action on unallocated object";
-        case AvError::CodecInvalidDirection: return "Action impossible with given codec context direction";
-        case AvError::CodecAlreadyOpened: return "Codec context already opened";
-        case AvError::CodecInvalid: return "Codec context invalid";
-        case AvError::CodecNotOpened: return "Codec context does not opened";
-        case AvError::CodecInvalidDecodeProc: return "Provided null decode proc";
-        case AvError::CodecInvalidEncodeProc: return "Provided null encode proc";
-        case AvError::CodecDecodingOffsetToLarge: return "Decoding packet offset biggest packet size";
-        case AvError::CodecInvalidForEncode: return "Codec context can't encode data";
-        case AvError::CodecInvalidForDecoce: return "Codec context can't decode data";
-        case AvError::FrameInvalid: return "Frame invalid (unallocated)";
-        case AvError::DictOutOfRage: return "Dictionary index out of range";
-        case AvError::DictNoKey: return "Dictionary does not contain entry with given key";
+        case Errors::NoError: return "Success";
+        case Errors::Generic: return "Generic error";
+        case Errors::CodecStreamInvalid: return "Codec's context parent stream invalid";
+        case Errors::Unallocated: return "Action on unallocated object";
+        case Errors::CodecInvalidDirection: return "Action impossible with given codec context direction";
+        case Errors::CodecAlreadyOpened: return "Codec context already opened";
+        case Errors::CodecInvalid: return "Codec context invalid";
+        case Errors::CodecNotOpened: return "Codec context does not opened";
+        case Errors::CodecInvalidDecodeProc: return "Provided null decode proc";
+        case Errors::CodecInvalidEncodeProc: return "Provided null encode proc";
+        case Errors::CodecDecodingOffsetToLarge: return "Decoding packet offset biggest packet size";
+        case Errors::CodecInvalidForEncode: return "Codec context can't encode data";
+        case Errors::CodecInvalidForDecoce: return "Codec context can't decode data";
+        case Errors::FrameInvalid: return "Frame invalid (unallocated)";
+        case Errors::DictOutOfRage: return "Dictionary index out of range";
+        case Errors::DictNoKey: return "Dictionary does not contain entry with given key";
 
             CASE(FormatCantAddStream, "Can't add stream to output format");
             CASE(FormatAlreadyOpened, "Format already opened");
@@ -60,16 +60,6 @@ const char *FfmpegCategory::name() const noexcept
 std::string FfmpegCategory::message(int ev) const
 {
     return error2string(ev);
-}
-
-AvException::AvException(const error_code ec)
-    : m_ec(ec)
-{
-}
-
-const char *av::AvException::what() const noexcept
-{
-    return m_ec.message().c_str();
 }
 
 } // ::av

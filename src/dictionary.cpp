@@ -121,7 +121,7 @@ void Dictionary::assign(AVDictionary *dict, bool takeOwning) noexcept
 const char *Dictionary::operator[](size_t index) const
 {
     if (index >= count())
-        throw_error_code(AvError::DictOutOfRage);
+        throw_error_code(Errors::DictOutOfRage);
 
     // Take a first element
     auto entry = av_dict_get(m_raw, "", nullptr, FlagIgnoreSuffix);
@@ -133,7 +133,7 @@ Dictionary::Entry Dictionary::operator[](size_t index)
 {
     Entry holder;
     if (index >= count())
-        throw_error_code(AvError::DictOutOfRage);
+        throw_error_code(Errors::DictOutOfRage);
 
     // Take a first element
     auto entry = av_dict_get(m_raw, "", nullptr, FlagIgnoreSuffix);
@@ -147,7 +147,7 @@ const char *Dictionary::operator[](const char *key) const
 {
     auto entry = av_dict_get(m_raw, key, nullptr, 0);
     if (!entry)
-        throw_error_code(AvError::DictNoKey);
+        throw_error_code(Errors::DictNoKey);
     return entry->value;
 }
 
