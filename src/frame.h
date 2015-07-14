@@ -53,12 +53,21 @@ public:
 
     // Helper ctors to implement move/copy ctors
     Frame2(const T& other) : Frame2(other.m_raw) {
-        copyInfoFrom(other);
+        if (m_raw)
+            copyInfoFrom(other);
     }
 
-    Frame2(T&& other) : Frame2() {
-        av_frame_move_ref(m_raw, other.m_raw);
-        copyInfoFrom(other);
+    Frame2(T&& other) : FFWrapperPtr<AVFrame>(nullptr) {
+        if (other.m_raw) {
+            m_raw = av_frame_alloc();
+            m_raw->opaque = this;
+            av_frame_move_ref(m_raw, other.m_raw);
+            copyInfoFrom(other);
+        }
+    }
+
+    static T null() {
+        return T(nullptr);
     }
 
     // You must implement operators in deveritive classes using assignOperator() and moveOperator()
@@ -83,18 +92,18 @@ public:
     }
 
     bool isReferenced() const {
-        return m_raw->buf[0];
+        return m_raw && m_raw->buf[0];
     }
 
     int refCount() const {
-        if (m_raw->buf[0])
+        if (m_raw && m_raw->buf[0])
             return av_buffer_get_ref_count(m_raw->buf[0]);
         else
             return 0;
     }
 
     AVFrame* makeRef() const {
-        return av_frame_clone(m_raw);
+        return m_raw ? av_frame_clone(m_raw) : nullptr;
     }
 
     T clone(size_t align = 1) const {
@@ -288,6 +297,12 @@ public:
     AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
     AudioSamples2(const uint8_t *data, size_t size,
                   AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1) throw(std::length_error);
+
+    AudioSamples2(const AudioSamples2 &other);
+    AudioSamples2(AudioSamples2 &&other);
+
+    AudioSamples2& operator=(const AudioSamples2 &rhs);
+    AudioSamples2& operator=(AudioSamples2 &&rhs);
 
     int            init(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
 

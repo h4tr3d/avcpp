@@ -133,47 +133,47 @@ VideoFrame2 &VideoFrame2::operator=(VideoFrame2 &&rhs)
 
 AVPixelFormat VideoFrame2::pixelFormat() const
 {
-    return static_cast<AVPixelFormat>(m_raw->format);
+    return static_cast<AVPixelFormat>(RAW_GET(format, AV_PIX_FMT_NONE));
 }
 
 int VideoFrame2::width() const
 {
-    return m_raw->width;
+    return RAW_GET(width, 0);
 }
 
 int VideoFrame2::height() const
 {
-    return m_raw->height;
+    return RAW_GET(height, 0);
 }
 
 bool VideoFrame2::isKeyFrame() const
 {
-    return m_raw->key_frame;
+    return RAW_GET(key_frame, false);
 }
 
 void VideoFrame2::setKeyFrame(bool isKey)
 {
-    m_raw->key_frame = isKey;
+    RAW_SET(key_frame, isKey);
 }
 
 int VideoFrame2::quality() const
 {
-    return m_raw->quality;
+    return RAW_GET(quality, 0);
 }
 
 void VideoFrame2::setQuality(int quality)
 {
-    m_raw->quality = quality;
+    RAW_SET(quality, quality);
 }
 
 AVPictureType VideoFrame2::pictureType() const
 {
-    return m_raw->pict_type;
+    return RAW_GET(pict_type, AV_PICTURE_TYPE_NONE);
 }
 
 void VideoFrame2::setPictureType(AVPictureType type)
 {
-    m_raw->pict_type = type;
+    RAW_SET(pict_type, type);
 }
 
 
@@ -184,6 +184,11 @@ AudioSamples2::AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, uint
 
 int AudioSamples2::init(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
 {
+    if (!m_raw) {
+        m_raw = av_frame_alloc();
+        m_raw->opaque = this;
+    }
+
     if (m_raw->data[0]) {
         av_frame_free(&m_raw);
     }
@@ -216,38 +221,60 @@ AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, AVSampleFormat sa
     }
 }
 
+AudioSamples2::AudioSamples2(const AudioSamples2 &other)
+    : Frame2<AudioSamples2>(other)
+{
+}
+
+AudioSamples2::AudioSamples2(AudioSamples2 &&other)
+    : Frame2<AudioSamples2>(move(other))
+{
+}
+
+AudioSamples2 &AudioSamples2::operator=(const AudioSamples2 &rhs)
+{
+    return assignOperator(rhs);
+}
+
+AudioSamples2 &AudioSamples2::operator=(AudioSamples2 &&rhs)
+{
+    return moveOperator(move(rhs));
+}
+
 AVSampleFormat AudioSamples2::sampleFormat() const
 {
-    return static_cast<AVSampleFormat>(m_raw->format);
+    return static_cast<AVSampleFormat>(RAW_GET(format, AV_SAMPLE_FMT_NONE));
 }
 
 int AudioSamples2::samplesCount() const
 {
-    return m_raw->nb_samples;
+    return RAW_GET(nb_samples, 0);
 }
 
 int AudioSamples2::channelsCount() const
 {
-    return av_frame_get_channels(m_raw);
+    return m_raw ? av_frame_get_channels(m_raw) : 0;
 }
 
 int64_t AudioSamples2::channelsLayout() const
 {
-    return av_frame_get_channel_layout(m_raw);
+    return m_raw ? av_frame_get_channel_layout(m_raw) : 0;
 }
 
 int AudioSamples2::sampleRate() const
 {
-    return av_frame_get_sample_rate(m_raw);
+    return m_raw ? av_frame_get_sample_rate(m_raw) : 0;
 }
 
 uint AudioSamples2::sampleBitDepth() const
 {
-    return (av_get_bytes_per_sample(static_cast<AVSampleFormat>(m_raw->format))) << 3;
+    return m_raw ? (av_get_bytes_per_sample(static_cast<AVSampleFormat>(m_raw->format))) << 3 : 0;
 }
 
 string AudioSamples2::channelsLayoutString() const
 {
+    if (!m_raw)
+        return "";
     char buf[128] = {0};
     av_get_channel_layout_string(buf,
                                  sizeof(buf),
