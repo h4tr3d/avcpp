@@ -663,7 +663,7 @@ VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size
     int         gotFrame = 0;
     auto st = decodeCommon(outFrame, packet, offset, gotFrame, avcodec_decode_video2);
 
-    if (get<0>(st) < 0) {
+    if (get<1>(st)) {
         throws_if(ec, get<0>(st), *get<1>(st));
         return VideoFrame2();
     }
@@ -688,7 +688,7 @@ Packet CodecContext::encodeVideo(const VideoFrame2 &inFrame, error_code &ec)
     Packet packet;
     auto st = encodeCommon(packet, inFrame, gotPacket, avcodec_encode_video2);
 
-    if (get<0>(st) < 0) {
+    if (get<1>(st)) {
         throws_if(ec, get<0>(st), *get<1>(st));
         return Packet();
     }
@@ -717,7 +717,7 @@ AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, size_t offset, e
 
     int gotFrame = 0;
     auto st = decodeCommon(outSamples, inPacket, offset, gotFrame, avcodec_decode_audio4);
-    if (get<0>(st) < 0)
+    if (get<1>(st))
     {
         throws_if(ec, get<0>(st), *get<1>(st));
         return AudioSamples2();
@@ -746,7 +746,7 @@ Packet CodecContext::encodeAudio(const AudioSamples2 &inSamples, error_code &ec)
 
     int gotFrame = 0;
     auto st = encodeCommon(outPacket, inSamples, gotFrame, avcodec_encode_audio2);
-    if (get<0>(st) < 0)
+    if (get<1>(st))
     {
         throws_if(ec, get<0>(st), *get<1>(st));
         return Packet();
@@ -891,7 +891,7 @@ template<typename T>
 std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(T &outFrame, const Packet & inPacket, size_t offset, int & frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *))
 {
     auto st = decodeCommon(outFrame.raw(), inPacket, offset, frameFinished, decodeProc);
-    if (get<0>(st) < 0)
+    if (get<1>(st))
         return st;
 
     if (!frameFinished)
@@ -934,7 +934,7 @@ template<typename T>
 std::pair<ssize_t, const error_category *> CodecContext::encodeCommon(Packet & outPacket, const T & inFrame, int & gotPacket, int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *))
 {
     auto st = encodeCommon(outPacket, inFrame.raw(), gotPacket, encodeProc);
-    if (get<0>(st) < 0)
+    if (get<1>(st))
         return st;
     if (!gotPacket)
         return make_pair(0u, nullptr);
