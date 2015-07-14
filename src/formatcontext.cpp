@@ -327,7 +327,7 @@ Packet FormatContext::readPacket(error_code &ec)
         return Packet();
     }
 
-    if (!m_streamsInfoFound && streamsCount() == 0)
+    if (!m_streamsInfoFound)
     {
         fflog(AV_LOG_ERROR, "Streams does not found. Try call findStreamInfo()\n");
         throws_if(ec, Errors::FormatNoStreams);
