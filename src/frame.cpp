@@ -94,7 +94,7 @@ VideoFrame2::VideoFrame2(AVPixelFormat pixelFormat, int width, int height, int a
     av_frame_get_buffer(m_raw, align);
 }
 
-VideoFrame2::VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height, int align) throw(std::length_error)
+VideoFrame2::VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height, int align)
     : VideoFrame2(pixelFormat, width, height, align)
 {
     size_t calcSize = av_image_get_buffer_size(pixelFormat, width, height, align);
@@ -203,7 +203,7 @@ int AudioSamples2::init(AVSampleFormat sampleFormat, int samplesCount, uint64_t 
     return 0;
 }
 
-AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align) throw(std::length_error)
+AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
     : AudioSamples2(sampleFormat, samplesCount, channelLayout, sampleRate, align)
 {
     const auto channels = av_get_channel_layout_nb_channels(channelLayout);

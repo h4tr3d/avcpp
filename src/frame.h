@@ -265,7 +265,7 @@ public:
 
     VideoFrame2() = default;
     VideoFrame2(AVPixelFormat pixelFormat, int width, int height, int align = 1);
-    VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height, int align = 1) throw(std::length_error);
+    VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height, int align = 1);
 
     VideoFrame2(const VideoFrame2 &other);
     VideoFrame2(VideoFrame2 &&other);
@@ -296,7 +296,7 @@ public:
     AudioSamples2() = default;
     AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
     AudioSamples2(const uint8_t *data, size_t size,
-                  AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1) throw(std::length_error);
+                  AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
 
     AudioSamples2(const AudioSamples2 &other);
     AudioSamples2(AudioSamples2 &&other);

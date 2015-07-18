@@ -91,8 +91,7 @@ int main(int argc, char **argv)
 
 
         while (Packet pkt = ictx.readPacket(ec)) {
-            if (ec)
-            {
+            if (ec) {
                 clog << "Packet reading error: " << ec << ", " << ec.message() << endl;
                 return 1;
             }

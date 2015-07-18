@@ -50,6 +50,8 @@ std::string AvcppCategory::message(int ev) const
         case Errors::ResamplerNotInited: return "Resampler not inited";
         case Errors::ResamplerInputChanges: return "Resampler input parameters changed (mismatch with provided frame)";
         case Errors::ResamplerOutputChanges: return "Resampler output parameters changed (mismatch with provided frame)";
+        case Errors::RescalerInvalidParameters: return "Provided invalid parameters for rescaler";
+        case Errors::RescalerInternalSwsError: return "Internal SWS error";
     }
 
 #undef CASE

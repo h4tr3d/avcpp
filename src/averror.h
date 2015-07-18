@@ -41,6 +41,9 @@ enum class Errors
     ResamplerNotInited,
     ResamplerInputChanges,
     ResamplerOutputChanges,
+
+    RescalerInvalidParameters,
+    RescalerInternalSwsError,
 };
 
 /**

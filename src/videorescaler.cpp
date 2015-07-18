@@ -10,13 +10,15 @@ namespace av
 VideoRescaler::VideoRescaler()
 {}
 
-VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixelFormat, int srcWidth, int srcHeight, AVPixelFormat srcPixelFormat) throw(invalid_argument)
+VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixelFormat,
+                             int srcWidth, int srcHeight, AVPixelFormat srcPixelFormat, int32_t flags)
     : m_dstWidth(dstWidth),
       m_dstHeight(dstHeight),
       m_dstPixelFormat(dstPixelFormat),
       m_srcWidth(srcWidth),
       m_srcHeight(srcHeight),
-      m_srcPixelFormat(srcPixelFormat)
+      m_srcPixelFormat(srcPixelFormat),
+      m_flags(flags)
 {
     if (dstWidth <= 0 || dstHeight <= 0 || dstPixelFormat == AV_PIX_FMT_NONE) {
         fflog(AV_LOG_FATAL,
@@ -27,17 +29,18 @@ VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixel
         throw invalid_argument("Invalid destination parameters");
     }
 
-    getContext();
+    getContext(flags);
 }
 
-VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixelFormat)
-    : VideoRescaler(dstWidth, dstHeight, dstPixelFormat, 0, 0, AV_PIX_FMT_NONE)
+VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixelFormat, int32_t flags)
+    : VideoRescaler(dstWidth, dstHeight, dstPixelFormat, 0, 0, AV_PIX_FMT_NONE, flags)
 {
 }
 
 VideoRescaler::VideoRescaler(const VideoRescaler &other)
     : VideoRescaler(other.m_dstWidth, other.m_dstHeight, other.m_dstPixelFormat,
-                    other.m_srcWidth, other.m_srcHeight, other.m_srcPixelFormat)
+                    other.m_srcWidth, other.m_srcHeight, other.m_srcPixelFormat,
+                    other.m_flags)
 {
 }
 
@@ -62,10 +65,11 @@ void VideoRescaler::swap(VideoRescaler &other) noexcept
     swap(m_srcWidth,       other.m_srcWidth);
     swap(m_srcHeight,      other.m_srcHeight);
     swap(m_srcPixelFormat, other.m_srcPixelFormat);
+    swap(m_flags,          other.m_flags);
     swap(m_raw,            other.m_raw);
 }
 
-void VideoRescaler::getContext()
+void VideoRescaler::getContext(int32_t flags)
 {
     if (m_srcWidth <= 0 || m_srcHeight <= 0 || m_srcPixelFormat == AV_PIX_FMT_NONE ||
         m_srcWidth <= 0 || m_dstHeight <= 0 || m_dstPixelFormat == AV_PIX_FMT_NONE)
@@ -76,18 +80,25 @@ void VideoRescaler::getContext()
         return;
     }
 
-    int32_t flags = 0;
-
-    if (m_srcWidth < m_dstWidth)
-        flags = SWS_BICUBIC;
-    else
-        flags = SWS_AREA;
+    if (flags == SwsFlagAuto) {
+        if (m_srcWidth < m_dstWidth)
+            flags = SWS_BICUBIC;
+        else
+            flags = SWS_AREA;
+    }
 
     m_raw = sws_getCachedContext(m_raw,
                                  m_srcWidth, m_srcHeight, m_srcPixelFormat,
                                  m_dstWidth, m_dstHeight, m_dstPixelFormat,
                                  flags,
                                  nullptr, nullptr, nullptr);
+}
+
+bool VideoRescaler::validate(int width, int height, AVPixelFormat pixelFormat)
+{
+    if (width > 0 && height > 0 && pixelFormat != AV_PIX_FMT_NONE)
+        return true;
+    return false;
 }
 
 VideoRescaler& VideoRescaler::operator=(const VideoRescaler &rhs)
@@ -100,15 +111,12 @@ VideoRescaler& VideoRescaler::operator=(const VideoRescaler &rhs)
 VideoRescaler& VideoRescaler::operator=(VideoRescaler &&rhs)
 {
     if (this != &rhs) {
-        swap(rhs);
-        VideoRescaler().swap(rhs);
+        VideoRescaler(std::move(rhs)).swap(*this);
     }
     return *this;
 }
 
-
-
-int32_t VideoRescaler::rescale(VideoFrame2 &dst, const VideoFrame2 &src)
+void VideoRescaler::rescale(VideoFrame2 &dst, const VideoFrame2 &src, error_code &ec)
 {
     m_srcWidth       = src.width();
     m_srcHeight      = src.height();
@@ -118,12 +126,15 @@ int32_t VideoRescaler::rescale(VideoFrame2 &dst, const VideoFrame2 &src)
     m_dstHeight      = dst.height();
     m_dstPixelFormat = dst.pixelFormat();
 
+    clear_if(ec);
+
     // Context can be allocated on demand
-    getContext();
+    getContext(m_flags);
 
     if (!m_raw) {
         fflog(AV_LOG_ERROR, "Can't allocate swsContext for given input/output parameters\n");
-        return -1;
+        throws_if(ec, Errors::RescalerInvalidParameters);
+        return;
     }
 
     dst.setPts(src.pts());
@@ -145,18 +156,29 @@ int32_t VideoRescaler::rescale(VideoFrame2 &dst, const VideoFrame2 &src)
     #endif
     };
 
-    int stat = -1;
-    stat = sws_scale(m_raw, srcFrameData, inpFrame->linesize, 0, m_srcHeight,
-                     outFrame->data, outFrame->linesize);
+    int sts = sws_scale(m_raw, srcFrameData, inpFrame->linesize, 0, m_srcHeight,
+                         outFrame->data, outFrame->linesize);
+    if (sts < 0) {
+        throws_if(ec, sts, ffmpeg_category());
+        return;
+    } else if (sts == 0) {
+        throws_if(ec, Errors::RescalerInternalSwsError);
+        return;
+    }
 
     dst.setQuality(src.quality());
     dst.setTimeBase(src.timeBase());
     dst.setPts(src.pts());
     //dst.setFakePts(src.fakePts());
     dst.setStreamIndex(src.streamIndex());
-    dst.setComplete(stat >= 0);
+    dst.setComplete(true);
+}
 
-    return stat;
+VideoFrame2 VideoRescaler::rescale(const VideoFrame2 &src, error_code &ec)
+{
+    VideoFrame2 dst{m_dstPixelFormat, m_dstWidth, m_dstHeight};
+    rescale(dst, src, ec);
+    return dst;
 }
 
 bool VideoRescaler::isValid() const

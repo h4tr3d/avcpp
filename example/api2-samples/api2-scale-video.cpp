@@ -170,10 +170,11 @@ int main(int argc, char **argv)
         clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts() * inpFrame.timeBase().getDouble() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
 
         // SCALE
-        VideoFrame2 outFrame {encoder.pixelFormat(), encoder.width(), encoder.height()};
-        auto st = rescaler.rescale(outFrame, inpFrame);
-        if (st < 0) {
-            cerr << "Can't rescale frame\n";
+        //VideoFrame2 outFrame {encoder.pixelFormat(), encoder.width(), encoder.height()};
+        //rescaler.rescale(outFrame, inpFrame, ec);
+        auto outFrame = rescaler.rescale(inpFrame, ec);
+        if (ec) {
+            cerr << "Can't rescale frame: " << ec << ", " << ec.message() << endl;
             return 1;
         }
 
