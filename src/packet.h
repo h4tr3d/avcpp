@@ -7,6 +7,7 @@
 #include "ffmpeg.h"
 #include "rational.h"
 #include "stream.h"
+#include "averror.h"
 
 namespace av {
 
@@ -16,19 +17,19 @@ private:
     void initCommon();
 
     // if deepCopy true - make deep copy, instead - reference is created
-    void initFromAVPacket(const AVPacket *avpacket, bool deepCopy);
+    void initFromAVPacket(const AVPacket *avpacket, bool deepCopy, std::error_code &ec);
 
 public:
     Packet();
-    Packet(const Packet &packet);
+    Packet(const Packet &packet, std::error_code &ec = throws());
     Packet(Packet &&packet);
-    explicit Packet(const AVPacket *packet);
+    explicit Packet(const AVPacket *packet, std::error_code &ec = throws());
     explicit Packet(const std::vector<uint8_t> &data);
     Packet(const uint8_t *data, size_t size, bool doAllign = true);
     ~Packet();
 
-    bool setData(const std::vector<uint8_t> &newData);
-    bool setData(const uint8_t *newData, size_t size);
+    bool setData(const std::vector<uint8_t> &newData, std::error_code &ec = throws());
+    bool setData(const uint8_t *newData, size_t size, std::error_code &ec = throws());
 
     const uint8_t* data() const { return m_raw.data; }
     uint8_t*       data() { return m_raw.data; }
@@ -75,12 +76,12 @@ public:
 
     bool     isReferenced() const;
     int      refCount() const;
-    AVPacket makeRef() const;
-    Packet   clone() const;
+    AVPacket makeRef(std::error_code &ec = throws()) const;
+    Packet   clone(std::error_code &ec = throws()) const;
 
-    Packet &operator =(const Packet &rhs);
-    Packet &operator= (Packet &&rhs);
-    Packet &operator =(const AVPacket &rhs);
+    Packet &operator=(const Packet &rhs);
+    Packet &operator=(Packet &&rhs);
+    Packet &operator=(const AVPacket &rhs);
 
     void swap(Packet &other);
 

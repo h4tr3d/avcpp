@@ -9,10 +9,10 @@ Packet::Packet()
     initCommon();
 }
 
-Packet::Packet(const Packet &packet)
+Packet::Packet(const Packet &packet, error_code &ec)
     : Packet()
 {
-    initFromAVPacket(&packet.m_raw, false);
+    initFromAVPacket(&packet.m_raw, false, ec);
     m_completeFlag = packet.m_completeFlag;
     m_timeBase = packet.m_timeBase;
     m_fakePts = packet.m_fakePts;
@@ -28,10 +28,10 @@ Packet::Packet(Packet &&packet)
     av_init_packet(&packet.m_raw);
 }
 
-Packet::Packet(const AVPacket *packet)
+Packet::Packet(const AVPacket *packet, error_code &ec)
     : Packet()
 {
-    initFromAVPacket(packet, false);
+    initFromAVPacket(packet, false, ec);
 }
 
 Packet::Packet(const vector<uint8_t> &data)
@@ -72,8 +72,10 @@ void Packet::initCommon()
     m_fakePts      = AV_NOPTS_VALUE;
 }
 
-void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy)
+void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, error_code &ec)
 {
+    clear_if(ec);
+
     if (!packet || packet->size <= 0)
     {
         return;
@@ -88,19 +90,24 @@ void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy)
         tmp.buf = nullptr;
     }
 
-    av_copy_packet(&m_raw, &tmp);
+    int sts = av_copy_packet(&m_raw, &tmp);
+    if (sts < 0) {
+        throws_if(ec, sts, ffmpeg_category());
+        return;
+    }
 
     m_fakePts      = packet->pts;
     m_completeFlag = m_raw.size > 0;
 }
 
-bool Packet::setData(const vector<uint8_t> &newData)
+bool Packet::setData(const vector<uint8_t> &newData, error_code &ec)
 {
-    return setData(newData.data(), newData.size());
+    return setData(newData.data(), newData.size(), ec);
 }
 
-bool Packet::setData(const uint8_t *newData, size_t size)
+bool Packet::setData(const uint8_t *newData, size_t size, std::error_code &ec)
 {
+    clear_if(ec);
     if ((m_raw.size >= 0 && (size_t)m_raw.size != size) || m_raw.data == 0)
     {
         if (m_raw.buf)
@@ -112,6 +119,10 @@ bool Packet::setData(const uint8_t *newData, size_t size)
 
         std::fill_n(m_raw.data + m_raw.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0'); // set padding memory to zero
         m_raw.buf = av_buffer_create(m_raw.data, m_raw.size, av_buffer_default_free, nullptr, 0);
+        if (!m_raw.buf) {
+            throws_if(ec, ENOMEM, system_category());
+            return false;
+        }
     }
 
     std::copy(newData, newData + size, m_raw.data);
@@ -288,17 +299,21 @@ int Packet::refCount() const
         return 0;
 }
 
-AVPacket Packet::makeRef() const
+AVPacket Packet::makeRef(error_code &ec) const
 {
+    clear_if(ec);
     AVPacket pkt;
-    av_copy_packet(&pkt, &m_raw);
+    auto sts = av_copy_packet(&pkt, &m_raw);
+    if (sts < 0) {
+        throws_if(ec, sts, ffmpeg_category());
+    }
     return pkt;
 }
 
-Packet Packet::clone() const
+Packet Packet::clone(error_code &ec) const
 {
     Packet pkt;
-    pkt.initFromAVPacket(&m_raw, true);
+    pkt.initFromAVPacket(&m_raw, true, ec);
     return pkt;
 }
 
@@ -307,7 +322,7 @@ void Packet::setComplete(bool complete)
     m_completeFlag = complete;
 }
 
-Packet &Packet::operator =(const Packet &rhs)
+Packet &Packet::operator=(const Packet &rhs)
 {
     if (&rhs == this)
         return *this;
@@ -327,12 +342,12 @@ Packet &Packet::operator=(Packet &&rhs)
     return *this;
 }
 
-Packet &Packet::operator =(const AVPacket &rhs)
+Packet &Packet::operator=(const AVPacket &rhs)
 {
     if (&rhs == &m_raw)
         return *this;
 
-    initFromAVPacket(&rhs, false);
+    initFromAVPacket(&rhs, false, throws());
     m_timeBase = Rational();
     return *this;
 }
