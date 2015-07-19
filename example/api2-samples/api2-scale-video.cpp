@@ -53,6 +53,12 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    ictx.findStreamInfo(ec);
+    if (ec) {
+        cerr << "Can't find streams: " << ec << ", " << ec.message() << endl;
+        return 1;
+    }
+    
     for (size_t i = 0; i < ictx.streamsCount(); ++i) {
         auto st = ictx.stream(i);
         if (st.mediaType() == AVMEDIA_TYPE_VIDEO) {
