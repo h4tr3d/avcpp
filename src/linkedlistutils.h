@@ -11,7 +11,7 @@ namespace av {
 template<typename T>
 struct NullDeleter
 {
-    void operator()(T * x)  const
+    void operator()(T*)  const
     {
     }
 };
@@ -113,11 +113,15 @@ public:
     typedef D deleter_type;
     typedef I iterator_category;
 
-    class base_iterator : public std::iterator<iterator_category, element_wrapper_type>
+    template<bool constIterator = false>
+    class base_iterator : public std::iterator<iterator_category, typename std::conditional<constIterator, const element_wrapper_type, element_wrapper_type>::type>
     {
-    protected:
-        element_type         *ptr;
-        element_wrapper_type  wrapper;
+    private:
+        using ElementType = typename std::conditional<constIterator, const element_type, element_type>::type;
+        using WrapperType = typename std::conditional<constIterator, const element_wrapper_type, element_wrapper_type>::type;
+
+        ElementType          *ptr;
+        WrapperType           wrapper;
         next_element_type     getNextPtr;
         wrapper_reset_type    resetPtr;
 
@@ -128,7 +132,7 @@ public:
             resetPtr(wrapper, ptr);
         }
 
-        virtual ~base_iterator() {}
+        ~base_iterator() {}
 
         // prefix++
         base_iterator& operator++()
@@ -148,69 +152,31 @@ public:
 
         bool  operator==(const base_iterator& rhs) const {return ptr == rhs.ptr;}
         bool  operator!=(const base_iterator& rhs) const {return !(ptr == rhs.ptr);}
-    };
 
-    class iterator : public base_iterator
-    {
-    public:
-        iterator(element_type *ptr) : base_iterator(ptr) {}
-        virtual ~iterator() {}
-
-        typedef element_wrapper_type* pointer;
-        typedef element_wrapper_type& reference;
-
-        using base_iterator::wrapper;
-        //using typename base_iterator::reference;
-        //using typename base_iterator::pointer;
-
-        //using typename base_iterator::core_iterator;
-        //using typename core_iterator::reference;
-        //using typename core_iterator::pointer;
-
-        virtual reference operator*()
+        WrapperType& operator*() noexcept
         {
             return wrapper;
         }
 
-        virtual pointer operator->()
+        WrapperType* operator->() noexcept
         {
             return &wrapper;
         }
+
     };
 
-    class const_iterator : public base_iterator
-    {
-    public:
-        const_iterator(element_type *ptr) : base_iterator(ptr) {}
-        virtual ~const_iterator() {}
-
-        typedef element_wrapper_type* pointer;
-        typedef element_wrapper_type& reference;
-
-        using base_iterator::wrapper;
-        //using typename base_iterator::reference;
-        //using typename base_iterator::pointer;
-
-        virtual const reference operator*()
-        {
-            return wrapper;
-        }
-
-        virtual const pointer operator->()
-        {
-            return &wrapper;
-        }
-    };
+    using iterator = base_iterator<false>;
+    using const_iterator = base_iterator<true>;
 
     LinkedListWrapper()
-        : beginPtr(0),
-          endPtr(0)
+        : m_begin(0),
+          m_end(0)
     {
     }
 
     explicit LinkedListWrapper(element_type * begin)
-        : beginPtr(begin),
-          endPtr(begin)
+        : m_begin(begin),
+          m_end(begin)
     {
     }
 
@@ -218,44 +184,44 @@ public:
     ~LinkedListWrapper()
     {
         // Free resources
-        deleter_type()(beginPtr);
+        deleter_type()(m_begin);
     }
 
 
-    virtual bool isValid()
+    bool isValid()
     {
-        return !!beginPtr;
+        return !!m_begin;
     }
 
-    virtual element_type *raw()
+    element_type *raw()
     {
-        return beginPtr;
+        return m_begin;
     }
 
-    virtual const element_type *raw() const
+    const element_type *raw() const
     {
-        return beginPtr;
+        return m_begin;
     }
 
-    virtual iterator begin()
+    iterator begin()
     {
-        return iterator(beginPtr);
+        return iterator(m_begin);
     }
 
 
-    virtual iterator end()
+    iterator end()
     {
         return iterator(0);
     }
 
 
-    virtual const_iterator begin() const
+    const_iterator begin() const
     {
-        return const_iterator(beginPtr);
+        return const_iterator(m_begin);
     }
 
 
-    virtual const_iterator end() const
+    const_iterator end() const
     {
         return const_iterator(0);
     }
@@ -263,16 +229,9 @@ public:
     /**
      Log(N) complexity!
      */
-    virtual unsigned int getCount() const
+    size_t count() const
     {
-        const_iterator it = begin();
-        unsigned int count = 0;
-        while (it++ != end())
-        {
-            ++count;
-        }
-
-        return count;
+        return std::distance(begin(), end());
     }
 
     /**
@@ -280,9 +239,9 @@ public:
      * @param idx
      * @return
      */
-    virtual element_wrapper_type getItem(unsigned int idx) const
+    element_wrapper_type at(size_t idx) const
     {
-        unsigned int size = getCount();
+        size_t size = count();
         if (idx >= size)
             return element_wrapper_type();
 
@@ -293,9 +252,9 @@ public:
     }
 
 protected:
-    wrapper_cast_type  wrapperCast;
-    element_type      *beginPtr;
-    element_type      *endPtr;
+    wrapper_cast_type  m_wrapperCast;
+    element_type      *m_begin;
+    element_type      *m_end;
 
 };
 }

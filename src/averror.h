@@ -13,6 +13,7 @@ enum class Errors
     Generic,
     Unallocated,
     InvalidArgument,
+    OutOfRange,
     CantAllocateFrame,
     CodecStreamInvalid,
     CodecInvalidDirection,
@@ -44,6 +45,16 @@ enum class Errors
 
     RescalerInvalidParameters,
     RescalerInternalSwsError,
+
+    FilterNotInFilterGraph,
+    FilterGraphDescriptionEmpty,
+
+    IncorrectBufferSrcFilter,
+    IncorrectBufferSrcMediaType,
+
+    IncorrectBufferSinkFilter,
+    IncorrectBufferSinkMediaType,
+    MixBufferSinkAccess,
 };
 
 /**

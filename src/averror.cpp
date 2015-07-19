@@ -15,14 +15,12 @@ std::string AvcppCategory::message(int ev) const
 {
     auto ec = static_cast<Errors>(ev);
 
-#define CASE(code, text) \
-    case Errors::code: return text
-
     switch (ec) {
         case Errors::NoError: return "Success";
         case Errors::Generic: return "Generic error";
         case Errors::Unallocated: return "Action on unallocated object";
         case Errors::InvalidArgument: return "Invalid function or method argument";
+        case Errors::OutOfRange: return "Value or index out of allowed range";
         case Errors::CantAllocateFrame: return "Can't allocate frame";
         case Errors::CodecStreamInvalid: return "Codec's context parent stream invalid";
         case Errors::CodecInvalidDirection: return "Action impossible with given codec context direction";
@@ -52,9 +50,14 @@ std::string AvcppCategory::message(int ev) const
         case Errors::ResamplerOutputChanges: return "Resampler output parameters changed (mismatch with provided frame)";
         case Errors::RescalerInvalidParameters: return "Provided invalid parameters for rescaler";
         case Errors::RescalerInternalSwsError: return "Internal SWS error";
+        case Errors::FilterNotInFilterGraph: return "Filtern not in filter graph";
+        case Errors::FilterGraphDescriptionEmpty: return "Empty graph description";
+        case Errors::IncorrectBufferSrcFilter: return "Given filter context not an type of BufferSrc filters";
+        case Errors::IncorrectBufferSrcMediaType: return "Incorrect frame media type provided for BufferSrc filter";
+        case Errors::IncorrectBufferSinkFilter: return "Given filter context not an type of BufferSink filters";
+        case Errors::IncorrectBufferSinkMediaType: return "Incorrect frame media type provided for BufferSink filter";
+        case Errors::MixBufferSinkAccess: return "Mix getFrame() and getSamples() calls on BufferSink";
     }
-
-#undef CASE
 
     return "Uknown AvCpp error";
 }
