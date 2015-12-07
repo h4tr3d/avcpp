@@ -145,6 +145,12 @@ int main(int argc, char **argv)
             break;
         }
 
+        // EOF
+        if (!pkt)
+        {
+            break;
+        }
+
         if (pkt.streamIndex() != videoStream) {
             continue;
         }

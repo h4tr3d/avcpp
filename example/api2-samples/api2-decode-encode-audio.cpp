@@ -176,11 +176,27 @@ int main(int argc, char **argv)
                 break;
             }
 
+            // EOF
+            if (!pkt)
+            {
+                break;
+            }
+
             if (pkt.streamIndex() != audioStream) {
                 continue;
             }
 
-            clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+            clog << "Read packet: " << pkt.pts() << "(nopts:" << (pkt.pts() == AV_NOPTS_VALUE) << ")" << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+            if (pkt.pts() == AV_NOPTS_VALUE && pkt.timeBase() == Rational())
+            {
+                clog << "Skip invalid timestamp packet: data=" << (void*)pkt.data()
+                     << ", size=" << pkt.size()
+                     << ", flags=" << pkt.flags() << " (corrupt:" << (pkt.flags() & AV_PKT_FLAG_CORRUPT) << ";key:" << (pkt.flags() & AV_PKT_FLAG_KEY) << ")"
+                     << ", side_data=" << (void*)pkt.raw()->side_data
+                     << ", side_data_count=" << pkt.raw()->side_data_elems
+                     << endl;
+                continue;
+            }
 
             AudioSamples2 samples = adec.decodeAudio(pkt, ec);
             count++;
@@ -188,7 +204,7 @@ int main(int argc, char **argv)
             //    break;
 
             if (ec) {
-                cerr << "Error: " << ec << endl;
+                cerr << "Decode error: " << ec << ", " << ec.message() << endl;
                 return 1;
             } else if (!samples) {
                 //cerr << "Empty frame\n";
@@ -237,8 +253,8 @@ int main(int argc, char **argv)
                 ouSamples.setTimeBase(enc.timeBase());
 
                 Packet opkt = enc.encodeAudio(ouSamples, ec);
-                if (!ec) {
-                    cerr << "Encoding error: " << ec << endl;
+                if (ec) {
+                    cerr << "Encoding error: " << ec << ", " << ec.message() << endl;
                     return 1;
                 } else if (!opkt) {
                     //cerr << "Empty packet\n";

@@ -348,8 +348,10 @@ Packet FormatContext::readPacket(error_code &ec)
     while (sts == AVERROR(EAGAIN) && (retryCount < 0 || tries <= retryCount));
 
     // End of file
-    if (sts == AVERROR_EOF || avio_feof(m_raw->pb))
+    if (sts == AVERROR_EOF || avio_feof(m_raw->pb)) {
+        fflog(AV_LOG_DEBUG, "EOF reaches\n");
         return Packet();
+    }
 
     if (sts == 0)
     {
