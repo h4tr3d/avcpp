@@ -614,23 +614,23 @@ T guessValue(const T& value, const L * list, C endListComparator)
 }
 
 
-template<typename T, typename R = T>
-std::deque<R> conditional_ends_array_to_deque(const T* array, R endCondition)
+template<typename T, typename Container>
+void array_to_container(const T* array, std::size_t nelemnts, Container &container)
 {
-    std::deque<R> result;
-    if (!array) {
-        return result;
-    }
-
-    R value;
-    const auto *values = array;
-    while ((value = *(values++)) != endCondition) {
-        result.push_back(value);
-    }
-
-    return result;
+    if (!array || nelemnts == 0)
+        return;
+    std::copy_n(array, array + nelemnts, std::back_inserter(container));
 }
 
+template<typename T, typename Container, typename Compare>
+void array_to_container(const T* array, Container &container, Compare isEnd)
+{
+    if (!array)
+        return;
+    T value;
+    while (!isEnd(value = *array++))
+        container.push_back(value);
+}
 
 } // ::av
 

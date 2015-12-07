@@ -40,41 +40,65 @@ AVMediaType Codec::type() const
 
 std::deque<Rational> Codec::supportedFramerates() const
 {
+    deque<Rational> frameRates;
     if (!m_raw)
-        return deque<Rational>();
-    return conditional_ends_array_to_deque<AVRational, Rational>(m_raw->supported_framerates, Rational());
+        return frameRates;
+    array_to_container(m_raw->supported_framerates, frameRates, [](const Rational& rate) {
+        return rate == Rational();
+    });
+    return frameRates;
 }
 
 std::deque<AVPixelFormat> Codec::supportedPixelFormats() const
 {
+    deque<AVPixelFormat> pixFmts;
     if (!m_raw)
-        return deque<AVPixelFormat>();
-    else
-        return conditional_ends_array_to_deque(m_raw->pix_fmts, AV_PIX_FMT_NONE);
+        return pixFmts;
+
+    array_to_container(m_raw->pix_fmts, pixFmts, [](AVPixelFormat pixFmt) {
+        return pixFmt == AV_PIX_FMT_NONE;
+    });
+
+    return pixFmts;
 }
 
 std::deque<int> Codec::supportedSamplerates() const
 {
+    deque<int> sampleRates;
     if (!m_raw)
-        return deque<int>();
-    else
-        return conditional_ends_array_to_deque(m_raw->supported_samplerates, 0);
+        return sampleRates;
+
+    array_to_container(m_raw->supported_samplerates, sampleRates, [](int sampleRate) {
+        return sampleRate == 0;
+    });
+
+    return sampleRates;
 }
 
 std::deque<AVSampleFormat> Codec::supportedSampleFormats() const
 {
+    deque<AVSampleFormat> sampleFmts;
     if (!m_raw)
-        return deque<AVSampleFormat>();
-    else
-        return conditional_ends_array_to_deque(m_raw->sample_fmts, AV_SAMPLE_FMT_NONE);
+        return sampleFmts;
+
+    array_to_container(m_raw->sample_fmts, sampleFmts, [](AVSampleFormat sampleFmt) {
+        return sampleFmt == AV_SAMPLE_FMT_NONE;
+    });
+
+    return sampleFmts;
 }
 
 std::deque<uint64_t> Codec::supportedChannelLayouts() const
 {
+    deque<uint64_t> channelLayouts;
     if (!m_raw)
-        return deque<uint64_t>();
-    else
-        return conditional_ends_array_to_deque(m_raw->channel_layouts, uint64_t(0));
+        return channelLayouts;
+
+    array_to_container(m_raw->channel_layouts, channelLayouts, [](uint64_t layout) {
+        return layout == 0;
+    });
+
+    return channelLayouts;
 }
 
 AVCodecID Codec::id() const
