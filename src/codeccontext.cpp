@@ -698,7 +698,9 @@ Packet CodecContext::encodeVideo(const VideoFrame2 &inFrame, error_code &ec)
         return packet;
     }
 
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(56, 60, 100)
     packet.setKeyPacket(!!m_raw->coded_frame->key_frame);
+#endif
 
     return packet;
 
@@ -939,20 +941,23 @@ std::pair<ssize_t, const error_category *> CodecContext::encodeCommon(Packet & o
     if (!gotPacket)
         return make_pair(0u, nullptr);
 
-    outPacket.setStreamIndex(inFrame.streamIndex());
-
     if (m_stream.isValid()) {
         outPacket.setTimeBase(m_stream.timeBase());
+        outPacket.setStreamIndex(m_stream.index());
     } else {
         outPacket.setTimeBase(inFrame.timeBase());
+        outPacket.setStreamIndex(inFrame.streamIndex());
     }
 
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(56, 60, 100)
     if (m_raw->coded_frame) {
         if (m_raw->coded_frame->pts != AV_NOPTS_VALUE)
             outPacket.setPts(m_raw->coded_frame->pts, timeBase());
     } else {
-        outPacket.setPts(inFrame.pts(), inFrame.timeBase());
+        if (outPacket.pts() == AV_NOPTS_VALUE)
+            outPacket.setPts(inFrame.pts(), inFrame.timeBase());
     }
+#endif
 
     if (outPacket.dts() != AV_NOPTS_VALUE && outPacket.pts() == AV_NOPTS_VALUE) {
         outPacket.setPts(outPacket.dts());
