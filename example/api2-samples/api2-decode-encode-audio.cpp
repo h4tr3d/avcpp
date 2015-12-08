@@ -132,6 +132,7 @@ int main(int argc, char **argv)
 
 
         // Settings
+#if 1
         enc.setSampleRate(48000);
         enc.setSampleFormat(sampleFmts[0]);
         // Layout
@@ -140,6 +141,13 @@ int main(int argc, char **argv)
         //enc.setChannelLayout(AV_CH_LAYOUT_MONO);
         enc.setTimeBase(Rational(1, enc.sampleRate()));
         enc.setBitRate(adec.bitRate());
+#else
+        enc.setSampleRate(adec.sampleRate());
+        enc.setSampleFormat(adec.sampleFormat());
+        enc.setChannelLayout(adec.channelLayout());
+        enc.setTimeBase(adec.timeBase());
+        enc.setBitRate(adec.bitRate());
+#endif
 
         octx.openOutput(out, ec);
         if (ec) {
@@ -176,17 +184,12 @@ int main(int argc, char **argv)
                 break;
             }
 
-            // EOF
-            if (!pkt)
-            {
-                break;
-            }
-
             if (pkt.streamIndex() != audioStream) {
                 continue;
             }
 
-            clog << "Read packet: " << pkt.pts() << "(nopts:" << (pkt.pts() == AV_NOPTS_VALUE) << ")" << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+            clog << "Read packet: isNull=" << (bool)!pkt << ", " << pkt.pts() << "(nopts:" << (pkt.pts() == AV_NOPTS_VALUE) << ")" << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+#if 0
             if (pkt.pts() == AV_NOPTS_VALUE && pkt.timeBase() == Rational())
             {
                 clog << "Skip invalid timestamp packet: data=" << (void*)pkt.data()
@@ -195,8 +198,9 @@ int main(int argc, char **argv)
                      << ", side_data=" << (void*)pkt.raw()->side_data
                      << ", side_data_count=" << pkt.raw()->side_data_elems
                      << endl;
-                continue;
+                //continue;
             }
+#endif
 
             AudioSamples2 samples = adec.decodeAudio(pkt, ec);
             count++;
@@ -207,8 +211,11 @@ int main(int argc, char **argv)
                 cerr << "Decode error: " << ec << ", " << ec.message() << endl;
                 return 1;
             } else if (!samples) {
-                //cerr << "Empty frame\n";
-                continue;
+                cerr << "Empty samples set\n";
+
+                //if (!pkt) // decoder flushed here
+                //   break;
+                //continue;
             }
 
             clog << "  Samples [in]: " << samples.samplesCount()
@@ -219,13 +226,20 @@ int main(int argc, char **argv)
                  << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
                  << endl;
 
-            resampler.push(samples, ec);
-            if (ec) {
-                clog << "Resampler push error: " << ec << ", text: " << ec.message() << endl;
-                continue;
+            // Empty samples set should not be pushed to the resampler, but it is valid case for the
+            // end of reading: during samples empty, some cached data can be stored at the resampler
+            // internal buffer, so we should consume it.
+            if (samples)
+            {
+                resampler.push(samples, ec);
+                if (ec) {
+                    clog << "Resampler push error: " << ec << ", text: " << ec.message() << endl;
+                    continue;
+                }
             }
 
             // Pop resampler data
+            bool getAll = !samples;
             while (true) {
                 AudioSamples2 ouSamples(enc.sampleFormat(),
                                         enc.frameSize(),
@@ -233,7 +247,7 @@ int main(int argc, char **argv)
                                         enc.sampleRate());
 
                 // Resample:
-                bool hasFrame = resampler.pop(ouSamples, false, ec);
+                bool hasFrame = resampler.pop(ouSamples, getAll, ec);
                 if (ec) {
                     clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
                     break;
@@ -270,10 +284,17 @@ int main(int argc, char **argv)
                     cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
                     return 1;
                 }
-
             }
+
+            // For the first packets samples can be empty: decoder caching
+            if (!pkt && !samples)
+                break;
         }
 
+        //
+        // Is resampler flushed?
+        //
+        cerr << "Delay: " << resampler.delay() << endl;
 
         //
         // Flush encoder queue
@@ -297,6 +318,7 @@ int main(int argc, char **argv)
 
         }
 
+        octx.flush();
         octx.writeTrailer();
     }
 }

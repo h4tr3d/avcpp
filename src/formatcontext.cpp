@@ -348,9 +348,20 @@ Packet FormatContext::readPacket(error_code &ec)
     while (sts == AVERROR(EAGAIN) && (retryCount < 0 || tries <= retryCount));
 
     // End of file
-    if (sts == AVERROR_EOF || avio_feof(m_raw->pb)) {
-        fflog(AV_LOG_DEBUG, "EOF reaches\n");
-        return Packet();
+    if (sts == AVERROR_EOF /*|| avio_feof(m_raw->pb)*/) {
+        auto ec = std::error_code(sts, ffmpeg_category());
+        fflog(AV_LOG_DEBUG,
+              "EOF reaches, error=%d, %s, isNull: %d, stream_index: %d, payload: %p\n",
+              sts,
+              ec.message().c_str(),
+              packet.isNull(),
+              packet.streamIndex(),
+              packet.data());
+        av_pkt_dump_log2(m_raw, AV_LOG_DEBUG, packet.raw(), 0, m_raw->streams[packet.streamIndex()]);
+        if (packet)
+            sts = 0; // not an error
+        else
+            return std::move(packet);
     }
 
     if (sts == 0)
@@ -360,13 +371,13 @@ Packet FormatContext::readPacket(error_code &ec)
         {
             // TODO: need verification
             throws_if(ec, pberr, ffmpeg_category());
-            return Packet();
+            return std::move(packet);
         }
     }
     else
     {
         throws_if(ec, sts, ffmpeg_category());
-        return Packet();
+        return std::move(packet);
     }
 
     if (packet.streamIndex() >= 0)

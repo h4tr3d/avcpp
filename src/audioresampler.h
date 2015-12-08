@@ -90,6 +90,8 @@ public:
     bool isValid() const;
     operator bool() const { return isValid(); }
 
+    int64_t delay() const;
+
     bool init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
               int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
               std::error_code &ec = throws());

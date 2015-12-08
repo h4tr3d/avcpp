@@ -229,18 +229,23 @@ void AudioResampler::push(const AudioSamples2 &src, error_code &ec)
         return;
     }
 
-    if (src.sampleRate() != srcSampleRate() ||
-        src.sampleFormat() != srcSampleFormat() ||
-        src.channelsCount() != srcChannels() ||
-        src.channelsLayout() != srcChannelLayout())
+    // Null samples is allowed
+    if (src)
     {
-        throws_if(ec, Errors::ResamplerInputChanges);
-        return;
+        if (src.sampleRate() != srcSampleRate() ||
+            src.sampleFormat() != srcSampleFormat() ||
+            src.channelsCount() != srcChannels() ||
+            src.channelsLayout() != srcChannelLayout())
+        {
+            throws_if(ec, Errors::ResamplerInputChanges);
+            return;
+        }
     }
 
     auto sts = swr_convert_frame(m_raw, nullptr, src.raw());
     if (sts < 0)
     {
+        fflog(AV_LOG_DEBUG, "Src is null: %d, payload: %p\n", src.isNull(), src.data());
         throws_if(ec, sts, ffmpeg_category());
         return;
     }
@@ -261,6 +266,13 @@ void AudioResampler::push(const AudioSamples2 &src, error_code &ec)
 bool AudioResampler::isValid() const
 {
     return !!m_raw;
+}
+
+int64_t AudioResampler::delay() const
+{
+    if (m_raw)
+        return swr_get_delay(m_raw, m_dstRate);
+    return -1;
 }
 
 bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,

@@ -67,6 +67,8 @@ void Packet::initCommon()
 {
     av_init_packet(&m_raw);
 
+    m_raw.stream_index = -1; // no stream
+
     m_completeFlag = false;
     m_timeBase     = Rational(0, 0);
     m_fakePts      = AV_NOPTS_VALUE;
@@ -205,6 +207,11 @@ int Packet::duration() const
 bool Packet::isComplete() const
 {
     return m_completeFlag && m_raw.data && m_raw.size;
+}
+
+bool Packet::isNull() const
+{
+    return m_raw.data == nullptr || m_raw.size == 0;
 }
 
 void Packet::setStreamIndex(int idx)

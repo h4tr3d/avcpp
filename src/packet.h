@@ -57,6 +57,7 @@ public:
     bool    isKeyPacket() const;
     int     duration() const;
     bool    isComplete() const;
+    bool    isNull() const;
 
     void    setStreamIndex(int idx);
     void    setKeyPacket(bool keyPacket);

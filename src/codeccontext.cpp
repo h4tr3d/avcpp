@@ -728,7 +728,6 @@ AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, size_t offset, e
     if (!gotFrame)
     {
         outSamples.setComplete(false);
-        return outSamples;
     }
 
     return outSamples;
@@ -831,7 +830,7 @@ std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(AVFrame *o
     if (!decodeProc)
         return make_error_pair(Errors::CodecInvalidDecodeProc);
 
-    if (offset >= inPacket.size())
+    if (offset && inPacket.size() && offset >= inPacket.size())
         return make_error_pair(Errors::CodecDecodingOffsetToLarge);
 
     frameFinished = 0;
