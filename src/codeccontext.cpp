@@ -730,6 +730,10 @@ AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, size_t offset, e
         outSamples.setComplete(false);
     }
 
+    // Fix channels layout
+    if (outSamples.channelsCount() && !outSamples.channelsLayout())
+        av_frame_set_channel_layout(outSamples.raw(), av_get_default_channel_layout(outSamples.channelsCount()));
+
     return outSamples;
 
 }
