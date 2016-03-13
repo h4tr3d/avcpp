@@ -18,49 +18,69 @@ enum
 class Rational
 {
 public:
-    Rational();
-    Rational(int numerator, int denominator);
-    Rational(const AVRational &value);
-    Rational(double value, int maxPrecision = RationalMaxPrecision);
+    Rational() noexcept;
+    Rational(int numerator, int denominator = 1) noexcept;
+    Rational(const AVRational &value) noexcept;
+    Rational(double value, int maxPrecision = RationalMaxPrecision) noexcept;
 
-    AVRational& getValue() { return value; }
-    const AVRational& getValue() const { return value; }
-    void setValue(const AVRational &newValue) { value = newValue; }
+    AVRational& getValue() noexcept { return m_value; }
+    const AVRational& getValue() const noexcept { return m_value; }
+    void setValue(const AVRational &newValue) noexcept { m_value = newValue; }
 
-    void setNumerator(int numerator) { value.num = numerator; }
-    void setDenominator(int denominator) { value.den = denominator; }
+    void setNumerator(int numerator) noexcept { m_value.num = numerator; }
+    void setDenominator(int denominator) noexcept { m_value.den = denominator; }
 
-    int    getNumerator() const { return value.num; }
-    int    getDenominator() const { return value.den; }
-    double getDouble() const { return (double)value.num / (double)value.den; }
+    int    getNumerator() const noexcept{ return m_value.num; }
+    int    getDenominator() const noexcept { return m_value.den; }
+    double getDouble() const noexcept { return (double)m_value.num / (double)m_value.den; }
 
-    static Rational fromDouble(double value, int maxPrecision = RationalMaxPrecision);
+    static Rational fromDouble(double value, int maxPrecision = RationalMaxPrecision) noexcept;
 
-    int64_t rescale(int64_t srcValue, const Rational &dstBase) const;
+    int64_t rescale(int64_t srcValue, const Rational &dstBase) const noexcept;
 
-    void dump() const;
+    void dump() const noexcept;
 
-    bool      operator== (const Rational   &other) const;
-    bool      operator!= (const Rational   &other) const;
-    bool      operator<  (const Rational   &other) const;
-    Rational& operator=  (const AVRational &value);
-    Rational& operator=  (double value);
-    Rational  operator+  (const Rational   &value);
-    Rational  operator-  (const Rational   &value);
-    Rational  operator*  (const Rational   &value);
-    Rational  operator/  (const Rational   &value);
+    Rational& operator=  (const AVRational &value) noexcept;
+    Rational& operator=  (double value) noexcept;
 
-    double    operator() () const;
+    bool      operator== (const Rational   &other) const noexcept;
+    bool      operator!= (const Rational   &other) const noexcept;
+    bool      operator<  (const Rational   &other) const noexcept;
+    Rational  operator+  (const Rational   &value) const noexcept;
+    Rational  operator-  (const Rational   &value) const noexcept;
+    Rational  operator*  (const Rational   &value) const noexcept;
+    Rational  operator/  (const Rational   &value) const noexcept;
 
+    double operator() () const noexcept;
+
+    operator const AVRational&() const noexcept
+    {
+        return m_value;
+    }
 
 private:
-    AVRational value;
+    AVRational m_value;
 };
+
+//inline
+//bool      operator== (const Rational &other) const noexcept;
+//inline
+//bool      operator!= (const Rational &other) const noexcept;
+//inline
+//bool      operator<  (const Rational &other) const noexcept;
+//inline
+//Rational  operator+(Rational left, const Rational &value) noexcept
+//inline
+//Rational  operator-(Rational left, const Rational &value) noexcept;
+//inline
+//Rational  operator*(Rational left, const Rational &value) noexcept;
+//inline
+//Rational  operator/(Rational left, const Rational &value) noexcept;
 
 
 inline std::ostream& operator<< (std::ostream &stream, const Rational &value)
 {
-    stream << value.getNumerator() << "/" << value.getDenominator();
+    stream << value.getNumerator() << '/' << value.getDenominator();
     return stream;
 
 }

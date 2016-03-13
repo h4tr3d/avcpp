@@ -12,6 +12,7 @@ api2-decode-audio
 api2-decode-rasample-audio
 api2-decode-encode-audio
 api2-dict-basic
+api2-timestamp
 )
 
 foreach(target ${TARGETS})

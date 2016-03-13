@@ -79,6 +79,16 @@ public:
     Stream2 addStream(const Codec &codec, std::error_code &ec = throws());
 
     //
+    // Seeking
+    //
+    void seek(int64_t timestamp, std::error_code &ec = throws());
+    void seek(int64_t timestamp, size_t streamIndex, std::error_code &ec = throws());
+    void seek(int64_t timestamp, bool anyFrame, std::error_code &ec = throws());
+    void seek(int64_t timestamp, size_t streamIndex, bool anyFrame, std::error_code &ec = throws());
+
+    void seek(int64_t position, int streamIndex, int flags, std::error_code &ec = throws());
+
+    //
     // Input
     //
     void openInput(const std::string& uri, std::error_code &ec = throws());
@@ -124,7 +134,9 @@ public:
 
     Packet readPacket(std::error_code &ec = throws());
 
+    //
     // Output
+    //
     void openOutput(const std::string& uri, std::error_code &ec = throws());
     void openOutput(const std::string& uri, Dictionary &options, std::error_code &ec = throws());
     void openOutput(const std::string& uri, Dictionary &&options, std::error_code &ec = throws());

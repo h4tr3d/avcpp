@@ -28,17 +28,17 @@ int Stream2::id() const
 
 Rational Stream2::frameRate() const
 {
-    return RAW_GET2(isValid(), r_frame_rate, Rational());
+    return RAW_GET2(isValid(), r_frame_rate, AVRational{});
 }
 
 Rational Stream2::timeBase() const
 {
-    return RAW_GET2(isValid(), time_base, Rational());
+    return RAW_GET2(isValid(), time_base, AVRational{});
 }
 
 Rational Stream2::sampleAspectRatio() const
 {
-    return RAW_GET2(isValid(), sample_aspect_ratio, Rational());
+    return RAW_GET2(isValid(), sample_aspect_ratio, AVRational{});
 }
 
 int64_t Stream2::startTime() const

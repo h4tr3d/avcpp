@@ -203,6 +203,36 @@ Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
     return Stream2(m_monitor, st, Direction::ENCODING);
 }
 
+void FormatContext::seek(int64_t timestamp, error_code &ec)
+{
+    seek(timestamp, -1, 0, ec);
+}
+
+void FormatContext::seek(int64_t timestamp, size_t streamIndex, error_code &ec)
+{
+    seek(timestamp, static_cast<int>(streamIndex), 0, ec);
+}
+
+void FormatContext::seek(int64_t timestamp, bool anyFrame, error_code &ec)
+{
+    seek(timestamp, -1, anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
+}
+
+void FormatContext::seek(int64_t timestamp, size_t streamIndex, bool anyFrame, error_code &ec)
+{
+    seek(timestamp, static_cast<int>(streamIndex), anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
+}
+
+void FormatContext::seek(int64_t position, int streamIndex, int flags, error_code &ec)
+{
+    clear_if(ec);
+    const auto sts = av_seek_frame(m_raw, streamIndex, position, flags);
+    if (sts < 0) {
+        throws_if(ec, sts, ffmpeg_category());
+        return;
+    }
+}
+
 void FormatContext::openInput(const string &uri, error_code &ec)
 {
     openInput(uri, InputFormat(), ec);

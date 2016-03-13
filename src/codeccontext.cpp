@@ -248,7 +248,7 @@ void CodecContext::copyContextFrom(const CodecContext &other, error_code &ec)
 
 Rational CodecContext::timeBase() const
 {
-    return RAW_GET2(isValid(), time_base, Rational());
+    return RAW_GET2(isValid(), time_base, AVRational{});
 }
 
 void CodecContext::setTimeBase(const Rational &value)
