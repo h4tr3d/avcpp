@@ -84,12 +84,13 @@ public:
     //
     // Seeking
     //
-    void seek(const Timestamp& timestamp, std::error_code &ec = throws()) noexcept;
-    void seek(const Timestamp& timestamp, size_t streamIndex, std::error_code &ec = throws()) noexcept;
-    void seek(const Timestamp& timestamp, bool anyFrame, std::error_code &ec = throws()) noexcept;
-    void seek(const Timestamp& timestamp, size_t streamIndex, bool anyFrame, std::error_code &ec = throws()) noexcept;
+    bool seekable() const noexcept;
+    void seek(const Timestamp& timestamp, std::error_code &ec = throws());
+    void seek(const Timestamp& timestamp, size_t streamIndex, std::error_code &ec = throws());
+    void seek(const Timestamp& timestamp, bool anyFrame, std::error_code &ec = throws());
+    void seek(const Timestamp& timestamp, size_t streamIndex, bool anyFrame, std::error_code &ec = throws());
 
-    void seek(int64_t position, int streamIndex, int flags, std::error_code &ec = throws()) noexcept;
+    void seek(int64_t position, int streamIndex, int flags, std::error_code &ec = throws());
 
     //
     // Other tools

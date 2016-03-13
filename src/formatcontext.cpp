@@ -218,31 +218,39 @@ Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
     return Stream2(m_monitor, st, Direction::ENCODING);
 }
 
-void FormatContext::seek(const Timestamp &timestamp, error_code &ec) noexcept
+bool FormatContext::seekable() const noexcept
+{
+    if (m_raw && m_raw->pb) {
+        return m_raw->pb->seekable;
+    }
+    return false;
+}
+
+void FormatContext::seek(const Timestamp &timestamp, error_code &ec)
 {
     seek(timestamp.timestamp(AV_TIME_BASE_Q), -1, 0, ec);
 }
 
-void FormatContext::seek(const Timestamp& timestamp, size_t streamIndex, error_code &ec) noexcept
+void FormatContext::seek(const Timestamp& timestamp, size_t streamIndex, error_code &ec)
 {
     auto st = stream(streamIndex, ec);
     if (st.isValid())
         seek(timestamp.timestamp(st.timeBase()), static_cast<int>(streamIndex), 0, ec);
 }
 
-void FormatContext::seek(const Timestamp& timestamp, bool anyFrame, error_code &ec) noexcept
+void FormatContext::seek(const Timestamp& timestamp, bool anyFrame, error_code &ec)
 {
     seek(timestamp.timestamp(AV_TIME_BASE_Q), -1, anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
 }
 
-void FormatContext::seek(const Timestamp &timestamp, size_t streamIndex, bool anyFrame, error_code &ec) noexcept
+void FormatContext::seek(const Timestamp &timestamp, size_t streamIndex, bool anyFrame, error_code &ec)
 {
     auto st = stream(streamIndex);
     if (st.isValid())
         seek(timestamp.timestamp(st.timeBase()), static_cast<int>(streamIndex), anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
 }
 
-void FormatContext::seek(int64_t position, int streamIndex, int flags, error_code &ec) noexcept
+void FormatContext::seek(int64_t position, int streamIndex, int flags, error_code &ec)
 {
     clear_if(ec);
     const auto sts = av_seek_frame(m_raw, streamIndex, position, flags);
