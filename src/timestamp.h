@@ -33,10 +33,12 @@ public:
     }
 
     int64_t         timestamp() const noexcept;
+    int64_t         timestamp(const Rational &timebase) const noexcept;
     const Rational& timebase() const noexcept;
 
     operator bool() const noexcept;
     bool isValid() const noexcept;
+    bool isNoPts() const noexcept;
 
     operator double() const noexcept;
     double seconds() const noexcept;
@@ -57,6 +59,8 @@ public:
         auto ts = m_timebase.rescale(m_timestamp, dstTimebase);
         return Duration(ts);
     }
+
+    Timestamp& operator+=(const Timestamp &other);
 
 private:
     int64_t  m_timestamp = AV_NOPTS_VALUE;
@@ -110,9 +114,14 @@ Timestamp operator/(const Timestamp& left, const Timestamp &right) noexcept;
 //
 // Output
 //
+inline
 std::ostream& operator<<(std::ostream &ost, const Timestamp &ts)
 {
-    ost << ts.timestamp() << '*' << ts.timebase();
+    if (ts.isNoPts()) {
+        ost << "NO_PTS";
+    } else {
+        ost << ts.timestamp() << '*' << ts.timebase();
+    }
     return ost;
 }
 

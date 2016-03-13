@@ -124,8 +124,8 @@ private:
     AVSampleFormat m_srcFormat;
 
     int            m_streamIndex = -1;
-    int64_t        m_prevPts     = AV_NOPTS_VALUE;
-    int64_t        m_nextPts     = AV_NOPTS_VALUE;
+    Timestamp      m_prevPts;
+    Timestamp      m_nextPts;
 };
 
 } // namespace av

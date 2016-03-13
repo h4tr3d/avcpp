@@ -41,19 +41,19 @@ Rational Stream2::sampleAspectRatio() const
     return RAW_GET2(isValid(), sample_aspect_ratio, AVRational{});
 }
 
-int64_t Stream2::startTime() const
+Timestamp Stream2::startTime() const
 {
-    return RAW_GET2(isValid(), start_time, AV_NOPTS_VALUE);
+    return {RAW_GET2(isValid(), start_time, AV_NOPTS_VALUE), timeBase()};
 }
 
-int64_t Stream2::duration() const
+Timestamp Stream2::duration() const
 {
-    return RAW_GET2(isValid(), duration, AV_NOPTS_VALUE);
+    return {RAW_GET2(isValid(), duration, AV_NOPTS_VALUE), timeBase()};
 }
 
-int64_t Stream2::currentDts() const
+Timestamp Stream2::currentDts() const
 {
-    return RAW_GET2(isValid(), cur_dts, AV_NOPTS_VALUE);
+    return {RAW_GET2(isValid(), cur_dts, AV_NOPTS_VALUE), timeBase()};
 }
 
 AVMediaType Stream2::mediaType() const

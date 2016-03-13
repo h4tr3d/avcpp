@@ -73,20 +73,31 @@ public:
     void close();
     void dump() const;
 
+    //
     // Streams
+    //
     size_t  streamsCount() const;
     Stream2 stream(size_t idx);
+    Stream2 stream(size_t idx, std::error_code &ec);
     Stream2 addStream(const Codec &codec, std::error_code &ec = throws());
 
     //
     // Seeking
     //
-    void seek(int64_t timestamp, std::error_code &ec = throws());
-    void seek(int64_t timestamp, size_t streamIndex, std::error_code &ec = throws());
-    void seek(int64_t timestamp, bool anyFrame, std::error_code &ec = throws());
-    void seek(int64_t timestamp, size_t streamIndex, bool anyFrame, std::error_code &ec = throws());
+    void seek(const Timestamp& timestamp, std::error_code &ec = throws()) noexcept;
+    void seek(const Timestamp& timestamp, size_t streamIndex, std::error_code &ec = throws()) noexcept;
+    void seek(const Timestamp& timestamp, bool anyFrame, std::error_code &ec = throws()) noexcept;
+    void seek(const Timestamp& timestamp, size_t streamIndex, bool anyFrame, std::error_code &ec = throws()) noexcept;
 
-    void seek(int64_t position, int streamIndex, int flags, std::error_code &ec = throws());
+    void seek(int64_t position, int streamIndex, int flags, std::error_code &ec = throws()) noexcept;
+
+    //
+    // Other tools
+    //
+    Timestamp startTime() const noexcept;
+    Timestamp duration() const noexcept;
+
+    void substractStartTime(bool enable);
 
     //
     // Input
@@ -193,6 +204,7 @@ private:
     std::string                                        m_uri;
     bool                                               m_streamsInfoFound = false;
     bool                                               m_headerWriten     = false;
+    bool                                               m_substractStartTime = false;
 };
 
 } // namespace av

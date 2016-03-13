@@ -112,7 +112,7 @@ int main(int argc, char **argv)
                 continue;
             }
 
-            clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+            clog << "Read packet: " << pkt.pts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
             AudioSamples2 samples = adec.decodeAudio(pkt, ec);
 
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
                  << ", ch: " << samples.channelsCount()
                  << ", freq: " << samples.sampleRate()
                  << ", name: " << samples.channelsLayoutString()
-                 << ", pts: " << (samples.timeBase().getDouble() * samples.pts())
+                 << ", pts: " << samples.pts().seconds()
                  << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
                  << endl;
 
@@ -171,7 +171,7 @@ int main(int argc, char **argv)
                      << ", ch: " << ouSamples.channelsCount()
                      << ", freq: " << ouSamples.sampleRate()
                      << ", name: " << ouSamples.channelsLayoutString()
-                     << ", pts: " << (ouSamples.timeBase().getDouble() * ouSamples.pts())
+                     << ", pts: " << ouSamples.pts().seconds()
                      << ", ref=" << ouSamples.isReferenced() << ":" << ouSamples.refCount()
                      << endl;
             }
@@ -201,7 +201,7 @@ int main(int argc, char **argv)
                          << ", ch: " << ouSamples.channelsCount()
                          << ", freq: " << ouSamples.sampleRate()
                          << ", name: " << ouSamples.channelsLayoutString()
-                         << ", pts: " << (ouSamples.timeBase().getDouble() * ouSamples.pts())
+                         << ", pts: " << ouSamples.pts().seconds()
                          << ", ref=" << ouSamples.isReferenced() << ":" << ouSamples.refCount()
                          << endl;
             }

@@ -78,8 +78,8 @@ void CodecContext::swap(CodecContext &other)
     using std::swap;
     swap(m_direction, other.m_direction);
     swap(m_fakePtsTimeBase, other.m_fakePtsTimeBase);
-    swap(m_fakeCurrPts, other.m_fakeCurrPts);
-    swap(m_fakeNextPts, other.m_fakeNextPts);
+    //swap(m_fakeCurrPts, other.m_fakeCurrPts);
+    //swap(m_fakeNextPts, other.m_fakeNextPts);
     swap(m_stream, other.m_stream);
     swap(m_raw, other.m_raw);
     swap(m_isOpened, other.m_isOpened);
@@ -660,7 +660,7 @@ VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size
         }
     }
 
-    int         gotFrame = 0;
+    int gotFrame = 0;
     auto st = decodeCommon(outFrame, packet, offset, gotFrame, avcodec_decode_video2);
 
     if (get<1>(st)) {
@@ -701,6 +701,8 @@ Packet CodecContext::encodeVideo(const VideoFrame2 &inFrame, error_code &ec)
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(56, 60, 100)
     packet.setKeyPacket(!!m_raw->coded_frame->key_frame);
 #endif
+
+    packet.setComplete(true);
 
     return packet;
 
@@ -757,11 +759,6 @@ Packet CodecContext::encodeAudio(const AudioSamples2 &inSamples, error_code &ec)
     {
         outPacket.setComplete(false);
         return outPacket;
-    }
-
-    // Fake PTS actual only for Audio
-    if (inSamples.fakePts() != AV_NOPTS_VALUE) {
-        outPacket.setFakePts(inSamples.fakePts(), inSamples.timeBase());
     }
 
     return outPacket;
@@ -839,7 +836,8 @@ std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(AVFrame *o
     pkt.data += offset;
     pkt.size -= offset;
 
-    m_raw->reordered_opaque = inPacket.pts();
+//#warning Inspect and remove
+//    m_raw->reordered_opaque = inPacket.pts().timestamp();
 
     int decoded = decodeProc(m_raw, outFrame, &frameFinished, &pkt);
     return make_error_pair(decoded);
@@ -900,17 +898,19 @@ std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(T &outFram
 
     outFrame.setTimeBase(timeBase());
     outFrame.setStreamIndex(inPacket.streamIndex());
+
+#if 0
     AVFrame *frame = outFrame.raw();
 
-    int64_t packetTs = frame->reordered_opaque;
-    if (packetTs == AV_NOPTS_VALUE)
+    auto packetTs = Timestamp(frame->pkt_pts, inPacket.timeBase());
+    if (packetTs.isNoPts())
         packetTs = inPacket.dts();
 
-    if (packetTs != AV_NOPTS_VALUE)
+    if (packetTs.isValid())
     {
-        int64_t nextPts = packetTs;
+        auto nextPts = packetTs;
 
-        if (nextPts < m_fakeNextPts && inPacket.pts() != AV_NOPTS_VALUE)
+        if (nextPts < m_fakeNextPts && inPacket.pts().isValid())
         {
             nextPts = inPacket.pts();
         }
@@ -922,10 +922,21 @@ std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(T &outFram
     double frameDelay = inPacket.timeBase().getDouble();
     frameDelay += outFrame.raw()->repeat_pict * (frameDelay * 0.5);
 
-    m_fakeNextPts += (int64_t) frameDelay;
+    m_fakeNextPts += Timestamp(frameDelay, m_fakeNextPts.timebase());
 
-    if (m_fakeCurrPts != AV_NOPTS_VALUE)
-        outFrame.setPts(inPacket.timeBase().rescale(m_fakeCurrPts, outFrame.timeBase()));
+    if (m_fakeCurrPts.isValid())
+        //outFrame.setPts(inPacket.timeBase().rescale(m_fakeCurrPts, outFrame.timeBase()));
+        outFrame.setPts(m_fakeCurrPts);
+#endif
+
+    if (outFrame.pts().isNoPts()) {
+        outFrame.setPts(inPacket.pts());
+    }
+
+    if (outFrame.pts().isNoPts()) {
+        outFrame.setPts(inPacket.dts());
+    }
+
     outFrame.setComplete(true);
 
     return st;
@@ -953,16 +964,16 @@ std::pair<ssize_t, const error_category *> CodecContext::encodeCommon(Packet & o
         if (m_raw->coded_frame->pts != AV_NOPTS_VALUE)
             outPacket.setPts(m_raw->coded_frame->pts, timeBase());
     } else {
-        if (outPacket.pts() == AV_NOPTS_VALUE)
+        if (outPacket.pts().isNoPts())
             outPacket.setPts(inFrame.pts(), inFrame.timeBase());
     }
 #endif
 
-    if (outPacket.dts() != AV_NOPTS_VALUE && outPacket.pts() == AV_NOPTS_VALUE) {
+    if (outPacket.dts().isValid() && outPacket.pts().isNoPts()) {
         outPacket.setPts(outPacket.dts());
     }
 
-    if (outPacket.dts() == AV_NOPTS_VALUE)
+    if (outPacket.dts().isNoPts())
         outPacket.setDts(outPacket.pts());
 
     outPacket.setComplete(true);

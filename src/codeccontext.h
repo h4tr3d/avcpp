@@ -249,8 +249,8 @@ private:
 private:
     Direction       m_direction = Direction::INVALID;
     Rational        m_fakePtsTimeBase;
-    int64_t         m_fakeNextPts = AV_NOPTS_VALUE;
-    int64_t         m_fakeCurrPts = AV_NOPTS_VALUE;
+    //Timestamp       m_fakeNextPts;
+    //Timestamp       m_fakeCurrPts;
 
     Stream2         m_stream;
     bool            m_isOpened = false;

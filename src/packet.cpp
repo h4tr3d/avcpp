@@ -15,13 +15,13 @@ Packet::Packet(const Packet &packet, error_code &ec)
     initFromAVPacket(&packet.m_raw, false, ec);
     m_completeFlag = packet.m_completeFlag;
     m_timeBase = packet.m_timeBase;
-    m_fakePts = packet.m_fakePts;
+    //m_fakePts = packet.m_fakePts;
 }
 
 Packet::Packet(Packet &&packet)
     : m_completeFlag(packet.m_completeFlag),
-      m_timeBase(packet.m_timeBase),
-      m_fakePts(packet.m_fakePts)
+      m_timeBase(packet.m_timeBase)
+      //m_fakePts(packet.m_fakePts)
 {
     // copy packet as is
     m_raw = packet.m_raw;
@@ -71,7 +71,7 @@ void Packet::initCommon()
 
     m_completeFlag = false;
     m_timeBase     = Rational(0, 0);
-    m_fakePts      = AV_NOPTS_VALUE;
+    //m_fakePts      = AV_NOPTS_VALUE;
 }
 
 void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, error_code &ec)
@@ -98,7 +98,7 @@ void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, error_code 
         return;
     }
 
-    m_fakePts      = packet->pts;
+    //m_fakePts      = packet->pts;
     m_completeFlag = m_raw.size > 0;
 }
 
@@ -134,24 +134,19 @@ bool Packet::setData(const uint8_t *newData, size_t size, std::error_code &ec)
     return true;
 }
 
-int64_t Packet::pts() const
+Timestamp Packet::pts() const
 {
-    return m_raw.pts;
+    return {m_raw.pts, m_timeBase};
 }
 
-int64_t Packet::dts() const
+Timestamp Packet::dts() const
 {
-    return m_raw.dts;
+    return {m_raw.dts, m_timeBase};
 }
 
-int64_t Packet::ts() const
+Timestamp Packet::ts() const
 {
-    return m_raw.pts != AV_NOPTS_VALUE ? m_raw.pts : m_raw.dts;
-}
-
-int64_t Packet::fakePts() const
-{
-    return m_fakePts;
+    return {m_raw.pts != AV_NOPTS_VALUE ? m_raw.pts : m_raw.dts, m_timeBase};
 }
 
 size_t Packet::size() const
@@ -165,7 +160,7 @@ void Packet::setPts(int64_t pts, const Rational &tsTimeBase)
         m_raw.pts = pts;
     else
         m_raw.pts = tsTimeBase.rescale(pts, m_timeBase);
-    setFakePts(pts, tsTimeBase);
+//    setFakePts(pts, tsTimeBase);
 }
 
 void Packet::setDts(int64_t dts, const Rational &tsTimeBase)
@@ -176,12 +171,22 @@ void Packet::setDts(int64_t dts, const Rational &tsTimeBase)
         m_raw.dts = tsTimeBase.rescale(dts, m_timeBase);
 }
 
-void Packet::setFakePts(int64_t pts, const Rational &tsTimeBase)
+//void Packet::setFakePts(int64_t pts, const Rational &tsTimeBase)
+//{
+//    if (tsTimeBase == Rational(0, 0))
+//        m_fakePts = pts;
+//    else
+//        m_fakePts = tsTimeBase.rescale(pts, m_timeBase);
+//}
+
+void Packet::setPts(const Timestamp &pts)
 {
-    if (tsTimeBase == Rational(0, 0))
-        m_fakePts = pts;
-    else
-        m_fakePts = tsTimeBase.rescale(pts, m_timeBase);
+    m_raw.pts = pts.timestamp(m_timeBase);
+}
+
+void Packet::setDts(const Timestamp &dts)
+{
+    m_raw.dts = dts.timestamp(m_timeBase);
 }
 
 int Packet::streamIndex() const
@@ -258,7 +263,7 @@ void Packet::setTimeBase(const Rational &value)
 
     int64_t rescaledPts      = AV_NOPTS_VALUE;
     int64_t rescaledDts      = AV_NOPTS_VALUE;
-    int64_t rescaledFakePts  = AV_NOPTS_VALUE;
+    //int64_t rescaledFakePts  = AV_NOPTS_VALUE;
     int     rescaledDuration = 0;
 
     if (m_timeBase != Rational() && value != Rational())
@@ -269,8 +274,8 @@ void Packet::setTimeBase(const Rational &value)
         if (m_raw.dts != AV_NOPTS_VALUE)
             rescaledDts = m_timeBase.rescale(m_raw.dts, value);
 
-        if (m_fakePts != AV_NOPTS_VALUE)
-            rescaledFakePts = m_timeBase.rescale(m_fakePts, value);
+        //if (m_fakePts != AV_NOPTS_VALUE)
+        //    rescaledFakePts = m_timeBase.rescale(m_fakePts, value);
 
         if (m_raw.duration != 0)
             rescaledDuration = m_timeBase.rescale(m_raw.duration, value);
@@ -279,7 +284,7 @@ void Packet::setTimeBase(const Rational &value)
     {
         rescaledPts      = m_raw.pts;
         rescaledDts      = m_raw.dts;
-        rescaledFakePts  = m_fakePts;
+        //rescaledFakePts  = m_fakePts;
         rescaledDuration = m_raw.duration;
     }
 
@@ -290,7 +295,7 @@ void Packet::setTimeBase(const Rational &value)
     m_raw.pts      = rescaledPts;
     m_raw.dts      = rescaledDts;
     m_raw.duration = rescaledDuration;
-    m_fakePts      = rescaledFakePts;
+    //m_fakePts      = rescaledFakePts;
 }
 
 bool Packet::isReferenced() const
@@ -365,7 +370,7 @@ void Packet::swap(Packet &other)
     swap(m_raw,          other.m_raw);
     swap(m_completeFlag, other.m_completeFlag);
     swap(m_timeBase,     other.m_timeBase);
-    swap(m_fakePts,      other.m_fakePts);
+    //swap(m_fakePts,      other.m_fakePts);
 }
 
 #if 0

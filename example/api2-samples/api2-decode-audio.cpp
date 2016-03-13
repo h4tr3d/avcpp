@@ -36,17 +36,29 @@ int main(int argc, char **argv)
     Stream2      ast;
     error_code   ec;
 
+    string format;
+
+    if (argc > 2) {
+        format = argv[2];
+    }
+
     int count = 0;
 
     {
+        InputFormat ifmt;
+        if (!format.empty()) {
+            ifmt.setFormat(format);
+        }
 
         FormatContext ictx;
 
-        ictx.openInput(uri, ec);
+        ictx.openInput(uri, ifmt, ec);
         if (ec) {
             cerr << "Can't open input\n";
             return 1;
         }
+
+        ictx.findStreamInfo();
 
         for (size_t i = 0; i < ictx.streamsCount(); ++i) {
             auto st = ictx.stream(i);
@@ -80,6 +92,13 @@ int main(int argc, char **argv)
             }
         }
 
+        clog << "NO_PTS: " << AV_NOPTS_VALUE << endl;
+        clog << "Duration: " << ictx.duration() << " / " << ictx.duration().seconds()
+             << ", Start Time: " << ictx.startTime() << " / " << ictx.startTime().seconds()
+             << endl;
+
+        // Substract start time from the Packet PTS and DTS values: PTS starts from the zero
+        ictx.substractStartTime(true);
 
         while (true) {
             Packet pkt = ictx.readPacket(ec);
@@ -99,13 +118,9 @@ int main(int argc, char **argv)
                 continue;
             }
 
-            clog << "Read packet: " << pkt.pts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+            clog << "Read packet: " << pkt.pts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
             AudioSamples2 samples = adec.decodeAudio(pkt, ec);
-
-            count++;
-            if (count > 100)
-                break;
 
             if (ec) {
                 cerr << "Error: " << ec << endl;
@@ -115,7 +130,19 @@ int main(int argc, char **argv)
                 //continue;
             }
 
-            clog << "  Samples: " << samples.samplesCount() << ", ch: " << samples.channelsCount() << ", freq: " << samples.sampleRate() << ", name: " << samples.channelsLayoutString() << ", ref=" << samples.isReferenced() << ":" << samples.refCount() << endl;
+            clog << "  Samples: " << samples.samplesCount()
+                 << ", ch: " << samples.channelsCount()
+                 << ", freq: " << samples.sampleRate()
+                 << ", name: " << samples.channelsLayoutString()
+                 << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
+                 << ", ts: " << samples.pts()
+                 << ", tm: " << samples.pts().seconds()
+                 << endl;
+
+            //return 0;
+            count++;
+            if (count > 100)
+                break;
         }
 
         // NOTE: stream decodec must be closed/destroyed before

@@ -157,11 +157,11 @@ bool AudioResampler::pop(AudioSamples2 &dst, bool getall, error_code &ec)
     dst.setComplete(true);
 
     // Ugly PTS handling. More clean one can be done by user code
-    if (m_nextPts == AV_NOPTS_VALUE) {
-        m_nextPts = 0;
+    if (!m_nextPts.isValid()) {
+        m_nextPts = Timestamp(0, dst.timeBase());
     }
     dst.setPts(m_nextPts);
-    m_nextPts = dst.pts() + dst.samplesCount();
+    m_nextPts = dst.pts() + Timestamp{dst.samplesCount(), dst.timeBase()};
 
     //result = swr_get_delay(m_raw, m_dstRate);
     //clog << "  delay [pop]: " << result << endl;
@@ -211,11 +211,11 @@ AudioSamples2 AudioResampler::pop(size_t samplesCount, error_code &ec)
     dst.setComplete(true);
 
     // Ugly PTS handling. More clean one can be done by user code
-    if (m_nextPts == AV_NOPTS_VALUE) {
-        m_nextPts = 0;
+    if (!m_nextPts.isValid()) {
+        m_nextPts = Timestamp(0, dst.timeBase());
     }
     dst.setPts(m_nextPts);
-    m_nextPts = dst.pts() + dst.samplesCount();
+    m_nextPts = dst.pts() + Timestamp(dst.samplesCount(), dst.timeBase());
 
     return dst.samplesCount() ? std::move(dst) : AudioSamples2::null();
 }
@@ -255,7 +255,7 @@ void AudioResampler::push(const AudioSamples2 &src, error_code &ec)
 
     // Need to restore PTS in output frames
     if (m_prevPts > src.pts()) // Reset case
-        m_nextPts = AV_NOPTS_VALUE;
+        m_nextPts = Timestamp();
     m_prevPts     = src.pts();
 
     //auto result = swr_get_delay(m_raw, m_dstRate);

@@ -101,7 +101,7 @@ int main(int argc, char **argv)
             }
 
             auto ts = pkt.ts();
-            clog << "Read packet: " << ts << " / " << ts * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+            clog << "Read packet: " << ts << " / " << ts.seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
             VideoFrame2 frame = vdec.decodeVideo(pkt, ec);
 
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
             }
 
             ts = frame.pts();
-            clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << "/" << ts*frame.timeBase().getDouble() << "/" << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
+            clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << "/" << ts.seconds() << "/" << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
 
         }
 

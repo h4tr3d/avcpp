@@ -135,7 +135,7 @@ int main(int argc, char **argv)
             continue;
         }
 
-        clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+        clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
         // DECODING
         //VideoFrame2 frame {vdec.pixelFormat(), vdec.width(), vdec.height(), 32};
@@ -153,14 +153,14 @@ int main(int argc, char **argv)
             continue;
         }
 
-        clog << "Frame: pts=" << frame.pts() << " / " << frame.pts() * frame.timeBase().getDouble() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
+        clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
 
         // Change timebase
         frame.setTimeBase(encoder.timeBase());
         frame.setStreamIndex(0);
         frame.setPictureType();
 
-        clog << "Frame: pts=" << frame.pts() << " / " << frame.pts() * frame.timeBase().getDouble() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
+        clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
 
         // Encode
         auto opkt = encoder.encodeVideo(frame, ec);
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
         // Only one output stream
         opkt.setStreamIndex(0);
 
-        clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts() * opkt.timeBase().getDouble() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+        clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
         octx.writePacket(opkt, ec);
         if (ec) {

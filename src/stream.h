@@ -5,6 +5,7 @@
 
 #include "ffmpeg.h"
 #include "rational.h"
+#include "timestamp.h"
 
 namespace av
 {
@@ -34,9 +35,9 @@ public:
     Rational    frameRate()          const;
     Rational    timeBase()           const;
     Rational    sampleAspectRatio()  const;
-    int64_t     startTime()          const;
-    int64_t     duration()           const;
-    int64_t     currentDts()         const;
+    Timestamp   startTime()          const;
+    Timestamp   duration()           const;
+    Timestamp   currentDts()         const;
     AVMediaType mediaType()          const;
 
     bool isAudio()      const;

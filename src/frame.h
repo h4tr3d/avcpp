@@ -7,9 +7,11 @@
 
 #include "ffmpeg.h"
 #include "rational.h"
+#include "timestamp.h"
 
 extern "C" {
-#include "libavutil/imgutils.h"
+#include <libavutil/imgutils.h>
+#include <libavutil/attributes.h>
 }
 
 namespace av
@@ -125,16 +127,19 @@ public:
         return result;
     }
 
-    int64_t pts() const {
-        return RAW_GET(pts, AV_NOPTS_VALUE);
+    Timestamp pts() const
+    {
+        return {RAW_GET(pts, AV_NOPTS_VALUE), m_timeBase};
     }
 
-    void setPts(int64_t pts) {
-        RAW_SET(pts, pts);
-    }
-
-    void setPts(int64_t pts, Rational ptsTimeBase) {
+    void setPts(int64_t pts, Rational ptsTimeBase) attribute_deprecated
+    {
         RAW_SET(pts, ptsTimeBase.rescale(pts, m_timeBase));
+    }
+
+    void setPts(const Timestamp &ts)
+    {
+        RAW_SET(pts, ts.timestamp(m_timeBase));
     }
 
     const Rational& timeBase() const { return m_timeBase; }
@@ -314,9 +319,6 @@ public:
     uint           sampleBitDepth() const;
 
     std::string    channelsLayoutString() const;
-
-    void           setFakePts(int64_t pts);
-    int64_t        fakePts() const;
 };
 
 

@@ -169,7 +169,6 @@ void VideoRescaler::rescale(VideoFrame2 &dst, const VideoFrame2 &src, error_code
     dst.setQuality(src.quality());
     dst.setTimeBase(src.timeBase());
     dst.setPts(src.pts());
-    //dst.setFakePts(src.fakePts());
     dst.setStreamIndex(src.streamIndex());
     dst.setComplete(true);
 }

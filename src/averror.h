@@ -28,6 +28,7 @@ enum class Errors
     FrameInvalid,
     DictOutOfRage,
     DictNoKey,
+
     FormatCantAddStream,
     FormatAlreadyOpened,
     FormatNullOutputFormat,

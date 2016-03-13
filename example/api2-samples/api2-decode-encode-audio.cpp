@@ -188,7 +188,7 @@ int main(int argc, char **argv)
                 continue;
             }
 
-            clog << "Read packet: isNull=" << (bool)!pkt << ", " << pkt.pts() << "(nopts:" << (pkt.pts() == AV_NOPTS_VALUE) << ")" << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+            clog << "Read packet: isNull=" << (bool)!pkt << ", " << pkt.pts() << "(nopts:" << pkt.pts().isNoPts() << ")" << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 #if 0
             if (pkt.pts() == AV_NOPTS_VALUE && pkt.timeBase() == Rational())
             {
@@ -222,7 +222,7 @@ int main(int argc, char **argv)
                  << ", ch: " << samples.channelsCount()
                  << ", freq: " << samples.sampleRate()
                  << ", name: " << samples.channelsLayoutString()
-                 << ", pts: " << (samples.timeBase().getDouble() * samples.pts())
+                 << ", pts: " << samples.pts().seconds()
                  << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
                  << endl;
 
@@ -258,7 +258,7 @@ int main(int argc, char **argv)
                          << ", ch: " << ouSamples.channelsCount()
                          << ", freq: " << ouSamples.sampleRate()
                          << ", name: " << ouSamples.channelsLayoutString()
-                         << ", pts: " << (ouSamples.timeBase().getDouble() * ouSamples.pts())
+                         << ", pts: " << ouSamples.pts().seconds()
                          << ", ref=" << ouSamples.isReferenced() << ":" << ouSamples.refCount()
                          << endl;
 
@@ -277,7 +277,7 @@ int main(int argc, char **argv)
 
                 opkt.setStreamIndex(0);
 
-                clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts() * opkt.timeBase().getDouble() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+                clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
                 octx.writePacket(opkt, ec);
                 if (ec) {
@@ -308,7 +308,7 @@ int main(int argc, char **argv)
 
             opkt.setStreamIndex(0);
 
-            clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts() * opkt.timeBase().getDouble() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+            clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
             octx.writePacket(opkt, ec);
             if (ec) {

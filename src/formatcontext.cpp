@@ -181,6 +181,21 @@ Stream2 FormatContext::stream(size_t idx)
     return Stream2(m_monitor, m_raw->streams[idx], isOutput() ? Direction::ENCODING : Direction::DECODING);
 }
 
+Stream2 FormatContext::stream(size_t idx, error_code &ec)
+{
+    if (!m_raw) {
+        throws_if(ec, Errors::Unallocated);
+        return Stream2(m_monitor);
+    }
+
+    if (idx >= m_raw->nb_streams) {
+        throws_if(ec, Errors::FormatInvalidStreamIndex);
+        return Stream2(m_monitor);
+    }
+
+    return stream(idx);
+}
+
 Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
 {
     clear_if(ec);
@@ -203,27 +218,31 @@ Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
     return Stream2(m_monitor, st, Direction::ENCODING);
 }
 
-void FormatContext::seek(int64_t timestamp, error_code &ec)
+void FormatContext::seek(const Timestamp &timestamp, error_code &ec) noexcept
 {
-    seek(timestamp, -1, 0, ec);
+    seek(timestamp.timestamp(AV_TIME_BASE_Q), -1, 0, ec);
 }
 
-void FormatContext::seek(int64_t timestamp, size_t streamIndex, error_code &ec)
+void FormatContext::seek(const Timestamp& timestamp, size_t streamIndex, error_code &ec) noexcept
 {
-    seek(timestamp, static_cast<int>(streamIndex), 0, ec);
+    auto st = stream(streamIndex, ec);
+    if (st.isValid())
+        seek(timestamp.timestamp(st.timeBase()), static_cast<int>(streamIndex), 0, ec);
 }
 
-void FormatContext::seek(int64_t timestamp, bool anyFrame, error_code &ec)
+void FormatContext::seek(const Timestamp& timestamp, bool anyFrame, error_code &ec) noexcept
 {
-    seek(timestamp, -1, anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
+    seek(timestamp.timestamp(AV_TIME_BASE_Q), -1, anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
 }
 
-void FormatContext::seek(int64_t timestamp, size_t streamIndex, bool anyFrame, error_code &ec)
+void FormatContext::seek(const Timestamp &timestamp, size_t streamIndex, bool anyFrame, error_code &ec) noexcept
 {
-    seek(timestamp, static_cast<int>(streamIndex), anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
+    auto st = stream(streamIndex);
+    if (st.isValid())
+        seek(timestamp.timestamp(st.timeBase()), static_cast<int>(streamIndex), anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
 }
 
-void FormatContext::seek(int64_t position, int streamIndex, int flags, error_code &ec)
+void FormatContext::seek(int64_t position, int streamIndex, int flags, error_code &ec) noexcept
 {
     clear_if(ec);
     const auto sts = av_seek_frame(m_raw, streamIndex, position, flags);
@@ -232,6 +251,36 @@ void FormatContext::seek(int64_t position, int streamIndex, int flags, error_cod
         return;
     }
 }
+
+Timestamp FormatContext::startTime() const noexcept
+{
+    if (isOutput()) {
+        return {};
+    }
+
+    return {m_raw->start_time, AV_TIME_BASE_Q};
+}
+
+void FormatContext::substractStartTime(bool enable)
+{
+    m_substractStartTime = enable;
+}
+
+
+Timestamp FormatContext::duration() const noexcept
+{
+    if (isOutput()) {
+        return {};
+    }
+
+    // Taken from the av_dump_format()
+    int64_t duration = m_raw->duration;
+    if (m_raw->duration != AV_NOPTS_VALUE) {
+        duration += (m_raw->duration <= INT64_MAX - 5000 ? 5000 : 0);
+    }
+
+    return {duration, AV_TIME_BASE_Q};
+};
 
 void FormatContext::openInput(const string &uri, error_code &ec)
 {
@@ -391,7 +440,7 @@ Packet FormatContext::readPacket(error_code &ec)
         if (packet)
             sts = 0; // not an error
         else
-            return std::move(packet);
+            return packet;
     }
 
     if (sts == 0)
@@ -401,13 +450,13 @@ Packet FormatContext::readPacket(error_code &ec)
         {
             // TODO: need verification
             throws_if(ec, pberr, ffmpeg_category());
-            return std::move(packet);
+            return packet;
         }
     }
     else
     {
         throws_if(ec, sts, ffmpeg_category());
-        return std::move(packet);
+        return packet;
     }
 
     if (packet.streamIndex() >= 0)
@@ -415,15 +464,25 @@ Packet FormatContext::readPacket(error_code &ec)
         if ((size_t)packet.streamIndex() > streamsCount())
         {
             throws_if(ec, Errors::FormatInvalidStreamIndex);
-            return std::move(packet);
+            return packet;
         }
 
         packet.setTimeBase(m_raw->streams[packet.streamIndex()]->time_base);
+
+        if (m_substractStartTime) {
+            const auto startTs = stream(packet.streamIndex()).startTime();
+            if (startTs.isValid()) {
+                if (packet.pts().isValid())
+                    packet.setPts(packet.pts() - startTs);
+                if (packet.dts().isValid())
+                    packet.setDts(packet.pts() - startTs);
+            }
+        }
     }
 
     packet.setComplete(true);
 
-    return std::move(packet);
+    return packet;
 }
 
 void FormatContext::openOutput(const string &uri, error_code &ec)
@@ -671,9 +730,6 @@ void FormatContext::writePacket(const Packet &pkt, error_code &ec, int(*write_pr
         if (st.timeBase() != pkt.timeBase()) {
             writePkt.setTimeBase(st.timeBase());
         }
-
-        if (pkt.pts() == AV_NOPTS_VALUE && pkt.fakePts() != AV_NOPTS_VALUE)
-            writePkt.setPts(writePkt.fakePts());
     }
 
     resetSocketAccess();

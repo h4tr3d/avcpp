@@ -155,7 +155,7 @@ int main(int argc, char **argv)
             continue;
         }
 
-        clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts() * pkt.timeBase().getDouble() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+        clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
         // DECODING
         auto inpFrame = vdec.decodeVideo(pkt, ec);
@@ -172,14 +172,14 @@ int main(int argc, char **argv)
             continue;
         }
 
-        clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts() * inpFrame.timeBase().getDouble() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
+        clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts().seconds() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
 
         // Change timebase
         inpFrame.setTimeBase(encoder.timeBase());
         inpFrame.setStreamIndex(0);
         inpFrame.setPictureType();
 
-        clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts() * inpFrame.timeBase().getDouble() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
+        clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts().seconds() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
 
         // SCALE
         //VideoFrame2 outFrame {encoder.pixelFormat(), encoder.width(), encoder.height()};
@@ -191,7 +191,7 @@ int main(int argc, char **argv)
         }
 
         clog << "outFrame: pts=" << outFrame.pts()
-             << " / " << outFrame.pts() * outFrame.timeBase().getDouble()
+             << " / " << outFrame.pts().seconds()
              << " / " << outFrame.timeBase()
              << ", " << outFrame.width() << "x" << outFrame.height()
              << ", size=" << outFrame.size()
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
         // Only one output stream
         opkt.setStreamIndex(0);
 
-        clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts() * opkt.timeBase().getDouble() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+        clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
         octx.writePacket(opkt, ec);
         if (ec) {

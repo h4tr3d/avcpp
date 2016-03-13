@@ -8,6 +8,11 @@
 #include "rational.h"
 #include "stream.h"
 #include "averror.h"
+#include "timestamp.h"
+
+extern "C" {
+#include <libavutil/attributes.h>
+}
 
 namespace av {
 
@@ -34,10 +39,9 @@ public:
     const uint8_t* data() const { return m_raw.data; }
     uint8_t*       data() { return m_raw.data; }
 
-    int64_t pts() const;
-    int64_t dts() const;
-    int64_t ts() const;
-    int64_t fakePts() const;
+    Timestamp pts() const;
+    Timestamp dts() const;
+    Timestamp ts() const;
     size_t size() const;
 
     /**
@@ -49,9 +53,13 @@ public:
      * @param tsTimeBase  is a time base of setted timestamp, can be omited or sets to Rational(0,0)
      *                    that means that time base equal to packet time base.
      */
-    void setPts(int64_t pts,     const Rational &tsTimeBase = Rational(0, 0));
-    void setDts(int64_t dts,     const Rational &tsTimeBase = Rational(0, 0));
-    void setFakePts(int64_t pts, const Rational &tsTimeBase = Rational(0, 0));
+    void setPts(int64_t pts,     const Rational &tsTimeBase = Rational(0, 0)) attribute_deprecated;
+    void setDts(int64_t dts,     const Rational &tsTimeBase = Rational(0, 0)) attribute_deprecated;
+    //void setFakePts(int64_t pts, const Rational &tsTimeBase = Rational(0, 0)) attribute_deprecated;
+
+    void setPts(const Timestamp &pts);
+    void setDts(const Timestamp &dts);
+    //void setFakePts(const Timestamp &pts);
 
     int     streamIndex() const;
     bool    isKeyPacket() const;
@@ -95,9 +103,9 @@ private:
 #endif
 
 private:
-    bool             m_completeFlag;
-    Rational         m_timeBase;
-    int64_t          m_fakePts;
+    bool     m_completeFlag;
+    Rational m_timeBase;
+    //int64_t  m_fakePts;
 };
 
 

@@ -283,15 +283,4 @@ string AudioSamples2::channelsLayoutString() const
     return string(buf);
 }
 
-void AudioSamples2::setFakePts(int64_t pts)
-{
-    m_fakePts = pts;
-}
-
-int64_t AudioSamples2::fakePts() const
-{
-    return m_fakePts;
-}
-
-
 } // ::av
