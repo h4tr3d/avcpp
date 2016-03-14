@@ -2,6 +2,7 @@
 #define AV_FORMAT_H
 
 #include <memory>
+#include <string>
 
 #include "ffmpeg.h"
 

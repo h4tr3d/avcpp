@@ -1,7 +1,7 @@
 AvCpp
 =====
 
-Wrapper for the FFMPEG that simplify usage it from C++ projects.
+Wrapper for the FFmpeg that simplify usage it from C++ projects.
 
 Currently covered next functionality:
   - Core helper & utility classes (AVFrame -> av::AudioSample & av::VideoFrame, AVRational -> av::Rational and so on)
@@ -15,7 +15,7 @@ Currently covered next functionality:
 Requirements
 ------------
 
-  - FFMPEG >= 1.0
+  - FFmpeg >= 1.0 (LibAV not supported)
     - libavformat >= 54.x.x
     - libavcodec >= 54.x.x
     - libavfilter >= 3.x.x
@@ -23,7 +23,7 @@ Requirements
     - libswscale >= 2.x.x
     - libswresample >= 0.x.x
     - libpostproc >= 52.x.x
-  - GCC >= 4.8 (C++11)
+  - GCC >= 4.8 (C++11 is required)
   
 
 ### Debian
@@ -40,20 +40,12 @@ Note 2: Debian Wheezy repo contains only FFmpeg 1.0.8. I tested building only wi
 
 ### Ubuntu and Linux Mint
 
-You should add samrog131 PPA:
+You should add [ffmpeg-opti](https://launchpad.net/~adrozdoff/+archive/ubuntu/ffmpeg-opti) PPA:
 ```
-sudo add-apt-repository ppa:samrog131/ppa
+sudo add-apt-repository ppa:adrozdoff/ffmpeg-opti
 sudo apt-get update
 sudo apt-get install libavformat-ffmpeg-dev libavcodec-ffmpeg-dev libavutil-ffmpeg-dev libavfilter-ffmpeg-dev libswscale-ffmpeg-dev libswresample-ffmpeg-dev libpostproc-ffmpeg-dev
 ```
-
-To remove PPA:
-```
-sudo apt-add-repository --remove ppa:samrog131/ppa
-sudo apt-get update
-```
-
-
 
 Near future plans
 -----------------
@@ -65,7 +57,7 @@ Future plans (long and not)
 ---------------------------
 
   - Code cleanup
-  - Remove all deprecates in Filters module (FFMPEG 2.x)
+  - Remove all deprecates in Filters module (FFmpeg 2.x)
   - API redisign, make it more intuitively
   - Filters module complete rework
   - Add good samples
