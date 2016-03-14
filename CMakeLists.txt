@@ -40,6 +40,7 @@ pkg_check_modules(FFMPEG REQUIRED
     libavdevice
 )
 
+include_directories(${FFMPEG_INCLUDE_DIRS})
 
 add_subdirectory(src)
 #add_subdirectory(example/test-basic)
