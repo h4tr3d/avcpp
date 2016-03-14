@@ -15,6 +15,10 @@
 #include "frame.h"
 #include "avtime.h"
 
+extern "C" {
+#include <libavfilter/avfilter.h>
+}
+
 //
 // Functions
 //
@@ -143,7 +147,7 @@ struct AvDeleter
 
     bool operator() (AVPacket* &packet)
     {
-        av_free_packet(packet);
+        avpacket_unref(packet);
         av_free(packet);
         packet = 0;
         return true;
@@ -168,17 +172,9 @@ struct AvDeleter
 /**
  * Functor to take next element in list/array
  */
+#if 0
 struct AvNextElement
 {
-    const AVFilterPad * operator()(const AVFilterPad * x) const
-    {
-        if (x)
-            return x + 1;
-        else
-            return 0;
-    }
-
-
     AVFilterInOut * operator()(AVFilterInOut * x) const
     {
         if (x)
@@ -187,6 +183,7 @@ struct AvNextElement
             return 0;
     }
 };
+#endif
 
 
 

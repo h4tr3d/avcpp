@@ -128,7 +128,7 @@ void CodecContext::setCodec(const Codec &codec, bool resetDefaults, error_code &
             avcodec_get_context_defaults3(m_raw, codec.raw());
         }
     } else {
-        m_raw->codec_id   = !codec.isNull() ? codec.raw()->id : CODEC_ID_NONE;
+        m_raw->codec_id   = !codec.isNull() ? codec.raw()->id : AV_CODEC_ID_NONE;
         m_raw->codec_type = !codec.isNull() ? codec.raw()->type : AVMEDIA_TYPE_UNKNOWN;
         m_raw->codec      = codec.raw();
 

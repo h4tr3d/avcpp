@@ -60,7 +60,7 @@ Packet::Packet(const uint8_t *data, size_t size, bool doAllign)
 
 Packet::~Packet()
 {
-    av_free_packet(&m_raw);
+    avpacket_unref(&m_raw);
 }
 
 void Packet::initCommon()
@@ -83,7 +83,7 @@ void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, error_code 
         return;
     }
 
-    av_free_packet(&m_raw);
+    avpacket_unref(&m_raw);
     av_init_packet(&m_raw);
 
     AVPacket tmp = *packet;

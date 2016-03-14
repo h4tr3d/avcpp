@@ -54,36 +54,6 @@ public:
     BufferSrcFilterContext  bufferSrcFilter(std::error_code &ec = throws());
     BufferSinkFilterContext bufferSinkFilter(std::error_code &ec = throws());
 
-#if 0
-    BufferSrcFilterContextPtr  getSrcFilter()  const;
-    BufferSinkFilterContextPtr getSinkFilter() const;
-
-    void setSrcFilter(const BufferSrcFilterContextPtr &filterCtx);
-    void setSinkFilter(const BufferSinkFilterContextPtr &filterCtx);
-
-    static std::shared_ptr<FilterGraph> createSimpleAudioFilterGraph(
-            const Rational&             srcTimeBase,
-            int                         srcSampleRate,
-            AVSampleFormat              srcSampleFormat,
-            uint64_t                    srcChannelLayout,
-            const std::list<int>&            dstSampleRates,
-            const std::list<AVSampleFormat>& dstSampleFormats,
-            const std::list<uint64_t>&       dstChannelLayouts,
-            const std::string&          graphDescription);
-
-    static std::shared_ptr<FilterGraph> createSimpleVideoFilterGraph(
-            const Rational&    timeBase,
-            const Rational&    sampleAspectRatio,
-            const Rational&    frameRate,
-            int                srcWidth,
-            int                srcHeight,
-            PixelFormat        srcPixelFormat,
-            int                dstWidth,
-            int                dstHeight,
-            PixelFormat        dstPixelFormat,
-            const std::string& graphDescription,
-            int                swsFlags = SWS_BILINEAR);
-#endif
 
 private:
 

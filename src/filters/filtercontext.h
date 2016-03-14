@@ -25,10 +25,7 @@ public:
     std::string       name() const;
 
     size_t            inputsCount()  const;
-    FilterPad         inputPad(size_t idx) const;
-
     size_t            outputsCount() const;
-    FilterPad         outputPad(size_t idx) const;
 
     void init(const std::string &args, std::error_code &ec = throws());
     void free();

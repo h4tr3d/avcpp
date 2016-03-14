@@ -29,22 +29,6 @@ string FilterContext::name() const
     return string();
 }
 
-FilterPad FilterContext::inputPad(size_t idx) const
-{
-    assert(m_raw);
-
-#if LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,17,100) // 1.0
-    auto count = m_raw->input_count;
-#else
-    auto count = m_raw->nb_inputs;
-#endif
-
-    if (idx >= count)
-        return FilterPad();
-
-    return FilterPad(&m_raw->input_pads[idx]);
-}
-
 size_t FilterContext::inputsCount() const
 {
     assert(m_raw);
@@ -56,23 +40,6 @@ size_t FilterContext::inputsCount() const
 #endif
 
     return count;
-}
-
-FilterPad FilterContext::outputPad(size_t idx) const
-{
-    assert(m_raw);
-
-    unsigned int count = 0;
-#if LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,17,100) // 1.0
-    count = m_raw->output_count;
-#else
-    count = m_raw->nb_outputs;
-#endif
-
-    if (idx >= count)
-        return FilterPad();
-
-    return FilterPad(&m_raw->output_pads[idx]);
 }
 
 void FilterContext::init(const string& args, error_code &ec)

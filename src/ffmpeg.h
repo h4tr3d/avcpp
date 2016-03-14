@@ -11,14 +11,20 @@ extern "C"
 #include <libavdevice/avdevice.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
+#include <libavformat/version.h>
+}
+
+extern "C" {
 #include <libavfilter/avfilter.h>
 #include <libavfilter/avfiltergraph.h>
+#include <libavfilter/buffersink.h>
+#include <libavfilter/buffersrc.h>
 #if LIBAVFILTER_VERSION_INT <= AV_VERSION_INT(2,77,100) // 0.11.1
 #  include <libavfilter/vsrc_buffer.h>
 #endif
+#if LIBAVFILTER_VERSION_INT < AV_VERSION_INT(6,31,100) // 3.0
 #include <libavfilter/avcodec.h>
-#include <libavfilter/buffersink.h>
-#include <libavfilter/buffersrc.h>
+#endif
 }
 
 // Compat level
@@ -42,6 +48,14 @@ inline AVMediaType avfilter_pad_get_type(AVFilterPad *pads, int pad_idx)
 {
     return pads[pad_idx].type;
 }
+#endif
+
+
+// Wrapper around av_free_packet()/av_packet_unref()
+#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(6,31,100) // < 3.0
+#define avpacket_unref(p) av_free_packet(p)
+#else
+#define avpacket_unref(p) av_packet_unref(p)
 #endif
 
 

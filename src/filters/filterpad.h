@@ -7,78 +7,19 @@
 
 #include "ffmpeg.h"
 #include "avutils.h"
-#include "linkedlistutils.h"
 
 namespace av {
 
-/**
- * Describe one Filter Pad
- */
-template<typename T>
-class FilterPadBase : public FFWrapperPtr<T>
+class FilterPadList : public FFWrapperPtr<const AVFilterPad>
 {
 public:
-    static_assert(std::is_same<typename std::remove_const<T>::type, AVFilterPad>::value,
-                  "This template only valid for const and non-const AVFilterPad");
+    using FFWrapperPtr<const AVFilterPad>::FFWrapperPtr;
 
-    // This template only valid for const and non-const AVFilterPad
-    using BaseType = FFWrapperPtr<T>;
+    size_t count() const noexcept;
+    std::string name(size_t index) const noexcept;
+    const char* nameCStr(size_t index) const noexcept;
+    AVMediaType type(size_t index) const noexcept;
 
-    // Import ctors
-    using BaseType::FFWrapperPtr;
-
-    std::string name() const
-    {
-        const auto nm = nameCStr();
-        return nm ? nm : std::string();
-    }
-
-    const char* nameCStr() const noexcept
-    {
-        return (m_raw ? avfilter_pad_get_name(m_raw, 0) : nullptr);
-    }
-
-    AVMediaType mediaType() const
-    {
-        return (m_raw ? avfilter_pad_get_type(m_raw, 0) : AVMEDIA_TYPE_UNKNOWN);
-    }
-
-protected:
-    using BaseType::m_raw;
-};
-
-/// Pads, including dynamic one at the FilterContext
-using FilterPad       = FilterPadBase<AVFilterPad>;
-/// Pads, only static, declared at the Filter
-using FilterPadStatic = FilterPadBase<const AVFilterPad>;
-
-///
-///
-
-struct FilterPadRawCast
-{
-    const AVFilterPad* operator ()(FilterPadStatic& w)
-    {
-        return w.raw();
-    }
-};
-
-typedef DefaultResetPtr<const AVFilterPad, FilterPadStatic> FilterPadResetPtr;
-
-class FilterPadList :
-        public LinkedListWrapper<const AVFilterPad, FilterPadStatic, AvNextElement, FilterPadRawCast, FilterPadResetPtr>
-{
-public:
-    using LinkedListWrapper::m_begin;
-    using LinkedListWrapper::m_end;
-
-    FilterPadList() : LinkedListWrapper() {}
-    FilterPadList(const AVFilterPad * ptr) : LinkedListWrapper(ptr) {}
-
-    size_t count() const;
-
-private:
-    mutable size_t m_countCached = 0;
 };
 
 

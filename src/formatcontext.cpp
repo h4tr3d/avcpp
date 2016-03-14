@@ -655,7 +655,7 @@ void FormatContext::writePacket(error_code &ec)
 
 void FormatContext::writePacket(const Packet &pkt, error_code &ec)
 {
-    writePacket(pkt, ec, av_write_frame);
+    writePacket(pkt, ec, av_interleaved_write_frame);
 }
 
 void FormatContext::writePacketDirect(error_code &ec)
@@ -665,7 +665,7 @@ void FormatContext::writePacketDirect(error_code &ec)
 
 void FormatContext::writePacketDirect(const Packet &pkt, error_code &ec)
 {
-    writePacket(pkt, ec, av_interleaved_write_frame);
+    writePacket(pkt, ec, av_write_frame);
 }
 
 bool FormatContext::checkUncodedFrameWriting(size_t streamIndex, error_code &ec) noexcept

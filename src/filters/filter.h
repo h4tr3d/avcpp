@@ -6,6 +6,10 @@
 #include "ffmpeg.h"
 #include "filterpad.h"
 
+extern "C" {
+#include <libavfilter/avfilter.h>
+}
+
 namespace av {
 
 enum class FilterMediaType
