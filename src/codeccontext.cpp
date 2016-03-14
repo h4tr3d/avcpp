@@ -78,8 +78,6 @@ void CodecContext::swap(CodecContext &other)
     using std::swap;
     swap(m_direction, other.m_direction);
     swap(m_fakePtsTimeBase, other.m_fakePtsTimeBase);
-    //swap(m_fakeCurrPts, other.m_fakeCurrPts);
-    //swap(m_fakeNextPts, other.m_fakeNextPts);
     swap(m_stream, other.m_stream);
     swap(m_raw, other.m_raw);
     swap(m_isOpened, other.m_isOpened);
