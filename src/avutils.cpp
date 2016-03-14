@@ -10,7 +10,7 @@ using namespace std;
 //
 namespace av {
 
-void setFFmpegLoggingLevel(int32_t level)
+void set_logging_level(int32_t level)
 {
     if (level < AV_LOG_PANIC)
         av_log_set_level(AV_LOG_QUIET);
@@ -31,7 +31,7 @@ void setFFmpegLoggingLevel(int32_t level)
 }
 
 
-void setFFmpegLoggingLevel(const string &level)
+void set_logging_level(const string &level)
 {
     if (level == "quiet")
         av_log_set_level(AV_LOG_QUIET);
@@ -53,7 +53,7 @@ void setFFmpegLoggingLevel(const string &level)
     {
         try
         {
-            setFFmpegLoggingLevel(lexical_cast<int32_t>(level));
+            set_logging_level(lexical_cast<int32_t>(level));
         }
         catch (...)
         {}
@@ -128,11 +128,14 @@ void init()
     avdevice_register_all();
 
     av_lockmgr_register(avcpp_lockmgr_cb);
-    setFFmpegLoggingLevel(AV_LOG_ERROR);
+    set_logging_level(AV_LOG_ERROR);
 
     // Ignore sigpipe by default
+#ifdef __unix__
     signal(SIGPIPE, SIG_IGN);
+#endif
 }
+
 
 string error2string(int error)
 {

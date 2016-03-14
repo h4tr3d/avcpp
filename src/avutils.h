@@ -45,20 +45,22 @@ protected:
  *               mean less logging.  A negative number tells FFmpeg to
  *               shut up.
  */
-void setFFmpegLoggingLevel(int32_t level);
+void set_logging_level(int32_t level);
 
 
 /**
- * Like @see setFFmpegLoggingLevel, but can assept logging level as string.
+ * Like @see set_logging_level, but can assept logging level as string.
  *
  * @param level - string representation of loggin level:
  *                'quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose' or 'debug',
  *                it also can be numeric (but in string representation), it it case
- *                boost::lexical_cast will be used and setFFmpegLoggingLevel(int32_t) will be
+ *                boost::lexical_cast will be used and set_logging_level(int32_t) will be
  *                called.
  */
-void setFFmpegLoggingLevel(const std::string& level);
+void set_logging_level(const std::string& level);
 
+// Compat code
+#define setFFmpegLoggingLevel set_logging_level
 
 /**
  * @brief dump_binary_buffer
