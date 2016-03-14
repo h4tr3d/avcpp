@@ -153,6 +153,11 @@ public:
     void openOutput(const std::string& uri, Dictionary &options, std::error_code &ec = throws());
     void openOutput(const std::string& uri, Dictionary &&options, std::error_code &ec = throws());
 
+    // TBD
+    //void openOutput(const std::string& uri, OutputFormat format, std::error_code &ec = throws());
+    //void openOutput(const std::string& uri, Dictionary &options, OutputFormat format, std::error_code &ec = throws());
+    //void openOutput(const std::string& uri, Dictionary &&options, OutputFormat format, std::error_code &ec = throws());
+
     void openOutput(CustomIO *io, std::error_code &ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
 
     void writeHeader(std::error_code &ec = throws());
@@ -176,7 +181,7 @@ public:
 
 private:
     void openInput(const std::string& uri, InputFormat format, AVDictionary **options, std::error_code &ec);
-    void openOutput(const std::string& uri, AVDictionary **options, std::error_code &ec);
+    void openOutput(const std::string& uri, OutputFormat format, AVDictionary **options, std::error_code &ec);
     void writeHeader(AVDictionary **options, std::error_code &ec = throws());
     void writePacket(const Packet &pkt, std::error_code &ec, int(*write_proc)(AVFormatContext *, AVPacket *));
     void writeFrame(AVFrame *frame, int streamIndex, std::error_code &ec, int(*write_proc)(AVFormatContext*,int,AVFrame*));

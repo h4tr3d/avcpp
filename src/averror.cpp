@@ -44,6 +44,7 @@ std::string AvcppCategory::message(int ev) const
         case Errors::FormatNotOpened: return "Format not opened";
         case Errors::FormatInvalidDirection: return "Incorrect operation for current format direction (input/output)";
         case Errors::FormatHeaderNotWriten: return "Header must be writen before";
+        case Errors::FormatCodecUnsupported: return "Codec unsupported by the format or format not specified";
         case Errors::ResamplerInvalidParameters: return "Provided invalid parameters for resampler";
         case Errors::ResamplerNotInited: return "Resampler not inited";
         case Errors::ResamplerInputChanges: return "Resampler input parameters changed (mismatch with provided frame)";

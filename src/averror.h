@@ -38,6 +38,7 @@ enum class Errors
     FormatNotOpened,
     FormatInvalidDirection,
     FormatHeaderNotWriten,
+    FormatCodecUnsupported,
 
     ResamplerInvalidParameters,
     ResamplerNotInited,

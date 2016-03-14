@@ -205,6 +205,11 @@ Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
         return Stream2();
     }
 
+    if (!outputFormat().codecSupported(codec)) {
+        throws_if(ec, Errors::FormatCodecUnsupported);
+        return Stream2();
+    }
+
     auto rawcodec = codec.raw();
     AVStream *st = nullptr;
 
@@ -215,7 +220,15 @@ Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
         return Stream2();
     }
 
-    return Stream2(m_monitor, st, Direction::ENCODING);
+    auto stream = Stream2(m_monitor, st, Direction::ENCODING);
+
+    if (st->codec) {
+        if (outputFormat().isFlags(AVFMT_GLOBALHEADER)) {
+            st->codec->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+        }
+    }
+
+    return stream;
 }
 
 bool FormatContext::seekable() const noexcept
@@ -495,7 +508,7 @@ Packet FormatContext::readPacket(error_code &ec)
 
 void FormatContext::openOutput(const string &uri, error_code &ec)
 {
-    return openOutput(uri, nullptr, ec);
+    return openOutput(uri, OutputFormat(), nullptr, ec);
 }
 
 void FormatContext::openOutput(const string &uri, Dictionary &options, error_code &ec)
@@ -503,7 +516,7 @@ void FormatContext::openOutput(const string &uri, Dictionary &options, error_cod
     auto ptr = options.release();
     try
     {
-        openOutput(uri, &ptr, ec);
+        openOutput(uri, OutputFormat(), &ptr, ec);
         options.assign(ptr);
     }
     catch (const Exception&)
@@ -518,7 +531,7 @@ void FormatContext::openOutput(const string &uri, Dictionary &&options, error_co
     return openOutput(uri, options, ec);
 }
 
-void FormatContext::openOutput(const string &uri, AVDictionary **options, error_code &ec)
+void FormatContext::openOutput(const string &uri, OutputFormat format, AVDictionary **options, error_code &ec)
 {
     clear_if(ec);
     if (!m_raw)
@@ -533,7 +546,10 @@ void FormatContext::openOutput(const string &uri, AVDictionary **options, error_
         return;
     }
 
-    OutputFormat format = outputFormat();
+    if (format.isNull())
+        format = outputFormat();
+    else
+        setFormat(format);
 
     if (format.isNull())
     {
@@ -547,6 +563,16 @@ void FormatContext::openOutput(const string &uri, AVDictionary **options, error_
             return;
         }
         setFormat(format);
+    }
+
+    // Fix stream flags
+    for (size_t i = 0; i < streamsCount(); ++i) {
+        auto st = stream(i);
+        if (st.raw()->codec) {
+            if (outputFormat().isFlags(AVFMT_GLOBALHEADER)) {
+                st.raw()->codec->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+            }
+        }
     }
 
     resetSocketAccess();
@@ -741,7 +767,7 @@ void FormatContext::writePacket(const Packet &pkt, error_code &ec, int(*write_pr
     }
 
     resetSocketAccess();
-    int sts = write_proc(m_raw, writePkt.raw());
+    int sts = write_proc(m_raw, writePkt.isNull() ? nullptr : writePkt.raw());
     sts = checkPbError(sts);
     if (sts < 0)
         throws_if(ec, sts, ffmpeg_category());
