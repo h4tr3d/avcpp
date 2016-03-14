@@ -1,9 +1,29 @@
+#include "codec.h"
 #include "format.h"
 
 namespace av {
 
+namespace internal {
+
+bool codec_supported(const AVCodecTag * const *codecTag, const FmtCodec &codec)
+{
+    if (!codecTag) // any codec supported
+        return true;
+
+    unsigned int tag;
+    return !!av_codec_get_tag2(codecTag, codec.id(), &tag);
+}
+
+} // ::internal
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool InputFormat::setFormat(const std::string &name) {
+InputFormat::InputFormat(const std::string &name) noexcept
+{
+    setFormat(name);
+}
+
+bool InputFormat::setFormat(const std::string &name) noexcept
+{
     if (!name.empty())
         m_raw = av_find_input_format(name.c_str());
     else
@@ -12,7 +32,12 @@ bool InputFormat::setFormat(const std::string &name) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool OutputFormat::setFormat(const std::string &name, const std::string &url, const std::string &mime)
+OutputFormat::OutputFormat(const std::string &name, const std::string &url, const std::string &mime) noexcept
+{
+    setFormat(name, url, mime);
+}
+
+bool OutputFormat::setFormat(const std::string &name, const std::string &url, const std::string &mime) noexcept
 {
     if (name.empty() && url.empty() && mime.empty())
         m_raw = nullptr;
@@ -23,12 +48,14 @@ bool OutputFormat::setFormat(const std::string &name, const std::string &url, co
     return m_raw;
 }
 
-AVCodecID OutputFormat::defaultVideoCodecId() const
+
+AVCodecID OutputFormat::defaultVideoCodecId() const noexcept
 {
     return RAW_GET(video_codec, AV_CODEC_ID_NONE);
 }
 
-AVCodecID OutputFormat::defaultAudioCodecId() const
+
+AVCodecID OutputFormat::defaultAudioCodecId() const noexcept
 {
     return RAW_GET(audio_codec, AV_CODEC_ID_NONE);
 }
@@ -36,10 +63,7 @@ AVCodecID OutputFormat::defaultAudioCodecId() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 OutputFormat guessOutputFormat(const std::string &name, const std::string &url, const std::string &mime)
 {
-    OutputFormat result;
-    result.setFormat(name, url, mime);
-    return result;
+    return {name, url, mime};
 }
-
 
 } // namespace av
