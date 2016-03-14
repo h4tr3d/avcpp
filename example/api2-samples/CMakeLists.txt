@@ -14,6 +14,7 @@ api2-decode-encode-audio
 api2-dict-basic
 api2-timestamp
 api2-demux-seek
+api2-remux
 )
 
 foreach(target ${TARGETS})
