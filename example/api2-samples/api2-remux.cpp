@@ -134,6 +134,8 @@ int main(int argc, char **argv)
             }
         }
 
+        ost.setTimeBase(ist.timeBase());
+
         auto ocoder = CodecContext(ost);
 
         // copy codec settings
@@ -144,8 +146,8 @@ int main(int argc, char **argv)
     }
 
     octx.openOutput(out);
-    octx.dump();
     octx.writeHeader();
+    octx.dump();
 
     //
     // PROCESS
