@@ -282,6 +282,27 @@ Timestamp FormatContext::startTime() const noexcept
     return {m_raw->start_time, AV_TIME_BASE_Q};
 }
 
+int FormatContext::eventFlags() const noexcept
+{
+    if (isOutput())
+        return 0;
+    return m_raw->event_flags;
+}
+
+bool FormatContext::eventFlags(int flags) const noexcept
+{
+    if (isOutput())
+        return false;
+    return m_raw->event_flags & flags;
+}
+
+void FormatContext::eventFlagsClear(int flags) noexcept
+{
+    if (isOutput())
+        return;
+    m_raw->event_flags &= ~flags;
+}
+
 void FormatContext::substractStartTime(bool enable)
 {
     m_substractStartTime = enable;

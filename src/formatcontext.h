@@ -97,8 +97,17 @@ public:
     //
     Timestamp startTime() const noexcept;
     Timestamp duration() const noexcept;
-
     void substractStartTime(bool enable);
+
+    /**
+     * Flags to the user to detect events happening on the file.
+     * A combination of AVFMT_EVENT_FLAG_*. Must be cleared by the user.
+     * @see AVFormatContext::event_flags
+     * @return
+     */
+    int eventFlags() const noexcept;
+    bool eventFlags(int flags) const noexcept;
+    void eventFlagsClear(int flags) noexcept;
 
     //
     // Input

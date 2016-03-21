@@ -52,6 +52,16 @@ public:
     void setFrameRate(const Rational &frameRate);
     void setSampleAspectRatio(const Rational &aspectRatio);
 
+    /**
+     * Flags to the user to detect events happening on the stream.
+     * A combination of AVSTREAM_EVENT_FLAG_*. Must be cleared by the user.
+     * @see AVFormatContext::event_flags
+     * @return
+     */
+    int eventFlags() const noexcept;
+    bool eventFlags(int flags) const noexcept;
+    void eventFlagsClear(int flags) noexcept;
+
 private:
     std::weak_ptr<char> m_parentMonitor;
     Direction           m_direction = Direction::INVALID;
