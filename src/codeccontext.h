@@ -248,7 +248,7 @@ private:
 
 private:
     Direction       m_direction = Direction::INVALID;
-    Rational        m_fakePtsTimeBase;
+    //Rational        m_fakePtsTimeBase;
     //Timestamp       m_fakeNextPts;
     //Timestamp       m_fakeCurrPts;
 

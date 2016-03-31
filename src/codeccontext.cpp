@@ -77,7 +77,6 @@ void CodecContext::swap(CodecContext &other)
 {
     using std::swap;
     swap(m_direction, other.m_direction);
-    swap(m_fakePtsTimeBase, other.m_fakePtsTimeBase);
     swap(m_stream, other.m_stream);
     swap(m_raw, other.m_raw);
     swap(m_isOpened, other.m_isOpened);
@@ -898,8 +897,31 @@ std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(T &outFram
     if (!frameFinished)
         return make_pair(0u, nullptr);
 
+    // Dial with PTS/DTS in packet/stream timebase
+
+    if (inPacket.timeBase() != Rational())
+        outFrame.setTimeBase(inPacket.timeBase());
+    else
+        outFrame.setTimeBase(m_stream.timeBase());
+
+    AVFrame *frame = outFrame.raw();
+
+    if (frame->pts == AV_NOPTS_VALUE)
+        frame->pts = av_frame_get_best_effort_timestamp(frame);
+
+    if (frame->pts == AV_NOPTS_VALUE)
+        frame->pts = frame->pkt_pts;
+
+    if (frame->pts == AV_NOPTS_VALUE)
+        frame->pts = frame->pkt_dts;
+
+    // Convert to decoder/frame time base. Seems not nessesary.
     outFrame.setTimeBase(timeBase());
-    outFrame.setStreamIndex(inPacket.streamIndex());
+
+    if (inPacket)
+        outFrame.setStreamIndex(inPacket.streamIndex());
+    else
+        outFrame.setStreamIndex(m_stream.index());
 
 #if 0
     AVFrame *frame = outFrame.raw();
@@ -931,6 +953,7 @@ std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(T &outFram
         outFrame.setPts(m_fakeCurrPts);
 #endif
 
+#if 0
     if (outFrame.pts().isNoPts()) {
         outFrame.setPts(inPacket.pts());
     }
@@ -938,6 +961,7 @@ std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(T &outFram
     if (outFrame.pts().isNoPts()) {
         outFrame.setPts(inPacket.dts());
     }
+#endif
 
     outFrame.setComplete(true);
 
