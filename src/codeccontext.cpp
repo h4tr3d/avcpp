@@ -700,9 +700,7 @@ Packet CodecContext::encodeVideo(const VideoFrame2 &inFrame, error_code &ec)
 #endif
 
     packet.setComplete(true);
-
     return packet;
-
 }
 
 AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, error_code &ec)
@@ -923,46 +921,6 @@ std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(T &outFram
     else
         outFrame.setStreamIndex(m_stream.index());
 
-#if 0
-    AVFrame *frame = outFrame.raw();
-
-    auto packetTs = Timestamp(frame->pkt_pts, inPacket.timeBase());
-    if (packetTs.isNoPts())
-        packetTs = inPacket.dts();
-
-    if (packetTs.isValid())
-    {
-        auto nextPts = packetTs;
-
-        if (nextPts < m_fakeNextPts && inPacket.pts().isValid())
-        {
-            nextPts = inPacket.pts();
-        }
-
-        m_fakeNextPts = nextPts;
-    }
-
-    m_fakeCurrPts = m_fakeNextPts;
-    double frameDelay = inPacket.timeBase().getDouble();
-    frameDelay += outFrame.raw()->repeat_pict * (frameDelay * 0.5);
-
-    m_fakeNextPts += Timestamp(frameDelay, m_fakeNextPts.timebase());
-
-    if (m_fakeCurrPts.isValid())
-        //outFrame.setPts(inPacket.timeBase().rescale(m_fakeCurrPts, outFrame.timeBase()));
-        outFrame.setPts(m_fakeCurrPts);
-#endif
-
-#if 0
-    if (outFrame.pts().isNoPts()) {
-        outFrame.setPts(inPacket.pts());
-    }
-
-    if (outFrame.pts().isNoPts()) {
-        outFrame.setPts(inPacket.dts());
-    }
-#endif
-
     outFrame.setComplete(true);
 
     return st;
@@ -977,30 +935,22 @@ std::pair<ssize_t, const error_category *> CodecContext::encodeCommon(Packet & o
     if (!gotPacket)
         return make_pair(0u, nullptr);
 
-    if (m_stream.isValid()) {
-        outPacket.setTimeBase(m_stream.timeBase());
-        outPacket.setStreamIndex(m_stream.index());
-    } else {
+    if (inFrame && inFrame.timeBase() != Rational()) {
         outPacket.setTimeBase(inFrame.timeBase());
         outPacket.setStreamIndex(inFrame.streamIndex());
+    } else if (m_stream.isValid()) {
+        if (m_stream.raw()->codec) {
+            outPacket.setTimeBase(m_stream.raw()->codec->time_base);
+        }
+        outPacket.setStreamIndex(m_stream.index());
     }
 
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(56, 60, 100)
-    if (m_raw->coded_frame) {
-        if (m_raw->coded_frame->pts != AV_NOPTS_VALUE)
-            outPacket.setPts(m_raw->coded_frame->pts, timeBase());
-    } else {
-        if (outPacket.pts().isNoPts())
-            outPacket.setPts(inFrame.pts(), inFrame.timeBase());
-    }
-#endif
+    //clog << "-------- pts: " << outPacket.raw()->pts << ", dts: " << outPacket.raw()->dts << '\n';
 
-    if (outPacket.dts().isValid() && outPacket.pts().isNoPts()) {
-        outPacket.setPts(outPacket.dts());
+    // Recalc PTS/DTS/Duration
+    if (m_stream.isValid()) {
+        outPacket.setTimeBase(m_stream.timeBase());
     }
-
-    if (outPacket.dts().isNoPts())
-        outPacket.setDts(outPacket.pts());
 
     outPacket.setComplete(true);
 
