@@ -50,6 +50,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    ictx.findStreamInfo();
+
     for (size_t i = 0; i < ictx.streamsCount(); ++i) {
         auto st = ictx.stream(i);
         if (st.mediaType() == AVMEDIA_TYPE_VIDEO) {
@@ -82,7 +84,7 @@ int main(int argc, char **argv)
     OutputFormat  ofrmt;
     FormatContext octx;
 
-    ofrmt.setFormat("flv", out);
+    ofrmt.setFormat(string(), out);
     octx.setFormat(ofrmt);
 
     Codec        ocodec  = findEncodingCodec(ofrmt);
@@ -92,7 +94,8 @@ int main(int argc, char **argv)
     // Settings
     encoder.setWidth(vdec.width());
     encoder.setHeight(vdec.height());
-    encoder.setPixelFormat(vdec.pixelFormat());
+    if (vdec.pixelFormat() > -1)
+        encoder.setPixelFormat(vdec.pixelFormat());
     encoder.setTimeBase(Rational{1, 1000});
     encoder.setBitRate(vdec.bitRate());
     ost.setFrameRate(vst.frameRate());
@@ -142,8 +145,8 @@ int main(int argc, char **argv)
         auto frame = vdec.decodeVideo(pkt, ec);
 
         count++;
-        if (count > 200)
-            break;
+        //if (count > 200)
+        //    break;
 
         if (ec) {
             cerr << "Decoding error: " << ec << endl;
@@ -174,6 +177,7 @@ int main(int argc, char **argv)
 
         // Only one output stream
         opkt.setStreamIndex(0);
+        opkt.setDts(opkt.pts());
 
         clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
