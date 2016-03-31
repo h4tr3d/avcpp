@@ -118,8 +118,22 @@ int main(int argc, char **argv)
             }
 
             ts = frame.pts();
-            clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << "/" << ts.seconds() << "/" << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
 
+            clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << ", tm: " << ts.seconds() << ", tb: " << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
+
+        }
+
+        clog << "Flush frames;\n";
+        while (true) {
+            VideoFrame2 frame = vdec.decodeVideo(Packet(), ec);
+            if (ec) {
+                cerr << "Error: " << ec << ", " << ec.message() << endl;
+                return 1;
+            }
+            if (!frame)
+                break;
+            auto ts = frame.pts();
+            clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << ", tm: " << ts.seconds() << ", tb: " << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
         }
 
         // NOTE: stream decodec must be closed/destroyed before
