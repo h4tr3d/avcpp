@@ -256,46 +256,17 @@ void Packet::dump(const Stream2 &st, bool dumpPayload) const
     }
 }
 
-void Packet::setTimeBase(const Rational &value)
+void Packet::setTimeBase(const Rational &tb)
 {
-    if (m_timeBase == value)
+    if (m_timeBase == tb)
         return;
 
-    int64_t rescaledPts      = AV_NOPTS_VALUE;
-    int64_t rescaledDts      = AV_NOPTS_VALUE;
-    //int64_t rescaledFakePts  = AV_NOPTS_VALUE;
-    int     rescaledDuration = 0;
+    if (m_timeBase != Rational())
+        av_packet_rescale_ts(&m_raw,
+                             m_timeBase.getValue(),
+                             tb.getValue());
 
-    if (m_timeBase != Rational() && value != Rational())
-    {
-        if (m_raw.pts != AV_NOPTS_VALUE)
-            rescaledPts = m_timeBase.rescale(m_raw.pts, value);
-
-        if (m_raw.dts != AV_NOPTS_VALUE)
-            rescaledDts = m_timeBase.rescale(m_raw.dts, value);
-
-        //if (m_fakePts != AV_NOPTS_VALUE)
-        //    rescaledFakePts = m_timeBase.rescale(m_fakePts, value);
-
-        if (m_raw.duration != 0)
-            rescaledDuration = m_timeBase.rescale(m_raw.duration, value);
-    }
-    else // Do not rescale for invalid timeBases
-    {
-        rescaledPts      = m_raw.pts;
-        rescaledDts      = m_raw.dts;
-        //rescaledFakePts  = m_fakePts;
-        rescaledDuration = m_raw.duration;
-    }
-
-    // may be throw
-    m_timeBase = value;
-
-    // next operations non-thrown
-    m_raw.pts      = rescaledPts;
-    m_raw.dts      = rescaledDts;
-    m_raw.duration = rescaledDuration;
-    //m_fakePts      = rescaledFakePts;
+    m_timeBase = tb;
 }
 
 bool Packet::isReferenced() const
@@ -370,7 +341,6 @@ void Packet::swap(Packet &other)
     swap(m_raw,          other.m_raw);
     swap(m_completeFlag, other.m_completeFlag);
     swap(m_timeBase,     other.m_timeBase);
-    //swap(m_fakePts,      other.m_fakePts);
 }
 
 #if 0
