@@ -129,64 +129,85 @@ int main(int argc, char **argv)
             break;
         }
 
-        // EOF
-        if (!pkt) {
+        bool flushDecoder = false;
+        // !EOF
+        if (pkt) {
+            if (pkt.streamIndex() != videoStream) {
+                continue;
+            }
+
+            clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+        } else {
+            flushDecoder = true;
+        }
+
+        do {
+            // DECODING
+            auto frame = vdec.decodeVideo(pkt, ec);
+
+            count++;
+            //if (count > 200)
+            //    break;
+
+            bool flushEncoder = false;
+
+            if (ec) {
+                cerr << "Decoding error: " << ec << endl;
+                return 1;
+            } else if (!frame) {
+                //cerr << "Empty frame\n";
+                //flushDecoder = false;
+                //continue;
+
+                if (flushDecoder) {
+                    flushEncoder = true;
+                }
+            }
+
+            if (frame) {
+                clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
+
+                // Change timebase
+                frame.setTimeBase(encoder.timeBase());
+                frame.setStreamIndex(0);
+                frame.setPictureType();
+
+                clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
+            }
+
+            if (frame || flushEncoder) {
+                do {
+                    // Encode
+                    Packet opkt = frame ? encoder.encodeVideo(frame, ec) : encoder.encodeVideo(ec);
+                    if (ec) {
+                        cerr << "Encoding error: " << ec << endl;
+                        return 1;
+                    } else if (!opkt) {
+                        //cerr << "Empty packet\n";
+                        //continue;
+                        break;
+                    }
+
+                    // Only one output stream
+                    opkt.setStreamIndex(0);
+
+                    clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+
+                    octx.writePacket(opkt, ec);
+                    if (ec) {
+                        cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
+                        return 1;
+                    }
+                } while (flushEncoder);
+            }
+
+            if (flushEncoder)
+                break;
+
+        } while (flushDecoder);
+
+        if (flushDecoder)
             break;
-        }
-
-        if (pkt.streamIndex() != videoStream) {
-            continue;
-        }
-
-        clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
-
-        // DECODING
-        //VideoFrame2 frame {vdec.pixelFormat(), vdec.width(), vdec.height(), 32};
-        auto frame = vdec.decodeVideo(pkt, ec);
-
-        count++;
-        //if (count > 200)
-        //    break;
-
-        if (ec) {
-            cerr << "Decoding error: " << ec << endl;
-            return 1;
-        } else if (!frame) {
-            cerr << "Empty frame\n";
-            continue;
-        }
-
-        clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
-
-        // Change timebase
-        frame.setTimeBase(encoder.timeBase());
-        frame.setStreamIndex(0);
-        frame.setPictureType();
-
-        clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
-
-        // Encode
-        auto opkt = encoder.encodeVideo(frame, ec);
-        if (ec) {
-            cerr << "Encoding error: " << ec << endl;
-            return 1;
-        } else if (!opkt) {
-            cerr << "Empty packet\n";
-            continue;
-        }
-
-        // Only one output stream
-        opkt.setStreamIndex(0);
-        opkt.setDts(opkt.pts());
-
-        clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
-
-        octx.writePacket(opkt, ec);
-        if (ec) {
-            cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
-            return 1;
-        }
-
     }
 
     octx.writeTrailer();
