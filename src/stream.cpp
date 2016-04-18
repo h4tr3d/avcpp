@@ -101,23 +101,23 @@ void Stream::setSampleAspectRatio(const Rational &aspectRatio)
     RAW_SET2(isValid(), sample_aspect_ratio, aspectRatio.getValue());
 }
 
-int Stream2::eventFlags() const noexcept
+int Stream::eventFlags() const noexcept
 {
-    if (!isValid() || m_direction != Direction::DECODING)
+    if (!isValid() || m_direction != Direction::Decoding)
         return 0;
     return m_raw->event_flags;
 }
 
-bool Stream2::eventFlags(int flags) const noexcept
+bool Stream::eventFlags(int flags) const noexcept
 {
-    if (!isValid() || m_direction != Direction::DECODING)
+    if (!isValid() || m_direction != Direction::Decoding)
         return false;
     return m_raw->event_flags & flags;
 }
 
-void Stream2::eventFlagsClear(int flags) noexcept
+void Stream::eventFlagsClear(int flags) noexcept
 {
-    if (!isValid() || m_direction != Direction::DECODING)
+    if (!isValid() || m_direction != Direction::Decoding)
         return;
     m_raw->event_flags &= ~flags;
 }
