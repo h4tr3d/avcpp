@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 
     ssize_t      audioStream = -1;
     CodecContext adec;
-    Stream      ast;
+    Stream2      ast;
     error_code   ec;
 
     int count = 0;
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
         octx.setFormat(ofmt);
 
         Codec        ocodec = av::findEncodingCodec(ofmt, false);
-        Stream      ost    = octx.addStream(ocodec);
+        Stream2      ost    = octx.addStream(ocodec);
         CodecContext enc (ost);
 
         clog << ocodec.name() << " / " << ocodec.longName() << ", audio: " << (ocodec.type()==AVMEDIA_TYPE_AUDIO) << '\n';
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
             }
 #endif
 
-            AudioSamples samples = adec.decodeAudio(pkt, ec);
+            AudioSamples2 samples = adec.decodeAudio(pkt, ec);
             count++;
             //if (count > 200)
             //    break;
@@ -241,7 +241,7 @@ int main(int argc, char **argv)
             // Pop resampler data
             bool getAll = !samples;
             while (true) {
-                AudioSamples ouSamples(enc.sampleFormat(),
+                AudioSamples2 ouSamples(enc.sampleFormat(),
                                         enc.frameSize(),
                                         enc.channelLayout(),
                                         enc.sampleRate());
@@ -301,7 +301,7 @@ int main(int argc, char **argv)
         //
         clog << "Flush encoder:\n";
         while (true) {
-            AudioSamples null(nullptr);
+            AudioSamples2 null(nullptr);
             Packet        opkt = enc.encodeAudio(null, ec);
             if (ec || !opkt)
                 break;

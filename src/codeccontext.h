@@ -18,6 +18,7 @@ extern "C" {
 
 namespace av {
 
+attribute_deprecated2("Use family of the VideoEncoderContext/VideoDecoderContext/AudioEncoderContext/AudioDecoderContext classes")
 class CodecContext : public FFWrapperPtr<AVCodecContext>, public noncopyable
 {
 private:
@@ -259,207 +260,52 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename Clazz, Direction _direction, AVMediaType _type>
-class CodecContext2 : public FFWrapperPtr<AVCodecContext>, public noncopyable
+class CodecContextBase : public FFWrapperPtr<AVCodecContext>, public noncopyable
 {
 protected:
-    void swap(Clazz &other)
-    {
-        using std::swap;
-        swap(m_stream, other.m_stream);
-        swap(m_raw, other.m_raw);
-    }
+    void swap(CodecContextBase &other);
 
-    Clazz& moveOperator(Clazz &&rhs)
-    {
-        if (this == &rhs)
-            return static_cast<Clazz&>(*this);
-        Clazz(std::forward<Clazz>(rhs)).swap(static_cast<Clazz&>(*this));
-        return static_cast<Clazz&>(*this);
-    }
-
-public:
+    //
+    // No directly created
+    //
 
     using BaseWrapper = FFWrapperPtr<AVCodecContext>;
     using BaseWrapper::BaseWrapper;
 
-    CodecContext2()
-    {
-        m_raw = avcodec_alloc_context3(nullptr);
-    }
+    CodecContextBase();
 
     // Stream decoding/encoding
-    explicit CodecContext2(const Stream &st, const Codec& codec = Codec())
-        : m_stream(st)
-    {
-        if (st.direction() != _direction)
-            throw av::Exception(make_avcpp_error(Errors::CodecInvalidDirection));
-
-        m_raw = st.raw()->codec;
-
-        Codec c = codec;
-
-        if (codec.isNull()) {
-            if (st.direction() == Direction::Decoding)
-                c = findDecodingCodec(m_raw->codec_id);
-            else
-                c = findEncodingCodec(m_raw->codec_id);
-        }
-
-        if (!c.isNull())
-            setCodec(c);
-    }
+    CodecContextBase(const Stream &st,
+                     const Codec& codec,
+                     Direction direction,
+                     AVMediaType type);
 
     // Stream independ decoding/encoding
-    explicit CodecContext2(const Codec &codec)
-    {
-        if (checkCodec(codec, throws()))
-            m_raw = avcodec_alloc_context3(codec.raw());
-    }
+    CodecContextBase(const Codec &codec, Direction direction, AVMediaType type);
 
-    ~CodecContext2()
-    {
-        std::error_code ec;
-        close(ec);
-        if (m_stream.isNull())
-            av_freep(&m_raw);
-    }
+    ~CodecContextBase();
+
+    void setCodec(const Codec &codec, bool resetDefaults, Direction direction, AVMediaType type, std::error_code &ec = throws());
+
+    AVMediaType codecType(AVMediaType contextType) const noexcept;
+
+public:
 
     //
-    // Disable copy/Activate move
-    // TBD
-    //
-    CodecContext2(Clazz &&other)
-        : CodecContext2()
-    {
-        swap(other);
-    }
-
-#if 0
-    Clazz& operator=(Clazz &&rhs)
-    {
-        if (this == &rhs)
-            return *this;
-
-        Clazz(std::move(rhs)).swap(*this);
-        return *this;
-    }
-#endif
-    //
-
     // Common
-    void setCodec(const Codec &codec, std::error_code &ec = throws())
-    {
-        setCodec(codec, false, ec);
-    }
+    //
 
-    void setCodec(const Codec &codec, bool resetDefaults, std::error_code &ec = throws())
-    {
-        clear_if(ec);
+    void open(std::error_code &ec = throws());
+    void open(const Codec &codec, std::error_code &ec = throws());
+    void open(Dictionary &options, std::error_code &ec = throws());
+    void open(Dictionary &&options, std::error_code &ec = throws());
+    void open(Dictionary &options, const Codec &codec, std::error_code &ec = throws());
+    void open(Dictionary &&options, const Codec &codec, std::error_code &ec = throws());
 
-        if (!m_raw)
-        {
-            fflog(AV_LOG_WARNING, "Codec context does not allocated\n");
-            throws_if(ec, Errors::Unallocated);
-            return;
-        }
+    void close(std::error_code &ec = throws());
 
-        if (!m_raw || (!m_stream.isValid() && !m_stream.isNull()))
-        {
-            fflog(AV_LOG_WARNING, "Parent stream is not valid. Probably it or FormatContext destroyed\n");
-            throws_if(ec, Errors::CodecStreamInvalid);
-            return;
-        }
-
-        if (codec.isNull())
-        {
-            fflog(AV_LOG_WARNING, "Try to set null codec\n");
-        }
-
-        if (!checkCodec(codec, ec))
-            return;
-
-        if (resetDefaults) {
-            if (!m_raw->codec) {
-                avcodec_free_context(&m_raw);
-                m_raw = avcodec_alloc_context3(codec.raw());
-            } else {
-                avcodec_get_context_defaults3(m_raw, codec.raw());
-            }
-        } else {
-            m_raw->codec_id   = !codec.isNull() ? codec.raw()->id : AV_CODEC_ID_NONE;
-            m_raw->codec_type = _type;
-            m_raw->codec      = codec.raw();
-
-            if (!codec.isNull()) {
-                if (codec.raw()->pix_fmts != 0)
-                    m_raw->pix_fmt = *(codec.raw()->pix_fmts); // assign default value
-                if (codec.raw()->sample_fmts != 0)
-                    m_raw->sample_fmt = *(codec.raw()->sample_fmts);
-            }
-        }
-
-        if (m_stream.isValid()) {
-            m_stream.raw()->codec = m_raw;
-        }
-    }
-
-
-    void open(std::error_code &ec = throws())
-    {
-        open(Codec(), ec);
-    }
-
-    void open(const Codec &codec, std::error_code &ec = throws())
-    {
-        open(codec, nullptr, ec);
-    }
-
-    void open(Dictionary &options, std::error_code &ec = throws())
-    {
-        open(options, Codec(), ec);
-    }
-
-    void open(Dictionary &&options, std::error_code &ec = throws())
-    {
-        open(std::move(options), Codec(), ec);
-    }
-
-    void open(Dictionary &options, const Codec &codec, std::error_code &ec = throws())
-    {
-        auto prt = options.release();
-        open(codec, &prt, ec);
-        options.assign(prt);
-    }
-
-    void open(Dictionary &&options, const Codec &codec, std::error_code &ec = throws())
-    {
-        open(options, codec, ec);
-    }
-
-    void close(std::error_code &ec = throws())
-    {
-        clear_if(ec);
-        if (isOpened())
-        {
-            if (isValid()) {
-                avcodec_close(m_raw);
-            }
-            return;
-        }
-        throws_if(ec, Errors::CodecNotOpened);
-    }
-
-    bool isOpened() const noexcept
-    {
-        return m_raw ? avcodec_is_open(m_raw) : false;
-    }
-
-    bool isValid() const noexcept
-    {
-        // Check parent stream first
-        return ((m_stream.isValid() || m_stream.isNull()) && m_raw && m_raw->codec);
-    }
+    bool isOpened() const noexcept;
+    bool isValid() const noexcept;
 
     /**
      * Copy codec context from codec context associated with given stream or other codec context.
@@ -467,390 +313,72 @@ public:
      * open codecs, only copy context.
      *
      * @param other  stream or codec context
-     * @return true if context copied, false otherwise
      */
     /// @{
-    void copyContextFrom(const Clazz &other, std::error_code &ec = throws())
-    {
-        clear_if(ec);
-        if (!isValid()) {
-            fflog(AV_LOG_ERROR, "Invalid target context\n");
-            throws_if(ec, Errors::CodecInvalid);
-            return;
-        }
-        if (!other.isValid()) {
-            fflog(AV_LOG_ERROR, "Invalid source context\n");
-            throws_if(ec, Errors::CodecInvalid);
-            return;
-        }
-        if (isOpened()) {
-            fflog(AV_LOG_ERROR, "Try to copy context to opened target context\n");
-            throws_if(ec, Errors::CodecAlreadyOpened);
-            return;
-        }
-        if (this == &other) {
-            fflog(AV_LOG_WARNING, "Same context\n");
-            // No error here, simple do nothig
-            return;
-        }
-
-        int stat = avcodec_copy_context(m_raw, other.m_raw);
-        m_raw->codec_tag = 0;
-        if (stat < 0)
-            throws_if(ec, stat, ffmpeg_category());
-    }
+    void copyContextFrom(const CodecContextBase &other, std::error_code &ec = throws());
     /// @}
 
-    Rational timeBase() const noexcept
-    {
-        return RAW_GET2(isValid(), time_base, AVRational());
-    }
+    Rational timeBase() const noexcept;
+    void setTimeBase(const Rational &value) noexcept;
 
-    void setTimeBase(const Rational &value) noexcept
-    {
-        RAW_SET2(isValid() && !isOpened(), time_base, value.getValue());
-    }
+    const Stream& stream() const noexcept;
+    Codec codec() const noexcept;
 
-    const Stream& stream() const noexcept
-    {
-        return m_stream;
-    }
+    void setOption(const std::string &key, const std::string &val, std::error_code &ec = throws());
+    void setOption(const std::string &key, const std::string &val, int flags, std::error_code &ec = throws());
 
-    Codec codec() const noexcept
-    {
-        if (isValid())
-            return Codec(m_raw->codec);
-        else
-            return Codec();
-    }
-
-    AVMediaType codecType() const noexcept
-    {
-        if (isValid())
-        {
-            if (m_raw->codec && (m_raw->codec_type != m_raw->codec->type || m_raw->codec_type != _type))
-                fflog(AV_LOG_ERROR, "Non-consistent AVCodecContext::codec_type and AVCodec::type and/or context type\n");
-
-            return m_raw->codec_type;
-        }
-        return _type;
-    }
-
-    void setOption(const std::string &key, const std::string &val, std::error_code &ec = throws())
-    {
-        setOption(key, val, 0, ec);
-    }
-
-    void setOption(const std::string &key, const std::string &val, int flags, std::error_code &ec = throws())
-    {
-        clear_if(ec);
-        if (isValid())
-        {
-            auto sts = av_opt_set(m_raw->priv_data, key.c_str(), val.c_str(), flags);
-            throws_if(ec, sts, ffmpeg_category());
-        }
-        else
-        {
-            throws_if(ec, Errors::CodecInvalid);
-        }
-    }
-
-    //bool isAudio() const;
-    //bool isVideo() const;
-
-    // Common
-    int frameSize() const noexcept
-    {
-        return RAW_GET2(isValid(), frame_size, 0);
-    }
-
-    int frameNumber() const noexcept
-    {
-        return RAW_GET2(isValid(), frame_number, 0);
-    }
+    int frameSize() const noexcept;
+    int frameNumber() const noexcept;
 
     // Note, set ref counted to enable for multithreaded processing
-    bool isRefCountedFrames() const noexcept
-    {
-        return RAW_GET2(isValid(), refcounted_frames, false);
-    }
+    bool isRefCountedFrames() const noexcept;
+    void setRefCountedFrames(bool refcounted) const noexcept;
 
-    void setRefCountedFrames(bool refcounted) const noexcept
-    {
-        RAW_SET2(isValid() && !isOpened(), refcounted_frames, refcounted);
-    }
+    int strict() const noexcept;
+    void setStrict(int strict) noexcept;
 
-    int strict() const
-    {
-        return RAW_GET2(isValid(), strict_std_compliance, 0);
-    }
-
-    void setStrict(int strict)
-    {
-        if (strict < FF_COMPLIANCE_EXPERIMENTAL)
-            strict = FF_COMPLIANCE_EXPERIMENTAL;
-        else if (strict > FF_COMPLIANCE_VERY_STRICT)
-            strict = FF_COMPLIANCE_VERY_STRICT;
-
-        RAW_SET2(isValid(), strict_std_compliance, strict);
-    }
-
-    int32_t bitRate() const
-    {
-        return RAW_GET2(isValid(), bit_rate, int32_t(0));
-    }
-
-    std::pair<int, int> bitRateRange() const
-    {
-        if (isValid())
-            return std::make_pair(m_raw->rc_min_rate, m_raw->rc_max_rate);
-        else
-            return std::make_pair(0, 0);
-    }
-
-    void setBitRate(int32_t bitRate)
-    {
-        RAW_SET2(isValid(), bit_rate, bitRate);
-    }
-
-    void setBitRateRange(const std::pair<int, int> &bitRateRange)
-    {
-        if (isValid())
-        {
-            m_raw->rc_min_rate = std::get<0>(bitRateRange);
-            m_raw->rc_max_rate = std::get<1>(bitRateRange);
-        }
-    }
+    int32_t bitRate() const noexcept;
+    std::pair<int, int> bitRateRange() const noexcept;
+    void setBitRate(int32_t bitRate) noexcept;
+    void setBitRateRange(const std::pair<int, int> &bitRateRange) noexcept;
 
     // Flags
     /// Access to CODEC_FLAG_* flags
     /// @{
-    void setFlags(int flags)
-    {
-        RAW_SET2(isValid(), flags, flags);
-    }
-
-    void addFlags(int flags)
-    {
-        if (isValid())
-            m_raw->flags |= flags;
-    }
-
-    void clearFlags(int flags)
-    {
-        if (isValid())
-            m_raw->flags &= ~flags;
-    }
-
-    int flags()
-    {
-        return RAW_GET2(isValid(), flags, 0);
-    }
-
-    bool isFlags(int flags)
-    {
-        if (isValid())
-            return (m_raw->flags & flags);
-        return false;
-    }
-
+    void setFlags(int flags) noexcept;
+    void addFlags(int flags) noexcept;
+    void clearFlags(int flags) noexcept;
+    int flags() noexcept;
+    bool isFlags(int flags) noexcept;
     /// @}
 
     // Flags 2
     /// Access to CODEC_FLAG2_* flags
     /// @{
-    void setFlags2(int flags)
-    {
-        RAW_SET2(isValid(), flags2, flags);
-    }
-
-    void addFlags2(int flags)
-    {
-        if (isValid())
-            m_raw->flags2 |= flags;
-    }
-
-    void clearFlags2(int flags)
-    {
-        if (isValid())
-            m_raw->flags2 &= ~flags;
-    }
-
-    int flags2()
-    {
-        return RAW_GET2(isValid(), flags2, 0);
-    }
-
-    bool isFlags2(int flags)
-    {
-        if (isValid())
-            return (m_raw->flags2 & flags);
-        return false;
-    }
+    void setFlags2(int flags) noexcept;
+    void addFlags2(int flags) noexcept;
+    void clearFlags2(int flags) noexcept;
+    int flags2() noexcept;
+    bool isFlags2(int flags) noexcept;
     /// @}
 
-    // Audio
-#if 0
-    int            sampleRate() const;
-    int            channels() const;
-    SampleFormat   sampleFormat() const;
-    uint64_t       channelLayout() const;
-
-    void        setSampleRate(int sampleRate);
-    void        setChannels(int channels);
-    void        setSampleFormat(SampleFormat sampleFormat);
-    void        setChannelLayout(uint64_t layout);
-#endif
-
-    //
-    // Audio
-    //
-    AudioSamples decodeAudio(const Packet &inPacket, std::error_code &ec = throws());
-    AudioSamples decodeAudio(const Packet &inPacket, size_t offset, std::error_code &ec = throws());
-
-    Packet encodeAudio(std::error_code &ec = throws());
-    Packet encodeAudio(const AudioSamples &inSamples, std::error_code &ec = throws());
-
-    bool isValidForEncode() const noexcept
-    {
-        if (!isValid())
-        {
-            fflog(AV_LOG_WARNING,
-                  "Not valid context: codec_context=%p, stream_valid=%d, stream_isnull=%d, codec=%p\n",
-                  m_raw,
-                  m_stream.isValid(),
-                  m_stream.isNull(),
-                  codec().raw());
-            return false;
-        }
-
-        if (!isOpened())
-        {
-            fflog(AV_LOG_WARNING, "You must open coder before encoding\n");
-            return false;
-        }
-
-        if (_direction == Direction::Decoding)
-        {
-            fflog(AV_LOG_WARNING, "Decoding coder does not valid for encoding\n");
-            return false;
-        }
-
-        if (!codec().canEncode())
-        {
-            fflog(AV_LOG_WARNING, "Codec can't be used for Encode\n");
-            return false;
-        }
-
-        return true;
-    }
 
 protected:
-    bool checkCodec(const Codec& codec, std::error_code& ec)
-    {
-        if (_direction == Direction::Encoding && !codec.canEncode())
-        {
-            fflog(AV_LOG_WARNING, "Encoding context, but codec does not support encoding\n");
-            throws_if(ec, Errors::CodecInvalidDirection);
-            return false;
-        }
 
-        if (_direction == Direction::Decoding && !codec.canDecode())
-        {
-            fflog(AV_LOG_WARNING, "Decoding context, but codec does not support decoding\n");
-            throws_if(ec, Errors::CodecInvalidDirection);
-            return false;
-        }
+    bool isValidForEncode(Direction direction, AVMediaType type) const noexcept;
 
-        if (_type != codec.type())
-        {
-            fflog(AV_LOG_ERROR, "Media type mismatch\n");
-            throws_if(ec, Errors::CodecInvalidMediaType);
-            return false;
-        }
+    bool checkCodec(const Codec& codec, Direction direction, AVMediaType type, std::error_code& ec);
 
-        return true;
-    }
+    void open(const Codec &codec, AVDictionary **options, std::error_code &ec);
 
-    void open(const Codec &codec, AVDictionary **options, std::error_code &ec)
-    {
-        clear_if(ec);
-
-        if (isOpened() || !isValid()) {
-            throws_if(ec, isOpened() ? Errors::CodecAlreadyOpened : Errors::CodecInvalid);
-            return;
-        }
-
-        int stat = avcodec_open2(m_raw, codec.isNull() ? m_raw->codec : codec.raw(), options);
-        if (stat < 0)
-            throws_if(ec, stat, ffmpeg_category());
-    }
-
-    std::pair<ssize_t, const std::error_category*>
-    make_error_pair(Errors errc)
-    {
-        return std::make_pair(static_cast<ssize_t>(errc), &avcpp_category());
-    }
-
-    std::pair<ssize_t, const std::error_category*>
-    make_error_pair(ssize_t status)
-    {
-        if (status < 0)
-            return std::make_pair(status, &ffmpeg_category());
-        return std::make_pair(status, nullptr);
-    }
 
     std::pair<ssize_t, const std::error_category*>
     decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished,
-                 int (*decodeProc)(AVCodecContext*, AVFrame*,int *, const AVPacket *))
-    {
-        if (!isValid())
-            return make_error_pair(Errors::CodecInvalid);
-
-        if (!isOpened())
-            return make_error_pair(Errors::CodecNotOpened);
-
-        if (!decodeProc)
-            return make_error_pair(Errors::CodecInvalidDecodeProc);
-
-        if (offset && inPacket.size() && offset >= inPacket.size())
-            return make_error_pair(Errors::CodecDecodingOffsetToLarge);
-
-        frameFinished = 0;
-
-        AVPacket pkt = *inPacket.raw();
-        pkt.data += offset;
-        pkt.size -= offset;
-
-        int decoded = decodeProc(m_raw, outFrame, &frameFinished, &pkt);
-        return make_error_pair(decoded);
-    }
+                 int (*decodeProc)(AVCodecContext*, AVFrame*,int *, const AVPacket *)) noexcept;
 
     std::pair<ssize_t, const std::error_category*>
     encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket,
-                         int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*))
-    {
-        if (!isValid()) {
-            fflog(AV_LOG_ERROR, "Invalid context\n");
-            return make_error_pair(Errors::CodecInvalid);
-        }
-
-        if (!isValidForEncode()) {
-            fflog(AV_LOG_ERROR, "Context can't be used for encoding\n");
-            return make_error_pair(Errors::CodecInvalidForEncode);
-        }
-
-        if (!encodeProc) {
-            fflog(AV_LOG_ERROR, "Encoding proc is null\n");
-            return make_error_pair(Errors::CodecInvalidEncodeProc);
-        }
-
-        int stat = encodeProc(m_raw, outPacket.raw(), inFrame, &gotPacket);
-        if (stat) {
-            fflog(AV_LOG_ERROR, "Encode error: %d, %s\n", stat, error2string(stat).c_str());
-        }
-        return make_error_pair(stat);
-    }
+                         int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*)) noexcept;
 
 public:
     template<typename T>
@@ -922,8 +450,6 @@ public:
             outPacket.setStreamIndex(m_stream.index());
         }
 
-        //clog << "-------- pts: " << outPacket.raw()->pts << ", dts: " << outPacket.raw()->dts << '\n';
-
         // Recalc PTS/DTS/Duration
         if (m_stream.isValid()) {
             outPacket.setTimeBase(m_stream.timeBase());
@@ -934,9 +460,98 @@ public:
         return st;
     }
 
-protected:
-    Stream          m_stream;
+private:
+    Stream m_stream;
 };
+
+
+template<typename Clazz, Direction _direction, AVMediaType _type>
+class CodecContext2 : public CodecContextBase
+{
+protected:
+    Clazz& moveOperator(Clazz &&rhs)
+    {
+        if (this == &rhs)
+            return static_cast<Clazz&>(*this);
+        Clazz(std::forward<Clazz>(rhs)).swap(static_cast<Clazz&>(*this));
+        return static_cast<Clazz&>(*this);
+    }
+
+public:
+
+    CodecContext2()
+        : CodecContextBase()
+    {
+    }
+
+    // Stream decoding/encoding
+    explicit CodecContext2(const Stream &st, const Codec& codec = Codec())
+        : CodecContextBase(st, codec, _direction, _type)
+    {
+    }
+
+    // Stream independ decoding/encoding
+    explicit CodecContext2(const Codec &codec)
+        : CodecContextBase(codec, _direction, _type)
+    {
+        if (checkCodec(codec, throws()))
+            m_raw = avcodec_alloc_context3(codec.raw());
+    }
+
+    //
+    // Disable copy/Activate move
+    //
+    CodecContext2(Clazz &&other)
+        : CodecContext2()
+    {
+        swap(other);
+    }
+    //
+
+
+    void setCodec(const Codec &codec, std::error_code &ec = throws())
+    {
+        setCodec(codec, false, _direction, _type, ec);
+    }
+
+    void setCodec(const Codec &codec, bool resetDefaults, std::error_code &ec = throws())
+    {
+        setCodec(codec, resetDefaults, _direction, _type, ec);
+    }
+
+    AVMediaType codecType() const noexcept
+    {
+        return codecType(_type);
+    }
+};
+
+#if 0
+template<typename Clazz, Direction _direction, AVMediaType _type>
+class CodecContext2 : public FFWrapperPtr<AVCodecContext>, public noncopyable
+{
+    // Audio
+#if 0
+    int            sampleRate() const;
+    int            channels() const;
+    SampleFormat   sampleFormat() const;
+    uint64_t       channelLayout() const;
+
+    void        setSampleRate(int sampleRate);
+    void        setChannels(int channels);
+    void        setSampleFormat(SampleFormat sampleFormat);
+    void        setChannelLayout(uint64_t layout);
+#endif
+
+    //
+    // Audio
+    //
+    AudioSamples decodeAudio(const Packet &inPacket, std::error_code &ec = throws());
+    AudioSamples decodeAudio(const Packet &inPacket, size_t offset, std::error_code &ec = throws());
+
+    Packet encodeAudio(std::error_code &ec = throws());
+    Packet encodeAudio(const AudioSamples &inSamples, std::error_code &ec = throws());
+};
+#endif
 
 
 template<typename Clazz, Direction _direction>
@@ -1052,10 +667,6 @@ public:
 protected:
     using Parent::moveOperator;
     using Parent::m_raw;
-
-//    template<typename T>
-//    using Parent::template decodeCommonImpl<T>;
-
 };
 
 

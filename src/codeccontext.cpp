@@ -1054,6 +1054,500 @@ Packet VideoEncoderContext::encode(const VideoFrame &inFrame, error_code &ec)
     return packet;
 }
 
+void CodecContextBase::swap(CodecContextBase &other)
+{
+    using std::swap;
+    swap(m_stream, other.m_stream);
+    swap(m_raw, other.m_raw);
+}
+
+CodecContextBase::CodecContextBase()
+{
+    m_raw = avcodec_alloc_context3(nullptr);
+}
+
+CodecContextBase::CodecContextBase(const Stream &st, const Codec &codec, Direction direction, AVMediaType type)
+    : m_stream(st)
+{
+    if (st.direction() != direction)
+        throw av::Exception(make_avcpp_error(Errors::CodecInvalidDirection));
+
+    if (st.mediaType() != type)
+        throw av::Exception(make_avcpp_error(Errors::CodecInvalidMediaType));
+
+    m_raw = st.raw()->codec;
+
+    Codec c = codec;
+
+    if (codec.isNull())
+    {
+        if (st.direction() == Direction::Decoding)
+            c = findDecodingCodec(m_raw->codec_id);
+        else
+            c = findEncodingCodec(m_raw->codec_id);
+    }
+
+    if (!c.isNull())
+        setCodec(c, false, direction, type);
+}
+
+CodecContextBase::CodecContextBase(const Codec &codec, Direction direction, AVMediaType type)
+{
+    if (checkCodec(codec, direction, type, throws()))
+        m_raw = avcodec_alloc_context3(codec.raw());
+}
+
+CodecContextBase::~CodecContextBase()
+{
+    std::error_code ec;
+    close(ec);
+    if (m_stream.isNull())
+        av_freep(&m_raw);
+}
+
+void CodecContextBase::setCodec(const Codec &codec, bool resetDefaults, Direction direction, AVMediaType type, error_code &ec)
+{
+    clear_if(ec);
+
+    if (!m_raw)
+    {
+        fflog(AV_LOG_WARNING, "Codec context does not allocated\n");
+        throws_if(ec, Errors::Unallocated);
+        return;
+    }
+
+    if (!m_raw || (!m_stream.isValid() && !m_stream.isNull()))
+    {
+        fflog(AV_LOG_WARNING, "Parent stream is not valid. Probably it or FormatContext destroyed\n");
+        throws_if(ec, Errors::CodecStreamInvalid);
+        return;
+    }
+
+    if (codec.isNull())
+    {
+        fflog(AV_LOG_WARNING, "Try to set null codec\n");
+    }
+
+    if (!checkCodec(codec, direction, type, ec))
+        return;
+
+    if (resetDefaults) {
+        if (!m_raw->codec) {
+            avcodec_free_context(&m_raw);
+            m_raw = avcodec_alloc_context3(codec.raw());
+        } else {
+            avcodec_get_context_defaults3(m_raw, codec.raw());
+        }
+    } else {
+        m_raw->codec_id   = !codec.isNull() ? codec.raw()->id : AV_CODEC_ID_NONE;
+        m_raw->codec_type = type;
+        m_raw->codec      = codec.raw();
+
+        if (!codec.isNull()) {
+            if (codec.raw()->pix_fmts != 0)
+                m_raw->pix_fmt = *(codec.raw()->pix_fmts); // assign default value
+            if (codec.raw()->sample_fmts != 0)
+                m_raw->sample_fmt = *(codec.raw()->sample_fmts);
+        }
+    }
+
+    if (m_stream.isValid()) {
+        m_stream.raw()->codec = m_raw;
+    }
+}
+
+AVMediaType CodecContextBase::codecType(AVMediaType contextType) const noexcept
+{
+    if (isValid())
+    {
+        if (m_raw->codec && (m_raw->codec_type != m_raw->codec->type || m_raw->codec_type != contextType))
+            fflog(AV_LOG_ERROR, "Non-consistent AVCodecContext::codec_type and AVCodec::type and/or context type\n");
+
+        return m_raw->codec_type;
+    }
+    return contextType;
+}
+
+void CodecContextBase::open(error_code &ec)
+{
+    open(Codec(), ec);
+}
+
+void CodecContextBase::open(const Codec &codec, error_code &ec)
+{
+    open(codec, nullptr, ec);
+}
+
+void CodecContextBase::open(Dictionary &&options, error_code &ec)
+{
+    open(std::move(options), Codec(), ec);
+}
+
+void CodecContextBase::open(Dictionary &options, error_code &ec)
+{
+    open(options, Codec(), ec);
+}
+
+void CodecContextBase::open(Dictionary &&options, const Codec &codec, error_code &ec)
+{
+    open(options, codec, ec);
+}
+
+void CodecContextBase::open(Dictionary &options, const Codec &codec, error_code &ec)
+{
+    auto prt = options.release();
+    open(codec, &prt, ec);
+    options.assign(prt);
+}
+
+void CodecContextBase::close(error_code &ec)
+{
+    clear_if(ec);
+    if (isOpened())
+    {
+        if (isValid()) {
+            avcodec_close(m_raw);
+        }
+        return;
+    }
+    throws_if(ec, Errors::CodecNotOpened);
+}
+
+bool CodecContextBase::isOpened() const noexcept
+{
+    return m_raw ? avcodec_is_open(m_raw) : false;
+}
+
+bool CodecContextBase::isValid() const noexcept
+{
+    // Check parent stream first
+    return ((m_stream.isValid() || m_stream.isNull()) && m_raw && m_raw->codec);
+}
+
+void CodecContextBase::copyContextFrom(const CodecContextBase &other, error_code &ec)
+{
+    clear_if(ec);
+    if (!isValid()) {
+        fflog(AV_LOG_ERROR, "Invalid target context\n");
+        throws_if(ec, Errors::CodecInvalid);
+        return;
+    }
+    if (!other.isValid()) {
+        fflog(AV_LOG_ERROR, "Invalid source context\n");
+        throws_if(ec, Errors::CodecInvalid);
+        return;
+    }
+    if (isOpened()) {
+        fflog(AV_LOG_ERROR, "Try to copy context to opened target context\n");
+        throws_if(ec, Errors::CodecAlreadyOpened);
+        return;
+    }
+    // TODO: need to be checked
+    if (m_raw->codec_type != AVMEDIA_TYPE_UNKNOWN &&
+        m_raw->codec_type != other.m_raw->codec_type)
+    {
+        fflog(AV_LOG_ERROR, "Context media types not same");
+        throws_if(ec, Errors::CodecInvalidMediaType);
+        return;
+    }
+    if (this == &other) {
+        fflog(AV_LOG_WARNING, "Same context\n");
+        // No error here, simple do nothig
+        return;
+    }
+
+    int stat = avcodec_copy_context(m_raw, other.m_raw);
+    m_raw->codec_tag = 0;
+    if (stat < 0)
+        throws_if(ec, stat, ffmpeg_category());
+}
+
+Rational CodecContextBase::timeBase() const noexcept
+{
+    return RAW_GET2(isValid(), time_base, AVRational());
+}
+
+void CodecContextBase::setTimeBase(const Rational &value) noexcept
+{
+    RAW_SET2(isValid() && !isOpened(), time_base, value.getValue());
+}
+
+const Stream &CodecContextBase::stream() const noexcept
+{
+    return m_stream;
+}
+
+Codec CodecContextBase::codec() const noexcept
+{
+    if (isValid())
+        return Codec(m_raw->codec);
+    else
+        return Codec();
+}
+
+void CodecContextBase::setOption(const string &key, const string &val, error_code &ec)
+{
+    setOption(key, val, 0, ec);
+}
+
+void CodecContextBase::setOption(const string &key, const string &val, int flags, error_code &ec)
+{
+    clear_if(ec);
+    if (isValid())
+    {
+        auto sts = av_opt_set(m_raw->priv_data, key.c_str(), val.c_str(), flags);
+        throws_if(ec, sts, ffmpeg_category());
+    }
+    else
+    {
+        throws_if(ec, Errors::CodecInvalid);
+    }
+}
+
+int CodecContextBase::frameSize() const noexcept
+{
+    return RAW_GET2(isValid(), frame_size, 0);
+}
+
+int CodecContextBase::frameNumber() const noexcept
+{
+    return RAW_GET2(isValid(), frame_number, 0);
+}
+
+bool CodecContextBase::isRefCountedFrames() const noexcept
+{
+    return RAW_GET2(isValid(), refcounted_frames, false);
+}
+
+void CodecContextBase::setRefCountedFrames(bool refcounted) const noexcept
+{
+    RAW_SET2(isValid() && !isOpened(), refcounted_frames, refcounted);
+}
+
+int CodecContextBase::strict() const noexcept
+{
+    return RAW_GET2(isValid(), strict_std_compliance, 0);
+}
+
+void CodecContextBase::setStrict(int strict) noexcept
+{
+    if (strict < FF_COMPLIANCE_EXPERIMENTAL)
+        strict = FF_COMPLIANCE_EXPERIMENTAL;
+    else if (strict > FF_COMPLIANCE_VERY_STRICT)
+        strict = FF_COMPLIANCE_VERY_STRICT;
+
+    RAW_SET2(isValid(), strict_std_compliance, strict);
+}
+
+int32_t CodecContextBase::bitRate() const noexcept
+{
+    return RAW_GET2(isValid(), bit_rate, int32_t(0));
+}
+
+std::pair<int, int> CodecContextBase::bitRateRange() const noexcept
+{
+    if (isValid())
+        return std::make_pair(m_raw->rc_min_rate, m_raw->rc_max_rate);
+    else
+        return std::make_pair(0, 0);
+}
+
+void CodecContextBase::setBitRate(int32_t bitRate) noexcept
+{
+    RAW_SET2(isValid(), bit_rate, bitRate);
+}
+
+void CodecContextBase::setBitRateRange(const std::pair<int, int> &bitRateRange) noexcept
+{
+    if (isValid())
+    {
+        m_raw->rc_min_rate = std::get<0>(bitRateRange);
+        m_raw->rc_max_rate = std::get<1>(bitRateRange);
+    }
+}
+
+void CodecContextBase::setFlags(int flags) noexcept
+{
+    RAW_SET2(isValid(), flags, flags);
+}
+
+void CodecContextBase::addFlags(int flags) noexcept
+{
+    if (isValid())
+        m_raw->flags |= flags;
+}
+
+void CodecContextBase::clearFlags(int flags) noexcept
+{
+    if (isValid())
+        m_raw->flags &= ~flags;
+}
+
+int CodecContextBase::flags() noexcept
+{
+    return RAW_GET2(isValid(), flags, 0);
+}
+
+bool CodecContextBase::isFlags(int flags) noexcept
+{
+    if (isValid())
+        return (m_raw->flags & flags);
+    return false;
+}
+
+void CodecContextBase::setFlags2(int flags) noexcept
+{
+    RAW_SET2(isValid(), flags2, flags);
+}
+
+void CodecContextBase::addFlags2(int flags) noexcept
+{
+    if (isValid())
+        m_raw->flags2 |= flags;
+}
+
+void CodecContextBase::clearFlags2(int flags) noexcept
+{
+    if (isValid())
+        m_raw->flags2 &= ~flags;
+}
+
+int CodecContextBase::flags2() noexcept
+{
+    return RAW_GET2(isValid(), flags2, 0);
+}
+
+bool CodecContextBase::isFlags2(int flags) noexcept
+{
+    if (isValid())
+        return (m_raw->flags2 & flags);
+    return false;
+}
+
+bool CodecContextBase::isValidForEncode(Direction direction, AVMediaType type) const noexcept
+{
+    if (!isValid())
+    {
+        fflog(AV_LOG_WARNING,
+              "Not valid context: codec_context=%p, stream_valid=%d, stream_isnull=%d, codec=%p\n",
+              m_raw,
+              m_stream.isValid(),
+              m_stream.isNull(),
+              codec().raw());
+        return false;
+    }
+
+    if (!isOpened())
+    {
+        fflog(AV_LOG_WARNING, "You must open coder before encoding\n");
+        return false;
+    }
+
+    if (direction == Direction::Decoding)
+    {
+        fflog(AV_LOG_WARNING, "Decoding coder does not valid for encoding\n");
+        return false;
+    }
+
+    if (!codec().canEncode())
+    {
+        fflog(AV_LOG_WARNING, "Codec can't be used for Encode\n");
+        return false;
+    }
+
+    return true;
+}
+
+bool CodecContextBase::checkCodec(const Codec &codec, Direction direction, AVMediaType type, error_code &ec)
+{
+    if (direction == Direction::Encoding && !codec.canEncode())
+    {
+        fflog(AV_LOG_WARNING, "Encoding context, but codec does not support encoding\n");
+        throws_if(ec, Errors::CodecInvalidDirection);
+        return false;
+    }
+
+    if (direction == Direction::Decoding && !codec.canDecode())
+    {
+        fflog(AV_LOG_WARNING, "Decoding context, but codec does not support decoding\n");
+        throws_if(ec, Errors::CodecInvalidDirection);
+        return false;
+    }
+
+    if (type != codec.type())
+    {
+        fflog(AV_LOG_ERROR, "Media type mismatch\n");
+        throws_if(ec, Errors::CodecInvalidMediaType);
+        return false;
+    }
+
+    return true;
+}
+
+void CodecContextBase::open(const Codec &codec, AVDictionary **options, error_code &ec)
+{
+    clear_if(ec);
+
+    if (isOpened() || !isValid()) {
+        throws_if(ec, isOpened() ? Errors::CodecAlreadyOpened : Errors::CodecInvalid);
+        return;
+    }
+
+    int stat = avcodec_open2(m_raw, codec.isNull() ? m_raw->codec : codec.raw(), options);
+    if (stat < 0)
+        throws_if(ec, stat, ffmpeg_category());
+}
+
+std::pair<ssize_t, const error_category *> CodecContextBase::decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *)) noexcept
+{
+    if (!isValid())
+        return make_error_pair(Errors::CodecInvalid);
+
+    if (!isOpened())
+        return make_error_pair(Errors::CodecNotOpened);
+
+    if (!decodeProc)
+        return make_error_pair(Errors::CodecInvalidDecodeProc);
+
+    if (offset && inPacket.size() && offset >= inPacket.size())
+        return make_error_pair(Errors::CodecDecodingOffsetToLarge);
+
+    frameFinished = 0;
+
+    AVPacket pkt = *inPacket.raw();
+    pkt.data += offset;
+    pkt.size -= offset;
+
+    int decoded = decodeProc(m_raw, outFrame, &frameFinished, &pkt);
+    return make_error_pair(decoded);
+}
+
+std::pair<ssize_t, const error_category *> CodecContextBase::encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket, int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *)) noexcept
+{
+    if (!isValid()) {
+        fflog(AV_LOG_ERROR, "Invalid context\n");
+        return make_error_pair(Errors::CodecInvalid);
+    }
+
+    //        if (!isValidForEncode()) {
+    //            fflog(AV_LOG_ERROR, "Context can't be used for encoding\n");
+    //            return make_error_pair(Errors::CodecInvalidForEncode);
+    //        }
+
+    if (!encodeProc) {
+        fflog(AV_LOG_ERROR, "Encoding proc is null\n");
+        return make_error_pair(Errors::CodecInvalidEncodeProc);
+    }
+
+    int stat = encodeProc(m_raw, outPacket.raw(), inFrame, &gotPacket);
+    if (stat) {
+        fflog(AV_LOG_ERROR, "Encode error: %d, %s\n", stat, error2string(stat).c_str());
+    }
+    return make_error_pair(stat);
+}
+
+
+
 
 #undef warnIfNotAudio
 #undef warnIfNotVideo
