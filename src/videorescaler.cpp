@@ -10,8 +10,8 @@ namespace av
 VideoRescaler::VideoRescaler()
 {}
 
-VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixelFormat,
-                             int srcWidth, int srcHeight, AVPixelFormat srcPixelFormat, int32_t flags)
+VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, PixelFormat dstPixelFormat,
+                             int srcWidth, int srcHeight, PixelFormat srcPixelFormat, int32_t flags)
     : m_dstWidth(dstWidth),
       m_dstHeight(dstHeight),
       m_dstPixelFormat(dstPixelFormat),
@@ -32,7 +32,7 @@ VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixel
     getContext(flags);
 }
 
-VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixelFormat, int32_t flags)
+VideoRescaler::VideoRescaler(int dstWidth, int dstHeight, PixelFormat dstPixelFormat, int32_t flags)
     : VideoRescaler(dstWidth, dstHeight, dstPixelFormat, 0, 0, AV_PIX_FMT_NONE, flags)
 {
 }
@@ -94,7 +94,7 @@ void VideoRescaler::getContext(int32_t flags)
                                  nullptr, nullptr, nullptr);
 }
 
-bool VideoRescaler::validate(int width, int height, AVPixelFormat pixelFormat)
+bool VideoRescaler::validate(int width, int height, PixelFormat pixelFormat)
 {
     if (width > 0 && height > 0 && pixelFormat != AV_PIX_FMT_NONE)
         return true;
@@ -116,7 +116,7 @@ VideoRescaler& VideoRescaler::operator=(VideoRescaler &&rhs)
     return *this;
 }
 
-void VideoRescaler::rescale(VideoFrame2 &dst, const VideoFrame2 &src, error_code &ec)
+void VideoRescaler::rescale(VideoFrame &dst, const VideoFrame &src, error_code &ec)
 {
     m_srcWidth       = src.width();
     m_srcHeight      = src.height();
@@ -173,9 +173,9 @@ void VideoRescaler::rescale(VideoFrame2 &dst, const VideoFrame2 &src, error_code
     dst.setComplete(true);
 }
 
-VideoFrame2 VideoRescaler::rescale(const VideoFrame2 &src, error_code &ec)
+VideoFrame VideoRescaler::rescale(const VideoFrame &src, error_code &ec)
 {
-    VideoFrame2 dst{m_dstPixelFormat, m_dstWidth, m_dstHeight};
+    VideoFrame dst{m_dstPixelFormat, m_dstWidth, m_dstHeight};
     rescale(dst, src, ec);
     return dst;
 }

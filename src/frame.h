@@ -8,6 +8,8 @@
 #include "ffmpeg.h"
 #include "rational.h"
 #include "timestamp.h"
+#include "pixelformat.h"
+#include "sampleformat.h"
 
 extern "C" {
 #include <libavutil/imgutils.h>
@@ -18,7 +20,7 @@ namespace av
 {
 
 template<typename T>
-class Frame2 : public FFWrapperPtr<AVFrame>
+class Frame : public FFWrapperPtr<AVFrame>
 {
 protected:
     T& assignOperator(const T &rhs) {
@@ -36,16 +38,16 @@ protected:
     }
 
 public:
-    Frame2() {
+    Frame() {
         m_raw = av_frame_alloc();
         m_raw->opaque = this;
     }
 
-    ~Frame2() {
+    ~Frame() {
         av_frame_free(&m_raw);
     }
 
-    Frame2(const AVFrame *frame) {
+    Frame(const AVFrame *frame) {
         if (frame) {
             m_raw = av_frame_alloc();
             m_raw->opaque = this;
@@ -54,12 +56,12 @@ public:
     }
 
     // Helper ctors to implement move/copy ctors
-    Frame2(const T& other) : Frame2(other.m_raw) {
+    Frame(const T& other) : Frame(other.m_raw) {
         if (m_raw)
             copyInfoFrom(other);
     }
 
-    Frame2(T&& other) : FFWrapperPtr<AVFrame>(nullptr) {
+    Frame(T&& other) : FFWrapperPtr<AVFrame>(nullptr) {
         if (other.m_raw) {
             m_raw = av_frame_alloc();
             m_raw->opaque = this;
@@ -73,9 +75,9 @@ public:
     }
 
     // You must implement operators in deveritive classes using assignOperator() and moveOperator()
-    void operator=(const Frame2&) = delete;
+    void operator=(const Frame&) = delete;
 
-    void swap(Frame2 &other) {
+    void swap(Frame &other) {
         using std::swap;
 #define FRAME_SWAP(x) swap(x, other.x)
         FRAME_SWAP(m_raw);
@@ -263,22 +265,22 @@ protected:
 };
 
 
-class VideoFrame2 : public Frame2<VideoFrame2>
+class VideoFrame : public Frame<VideoFrame>
 {
 public:
-    using Frame2<VideoFrame2>::Frame2;
+    using Frame<VideoFrame>::Frame;
 
-    VideoFrame2() = default;
-    VideoFrame2(AVPixelFormat pixelFormat, int width, int height, int align = 1);
-    VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height, int align = 1);
+    VideoFrame() = default;
+    VideoFrame(PixelFormat pixelFormat, int width, int height, int align = 1);
+    VideoFrame(const uint8_t *data, size_t size, PixelFormat pixelFormat, int width, int height, int align = 1);
 
-    VideoFrame2(const VideoFrame2 &other);
-    VideoFrame2(VideoFrame2 &&other);
+    VideoFrame(const VideoFrame &other);
+    VideoFrame(VideoFrame &&other);
 
-    VideoFrame2& operator=(const VideoFrame2 &rhs);
-    VideoFrame2& operator=(VideoFrame2 &&rhs);
+    VideoFrame& operator=(const VideoFrame &rhs);
+    VideoFrame& operator=(VideoFrame &&rhs);
 
-    AVPixelFormat          pixelFormat() const;
+    PixelFormat            pixelFormat() const;
     int                    width() const;
     int                    height() const;
 
@@ -292,34 +294,39 @@ public:
     void                   setPictureType(AVPictureType type = AV_PICTURE_TYPE_NONE);
 };
 
+// Be a little back compat
+using VideoFrame2 attribute_deprecated2("Use `VideoFrame` class (drop-in replacement)") = VideoFrame;
 
-class AudioSamples2 : public Frame2<AudioSamples2>
+class AudioSamples : public Frame<AudioSamples>
 {
 public:
-    using Frame2<AudioSamples2>::Frame2;
+    using Frame<AudioSamples>::Frame;
 
-    AudioSamples2() = default;
-    AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
-    AudioSamples2(const uint8_t *data, size_t size,
-                  AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
+    AudioSamples() = default;
+    AudioSamples(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = SampleFormat::AlignDefault);
+    AudioSamples(const uint8_t *data, size_t size,
+                  SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = SampleFormat::AlignDefault);
 
-    AudioSamples2(const AudioSamples2 &other);
-    AudioSamples2(AudioSamples2 &&other);
+    AudioSamples(const AudioSamples &other);
+    AudioSamples(AudioSamples &&other);
 
-    AudioSamples2& operator=(const AudioSamples2 &rhs);
-    AudioSamples2& operator=(AudioSamples2 &&rhs);
+    AudioSamples& operator=(const AudioSamples &rhs);
+    AudioSamples& operator=(AudioSamples &&rhs);
 
-    int            init(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
+    int            init(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = SampleFormat::AlignDefault);
 
-    AVSampleFormat sampleFormat() const;
+    SampleFormat sampleFormat() const;
     int            samplesCount() const;
     int            channelsCount() const;
     int64_t        channelsLayout() const;
     int            sampleRate() const;
-    uint           sampleBitDepth() const;
+    size_t         sampleBitDepth(std::error_code& ec = throws()) const;
 
     std::string    channelsLayoutString() const;
 };
+
+// Be a little back compat
+using AudioSamples2 attribute_deprecated2("Use `AudioSamples` class (drop-in replacement)") = AudioSamples;
 
 
 } // ::av

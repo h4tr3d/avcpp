@@ -19,7 +19,7 @@ CodecContext::CodecContext()
     m_raw = avcodec_alloc_context3(nullptr);
 }
 
-CodecContext::CodecContext(const Stream2 &st, const Codec &codec)
+CodecContext::CodecContext(const Stream &st, const Codec &codec)
     : m_stream(st)
 {
     m_raw = st.raw()->codec;
@@ -27,7 +27,7 @@ CodecContext::CodecContext(const Stream2 &st, const Codec &codec)
     Codec c = codec;
 
     if (codec.isNull()) {
-        if (st.direction() == Direction::DECODING)
+        if (st.direction() == Direction::Decoding)
             c = findDecodingCodec(m_raw->codec_id);
         else
             c = findEncodingCodec(m_raw->codec_id);
@@ -77,10 +77,8 @@ void CodecContext::swap(CodecContext &other)
 {
     using std::swap;
     swap(m_direction, other.m_direction);
-    swap(m_fakePtsTimeBase, other.m_fakePtsTimeBase);
     swap(m_stream, other.m_stream);
     swap(m_raw, other.m_raw);
-    swap(m_isOpened, other.m_isOpened);
 }
 
 void CodecContext::setCodec(const Codec &codec, bool resetDefaults, error_code &ec)
@@ -106,14 +104,14 @@ void CodecContext::setCodec(const Codec &codec, bool resetDefaults, error_code &
         fflog(AV_LOG_WARNING, "Try to set null codec\n");
     }
 
-    if (m_direction == Direction::ENCODING && codec.canEncode() == false)
+    if (m_direction == Direction::Encoding && codec.canEncode() == false)
     {
         fflog(AV_LOG_WARNING, "Encoding context, but codec does not support encoding\n");
         throws_if(ec, Errors::CodecInvalidDirection);
         return;
     }
 
-    if (m_direction == Direction::DECODING && codec.canDecode() == false)
+    if (m_direction == Direction::Decoding && codec.canDecode() == false)
     {
         fflog(AV_LOG_WARNING, "Decoding context, but codec does not support decoding\n");
         throws_if(ec, Errors::CodecInvalidDirection);
@@ -182,30 +180,32 @@ void CodecContext::open(const Codec &codec, AVDictionary **options, error_code &
 {
     clear_if(ec);
 
-    if (m_isOpened || !isValid()) {
-        throws_if(ec, m_isOpened ? Errors::CodecAlreadyOpened : Errors::CodecInvalid);
+    if (isOpened() || !isValid()) {
+        throws_if(ec, isOpened() ? Errors::CodecAlreadyOpened : Errors::CodecInvalid);
         return;
     }
 
     int stat = avcodec_open2(m_raw, codec.isNull() ? m_raw->codec : codec.raw(), options);
     if (stat < 0)
         throws_if(ec, stat, ffmpeg_category());
-    else
-        m_isOpened = true;
 }
 
 void CodecContext::close(error_code &ec)
 {
     clear_if(ec);
-    if (m_isOpened)
+    if (isOpened())
     {
         if (isValid()) {
             avcodec_close(m_raw);
         }
-        m_isOpened = false;
         return;
     }
     throws_if(ec, Errors::CodecNotOpened);
+}
+
+bool CodecContext::isOpened() const noexcept
+{
+    return m_raw ? avcodec_is_open(m_raw) : false;
 }
 
 bool CodecContext::isValid() const noexcept
@@ -254,7 +254,7 @@ void CodecContext::setTimeBase(const Rational &value)
     RAW_SET2(isValid(), time_base, value.getValue());
 }
 
-const Stream2 &CodecContext::stream() const
+const Stream &CodecContext::stream() const
 {
     return m_stream;
 }
@@ -318,14 +318,14 @@ int CodecContext::frameNumber() const
     return RAW_GET2(isValid(), frame_number, 0);
 }
 
-bool CodecContext::isRefCountedFrames() const
+bool CodecContext::isRefCountedFrames() const noexcept
 {
     return RAW_GET2(isValid(), refcounted_frames, false);
 }
 
-void CodecContext::setRefCountedFrames(bool refcounted) const
+void CodecContext::setRefCountedFrames(bool refcounted) const noexcept
 {
-    RAW_SET2(isValid(), refcounted_frames, refcounted);
+    RAW_SET2(isValid() && !isOpened(), refcounted_frames, refcounted);
 }
 
 int CodecContext::width() const
@@ -348,14 +348,14 @@ int CodecContext::codedHeight() const
     return RAW_GET2(isValid(), coded_height, 0);
 }
 
-AVPixelFormat CodecContext::pixelFormat() const
+PixelFormat CodecContext::pixelFormat() const
 {
     return RAW_GET2(isValid(), pix_fmt, AV_PIX_FMT_NONE);
 }
 
 int32_t CodecContext::bitRate() const
 {
-    return RAW_GET2(isValid(), bit_rate, 0);
+    return RAW_GET2(isValid(), bit_rate, int32_t(0));
 }
 
 std::pair<int, int> CodecContext::bitRateRange() const
@@ -394,7 +394,7 @@ int CodecContext::maxBFrames() const
 void CodecContext::setWidth(int w)
 {
     warnIfNotVideo();
-    if (isValid() && !m_isOpened)
+    if (isValid())
     {
         m_raw->width       = w;
         m_raw->coded_width = w;
@@ -404,7 +404,7 @@ void CodecContext::setWidth(int w)
 void CodecContext::setHeight(int h)
 {
     warnIfNotVideo();
-    if (isValid() && !m_isOpened)
+    if (isValid())
     {
         m_raw->height       = h;
         m_raw->coded_height = h;
@@ -414,31 +414,31 @@ void CodecContext::setHeight(int h)
 void CodecContext::setCodedWidth(int w)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !m_isOpened, coded_width, w);
+    RAW_SET2(isValid(), coded_width, w);
 }
 
 void CodecContext::setCodedHeight(int h)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !m_isOpened, coded_height, h);
+    RAW_SET2(isValid(), coded_height, h);
 }
 
-void CodecContext::setPixelFormat(AVPixelFormat pixelFormat)
+void CodecContext::setPixelFormat(PixelFormat pixelFormat)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !m_isOpened, pix_fmt, pixelFormat);
+    RAW_SET2(isValid(), pix_fmt, pixelFormat);
 }
 
 void CodecContext::setBitRate(int32_t bitRate)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !m_isOpened, bit_rate, bitRate);
+    RAW_SET2(isValid(), bit_rate, bitRate);
 }
 
 void CodecContext::setBitRateRange(const std::pair<int, int> &bitRateRange)
 {
     warnIfNotVideo();
-    if (isValid() && !m_isOpened)
+    if (isValid())
     {
         m_raw->rc_min_rate = get<0>(bitRateRange);
         m_raw->rc_max_rate = get<1>(bitRateRange);
@@ -451,19 +451,19 @@ void CodecContext::setGlobalQuality(int32_t quality)
     if (quality < 0 || quality > FF_LAMBDA_MAX)
         quality = FF_LAMBDA_MAX;
 
-    RAW_SET2(isValid() && !m_isOpened, global_quality, quality);
+    RAW_SET2(isValid(), global_quality, quality);
 }
 
 void CodecContext::setGopSize(int32_t size)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !m_isOpened, gop_size, size);
+    RAW_SET2(isValid(), gop_size, size);
 }
 
 void CodecContext::setBitRateTolerance(int bitRateTolerance)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !m_isOpened, bit_rate_tolerance, bitRateTolerance);
+    RAW_SET2(isValid(), bit_rate_tolerance, bitRateTolerance);
 }
 
 void CodecContext::setStrict(int strict)
@@ -474,13 +474,13 @@ void CodecContext::setStrict(int strict)
     else if (strict > FF_COMPLIANCE_VERY_STRICT)
         strict = FF_COMPLIANCE_VERY_STRICT;
 
-    RAW_SET2(isValid() && !m_isOpened, strict_std_compliance, strict);
+    RAW_SET2(isValid(), strict_std_compliance, strict);
 }
 
 void CodecContext::setMaxBFrames(int maxBFrames)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !m_isOpened, max_b_frames, maxBFrames);
+    RAW_SET2(isValid(), max_b_frames, maxBFrames);
 }
 
 int CodecContext::sampleRate() const
@@ -502,7 +502,7 @@ int CodecContext::channels() const
     return 0;
 }
 
-AVSampleFormat CodecContext::sampleFormat() const
+SampleFormat CodecContext::sampleFormat() const
 {
     return RAW_GET2(isValid(), sample_fmt, AV_SAMPLE_FMT_NONE);
 }
@@ -524,7 +524,7 @@ uint64_t CodecContext::channelLayout() const
 void CodecContext::setSampleRate(int sampleRate)
 {
     warnIfNotAudio();
-    if (!isValid() || m_isOpened)
+    if (!isValid())
         return;
     int sr = guessValue(sampleRate, m_raw->codec->supported_samplerates, EqualComparator<int>(0));
     if (sr != sampleRate)
@@ -537,7 +537,7 @@ void CodecContext::setSampleRate(int sampleRate)
 
 void CodecContext::setChannels(int channels)
 {
-    if (!isValid() || channels <= 0 || m_isOpened)
+    if (!isValid() || channels <= 0)
         return;
     m_raw->channels = channels;
     if (m_raw->channel_layout != 0 ||
@@ -546,16 +546,16 @@ void CodecContext::setChannels(int channels)
     }
 }
 
-void CodecContext::setSampleFormat(AVSampleFormat sampleFormat)
+void CodecContext::setSampleFormat(SampleFormat sampleFormat)
 {
     warnIfNotAudio();
-    RAW_SET2(isValid() && !m_isOpened, sample_fmt, sampleFormat);
+    RAW_SET2(isValid(), sample_fmt, sampleFormat);
 }
 
 void CodecContext::setChannelLayout(uint64_t layout)
 {
     warnIfNotAudio();
-    if (!isValid() || m_isOpened || layout == 0)
+    if (!isValid() || layout == 0)
         return;
 
     m_raw->channel_layout = layout;
@@ -570,29 +570,29 @@ void CodecContext::setChannelLayout(uint64_t layout)
 
 void CodecContext::setFlags(int flags)
 {
-    RAW_SET2(isValid() && !m_isOpened, flags, flags);
+    RAW_SET2(isValid(), flags, flags);
 }
 
 void CodecContext::addFlags(int flags)
 {
-    if (isValid() && !m_isOpened)
+    if (isValid())
         m_raw->flags |= flags;
 }
 
 void CodecContext::clearFlags(int flags)
 {
-    if (isValid() && !m_isOpened)
+    if (isValid())
         m_raw->flags &= ~flags;
 }
 
 int CodecContext::flags()
 {
-    return RAW_GET2(isValid() && !m_isOpened, flags, 0);
+    return RAW_GET2(isValid(), flags, 0);
 }
 
 bool CodecContext::isFlags(int flags)
 {
-    if (isValid() && !m_isOpened)
+    if (isValid())
         return (m_raw->flags & flags);
     return false;
 }
@@ -600,53 +600,53 @@ bool CodecContext::isFlags(int flags)
 //
 void CodecContext::setFlags2(int flags)
 {
-    RAW_SET2(isValid() && !m_isOpened, flags2, flags);
+    RAW_SET2(isValid(), flags2, flags);
 }
 
 void CodecContext::addFlags2(int flags)
 {
-    if (isValid() && !m_isOpened)
+    if (isValid())
         m_raw->flags2 |= flags;
 }
 
 void CodecContext::clearFlags2(int flags)
 {
-    if (isValid() && !m_isOpened)
+    if (isValid())
         m_raw->flags2 &= ~flags;
 }
 
 int CodecContext::flags2()
 {
-    return RAW_GET2(isValid() && !m_isOpened, flags2, 0);
+    return RAW_GET2(isValid(), flags2, 0);
 }
 
 bool CodecContext::isFlags2(int flags)
 {
-    if (isValid() && !m_isOpened)
+    if (isValid())
         return (m_raw->flags2 & flags);
     return false;
 }
 
-VideoFrame2 CodecContext::decodeVideo(const Packet &packet, error_code &ec, bool autoAllocateFrame)
+VideoFrame CodecContext::decodeVideo(const Packet &packet, error_code &ec, bool autoAllocateFrame)
 {
     return decodeVideo(ec, packet, 0, nullptr, autoAllocateFrame);
 }
 
-VideoFrame2 CodecContext::decodeVideo(const Packet &packet, size_t offset, size_t &decodedBytes, error_code &ec, bool autoAllocateFrame)
+VideoFrame CodecContext::decodeVideo(const Packet &packet, size_t offset, size_t &decodedBytes, error_code &ec, bool autoAllocateFrame)
 {
     return decodeVideo(ec, packet, offset, &decodedBytes, autoAllocateFrame);
 }
 
 Packet CodecContext::encodeVideo(error_code &ec)
 {
-    return encodeVideo(VideoFrame2(nullptr), ec);
+    return encodeVideo(VideoFrame(nullptr), ec);
 }
 
-VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
+VideoFrame CodecContext::decodeVideo(error_code &ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
 {
     clear_if(ec);
 
-    VideoFrame2 outFrame;
+    VideoFrame outFrame;
     if (!autoAllocateFrame)
     {
         outFrame = {pixelFormat(), width(), height(), 32};
@@ -654,7 +654,7 @@ VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size
         if (!outFrame.isValid())
         {
             throws_if(ec, Errors::FrameInvalid);
-            return VideoFrame2();
+            return VideoFrame();
         }
     }
 
@@ -663,11 +663,11 @@ VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size
 
     if (get<1>(st)) {
         throws_if(ec, get<0>(st), *get<1>(st));
-        return VideoFrame2();
+        return VideoFrame();
     }
 
     if (!gotFrame)
-        return VideoFrame2();
+        return VideoFrame();
 
     outFrame.setPictureType(AV_PICTURE_TYPE_I);
 
@@ -678,7 +678,7 @@ VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size
 }
 
 
-Packet CodecContext::encodeVideo(const VideoFrame2 &inFrame, error_code &ec)
+Packet CodecContext::encodeVideo(const VideoFrame &inFrame, error_code &ec)
 {
     clear_if(ec);
 
@@ -701,28 +701,26 @@ Packet CodecContext::encodeVideo(const VideoFrame2 &inFrame, error_code &ec)
 #endif
 
     packet.setComplete(true);
-
     return packet;
-
 }
 
-AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, error_code &ec)
+AudioSamples CodecContext::decodeAudio(const Packet &inPacket, error_code &ec)
 {
     return decodeAudio(inPacket, 0, ec);
 }
 
-AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, size_t offset, error_code &ec)
+AudioSamples CodecContext::decodeAudio(const Packet &inPacket, size_t offset, error_code &ec)
 {
     clear_if(ec);
 
-    AudioSamples2 outSamples;
+    AudioSamples outSamples;
 
     int gotFrame = 0;
     auto st = decodeCommon(outSamples, inPacket, offset, gotFrame, avcodec_decode_audio4);
     if (get<1>(st))
     {
         throws_if(ec, get<0>(st), *get<1>(st));
-        return AudioSamples2();
+        return AudioSamples();
     }
 
     if (!gotFrame)
@@ -740,10 +738,10 @@ AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, size_t offset, e
 
 Packet CodecContext::encodeAudio(error_code &ec)
 {
-    return encodeAudio(AudioSamples2(nullptr), ec);
+    return encodeAudio(AudioSamples(nullptr), ec);
 }
 
-Packet CodecContext::encodeAudio(const AudioSamples2 &inSamples, error_code &ec)
+Packet CodecContext::encodeAudio(const AudioSamples &inSamples, error_code &ec)
 {
     clear_if(ec);
 
@@ -779,13 +777,13 @@ bool CodecContext::isValidForEncode()
         return false;
     }
 
-    if (!m_isOpened)
+    if (!isOpened())
     {
         fflog(AV_LOG_WARNING, "You must open coder before encoding\n");
         return false;
     }
 
-    if (m_direction == Direction::DECODING)
+    if (m_direction == Direction::Decoding)
     {
         fflog(AV_LOG_WARNING, "Decoding coder does not valid for encoding\n");
         return false;
@@ -898,46 +896,31 @@ std::pair<ssize_t, const error_category *> CodecContext::decodeCommon(T &outFram
     if (!frameFinished)
         return make_pair(0u, nullptr);
 
-    outFrame.setTimeBase(timeBase());
-    outFrame.setStreamIndex(inPacket.streamIndex());
+    // Dial with PTS/DTS in packet/stream timebase
 
-#if 0
+    if (inPacket.timeBase() != Rational())
+        outFrame.setTimeBase(inPacket.timeBase());
+    else
+        outFrame.setTimeBase(m_stream.timeBase());
+
     AVFrame *frame = outFrame.raw();
 
-    auto packetTs = Timestamp(frame->pkt_pts, inPacket.timeBase());
-    if (packetTs.isNoPts())
-        packetTs = inPacket.dts();
+    if (frame->pts == AV_NOPTS_VALUE)
+        frame->pts = av_frame_get_best_effort_timestamp(frame);
 
-    if (packetTs.isValid())
-    {
-        auto nextPts = packetTs;
+    if (frame->pts == AV_NOPTS_VALUE)
+        frame->pts = frame->pkt_pts;
 
-        if (nextPts < m_fakeNextPts && inPacket.pts().isValid())
-        {
-            nextPts = inPacket.pts();
-        }
+    if (frame->pts == AV_NOPTS_VALUE)
+        frame->pts = frame->pkt_dts;
 
-        m_fakeNextPts = nextPts;
-    }
+    // Convert to decoder/frame time base. Seems not nessesary.
+    outFrame.setTimeBase(timeBase());
 
-    m_fakeCurrPts = m_fakeNextPts;
-    double frameDelay = inPacket.timeBase().getDouble();
-    frameDelay += outFrame.raw()->repeat_pict * (frameDelay * 0.5);
-
-    m_fakeNextPts += Timestamp(frameDelay, m_fakeNextPts.timebase());
-
-    if (m_fakeCurrPts.isValid())
-        //outFrame.setPts(inPacket.timeBase().rescale(m_fakeCurrPts, outFrame.timeBase()));
-        outFrame.setPts(m_fakeCurrPts);
-#endif
-
-    if (outFrame.pts().isNoPts()) {
-        outFrame.setPts(inPacket.pts());
-    }
-
-    if (outFrame.pts().isNoPts()) {
-        outFrame.setPts(inPacket.dts());
-    }
+    if (inPacket)
+        outFrame.setStreamIndex(inPacket.streamIndex());
+    else
+        outFrame.setStreamIndex(m_stream.index());
 
     outFrame.setComplete(true);
 
@@ -953,34 +936,122 @@ std::pair<ssize_t, const error_category *> CodecContext::encodeCommon(Packet & o
     if (!gotPacket)
         return make_pair(0u, nullptr);
 
-    if (m_stream.isValid()) {
-        outPacket.setTimeBase(m_stream.timeBase());
-        outPacket.setStreamIndex(m_stream.index());
-    } else {
+    if (inFrame && inFrame.timeBase() != Rational()) {
         outPacket.setTimeBase(inFrame.timeBase());
         outPacket.setStreamIndex(inFrame.streamIndex());
+    } else if (m_stream.isValid()) {
+        if (m_stream.raw()->codec) {
+            outPacket.setTimeBase(m_stream.raw()->codec->time_base);
+        }
+        outPacket.setStreamIndex(m_stream.index());
     }
 
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(56, 60, 100)
-    if (m_raw->coded_frame) {
-        if (m_raw->coded_frame->pts != AV_NOPTS_VALUE)
-            outPacket.setPts(m_raw->coded_frame->pts, timeBase());
-    } else {
-        if (outPacket.pts().isNoPts())
-            outPacket.setPts(inFrame.pts(), inFrame.timeBase());
-    }
-#endif
+    //clog << "-------- pts: " << outPacket.raw()->pts << ", dts: " << outPacket.raw()->dts << '\n';
 
-    if (outPacket.dts().isValid() && outPacket.pts().isNoPts()) {
-        outPacket.setPts(outPacket.dts());
+    // Recalc PTS/DTS/Duration
+    if (m_stream.isValid()) {
+        outPacket.setTimeBase(m_stream.timeBase());
     }
-
-    if (outPacket.dts().isNoPts())
-        outPacket.setDts(outPacket.pts());
 
     outPacket.setComplete(true);
 
     return st;
+}
+
+VideoDecoderContext::VideoDecoderContext(VideoDecoderContext &&other)
+    : Parent(std::move(other))
+{
+}
+
+VideoDecoderContext &VideoDecoderContext::operator=(VideoDecoderContext&& other)
+{
+    return moveOperator(std::move(other));
+}
+
+VideoFrame VideoDecoderContext::decode(const Packet &packet, error_code &ec, bool autoAllocateFrame)
+{
+    return decodeVideo(ec, packet, 0, nullptr, autoAllocateFrame);
+}
+
+VideoFrame VideoDecoderContext::decode(const Packet &packet, size_t offset, size_t &decodedBytes, error_code &ec, bool autoAllocateFrame)
+{
+    return decodeVideo(ec, packet, offset, &decodedBytes, autoAllocateFrame);
+}
+
+VideoFrame VideoDecoderContext::decodeVideo(error_code &ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
+{
+    clear_if(ec);
+
+    VideoFrame outFrame;
+    if (!autoAllocateFrame)
+    {
+        outFrame = {pixelFormat(), width(), height(), 32};
+
+        if (!outFrame.isValid())
+        {
+            throws_if(ec, Errors::FrameInvalid);
+            return VideoFrame();
+        }
+    }
+
+    int gotFrame = 0;
+    auto st = decodeCommon(outFrame, packet, offset, gotFrame, avcodec_decode_video2);
+
+    if (get<1>(st)) {
+        throws_if(ec, get<0>(st), *get<1>(st));
+        return VideoFrame();
+    }
+
+    if (!gotFrame)
+        return VideoFrame();
+
+    outFrame.setPictureType(AV_PICTURE_TYPE_I);
+
+    if (decodedBytes)
+        *decodedBytes = get<0>(st);
+
+    return outFrame;
+}
+
+VideoEncoderContext::VideoEncoderContext(VideoEncoderContext &&other)
+    : Parent(std::move(other))
+{
+}
+
+VideoEncoderContext &VideoEncoderContext::operator=(VideoEncoderContext&& other)
+{
+    return moveOperator(std::move(other));
+}
+
+Packet VideoEncoderContext::encode(error_code &ec)
+{
+    return encode(VideoFrame(nullptr), ec);
+}
+
+Packet VideoEncoderContext::encode(const VideoFrame &inFrame, error_code &ec)
+{
+    clear_if(ec);
+
+    int gotPacket = 0;
+    Packet packet;
+    auto st = encodeCommon(packet, inFrame, gotPacket, avcodec_encode_video2);
+
+    if (get<1>(st)) {
+        throws_if(ec, get<0>(st), *get<1>(st));
+        return Packet();
+    }
+
+    if (!gotPacket) {
+        packet.setComplete(false);
+        return packet;
+    }
+
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(56, 60, 100)
+    packet.setKeyPacket(!!m_raw->coded_frame->key_frame);
+#endif
+
+    packet.setComplete(true);
+    return packet;
 }
 
 

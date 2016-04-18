@@ -25,6 +25,7 @@ enum class Errors
     CodecDecodingOffsetToLarge,
     CodecInvalidForEncode,
     CodecInvalidForDecoce,
+    CodecInvalidMediaType,
     FrameInvalid,
     DictOutOfRage,
     DictNoKey,

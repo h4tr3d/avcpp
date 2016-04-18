@@ -7,6 +7,7 @@
 #include "frame.h"
 #include "dictionary.h"
 #include "avutils.h"
+#include "sampleformat.h"
 #include "averror.h"
 
 namespace av {
@@ -16,17 +17,17 @@ class AudioResampler : public FFWrapperPtr<SwrContext>, public noncopyable
 public:
     AudioResampler();
 
-    AudioResampler(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                   int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+    AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                   int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    std::error_code &ec = throws());
 
-    AudioResampler(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                   int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+    AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                   int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    Dictionary &options,
                    std::error_code &ec = throws());
 
-    AudioResampler(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                   int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+    AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                   int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    Dictionary &&options,
                    std::error_code &ec = throws());
 
@@ -40,12 +41,12 @@ public:
     int64_t        dstChannelLayout() const;
     int            dstChannels()      const;
     int            dstSampleRate()    const;
-    AVSampleFormat dstSampleFormat()  const;
+    SampleFormat   dstSampleFormat()  const;
 
     int64_t        srcChannelLayout() const;
     int            srcChannels()      const;
     int            srcSampleRate()    const;
-    AVSampleFormat srcSampleFormat()  const;
+    SampleFormat   srcSampleFormat()  const;
 
     /**
      * @brief Push frame to the rescaler context.
@@ -54,7 +55,7 @@ public:
      * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
      *                       av#throws the function will throw on error instead
      */
-    void push(const AudioSamples2 &src, std::error_code &ec = throws());
+    void push(const AudioSamples &src, std::error_code &ec = throws());
 
     /**
      * @brief Pop frame from the rescaler context.
@@ -70,7 +71,7 @@ public:
      *                       av#throws the function will throw on error instead
      * @return false if no samples avail, true otherwise. On error false.
      */
-    bool pop(AudioSamples2 &dst, bool getall, std::error_code &ec = throws());
+    bool pop(AudioSamples &dst, bool getall, std::error_code &ec = throws());
 
     /**
      * @brief Pop frame from the rescaler context.
@@ -85,43 +86,43 @@ public:
      *                              av#throws the function will throw on error instead
      * @return resampled samples or null-frame when no requested samples avail. On error null-frame.
      */
-    AudioSamples2 pop(size_t samplesCount, std::error_code &ec = throws());
+    AudioSamples pop(size_t samplesCount, std::error_code &ec = throws());
 
     bool isValid() const;
     operator bool() const { return isValid(); }
 
     int64_t delay() const;
 
-    bool init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-              int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+    bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+              int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               std::error_code &ec = throws());
 
-    bool init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-              int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+    bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+              int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               Dictionary &options,
               std::error_code &ec = throws());
 
-    bool init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-              int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+    bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+              int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               Dictionary &&options,
               std::error_code &ec = throws());
 
     static
-    bool validate(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat);
+    bool validate(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat);
 
 private:
-    bool init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-              int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+    bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+              int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               AVDictionary **dict, std::error_code &ec);
 
 private:
     // Cached values to avoid access to the av_opt
     int64_t        m_dstChannelsLayout;
     int            m_dstRate;
-    AVSampleFormat m_dstFormat;
+    SampleFormat   m_dstFormat;
     int64_t        m_srcChannelsLayout;
     int            m_srcRate;
-    AVSampleFormat m_srcFormat;
+    SampleFormat   m_srcFormat;
 
     int            m_streamIndex = -1;
     Timestamp      m_prevPts;

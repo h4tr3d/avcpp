@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     FormatContext ictx;
     ssize_t      videoStream = -1;
     CodecContext vdec;
-    Stream2      vst;
+    Stream      vst;
 
     int count = 0;
 
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     octx.setFormat(ofrmt);
 
     Codec        ocodec  = findEncodingCodec(ofrmt);
-    Stream2      ost     = octx.addStream(ocodec);
+    Stream      ost     = octx.addStream(ocodec);
     CodecContext encoder {ost};
 
     // Settings
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
         clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts().seconds() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
 
         // SCALE
-        //VideoFrame2 outFrame {encoder.pixelFormat(), encoder.width(), encoder.height()};
+        //VideoFrame outFrame {encoder.pixelFormat(), encoder.width(), encoder.height()};
         //rescaler.rescale(outFrame, inpFrame, ec);
         auto outFrame = rescaler.rescale(inpFrame, ec);
         if (ec) {

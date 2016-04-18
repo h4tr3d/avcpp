@@ -11,16 +11,16 @@ AudioResampler::AudioResampler()
 {
 }
 
-AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                               int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                               int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                                error_code &ec)
     : AudioResampler()
 {
     init(dstChannelsLayout, dstRate, dstFormat, srcChannelsLayout, srcRate, srcFormat, ec);
 }
 
-AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                               int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                               int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                                Dictionary &options,
                                error_code &ec)
     : AudioResampler()
@@ -28,8 +28,8 @@ AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, AVSampleF
     init(dstChannelsLayout, dstRate, dstFormat, srcChannelsLayout, srcRate, srcFormat, options, ec);
 }
 
-AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                               int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                               int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                                Dictionary &&options,
                                error_code &ec)
     : AudioResampler()
@@ -92,7 +92,7 @@ int AudioResampler::dstSampleRate() const
     return m_dstRate;
 }
 
-AVSampleFormat AudioResampler::dstSampleFormat() const
+SampleFormat AudioResampler::dstSampleFormat() const
 {
     return m_dstFormat;
 }
@@ -112,12 +112,12 @@ int AudioResampler::srcSampleRate() const
     return m_srcRate;
 }
 
-AVSampleFormat AudioResampler::srcSampleFormat() const
+SampleFormat AudioResampler::srcSampleFormat() const
 {
     return m_srcFormat;
 }
 
-bool AudioResampler::pop(AudioSamples2 &dst, bool getall, error_code &ec)
+bool AudioResampler::pop(AudioSamples &dst, bool getall, error_code &ec)
 {
     clear_if(ec);
 
@@ -170,7 +170,7 @@ bool AudioResampler::pop(AudioSamples2 &dst, bool getall, error_code &ec)
     return dst.samplesCount() ? true : false;
 }
 
-AudioSamples2 AudioResampler::pop(size_t samplesCount, error_code &ec)
+AudioSamples AudioResampler::pop(size_t samplesCount, error_code &ec)
 {
     clear_if(ec);
 
@@ -178,7 +178,7 @@ AudioSamples2 AudioResampler::pop(size_t samplesCount, error_code &ec)
     {
         fflog(AV_LOG_ERROR, "SwrContext does not inited\n");
         throws_if(ec, Errors::ResamplerNotInited);
-        return AudioSamples2(nullptr);
+        return AudioSamples(nullptr);
     }
 
     auto delay = swr_get_delay(m_raw, m_dstRate);
@@ -186,24 +186,24 @@ AudioSamples2 AudioResampler::pop(size_t samplesCount, error_code &ec)
     // Need more data
     if ((size_t)delay < samplesCount && samplesCount)
     {
-        return AudioSamples2(nullptr);
+        return AudioSamples(nullptr);
     }
 
     if (!samplesCount)
         samplesCount = delay; // Request all samples
 
-    AudioSamples2 dst(dstSampleFormat(), samplesCount, dstChannelLayout(), dstSampleRate());
+    AudioSamples dst(dstSampleFormat(), samplesCount, dstChannelLayout(), dstSampleRate());
     if (!dst.isValid())
     {
         throws_if(ec, Errors::CantAllocateFrame);
-        return AudioSamples2(nullptr);
+        return AudioSamples(nullptr);
     }
 
     auto sts = swr_convert_frame(m_raw, dst.raw(), nullptr);
     if (sts < 0)
     {
         throws_if(ec, sts, ffmpeg_category());
-        return AudioSamples2(nullptr);
+        return AudioSamples(nullptr);
     }
 
     dst.setTimeBase(Rational(1, m_dstRate));
@@ -217,10 +217,10 @@ AudioSamples2 AudioResampler::pop(size_t samplesCount, error_code &ec)
     dst.setPts(m_nextPts);
     m_nextPts = dst.pts() + Timestamp(dst.samplesCount(), dst.timeBase());
 
-    return dst.samplesCount() ? std::move(dst) : AudioSamples2::null();
+    return dst.samplesCount() ? std::move(dst) : AudioSamples::null();
 }
 
-void AudioResampler::push(const AudioSamples2 &src, error_code &ec)
+void AudioResampler::push(const AudioSamples &src, error_code &ec)
 {
     if (!m_raw)
     {
@@ -275,8 +275,8 @@ int64_t AudioResampler::delay() const
     return -1;
 }
 
-bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                          int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                          int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                           error_code &ec)
 {
     return init(dstChannelsLayout, dstRate, dstFormat,
@@ -284,8 +284,8 @@ bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat
                 nullptr, ec);
 }
 
-bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                          int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                          int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                           Dictionary &options, error_code &ec)
 {
     auto ptr = options.release();
@@ -298,8 +298,8 @@ bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat
                 &ptr, ec);
 }
 
-bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                          int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                          int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                           Dictionary &&options, error_code &ec)
 {
     return init(dstChannelsLayout, dstRate, dstFormat,
@@ -307,7 +307,7 @@ bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat
                 options, ec);
 }
 
-bool AudioResampler::validate(int64_t channelsLayout, int rate, AVSampleFormat format)
+bool AudioResampler::validate(int64_t channelsLayout, int rate, SampleFormat format)
 {
     if (channelsLayout <= 0)
         return false;
@@ -321,8 +321,8 @@ bool AudioResampler::validate(int64_t channelsLayout, int rate, AVSampleFormat f
     return true;
 }
 
-bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, AVSampleFormat dstFormat,
-                          int64_t srcChannelsLayout, int srcRate, AVSampleFormat srcFormat,
+bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                          int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                           AVDictionary **dict, error_code &ec)
 {
     clear_if(ec);

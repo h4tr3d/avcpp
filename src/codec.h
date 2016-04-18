@@ -8,6 +8,8 @@
 #include "ffmpeg.h"
 #include "rational.h"
 #include "format.h"
+#include "pixelformat.h"
+#include "sampleformat.h"
 
 namespace av {
 
@@ -23,9 +25,9 @@ public:
     AVMediaType type() const;
 
     std::deque<Rational>       supportedFramerates()    const;
-    std::deque<AVPixelFormat>  supportedPixelFormats()  const;
+    std::deque<PixelFormat>    supportedPixelFormats()  const;
     std::deque<int>            supportedSamplerates()   const;
-    std::deque<AVSampleFormat> supportedSampleFormats() const;
+    std::deque<SampleFormat>   supportedSampleFormats() const;
     std::deque<uint64_t>       supportedChannelLayouts() const;
 
     AVCodecID id() const;

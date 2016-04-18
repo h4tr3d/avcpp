@@ -173,41 +173,41 @@ size_t FormatContext::streamsCount() const
     return RAW_GET(nb_streams, 0);
 }
 
-Stream2 FormatContext::stream(size_t idx)
+Stream FormatContext::stream(size_t idx)
 {
     if (!m_raw || idx >= m_raw->nb_streams)
-        return Stream2(m_monitor);
+        return Stream(m_monitor);
 
-    return Stream2(m_monitor, m_raw->streams[idx], isOutput() ? Direction::ENCODING : Direction::DECODING);
+    return Stream(m_monitor, m_raw->streams[idx], isOutput() ? Direction::Encoding : Direction::Decoding);
 }
 
-Stream2 FormatContext::stream(size_t idx, error_code &ec)
+Stream FormatContext::stream(size_t idx, error_code &ec)
 {
     if (!m_raw) {
         throws_if(ec, Errors::Unallocated);
-        return Stream2(m_monitor);
+        return Stream(m_monitor);
     }
 
     if (idx >= m_raw->nb_streams) {
         throws_if(ec, Errors::FormatInvalidStreamIndex);
-        return Stream2(m_monitor);
+        return Stream(m_monitor);
     }
 
     return stream(idx);
 }
 
-Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
+Stream FormatContext::addStream(const Codec &codec, error_code &ec)
 {
     clear_if(ec);
     if (!m_raw)
     {
         throws_if(ec, Errors::Unallocated);
-        return Stream2();
+        return Stream();
     }
 
     if (!outputFormat().codecSupported(codec)) {
         throws_if(ec, Errors::FormatCodecUnsupported);
-        return Stream2();
+        return Stream();
     }
 
     auto rawcodec = codec.raw();
@@ -217,10 +217,10 @@ Stream2 FormatContext::addStream(const Codec &codec, error_code &ec)
     if (!st)
     {
         throws_if(ec, Errors::FormatCantAddStream);
-        return Stream2();
+        return Stream();
     }
 
-    auto stream = Stream2(m_monitor, st, Direction::ENCODING);
+    auto stream = Stream(m_monitor, st, Direction::Encoding);
 
     if (st->codec) {
         if (outputFormat().isFlags(AVFMT_GLOBALHEADER)) {
@@ -726,22 +726,22 @@ bool FormatContext::checkUncodedFrameWriting(size_t streamIndex) noexcept
     return checkUncodedFrameWriting(streamIndex, ec);
 }
 
-void FormatContext::writeUncodedFrame(VideoFrame2 &frame, size_t streamIndex, error_code &ec)
+void FormatContext::writeUncodedFrame(VideoFrame &frame, size_t streamIndex, error_code &ec)
 {
     writeFrame(frame.raw(), streamIndex, ec, av_interleaved_write_uncoded_frame);
 }
 
-void FormatContext::writeUncodedFrameDirect(VideoFrame2 &frame, size_t streamIndex, error_code &ec)
+void FormatContext::writeUncodedFrameDirect(VideoFrame &frame, size_t streamIndex, error_code &ec)
 {
     writeFrame(frame.raw(), streamIndex, ec, av_write_uncoded_frame);
 }
 
-void FormatContext::writeUncodedFrame(AudioSamples2 &frame, size_t streamIndex, error_code &ec)
+void FormatContext::writeUncodedFrame(AudioSamples &frame, size_t streamIndex, error_code &ec)
 {
     writeFrame(frame.raw(), streamIndex, ec, av_interleaved_write_uncoded_frame);
 }
 
-void FormatContext::writeUncodedFrameDirect(AudioSamples2 &frame, size_t streamIndex, error_code &ec)
+void FormatContext::writeUncodedFrameDirect(AudioSamples &frame, size_t streamIndex, error_code &ec)
 {
     writeFrame(frame.raw(), streamIndex, ec, av_write_uncoded_frame);
 }

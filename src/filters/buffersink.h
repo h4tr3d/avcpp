@@ -29,12 +29,12 @@ public:
     BufferSinkFilterContext& operator=(const FilterContext &ctx);
 
 
-    bool getVideoFrame(VideoFrame2 &frame, int flags, std::error_code &ec = throws());
-    bool getVideoFrame(VideoFrame2 &frame, std::error_code &ec = throws());
+    bool getVideoFrame(VideoFrame &frame, int flags, std::error_code &ec = throws());
+    bool getVideoFrame(VideoFrame &frame, std::error_code &ec = throws());
 
-    bool getAudioFrame(AudioSamples2 &samples, int flags, std::error_code &ec = throws());
-    bool getAudioFrame(AudioSamples2 &samples, std::error_code &ec = throws());
-    bool getAudioSamples(AudioSamples2 &samples, size_t samplesCount, std::error_code &ec = throws());
+    bool getAudioFrame(AudioSamples &samples, int flags, std::error_code &ec = throws());
+    bool getAudioFrame(AudioSamples &samples, std::error_code &ec = throws());
+    bool getAudioSamples(AudioSamples &samples, size_t samplesCount, std::error_code &ec = throws());
 
     void     setFrameSize(unsigned size, std::error_code &ec = throws());
     Rational frameRate(std::error_code &ec = throws());

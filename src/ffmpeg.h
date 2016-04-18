@@ -1,6 +1,8 @@
 #ifndef FFMPEG_H
 #define FFMPEG_H
 
+#include <iostream>
+
 extern "C"
 {
 #include <libavutil/avutil.h>
@@ -129,6 +131,49 @@ protected:
     T m_raw = T();
 };
 
+
+template<typename WrapperClass, typename T, T NoneValue = static_cast<T>(-1)>
+struct PixSampleFmtWrapper
+{
+    PixSampleFmtWrapper(T fmt = NoneValue) noexcept : m_fmt(fmt) {}
+
+    // Access to  the stored value
+    operator T() const noexcept
+    {
+        return m_fmt;
+    }
+
+    T get() const noexcept
+    {
+        return m_fmt;
+    }
+
+    operator T&() noexcept
+    {
+        return m_fmt;
+    }
+
+    WrapperClass& operator=(T fmt) noexcept
+    {
+        m_fmt = fmt;
+        return *this;
+    }
+
+    void set(T fmt) noexcept
+    {
+        m_fmt = fmt;
+    }
+
+    // IO Stream interface
+    friend std::ostream& operator<<(std::ostream& ost, WrapperClass fmt)
+    {
+        ost << fmt.name();
+        return ost;
+    }
+
+protected:
+    T m_fmt = NoneValue;
+};
 
 // Extended attributes
 #if AV_GCC_VERSION_AT_LEAST(3,1)

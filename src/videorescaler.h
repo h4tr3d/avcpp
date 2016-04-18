@@ -7,6 +7,7 @@
 #include "ffmpeg.h"
 #include "frame.h"
 #include "avutils.h"
+#include "pixelformat.h"
 #include <averror.h>
 
 namespace av
@@ -39,11 +40,11 @@ class VideoRescaler : public FFWrapperPtr<SwsContext>, public noncopyable
 public:
     VideoRescaler();
 
-    VideoRescaler(int dstWidth, int dstHeight, AVPixelFormat dstPixelFormat,
-                  int srcWidth, int srcHeight, AVPixelFormat srcPixelFormat,
+    VideoRescaler(int dstWidth, int dstHeight, PixelFormat dstPixelFormat,
+                  int srcWidth, int srcHeight, PixelFormat srcPixelFormat,
                   int32_t flags = SwsFlagAuto);
 
-    VideoRescaler(int m_dstWidth, int m_dstHeight, AVPixelFormat m_dstPixelFormat, int32_t flags = SwsFlagAuto);
+    VideoRescaler(int m_dstWidth, int m_dstHeight, PixelFormat m_dstPixelFormat, int32_t flags = SwsFlagAuto);
 
     VideoRescaler(const VideoRescaler &other);
     VideoRescaler(VideoRescaler &&other);
@@ -55,16 +56,16 @@ public:
 
     int dstWidth() const { return m_dstWidth; }
     int dstHeight() const { return m_dstHeight; }
-    AVPixelFormat dstPixelFormat() { return m_dstPixelFormat; }
+    PixelFormat dstPixelFormat() { return m_dstPixelFormat; }
 
     int srcWidth() const { return m_srcWidth; }
     int srcHeight() const { return m_srcHeight; }
-    AVPixelFormat srcPixelFormat() { return m_srcPixelFormat; }
+    PixelFormat srcPixelFormat() { return m_srcPixelFormat; }
 
     int32_t flags() const { return m_flags; }
 
-    void        rescale(VideoFrame2 &dst, const VideoFrame2 &src, std::error_code &ec = throws());
-    VideoFrame2 rescale(const VideoFrame2 &src, std::error_code &ec);
+    void        rescale(VideoFrame &dst, const VideoFrame &src, std::error_code &ec = throws());
+    VideoFrame rescale(const VideoFrame &src, std::error_code &ec);
 
     bool isValid() const;
 
@@ -74,16 +75,16 @@ private:
     void getContext(int32_t flags = 0);
 
     static
-    bool validate(int width, int height, AVPixelFormat pixelFormat);
+    bool validate(int width, int height, PixelFormat pixelFormat);
 
 private:
     int           m_dstWidth       = -1;
     int           m_dstHeight      = -1;
-    AVPixelFormat m_dstPixelFormat = AV_PIX_FMT_NONE;
+    PixelFormat   m_dstPixelFormat = AV_PIX_FMT_NONE;
 
     int           m_srcWidth       = -1;
     int           m_srcHeight      = -1;
-    AVPixelFormat m_srcPixelFormat = AV_PIX_FMT_NONE;
+    PixelFormat   m_srcPixelFormat = AV_PIX_FMT_NONE;
 
     int32_t       m_flags          = SwsFlagAuto;
 };

@@ -12,20 +12,20 @@ namespace av
 
 enum class Direction
 {
-    INVALID = -1,
-    ENCODING,
-    DECODING
+    Invalid = -1,
+    Encoding,
+    Decoding
 };
 
 
-class Stream2 : public FFWrapperPtr<AVStream>
+class Stream : public FFWrapperPtr<AVStream>
 {
 private:
     friend class FormatContext;
-    Stream2(const std::shared_ptr<char> &monitor, AVStream *st = nullptr, Direction direction = Direction::INVALID);
+    Stream(const std::shared_ptr<char> &monitor, AVStream *st = nullptr, Direction direction = Direction::Invalid);
 
 public:
-    Stream2() = default;
+    Stream() = default;
 
     bool isValid() const;
 
@@ -64,9 +64,11 @@ public:
 
 private:
     std::weak_ptr<char> m_parentMonitor;
-    Direction           m_direction = Direction::INVALID;
+    Direction           m_direction = Direction::Invalid;
 };
 
+// Back compat alias
+using Stream2 attribute_deprecated2("Use `Stream` class (drop-in replacement)") = Stream;
 
 } // ::av
 

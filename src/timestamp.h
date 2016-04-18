@@ -19,7 +19,7 @@ public:
     /**
      * @brief Create AvCpp/FFmpeg compatible timestamp value from the std::chrono::duration/boost::chrono::duration
      */
-    template<typename Duration>
+    template<typename Duration, typename = typename Duration::period>
     Timestamp(const Duration& duration)
     {      
         using Ratio = typename Duration::period;
