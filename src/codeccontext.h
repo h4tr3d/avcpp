@@ -47,7 +47,7 @@ public:
 
     void close(std::error_code &ec = throws());
 
-    bool isOpened() const noexcept { return m_isOpened; }
+    bool isOpened() const noexcept;
     bool isValid() const noexcept;
 
     /**
@@ -250,12 +250,7 @@ private:
 
 private:
     Direction       m_direction = Direction::INVALID;
-    //Rational        m_fakePtsTimeBase;
-    //Timestamp       m_fakeNextPts;
-    //Timestamp       m_fakeCurrPts;
-
     Stream          m_stream;
-    bool            m_isOpened = false;
 };
 
 } // namespace av
