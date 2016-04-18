@@ -27,14 +27,11 @@ class PixelFormat : public PixSampleFmtWrapper<PixelFormat, AVPixelFormat>
 {
 public:
     using Parent = PixSampleFmtWrapper<PixelFormat, AVPixelFormat>;
-    using Parent::PixSampleFmtWrapper;
+    using Parent::Parent;
 
+    PixelFormat() = default;
     explicit PixelFormat(const char* name) noexcept;
     explicit PixelFormat(const std::string& name) noexcept;
-
-    // Additional construction helper
-    static PixelFormat fromString(const char* name);
-    static PixelFormat fromString(const std::string &name);
 
     // Info functions
     const char* name(std::error_code &ec = throws()) const;

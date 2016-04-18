@@ -9,6 +9,7 @@
 #include "rational.h"
 #include "timestamp.h"
 #include "pixelformat.h"
+#include "sampleformat.h"
 
 extern "C" {
 #include <libavutil/imgutils.h>
@@ -300,9 +301,9 @@ public:
     using Frame2<AudioSamples2>::Frame2;
 
     AudioSamples2() = default;
-    AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
+    AudioSamples2(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = SampleFormat::AlignDefault);
     AudioSamples2(const uint8_t *data, size_t size,
-                  AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
+                  SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = SampleFormat::AlignDefault);
 
     AudioSamples2(const AudioSamples2 &other);
     AudioSamples2(AudioSamples2 &&other);
@@ -310,14 +311,14 @@ public:
     AudioSamples2& operator=(const AudioSamples2 &rhs);
     AudioSamples2& operator=(AudioSamples2 &&rhs);
 
-    int            init(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = 1);
+    int            init(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align = SampleFormat::AlignDefault);
 
-    AVSampleFormat sampleFormat() const;
+    SampleFormat sampleFormat() const;
     int            samplesCount() const;
     int            channelsCount() const;
     int64_t        channelsLayout() const;
     int            sampleRate() const;
-    uint           sampleBitDepth() const;
+    size_t         sampleBitDepth(std::error_code& ec = throws()) const;
 
     std::string    channelsLayoutString() const;
 };

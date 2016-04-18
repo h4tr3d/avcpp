@@ -9,6 +9,7 @@
 #include "avutils.h"
 #include "averror.h"
 #include "pixelformat.h"
+#include "sampleformat.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -114,12 +115,12 @@ public:
     // Audio
     int            sampleRate() const;
     int            channels() const;
-    AVSampleFormat sampleFormat() const;
+    SampleFormat   sampleFormat() const;
     uint64_t       channelLayout() const;
 
     void        setSampleRate(int sampleRate);
     void        setChannels(int channels);
-    void        setSampleFormat(AVSampleFormat sampleFormat);
+    void        setSampleFormat(SampleFormat sampleFormat);
     void        setChannelLayout(uint64_t layout);
 
     // Flags

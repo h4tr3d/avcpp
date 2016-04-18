@@ -7,6 +7,7 @@
 #include "av.h"
 #include "ffmpeg.h"
 #include "pixelformat.h"
+#include "sampleformat.h"
 #include "codec.h"
 #include "containerformat.h"
 #include "container.h"
@@ -160,7 +161,7 @@ int main(int argc, char **argv)
 
     int            inSampleRate    = 0;
     int            inChannels      = 0;
-    AVSampleFormat inSampleFmt     = AV_SAMPLE_FMT_S16;
+    SampleFormat   inSampleFmt     = AV_SAMPLE_FMT_S16;
     uint64_t       inChannelLayout = 0;
 
 
@@ -233,7 +234,7 @@ int main(int argc, char **argv)
     int            outSampleRate    = inSampleRate;
     //int            outSampleRate    = 44100;
     int            outChannels      = inChannels;
-    AVSampleFormat outSampleFmt     = inSampleFmt;
+    SampleFormat   outSampleFmt     = inSampleFmt;
     uint64_t       outChannelLayout = inChannelLayout;
     int            outFrameSize     = 0;
 
@@ -324,7 +325,7 @@ int main(int argc, char **argv)
 #if 0
     // Audio filter graph
     list<int>            dstSampleRates    = {outSampleRate};
-    list<AVSampleFormat> dstSampleFormats  = {outSampleFmt};
+    list<SampleFormat> dstSampleFormats  = {outSampleFmt};
     list<uint64_t>       dstChannelLayouts = {outChannelLayout};
     BufferSrcFilterContextPtr srcAudioFilter;
     BufferSinkFilterContextPtr sinkAudioFilter;

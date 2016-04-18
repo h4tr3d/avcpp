@@ -177,12 +177,12 @@ void VideoFrame2::setPictureType(AVPictureType type)
 }
 
 
-AudioSamples2::AudioSamples2(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
+AudioSamples2::AudioSamples2(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
 {
     init(sampleFormat, samplesCount, channelLayout, sampleRate, align);
 }
 
-int AudioSamples2::init(AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
+int AudioSamples2::init(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
 {
     if (!m_raw) {
         m_raw = av_frame_alloc();
@@ -203,17 +203,18 @@ int AudioSamples2::init(AVSampleFormat sampleFormat, int samplesCount, uint64_t 
     return 0;
 }
 
-AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, AVSampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
+AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
     : AudioSamples2(sampleFormat, samplesCount, channelLayout, sampleRate, align)
 {
     const auto channels = av_get_channel_layout_nb_channels(channelLayout);
-    size_t calcSize = av_samples_get_buffer_size(nullptr, channels, samplesCount, sampleFormat, align);
+    auto calcSize = sampleFormat.requiredBufferSize(channels, samplesCount, align);
+
     if (calcSize > size)
         throw length_error("Data size and required buffer for this format/nb_samples/nb_channels/align not equal");
 
-    uint8_t *buf[channels];
-    int      linesize[channels];
-    av_samples_fill_arrays(buf, linesize, data, channels, samplesCount, sampleFormat, align);
+    uint8_t *buf[AV_NUM_DATA_POINTERS];
+    int      linesize[AV_NUM_DATA_POINTERS];
+    SampleFormat::fillArrays(buf, linesize, data, channels, samplesCount, sampleFormat, align);
 
     // copy data
     for (size_t i = 0; i < size_t(channels) && i < size_t(AV_NUM_DATA_POINTERS); ++i) {
@@ -241,7 +242,7 @@ AudioSamples2 &AudioSamples2::operator=(AudioSamples2 &&rhs)
     return moveOperator(move(rhs));
 }
 
-AVSampleFormat AudioSamples2::sampleFormat() const
+SampleFormat AudioSamples2::sampleFormat() const
 {
     return static_cast<AVSampleFormat>(RAW_GET(format, AV_SAMPLE_FMT_NONE));
 }
@@ -266,9 +267,11 @@ int AudioSamples2::sampleRate() const
     return m_raw ? av_frame_get_sample_rate(m_raw) : 0;
 }
 
-uint AudioSamples2::sampleBitDepth() const
+size_t AudioSamples2::sampleBitDepth(error_code &ec) const
 {
-    return m_raw ? (av_get_bytes_per_sample(static_cast<AVSampleFormat>(m_raw->format))) << 3 : 0;
+    return m_raw
+            ? SampleFormat(static_cast<AVSampleFormat>(m_raw->format)).bitsPerSample(ec)
+            : 0;
 }
 
 string AudioSamples2::channelsLayoutString() const

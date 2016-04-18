@@ -75,13 +75,13 @@ std::deque<int> Codec::supportedSamplerates() const
     return sampleRates;
 }
 
-std::deque<AVSampleFormat> Codec::supportedSampleFormats() const
+std::deque<SampleFormat> Codec::supportedSampleFormats() const
 {
-    deque<AVSampleFormat> sampleFmts;
+    deque<SampleFormat> sampleFmts;
     if (!m_raw)
         return sampleFmts;
 
-    array_to_container(m_raw->sample_fmts, sampleFmts, [](AVSampleFormat sampleFmt) {
+    array_to_container(m_raw->sample_fmts, sampleFmts, [](SampleFormat sampleFmt) {
         return sampleFmt == AV_SAMPLE_FMT_NONE;
     });
 

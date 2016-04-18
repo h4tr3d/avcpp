@@ -54,6 +54,11 @@ size_t SampleFormat::bytesPerSample(std::error_code &ec) const
     return 0;
 }
 
+size_t SampleFormat::bitsPerSample(std::error_code &ec) const
+{
+    return bytesPerSample(ec) << 3;
+}
+
 size_t SampleFormat::requiredBufferSize(int nbChannels, int nbSamples, int align, std::error_code &ec) const
 {
     int lineSizeDummy;
@@ -70,6 +75,31 @@ size_t SampleFormat::requiredBufferSize(int nbChannels, int nbSamples, int align
     }
     clear_if(ec);
     return static_cast<size_t>(sts);
+}
+
+size_t SampleFormat::requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, std::error_code &ec)
+{
+    return fmt.requiredBufferSize(nbChannels, nbSamples, align, ec);
+}
+
+size_t SampleFormat::requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, int &lineSize, std::error_code &ec)
+{
+    return fmt.requiredBufferSize(nbChannels, nbSamples, align, lineSize, ec);
+}
+
+void SampleFormat::fillArrays(uint8_t **audioData, int *linesize, const uint8_t *buf, int nbChannels, int nbSamples, SampleFormat fmt, int align, std::error_code &ec)
+{
+    auto sts = av_samples_fill_arrays(audioData, linesize, buf, nbChannels, nbSamples, fmt, align);
+    if (sts < 0)
+    {
+        throws_if(ec, sts, ffmpeg_category());
+        return;
+    }
+}
+
+void SampleFormat::setSilence(uint8_t **audioData, int offset, int nbSamples, int nbChannels, SampleFormat fmt)
+{
+    av_samples_set_silence(audioData, offset, nbSamples, nbChannels, fmt);
 }
 
 

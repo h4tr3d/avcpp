@@ -501,7 +501,7 @@ int CodecContext::channels() const
     return 0;
 }
 
-AVSampleFormat CodecContext::sampleFormat() const
+SampleFormat CodecContext::sampleFormat() const
 {
     return RAW_GET2(isValid(), sample_fmt, AV_SAMPLE_FMT_NONE);
 }
@@ -545,7 +545,7 @@ void CodecContext::setChannels(int channels)
     }
 }
 
-void CodecContext::setSampleFormat(AVSampleFormat sampleFormat)
+void CodecContext::setSampleFormat(SampleFormat sampleFormat)
 {
     warnIfNotAudio();
     RAW_SET2(isValid() && !m_isOpened, sample_fmt, sampleFormat);

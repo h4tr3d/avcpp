@@ -12,16 +12,6 @@ PixelFormat::PixelFormat(const std::string &name) noexcept
 {
 }
 
-PixelFormat PixelFormat::fromString(const char *name)
-{
-    return PixelFormat(name);
-}
-
-PixelFormat PixelFormat::fromString(const std::string &name)
-{
-    return PixelFormat(name);
-}
-
 const char *PixelFormat::name(std::error_code &ec) const
 {
     if (auto nm = av_get_pix_fmt_name(m_fmt))

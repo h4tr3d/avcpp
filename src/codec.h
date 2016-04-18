@@ -9,6 +9,7 @@
 #include "rational.h"
 #include "format.h"
 #include "pixelformat.h"
+#include "sampleformat.h"
 
 namespace av {
 
@@ -26,7 +27,7 @@ public:
     std::deque<Rational>       supportedFramerates()    const;
     std::deque<PixelFormat>    supportedPixelFormats()  const;
     std::deque<int>            supportedSamplerates()   const;
-    std::deque<AVSampleFormat> supportedSampleFormats() const;
+    std::deque<SampleFormat>   supportedSampleFormats() const;
     std::deque<uint64_t>       supportedChannelLayouts() const;
 
     AVCodecID id() const;

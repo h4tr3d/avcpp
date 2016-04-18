@@ -23,13 +23,14 @@ class SampleFormat : public PixSampleFmtWrapper<SampleFormat, AVSampleFormat>
 public:
     enum Alignment
     {
-        Default = 0,
-        None    = 1
+        AlignDefault = 0,
+        AlignNone    = 1
     };
 
     using Parent = PixSampleFmtWrapper<SampleFormat, AVSampleFormat>;
-    using Parent::PixSampleFmtWrapper;
+    using Parent::Parent;
 
+    SampleFormat() = default;
     explicit SampleFormat(const char* name) noexcept;
     explicit SampleFormat(const std::string& name) noexcept;
 
@@ -42,9 +43,43 @@ public:
     bool isPlanar() const noexcept;
 
     size_t bytesPerSample(std::error_code& ec = throws()) const;
+    size_t bitsPerSample(std::error_code& ec = throws()) const;
 
     size_t requiredBufferSize(int nbChannels, int nbSamples, int align, std::error_code& ec = throws()) const;
     size_t requiredBufferSize(int nbChannels, int nbSamples, int align, int &lineSize, std::error_code& ec = throws()) const;
+
+    // Static helper methods
+
+    static size_t requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, std::error_code& ec = throws());
+    static size_t requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, int &lineSize, std::error_code& ec = throws());
+
+    static void fillArrays(uint8_t **audioData,
+                           int *linesize,
+                           const uint8_t *buf,
+                           int nbChannels,
+                           int nbSamples,
+                           SampleFormat fmt,
+                           int align,
+                           std::error_code& ec = throws());
+
+    static void setSilence(uint8_t **audioData,
+                           int offset,
+                           int nbSamples,
+                           int nbChannels,
+                           SampleFormat fmt);
+
+#if 0
+    // WARNING: use this function only if required API call expect data allocated with av_alloc() proc families.
+    // You must free allocated data with av_free(&audioData[0]);
+    static void samplesAlloc(uint8_t **audioData,
+                             int *linesize,
+                             int nbChannels,
+                             int nbSamples,
+                             SampleFormat fmt,
+                             int align,
+                             std::error_code& ec = throws());
+#endif
+
 };
 
 } // namespace av
