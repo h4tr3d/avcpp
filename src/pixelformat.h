@@ -1,10 +1,10 @@
-#ifndef AV_PIXELFORMAT_H
-#define AV_PIXELFORMAT_H
+#pragma once
 
 #include <string>
 #include <iostream>
 
 #include "averror.h"
+#include "ffmpeg.h"
 
 extern "C" {
 #include <libavutil/pixfmt.h>
@@ -23,21 +23,14 @@ namespace av {
  *
  * It has size same to the AVPixelFormat, but wrap pixel description function too.
  */
-class PixelFormat
+class PixelFormat : public PixSampleFmtWrapper<PixelFormat, AVPixelFormat>
 {
 public:
-    PixelFormat() = default;
-    PixelFormat(AVPixelFormat pixfmt) noexcept;
+    using Parent = PixSampleFmtWrapper<PixelFormat, AVPixelFormat>;
+    using Parent::PixSampleFmtWrapper;
+
     explicit PixelFormat(const char* name) noexcept;
     explicit PixelFormat(const std::string& name) noexcept;
-
-    // Access to  the stored value
-    operator AVPixelFormat() const noexcept;
-    AVPixelFormat get() const noexcept;
-
-    operator AVPixelFormat&() noexcept;
-    PixelFormat& operator=(AVPixelFormat pixfmt) noexcept;
-    void set(AVPixelFormat pixfmt) noexcept;
 
     // Additional construction helper
     static PixelFormat fromString(const char* name);
@@ -56,19 +49,7 @@ public:
 
     // See FF_LOSS_xxx flags
     size_t convertionLoss(PixelFormat dstFmt, bool srcHasAlpha = false) const noexcept;
-
-private:
-    AVPixelFormat m_pixfmt = AV_PIX_FMT_NONE;
 };
-
-
-// IO Stream interface
-inline std::ostream& operator<<(std::ostream& ost, PixelFormat fmt)
-{
-    ost << fmt.name();
-    return ost;
-}
 
 } // namespace av
 
-#endif // AV_PIXELFORMAT_H

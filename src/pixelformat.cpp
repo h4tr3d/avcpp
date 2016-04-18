@@ -2,29 +2,14 @@
 
 namespace av {
 
-PixelFormat::PixelFormat(AVPixelFormat pixfmt) noexcept
-    : m_pixfmt(pixfmt)
-{
-}
-
 PixelFormat::PixelFormat(const char *name) noexcept
-    : m_pixfmt(av_get_pix_fmt(name))
+    : Parent(av_get_pix_fmt(name))
 {
 }
 
 PixelFormat::PixelFormat(const std::string &name) noexcept
     : PixelFormat(name.c_str())
 {
-}
-
-AVPixelFormat PixelFormat::get() const noexcept
-{
-    return m_pixfmt;
-}
-
-void PixelFormat::set(AVPixelFormat pixfmt) noexcept
-{
-    m_pixfmt = pixfmt;
 }
 
 PixelFormat PixelFormat::fromString(const char *name)
@@ -39,7 +24,7 @@ PixelFormat PixelFormat::fromString(const std::string &name)
 
 const char *PixelFormat::name(std::error_code &ec) const
 {
-    if (auto nm = av_get_pix_fmt_name(m_pixfmt))
+    if (auto nm = av_get_pix_fmt_name(m_fmt))
     {
         clear_if(ec);
         return nm;
@@ -50,7 +35,7 @@ const char *PixelFormat::name(std::error_code &ec) const
 
 const AVPixFmtDescriptor *PixelFormat::descriptor(std::error_code &ec) const
 {
-    if (auto desc = av_pix_fmt_desc_get(m_pixfmt))
+    if (auto desc = av_pix_fmt_desc_get(m_fmt))
     {
         clear_if(ec);
         return desc;
@@ -68,7 +53,7 @@ int PixelFormat::bitsPerPixel(std::error_code &ec) const
 
 size_t PixelFormat::planesCount(std::error_code &ec) const
 {
-    auto count = av_pix_fmt_count_planes(m_pixfmt);
+    auto count = av_pix_fmt_count_planes(m_fmt);
     if (count < 0)
     {
         throws_if(ec, count, ffmpeg_category());
@@ -80,29 +65,12 @@ size_t PixelFormat::planesCount(std::error_code &ec) const
 
 PixelFormat PixelFormat::swapEndianness() const noexcept
 {
-    return av_pix_fmt_swap_endianness(m_pixfmt);
+    return av_pix_fmt_swap_endianness(m_fmt);
 }
 
 size_t PixelFormat::convertionLoss(PixelFormat dstFmt, bool srcHasAlpha) const noexcept
 {
-    return static_cast<size_t>(av_get_pix_fmt_loss(dstFmt, m_pixfmt, srcHasAlpha));
+    return static_cast<size_t>(av_get_pix_fmt_loss(dstFmt, m_fmt, srcHasAlpha));
 }
-
-PixelFormat &PixelFormat::operator=(AVPixelFormat pixfmt) noexcept
-{
-    m_pixfmt = pixfmt;
-    return *this;
-}
-
-PixelFormat::operator AVPixelFormat &() noexcept
-{
-    return m_pixfmt;
-}
-
-PixelFormat::operator AVPixelFormat() const noexcept
-{
-    return m_pixfmt;
-}
-
 
 } // namespace av
