@@ -86,7 +86,7 @@ int av_frame_copy(AVFrame *dst, const AVFrame *src)
 namespace av
 {
 
-VideoFrame2::VideoFrame2(AVPixelFormat pixelFormat, int width, int height, int align)
+VideoFrame2::VideoFrame2(PixelFormat pixelFormat, int width, int height, int align)
 {
     m_raw->format = pixelFormat;
     m_raw->width  = width;
@@ -94,7 +94,7 @@ VideoFrame2::VideoFrame2(AVPixelFormat pixelFormat, int width, int height, int a
     av_frame_get_buffer(m_raw, align);
 }
 
-VideoFrame2::VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height, int align)
+VideoFrame2::VideoFrame2(const uint8_t *data, size_t size, PixelFormat pixelFormat, int width, int height, int align)
     : VideoFrame2(pixelFormat, width, height, align)
 {
     size_t calcSize = av_image_get_buffer_size(pixelFormat, width, height, align);
@@ -131,7 +131,7 @@ VideoFrame2 &VideoFrame2::operator=(VideoFrame2 &&rhs)
     return moveOperator(move(rhs));
 }
 
-AVPixelFormat VideoFrame2::pixelFormat() const
+PixelFormat VideoFrame2::pixelFormat() const
 {
     return static_cast<AVPixelFormat>(RAW_GET(format, AV_PIX_FMT_NONE));
 }

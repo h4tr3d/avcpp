@@ -49,13 +49,13 @@ std::deque<Rational> Codec::supportedFramerates() const
     return frameRates;
 }
 
-std::deque<AVPixelFormat> Codec::supportedPixelFormats() const
+std::deque<PixelFormat> Codec::supportedPixelFormats() const
 {
-    deque<AVPixelFormat> pixFmts;
+    deque<PixelFormat> pixFmts;
     if (!m_raw)
         return pixFmts;
 
-    array_to_container(m_raw->pix_fmts, pixFmts, [](AVPixelFormat pixFmt) {
+    array_to_container(m_raw->pix_fmts, pixFmts, [](PixelFormat pixFmt) {
         return pixFmt == AV_PIX_FMT_NONE;
     });
 

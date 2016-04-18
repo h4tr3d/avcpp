@@ -347,14 +347,14 @@ int CodecContext::codedHeight() const
     return RAW_GET2(isValid(), coded_height, 0);
 }
 
-AVPixelFormat CodecContext::pixelFormat() const
+PixelFormat CodecContext::pixelFormat() const
 {
     return RAW_GET2(isValid(), pix_fmt, AV_PIX_FMT_NONE);
 }
 
 int32_t CodecContext::bitRate() const
 {
-    return RAW_GET2(isValid(), bit_rate, 0);
+    return RAW_GET2(isValid(), bit_rate, int32_t(0));
 }
 
 std::pair<int, int> CodecContext::bitRateRange() const
@@ -422,7 +422,7 @@ void CodecContext::setCodedHeight(int h)
     RAW_SET2(isValid() && !m_isOpened, coded_height, h);
 }
 
-void CodecContext::setPixelFormat(AVPixelFormat pixelFormat)
+void CodecContext::setPixelFormat(PixelFormat pixelFormat)
 {
     warnIfNotVideo();
     RAW_SET2(isValid() && !m_isOpened, pix_fmt, pixelFormat);

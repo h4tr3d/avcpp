@@ -8,6 +8,7 @@
 #include "ffmpeg.h"
 #include "rational.h"
 #include "timestamp.h"
+#include "pixelformat.h"
 
 extern "C" {
 #include <libavutil/imgutils.h>
@@ -269,8 +270,8 @@ public:
     using Frame2<VideoFrame2>::Frame2;
 
     VideoFrame2() = default;
-    VideoFrame2(AVPixelFormat pixelFormat, int width, int height, int align = 1);
-    VideoFrame2(const uint8_t *data, size_t size, AVPixelFormat pixelFormat, int width, int height, int align = 1);
+    VideoFrame2(PixelFormat pixelFormat, int width, int height, int align = 1);
+    VideoFrame2(const uint8_t *data, size_t size, PixelFormat pixelFormat, int width, int height, int align = 1);
 
     VideoFrame2(const VideoFrame2 &other);
     VideoFrame2(VideoFrame2 &&other);
@@ -278,7 +279,7 @@ public:
     VideoFrame2& operator=(const VideoFrame2 &rhs);
     VideoFrame2& operator=(VideoFrame2 &&rhs);
 
-    AVPixelFormat          pixelFormat() const;
+    PixelFormat            pixelFormat() const;
     int                    width() const;
     int                    height() const;
 

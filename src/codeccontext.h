@@ -8,6 +8,7 @@
 #include "dictionary.h"
 #include "avutils.h"
 #include "averror.h"
+#include "pixelformat.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -88,7 +89,7 @@ public:
     int                 height() const;
     int                 codedWidth() const;
     int                 codedHeight() const;
-    AVPixelFormat       pixelFormat() const;
+    PixelFormat         pixelFormat() const;
     int32_t             bitRate() const;
     std::pair<int, int> bitRateRange() const;
     int32_t             globalQuality();
@@ -101,7 +102,7 @@ public:
     void setHeight(int h); // Note, it also sets coded_height
     void setCodedWidth(int w);
     void setCodedHeight(int h);
-    void setPixelFormat(AVPixelFormat pixelFormat);
+    void setPixelFormat(PixelFormat pixelFormat);
     void setBitRate(int32_t bitRate);
     void setBitRateRange(const std::pair<int, int> &bitRateRange);
     void setGlobalQuality(int32_t quality);

@@ -6,6 +6,7 @@
 
 #include "av.h"
 #include "ffmpeg.h"
+#include "pixelformat.h"
 #include "codec.h"
 #include "containerformat.h"
 #include "container.h"
