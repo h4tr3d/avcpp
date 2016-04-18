@@ -394,7 +394,7 @@ int CodecContext::maxBFrames() const
 void CodecContext::setWidth(int w)
 {
     warnIfNotVideo();
-    if (isValid() && !isOpened())
+    if (isValid())
     {
         m_raw->width       = w;
         m_raw->coded_width = w;
@@ -404,7 +404,7 @@ void CodecContext::setWidth(int w)
 void CodecContext::setHeight(int h)
 {
     warnIfNotVideo();
-    if (isValid() && !isOpened())
+    if (isValid())
     {
         m_raw->height       = h;
         m_raw->coded_height = h;
@@ -414,31 +414,31 @@ void CodecContext::setHeight(int h)
 void CodecContext::setCodedWidth(int w)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !isOpened(), coded_width, w);
+    RAW_SET2(isValid(), coded_width, w);
 }
 
 void CodecContext::setCodedHeight(int h)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !isOpened(), coded_height, h);
+    RAW_SET2(isValid(), coded_height, h);
 }
 
 void CodecContext::setPixelFormat(PixelFormat pixelFormat)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !isOpened(), pix_fmt, pixelFormat);
+    RAW_SET2(isValid(), pix_fmt, pixelFormat);
 }
 
 void CodecContext::setBitRate(int32_t bitRate)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !isOpened(), bit_rate, bitRate);
+    RAW_SET2(isValid(), bit_rate, bitRate);
 }
 
 void CodecContext::setBitRateRange(const std::pair<int, int> &bitRateRange)
 {
     warnIfNotVideo();
-    if (isValid() && !isOpened())
+    if (isValid())
     {
         m_raw->rc_min_rate = get<0>(bitRateRange);
         m_raw->rc_max_rate = get<1>(bitRateRange);
@@ -451,19 +451,19 @@ void CodecContext::setGlobalQuality(int32_t quality)
     if (quality < 0 || quality > FF_LAMBDA_MAX)
         quality = FF_LAMBDA_MAX;
 
-    RAW_SET2(isValid() && !isOpened(), global_quality, quality);
+    RAW_SET2(isValid(), global_quality, quality);
 }
 
 void CodecContext::setGopSize(int32_t size)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !isOpened(), gop_size, size);
+    RAW_SET2(isValid(), gop_size, size);
 }
 
 void CodecContext::setBitRateTolerance(int bitRateTolerance)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !isOpened(), bit_rate_tolerance, bitRateTolerance);
+    RAW_SET2(isValid(), bit_rate_tolerance, bitRateTolerance);
 }
 
 void CodecContext::setStrict(int strict)
@@ -474,13 +474,13 @@ void CodecContext::setStrict(int strict)
     else if (strict > FF_COMPLIANCE_VERY_STRICT)
         strict = FF_COMPLIANCE_VERY_STRICT;
 
-    RAW_SET2(isValid() && !isOpened(), strict_std_compliance, strict);
+    RAW_SET2(isValid(), strict_std_compliance, strict);
 }
 
 void CodecContext::setMaxBFrames(int maxBFrames)
 {
     warnIfNotVideo();
-    RAW_SET2(isValid() && !isOpened(), max_b_frames, maxBFrames);
+    RAW_SET2(isValid(), max_b_frames, maxBFrames);
 }
 
 int CodecContext::sampleRate() const
@@ -524,7 +524,7 @@ uint64_t CodecContext::channelLayout() const
 void CodecContext::setSampleRate(int sampleRate)
 {
     warnIfNotAudio();
-    if (!isValid() || isOpened())
+    if (!isValid())
         return;
     int sr = guessValue(sampleRate, m_raw->codec->supported_samplerates, EqualComparator<int>(0));
     if (sr != sampleRate)
@@ -537,7 +537,7 @@ void CodecContext::setSampleRate(int sampleRate)
 
 void CodecContext::setChannels(int channels)
 {
-    if (!isValid() || channels <= 0 || isOpened())
+    if (!isValid() || channels <= 0)
         return;
     m_raw->channels = channels;
     if (m_raw->channel_layout != 0 ||
@@ -549,13 +549,13 @@ void CodecContext::setChannels(int channels)
 void CodecContext::setSampleFormat(SampleFormat sampleFormat)
 {
     warnIfNotAudio();
-    RAW_SET2(isValid() && !isOpened(), sample_fmt, sampleFormat);
+    RAW_SET2(isValid(), sample_fmt, sampleFormat);
 }
 
 void CodecContext::setChannelLayout(uint64_t layout)
 {
     warnIfNotAudio();
-    if (!isValid() || isOpened() || layout == 0)
+    if (!isValid() || layout == 0)
         return;
 
     m_raw->channel_layout = layout;
@@ -570,29 +570,29 @@ void CodecContext::setChannelLayout(uint64_t layout)
 
 void CodecContext::setFlags(int flags)
 {
-    RAW_SET2(isValid() && !isOpened(), flags, flags);
+    RAW_SET2(isValid(), flags, flags);
 }
 
 void CodecContext::addFlags(int flags)
 {
-    if (isValid() && !isOpened())
+    if (isValid())
         m_raw->flags |= flags;
 }
 
 void CodecContext::clearFlags(int flags)
 {
-    if (isValid() && !isOpened())
+    if (isValid())
         m_raw->flags &= ~flags;
 }
 
 int CodecContext::flags()
 {
-    return RAW_GET2(isValid() && !isOpened(), flags, 0);
+    return RAW_GET2(isValid(), flags, 0);
 }
 
 bool CodecContext::isFlags(int flags)
 {
-    if (isValid() && !isOpened())
+    if (isValid())
         return (m_raw->flags & flags);
     return false;
 }
@@ -600,29 +600,29 @@ bool CodecContext::isFlags(int flags)
 //
 void CodecContext::setFlags2(int flags)
 {
-    RAW_SET2(isValid() && !isOpened(), flags2, flags);
+    RAW_SET2(isValid(), flags2, flags);
 }
 
 void CodecContext::addFlags2(int flags)
 {
-    if (isValid() && !isOpened())
+    if (isValid())
         m_raw->flags2 |= flags;
 }
 
 void CodecContext::clearFlags2(int flags)
 {
-    if (isValid() && !isOpened())
+    if (isValid())
         m_raw->flags2 &= ~flags;
 }
 
 int CodecContext::flags2()
 {
-    return RAW_GET2(isValid() && !isOpened(), flags2, 0);
+    return RAW_GET2(isValid(), flags2, 0);
 }
 
 bool CodecContext::isFlags2(int flags)
 {
-    if (isValid() && !isOpened())
+    if (isValid())
         return (m_raw->flags2 & flags);
     return false;
 }
