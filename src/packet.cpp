@@ -247,7 +247,7 @@ void Packet::clearFlags(int flags)
     m_raw.flags &= ~flags;
 }
 
-void Packet::dump(const Stream2 &st, bool dumpPayload) const
+void Packet::dump(const Stream &st, bool dumpPayload) const
 {
     if (!st.isNull())
     {

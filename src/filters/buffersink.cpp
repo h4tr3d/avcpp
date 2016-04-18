@@ -29,7 +29,7 @@ BufferSinkFilterContext &BufferSinkFilterContext::operator=(const FilterContext 
     return *this;
 }
 
-bool BufferSinkFilterContext::getVideoFrame(VideoFrame2 &frame, int flags, error_code &ec)
+bool BufferSinkFilterContext::getVideoFrame(VideoFrame &frame, int flags, error_code &ec)
 {
     if (m_type != FilterMediaType::Video) {
         throws_if(ec, Errors::IncorrectBufferSinkMediaType);
@@ -39,12 +39,12 @@ bool BufferSinkFilterContext::getVideoFrame(VideoFrame2 &frame, int flags, error
     return getFrame(frame.raw(), flags, ec);
 }
 
-bool BufferSinkFilterContext::getVideoFrame(VideoFrame2 &frame, error_code &ec)
+bool BufferSinkFilterContext::getVideoFrame(VideoFrame &frame, error_code &ec)
 {
     return getVideoFrame(frame, 0, ec);
 }
 
-bool BufferSinkFilterContext::getAudioFrame(AudioSamples2 &samples, int flags, error_code &ec)
+bool BufferSinkFilterContext::getAudioFrame(AudioSamples &samples, int flags, error_code &ec)
 {
     if (m_type != FilterMediaType::Audio) {
         throws_if(ec, Errors::IncorrectBufferSinkMediaType);
@@ -53,12 +53,12 @@ bool BufferSinkFilterContext::getAudioFrame(AudioSamples2 &samples, int flags, e
     return getFrame(samples.raw(), flags, ec);
 }
 
-bool BufferSinkFilterContext::getAudioFrame(AudioSamples2 &samples, error_code &ec)
+bool BufferSinkFilterContext::getAudioFrame(AudioSamples &samples, error_code &ec)
 {
     return getAudioFrame(samples, 0, ec);
 }
 
-bool BufferSinkFilterContext::getAudioSamples(AudioSamples2 &samples, size_t samplesCount, error_code &ec)
+bool BufferSinkFilterContext::getAudioSamples(AudioSamples &samples, size_t samplesCount, error_code &ec)
 {
     if (m_type != FilterMediaType::Audio) {
         throws_if(ec, Errors::IncorrectBufferSinkMediaType);

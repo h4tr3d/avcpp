@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
     ssize_t      audioStream = -1;
     CodecContext adec;
-    Stream2      ast;
+    Stream      ast;
     error_code   ec;
 
     string format;
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            AudioSamples2 samples = adec.decodeAudio(pkt, ec);
+            AudioSamples samples = adec.decodeAudio(pkt, ec);
 
             if (ec) {
                 cerr << "Error: " << ec << endl;

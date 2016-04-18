@@ -18,14 +18,14 @@ enum class Direction
 };
 
 
-class Stream2 : public FFWrapperPtr<AVStream>
+class Stream : public FFWrapperPtr<AVStream>
 {
 private:
     friend class FormatContext;
-    Stream2(const std::shared_ptr<char> &monitor, AVStream *st = nullptr, Direction direction = Direction::INVALID);
+    Stream(const std::shared_ptr<char> &monitor, AVStream *st = nullptr, Direction direction = Direction::INVALID);
 
 public:
-    Stream2() = default;
+    Stream() = default;
 
     bool isValid() const;
 
@@ -57,6 +57,8 @@ private:
     Direction           m_direction = Direction::INVALID;
 };
 
+// Back compat alias
+using Stream2 attribute_deprecated2("Use `Stream` class (drop-in replacement)") = Stream;
 
 } // ::av
 

@@ -55,7 +55,7 @@ public:
      * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
      *                       av#throws the function will throw on error instead
      */
-    void push(const AudioSamples2 &src, std::error_code &ec = throws());
+    void push(const AudioSamples &src, std::error_code &ec = throws());
 
     /**
      * @brief Pop frame from the rescaler context.
@@ -71,7 +71,7 @@ public:
      *                       av#throws the function will throw on error instead
      * @return false if no samples avail, true otherwise. On error false.
      */
-    bool pop(AudioSamples2 &dst, bool getall, std::error_code &ec = throws());
+    bool pop(AudioSamples &dst, bool getall, std::error_code &ec = throws());
 
     /**
      * @brief Pop frame from the rescaler context.
@@ -86,7 +86,7 @@ public:
      *                              av#throws the function will throw on error instead
      * @return resampled samples or null-frame when no requested samples avail. On error null-frame.
      */
-    AudioSamples2 pop(size_t samplesCount, std::error_code &ec = throws());
+    AudioSamples pop(size_t samplesCount, std::error_code &ec = throws());
 
     bool isValid() const;
     operator bool() const { return isValid(); }

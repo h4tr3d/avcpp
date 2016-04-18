@@ -76,10 +76,10 @@ public:
     //
     // Streams
     //
-    size_t  streamsCount() const;
-    Stream2 stream(size_t idx);
-    Stream2 stream(size_t idx, std::error_code &ec);
-    Stream2 addStream(const Codec &codec, std::error_code &ec = throws());
+    size_t streamsCount() const;
+    Stream stream(size_t idx);
+    Stream stream(size_t idx, std::error_code &ec);
+    Stream addStream(const Codec &codec, std::error_code &ec = throws());
 
     //
     // Seeking
@@ -172,10 +172,10 @@ public:
     bool checkUncodedFrameWriting(size_t streamIndex, std::error_code &ec) noexcept;
     bool checkUncodedFrameWriting(size_t streamIndex) noexcept;
 
-    void writeUncodedFrame(VideoFrame2 &frame, size_t streamIndex, std::error_code &ec = throws());
-    void writeUncodedFrameDirect(VideoFrame2 &frame, size_t streamIndex, std::error_code &ec = throws());
-    void writeUncodedFrame(AudioSamples2 &frame, size_t streamIndex, std::error_code &ec = throws());
-    void writeUncodedFrameDirect(AudioSamples2 &frame, size_t streamIndex, std::error_code &ec = throws());
+    void writeUncodedFrame(VideoFrame &frame, size_t streamIndex, std::error_code &ec = throws());
+    void writeUncodedFrameDirect(VideoFrame &frame, size_t streamIndex, std::error_code &ec = throws());
+    void writeUncodedFrame(AudioSamples &frame, size_t streamIndex, std::error_code &ec = throws());
+    void writeUncodedFrameDirect(AudioSamples &frame, size_t streamIndex, std::error_code &ec = throws());
 
     void writeTrailer(std::error_code &ec = throws());
 

@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
     ssize_t      videoStream = -1;
     CodecContext vdec;
-    Stream2      vst;
+    Stream      vst;
     error_code   ec;
 
     int count = 0;
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
             auto ts = pkt.ts();
             clog << "Read packet: " << ts << " / " << ts.seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            VideoFrame2 frame = vdec.decodeVideo(pkt, ec);
+            VideoFrame frame = vdec.decodeVideo(pkt, ec);
 
             count++;
             //if (count > 100)
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 
         clog << "Flush frames;\n";
         while (true) {
-            VideoFrame2 frame = vdec.decodeVideo(Packet(), ec);
+            VideoFrame frame = vdec.decodeVideo(Packet(), ec);
             if (ec) {
                 cerr << "Error: " << ec << ", " << ec.message() << endl;
                 return 1;

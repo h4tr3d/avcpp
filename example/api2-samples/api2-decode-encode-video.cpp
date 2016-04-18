@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     FormatContext ictx;
     ssize_t      videoStream = -1;
     CodecContext vdec;
-    Stream2      vst;
+    Stream      vst;
 
     int count = 0;
 
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     octx.setFormat(ofrmt);
 
     Codec        ocodec  = findEncodingCodec(ofrmt);
-    Stream2      ost     = octx.addStream(ocodec);
+    Stream      ost     = octx.addStream(ocodec);
     CodecContext encoder {ost};
 
     // Settings

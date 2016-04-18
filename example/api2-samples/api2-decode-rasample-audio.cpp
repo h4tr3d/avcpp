@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
     ssize_t      audioStream = -1;
     CodecContext adec;
-    Stream2      ast;
+    Stream      ast;
     error_code   ec;
 
     int count = 0;
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            AudioSamples2 samples = adec.decodeAudio(pkt, ec);
+            AudioSamples samples = adec.decodeAudio(pkt, ec);
 
             count++;
             if (count > 100)
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
             // Pop resampler data
 #if 0
             while (true) {
-                AudioSamples2 ouSamples(adec.sampleFormat(), samples.samplesCount()/2, adec.channelLayout(), 48000);
+                AudioSamples ouSamples(adec.sampleFormat(), samples.samplesCount()/2, adec.channelLayout(), 48000);
 
                 // Resample:
                 //st = resampler.resample(ouSamples, samples);
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
                          << endl;
             }
 #else
-            auto ouSamples = AudioSamples2::null();
+            auto ouSamples = AudioSamples::null();
             while (ouSamples = resampler.pop(samples.samplesCount()/2, ec)) {
                 clog << "  Samples [ou]: " << ouSamples.samplesCount()
                      << ", ch: " << ouSamples.channelsCount()
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
         {
             clog << "Flush resampler:\n";
             while (true) {
-                AudioSamples2 ouSamples(adec.sampleFormat(), 576, adec.channelLayout(), 48000);
+                AudioSamples ouSamples(adec.sampleFormat(), 576, adec.channelLayout(), 48000);
                 auto hasFrame = resampler.pop(ouSamples, false, ec);
                 if (!ec && !hasFrame)
                     hasFrame = resampler.pop(ouSamples, true, ec);

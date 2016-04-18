@@ -86,7 +86,7 @@ int av_frame_copy(AVFrame *dst, const AVFrame *src)
 namespace av
 {
 
-VideoFrame2::VideoFrame2(PixelFormat pixelFormat, int width, int height, int align)
+VideoFrame::VideoFrame(PixelFormat pixelFormat, int width, int height, int align)
 {
     m_raw->format = pixelFormat;
     m_raw->width  = width;
@@ -94,8 +94,8 @@ VideoFrame2::VideoFrame2(PixelFormat pixelFormat, int width, int height, int ali
     av_frame_get_buffer(m_raw, align);
 }
 
-VideoFrame2::VideoFrame2(const uint8_t *data, size_t size, PixelFormat pixelFormat, int width, int height, int align)
-    : VideoFrame2(pixelFormat, width, height, align)
+VideoFrame::VideoFrame(const uint8_t *data, size_t size, PixelFormat pixelFormat, int width, int height, int align)
+    : VideoFrame(pixelFormat, width, height, align)
 {
     size_t calcSize = av_image_get_buffer_size(pixelFormat, width, height, align);
     if (calcSize != size)
@@ -111,78 +111,78 @@ VideoFrame2::VideoFrame2(const uint8_t *data, size_t size, PixelFormat pixelForm
     }
 }
 
-VideoFrame2::VideoFrame2(const VideoFrame2 &other)
-    : Frame2<VideoFrame2>(other)
+VideoFrame::VideoFrame(const VideoFrame &other)
+    : Frame<VideoFrame>(other)
 {
 }
 
-VideoFrame2::VideoFrame2(VideoFrame2 &&other)
-    : Frame2<VideoFrame2>(move(other))
+VideoFrame::VideoFrame(VideoFrame &&other)
+    : Frame<VideoFrame>(move(other))
 {
 }
 
-VideoFrame2 &VideoFrame2::operator=(const VideoFrame2 &rhs)
+VideoFrame &VideoFrame::operator=(const VideoFrame &rhs)
 {
     return assignOperator(rhs);
 }
 
-VideoFrame2 &VideoFrame2::operator=(VideoFrame2 &&rhs)
+VideoFrame &VideoFrame::operator=(VideoFrame &&rhs)
 {
     return moveOperator(move(rhs));
 }
 
-PixelFormat VideoFrame2::pixelFormat() const
+PixelFormat VideoFrame::pixelFormat() const
 {
     return static_cast<AVPixelFormat>(RAW_GET(format, AV_PIX_FMT_NONE));
 }
 
-int VideoFrame2::width() const
+int VideoFrame::width() const
 {
     return RAW_GET(width, 0);
 }
 
-int VideoFrame2::height() const
+int VideoFrame::height() const
 {
     return RAW_GET(height, 0);
 }
 
-bool VideoFrame2::isKeyFrame() const
+bool VideoFrame::isKeyFrame() const
 {
     return RAW_GET(key_frame, false);
 }
 
-void VideoFrame2::setKeyFrame(bool isKey)
+void VideoFrame::setKeyFrame(bool isKey)
 {
     RAW_SET(key_frame, isKey);
 }
 
-int VideoFrame2::quality() const
+int VideoFrame::quality() const
 {
     return RAW_GET(quality, 0);
 }
 
-void VideoFrame2::setQuality(int quality)
+void VideoFrame::setQuality(int quality)
 {
     RAW_SET(quality, quality);
 }
 
-AVPictureType VideoFrame2::pictureType() const
+AVPictureType VideoFrame::pictureType() const
 {
     return RAW_GET(pict_type, AV_PICTURE_TYPE_NONE);
 }
 
-void VideoFrame2::setPictureType(AVPictureType type)
+void VideoFrame::setPictureType(AVPictureType type)
 {
     RAW_SET(pict_type, type);
 }
 
 
-AudioSamples2::AudioSamples2(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
+AudioSamples::AudioSamples(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
 {
     init(sampleFormat, samplesCount, channelLayout, sampleRate, align);
 }
 
-int AudioSamples2::init(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
+int AudioSamples::init(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
 {
     if (!m_raw) {
         m_raw = av_frame_alloc();
@@ -203,8 +203,8 @@ int AudioSamples2::init(SampleFormat sampleFormat, int samplesCount, uint64_t ch
     return 0;
 }
 
-AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
-    : AudioSamples2(sampleFormat, samplesCount, channelLayout, sampleRate, align)
+AudioSamples::AudioSamples(const uint8_t *data, size_t size, SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
+    : AudioSamples(sampleFormat, samplesCount, channelLayout, sampleRate, align)
 {
     const auto channels = av_get_channel_layout_nb_channels(channelLayout);
     auto calcSize = sampleFormat.requiredBufferSize(channels, samplesCount, align);
@@ -222,59 +222,59 @@ AudioSamples2::AudioSamples2(const uint8_t *data, size_t size, SampleFormat samp
     }
 }
 
-AudioSamples2::AudioSamples2(const AudioSamples2 &other)
-    : Frame2<AudioSamples2>(other)
+AudioSamples::AudioSamples(const AudioSamples &other)
+    : Frame<AudioSamples>(other)
 {
 }
 
-AudioSamples2::AudioSamples2(AudioSamples2 &&other)
-    : Frame2<AudioSamples2>(move(other))
+AudioSamples::AudioSamples(AudioSamples &&other)
+    : Frame<AudioSamples>(move(other))
 {
 }
 
-AudioSamples2 &AudioSamples2::operator=(const AudioSamples2 &rhs)
+AudioSamples &AudioSamples::operator=(const AudioSamples &rhs)
 {
     return assignOperator(rhs);
 }
 
-AudioSamples2 &AudioSamples2::operator=(AudioSamples2 &&rhs)
+AudioSamples &AudioSamples::operator=(AudioSamples &&rhs)
 {
     return moveOperator(move(rhs));
 }
 
-SampleFormat AudioSamples2::sampleFormat() const
+SampleFormat AudioSamples::sampleFormat() const
 {
     return static_cast<AVSampleFormat>(RAW_GET(format, AV_SAMPLE_FMT_NONE));
 }
 
-int AudioSamples2::samplesCount() const
+int AudioSamples::samplesCount() const
 {
     return RAW_GET(nb_samples, 0);
 }
 
-int AudioSamples2::channelsCount() const
+int AudioSamples::channelsCount() const
 {
     return m_raw ? av_frame_get_channels(m_raw) : 0;
 }
 
-int64_t AudioSamples2::channelsLayout() const
+int64_t AudioSamples::channelsLayout() const
 {
     return m_raw ? av_frame_get_channel_layout(m_raw) : 0;
 }
 
-int AudioSamples2::sampleRate() const
+int AudioSamples::sampleRate() const
 {
     return m_raw ? av_frame_get_sample_rate(m_raw) : 0;
 }
 
-size_t AudioSamples2::sampleBitDepth(error_code &ec) const
+size_t AudioSamples::sampleBitDepth(error_code &ec) const
 {
     return m_raw
             ? SampleFormat(static_cast<AVSampleFormat>(m_raw->format)).bitsPerSample(ec)
             : 0;
 }
 
-string AudioSamples2::channelsLayoutString() const
+string AudioSamples::channelsLayoutString() const
 {
     if (!m_raw)
         return "";

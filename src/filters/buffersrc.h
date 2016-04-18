@@ -19,13 +19,13 @@ public:
     void assign(const FilterContext &ctx, std::error_code &ec = throws());
     BufferSrcFilterContext& operator=(const FilterContext &ctx);
 
-    void writeVideoFrame(const VideoFrame2 &frame, std::error_code &ec = throws());
-    void addVideoFrame(VideoFrame2 &frame, int flags, std::error_code &ec = throws());
-    void addVideoFrame(VideoFrame2 &frame, std::error_code &ec = throws());
+    void writeVideoFrame(const VideoFrame &frame, std::error_code &ec = throws());
+    void addVideoFrame(VideoFrame &frame, int flags, std::error_code &ec = throws());
+    void addVideoFrame(VideoFrame &frame, std::error_code &ec = throws());
 
-    void writeAudioSamples(const AudioSamples2 &samples, std::error_code &ec = throws());
-    void addAudioSamples(AudioSamples2 &samples, int flags, std::error_code &ec = throws());
-    void addAudioSamples(AudioSamples2 &samples, std::error_code &ec = throws());
+    void writeAudioSamples(const AudioSamples &samples, std::error_code &ec = throws());
+    void addAudioSamples(AudioSamples &samples, int flags, std::error_code &ec = throws());
+    void addAudioSamples(AudioSamples &samples, std::error_code &ec = throws());
 
     size_t failedRequestsCount();
 

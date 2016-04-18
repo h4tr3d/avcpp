@@ -25,7 +25,7 @@ private:
 public:
     CodecContext();
     // Stream decoding/encoding
-    explicit CodecContext(const Stream2 &st, const Codec& codec = Codec());
+    explicit CodecContext(const Stream &st, const Codec& codec = Codec());
     // Stream independ decoding/encoding
     explicit CodecContext(const Codec &codec);
     ~CodecContext();
@@ -66,7 +66,7 @@ public:
     Rational timeBase() const;
     void     setTimeBase(const Rational &value);
 
-    const Stream2& stream() const;
+    const Stream& stream() const;
 
     Codec       codec() const;
     AVMediaType codecType() const;
@@ -158,7 +158,7 @@ public:
      * @return encoded video frame, if error: exception thrown or error code returns, in both cases
      *         output undefined.
      */
-    VideoFrame2 decodeVideo(const Packet    &packet,
+    VideoFrame decodeVideo(const Packet    &packet,
                             std::error_code &ec = throws(),
                             bool             autoAllocateFrame = true);
 
@@ -175,7 +175,7 @@ public:
      * @return encoded video frame, if error: exception thrown or error code returns, in both cases
      *         output undefined.
      */
-    VideoFrame2 decodeVideo(const Packet &packet,
+    VideoFrame decodeVideo(const Packet &packet,
                             size_t offset,
                             size_t &decodedBytes,
                             std::error_code &ec = throws(),
@@ -203,23 +203,23 @@ public:
      *                       av#throws the function will throw on error instead
      * @return
      */
-    Packet encodeVideo(const VideoFrame2 &inFrame, std::error_code &ec = throws());
+    Packet encodeVideo(const VideoFrame &inFrame, std::error_code &ec = throws());
 
     //
     // Audio
     //
-    AudioSamples2 decodeAudio(const Packet &inPacket, std::error_code &ec = throws());
-    AudioSamples2 decodeAudio(const Packet &inPacket, size_t offset, std::error_code &ec = throws());
+    AudioSamples decodeAudio(const Packet &inPacket, std::error_code &ec = throws());
+    AudioSamples decodeAudio(const Packet &inPacket, size_t offset, std::error_code &ec = throws());
 
     Packet encodeAudio(std::error_code &ec = throws());
-    Packet encodeAudio(const AudioSamples2 &inSamples, std::error_code &ec = throws());
+    Packet encodeAudio(const AudioSamples &inSamples, std::error_code &ec = throws());
 
     bool    isValidForEncode();
 
 private:
     void open(const Codec &codec, AVDictionary **options, std::error_code &ec);
 
-    VideoFrame2 decodeVideo(std::error_code &ec,
+    VideoFrame decodeVideo(std::error_code &ec,
                             const Packet &packet,
                             size_t offset,
                             size_t *decodedBytes,
@@ -254,7 +254,7 @@ private:
     //Timestamp       m_fakeNextPts;
     //Timestamp       m_fakeCurrPts;
 
-    Stream2         m_stream;
+    Stream          m_stream;
     bool            m_isOpened = false;
 };
 

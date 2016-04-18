@@ -19,7 +19,7 @@ CodecContext::CodecContext()
     m_raw = avcodec_alloc_context3(nullptr);
 }
 
-CodecContext::CodecContext(const Stream2 &st, const Codec &codec)
+CodecContext::CodecContext(const Stream &st, const Codec &codec)
     : m_stream(st)
 {
     m_raw = st.raw()->codec;
@@ -253,7 +253,7 @@ void CodecContext::setTimeBase(const Rational &value)
     RAW_SET2(isValid(), time_base, value.getValue());
 }
 
-const Stream2 &CodecContext::stream() const
+const Stream &CodecContext::stream() const
 {
     return m_stream;
 }
@@ -626,26 +626,26 @@ bool CodecContext::isFlags2(int flags)
     return false;
 }
 
-VideoFrame2 CodecContext::decodeVideo(const Packet &packet, error_code &ec, bool autoAllocateFrame)
+VideoFrame CodecContext::decodeVideo(const Packet &packet, error_code &ec, bool autoAllocateFrame)
 {
     return decodeVideo(ec, packet, 0, nullptr, autoAllocateFrame);
 }
 
-VideoFrame2 CodecContext::decodeVideo(const Packet &packet, size_t offset, size_t &decodedBytes, error_code &ec, bool autoAllocateFrame)
+VideoFrame CodecContext::decodeVideo(const Packet &packet, size_t offset, size_t &decodedBytes, error_code &ec, bool autoAllocateFrame)
 {
     return decodeVideo(ec, packet, offset, &decodedBytes, autoAllocateFrame);
 }
 
 Packet CodecContext::encodeVideo(error_code &ec)
 {
-    return encodeVideo(VideoFrame2(nullptr), ec);
+    return encodeVideo(VideoFrame(nullptr), ec);
 }
 
-VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
+VideoFrame CodecContext::decodeVideo(error_code &ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
 {
     clear_if(ec);
 
-    VideoFrame2 outFrame;
+    VideoFrame outFrame;
     if (!autoAllocateFrame)
     {
         outFrame = {pixelFormat(), width(), height(), 32};
@@ -653,7 +653,7 @@ VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size
         if (!outFrame.isValid())
         {
             throws_if(ec, Errors::FrameInvalid);
-            return VideoFrame2();
+            return VideoFrame();
         }
     }
 
@@ -662,11 +662,11 @@ VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size
 
     if (get<1>(st)) {
         throws_if(ec, get<0>(st), *get<1>(st));
-        return VideoFrame2();
+        return VideoFrame();
     }
 
     if (!gotFrame)
-        return VideoFrame2();
+        return VideoFrame();
 
     outFrame.setPictureType(AV_PICTURE_TYPE_I);
 
@@ -677,7 +677,7 @@ VideoFrame2 CodecContext::decodeVideo(error_code &ec, const Packet &packet, size
 }
 
 
-Packet CodecContext::encodeVideo(const VideoFrame2 &inFrame, error_code &ec)
+Packet CodecContext::encodeVideo(const VideoFrame &inFrame, error_code &ec)
 {
     clear_if(ec);
 
@@ -703,23 +703,23 @@ Packet CodecContext::encodeVideo(const VideoFrame2 &inFrame, error_code &ec)
     return packet;
 }
 
-AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, error_code &ec)
+AudioSamples CodecContext::decodeAudio(const Packet &inPacket, error_code &ec)
 {
     return decodeAudio(inPacket, 0, ec);
 }
 
-AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, size_t offset, error_code &ec)
+AudioSamples CodecContext::decodeAudio(const Packet &inPacket, size_t offset, error_code &ec)
 {
     clear_if(ec);
 
-    AudioSamples2 outSamples;
+    AudioSamples outSamples;
 
     int gotFrame = 0;
     auto st = decodeCommon(outSamples, inPacket, offset, gotFrame, avcodec_decode_audio4);
     if (get<1>(st))
     {
         throws_if(ec, get<0>(st), *get<1>(st));
-        return AudioSamples2();
+        return AudioSamples();
     }
 
     if (!gotFrame)
@@ -737,10 +737,10 @@ AudioSamples2 CodecContext::decodeAudio(const Packet &inPacket, size_t offset, e
 
 Packet CodecContext::encodeAudio(error_code &ec)
 {
-    return encodeAudio(AudioSamples2(nullptr), ec);
+    return encodeAudio(AudioSamples(nullptr), ec);
 }
 
-Packet CodecContext::encodeAudio(const AudioSamples2 &inSamples, error_code &ec)
+Packet CodecContext::encodeAudio(const AudioSamples &inSamples, error_code &ec)
 {
     clear_if(ec);
 

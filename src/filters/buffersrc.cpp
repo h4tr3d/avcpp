@@ -28,7 +28,7 @@ BufferSrcFilterContext &BufferSrcFilterContext::operator=(const FilterContext &c
     return *this;
 }
 
-void BufferSrcFilterContext::addVideoFrame(VideoFrame2 &frame, int flags, error_code &ec)
+void BufferSrcFilterContext::addVideoFrame(VideoFrame &frame, int flags, error_code &ec)
 {
     if (m_type == FilterMediaType::Video) {
         addFrame(frame.raw(), flags, ec);
@@ -37,12 +37,12 @@ void BufferSrcFilterContext::addVideoFrame(VideoFrame2 &frame, int flags, error_
     }
 }
 
-void BufferSrcFilterContext::addVideoFrame(VideoFrame2 &frame, error_code &ec)
+void BufferSrcFilterContext::addVideoFrame(VideoFrame &frame, error_code &ec)
 {
     addVideoFrame(frame, 0, ec);
 }
 
-void BufferSrcFilterContext::writeVideoFrame(const VideoFrame2 &frame, error_code &ec)
+void BufferSrcFilterContext::writeVideoFrame(const VideoFrame &frame, error_code &ec)
 {
     if (m_type == FilterMediaType::Video) {
         writeFrame(frame.raw(), ec);
@@ -51,7 +51,7 @@ void BufferSrcFilterContext::writeVideoFrame(const VideoFrame2 &frame, error_cod
     }
 }
 
-void BufferSrcFilterContext::addAudioSamples(AudioSamples2 &samples, int flags, error_code &ec)
+void BufferSrcFilterContext::addAudioSamples(AudioSamples &samples, int flags, error_code &ec)
 {
     if (m_type == FilterMediaType::Audio) {
         addFrame(samples.raw(), flags, ec);
@@ -60,12 +60,12 @@ void BufferSrcFilterContext::addAudioSamples(AudioSamples2 &samples, int flags, 
     }
 }
 
-void BufferSrcFilterContext::addAudioSamples(AudioSamples2 &samples, error_code &ec)
+void BufferSrcFilterContext::addAudioSamples(AudioSamples &samples, error_code &ec)
 {
     addAudioSamples(samples, 0, ec);
 }
 
-void BufferSrcFilterContext::writeAudioSamples(const AudioSamples2 &samples, error_code &ec)
+void BufferSrcFilterContext::writeAudioSamples(const AudioSamples &samples, error_code &ec)
 {
     if (m_type == FilterMediaType::Audio) {
         writeFrame(samples.raw(), ec);

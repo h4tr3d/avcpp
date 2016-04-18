@@ -117,7 +117,7 @@ SampleFormat AudioResampler::srcSampleFormat() const
     return m_srcFormat;
 }
 
-bool AudioResampler::pop(AudioSamples2 &dst, bool getall, error_code &ec)
+bool AudioResampler::pop(AudioSamples &dst, bool getall, error_code &ec)
 {
     clear_if(ec);
 
@@ -170,7 +170,7 @@ bool AudioResampler::pop(AudioSamples2 &dst, bool getall, error_code &ec)
     return dst.samplesCount() ? true : false;
 }
 
-AudioSamples2 AudioResampler::pop(size_t samplesCount, error_code &ec)
+AudioSamples AudioResampler::pop(size_t samplesCount, error_code &ec)
 {
     clear_if(ec);
 
@@ -178,7 +178,7 @@ AudioSamples2 AudioResampler::pop(size_t samplesCount, error_code &ec)
     {
         fflog(AV_LOG_ERROR, "SwrContext does not inited\n");
         throws_if(ec, Errors::ResamplerNotInited);
-        return AudioSamples2(nullptr);
+        return AudioSamples(nullptr);
     }
 
     auto delay = swr_get_delay(m_raw, m_dstRate);
@@ -186,24 +186,24 @@ AudioSamples2 AudioResampler::pop(size_t samplesCount, error_code &ec)
     // Need more data
     if ((size_t)delay < samplesCount && samplesCount)
     {
-        return AudioSamples2(nullptr);
+        return AudioSamples(nullptr);
     }
 
     if (!samplesCount)
         samplesCount = delay; // Request all samples
 
-    AudioSamples2 dst(dstSampleFormat(), samplesCount, dstChannelLayout(), dstSampleRate());
+    AudioSamples dst(dstSampleFormat(), samplesCount, dstChannelLayout(), dstSampleRate());
     if (!dst.isValid())
     {
         throws_if(ec, Errors::CantAllocateFrame);
-        return AudioSamples2(nullptr);
+        return AudioSamples(nullptr);
     }
 
     auto sts = swr_convert_frame(m_raw, dst.raw(), nullptr);
     if (sts < 0)
     {
         throws_if(ec, sts, ffmpeg_category());
-        return AudioSamples2(nullptr);
+        return AudioSamples(nullptr);
     }
 
     dst.setTimeBase(Rational(1, m_dstRate));
@@ -217,10 +217,10 @@ AudioSamples2 AudioResampler::pop(size_t samplesCount, error_code &ec)
     dst.setPts(m_nextPts);
     m_nextPts = dst.pts() + Timestamp(dst.samplesCount(), dst.timeBase());
 
-    return dst.samplesCount() ? std::move(dst) : AudioSamples2::null();
+    return dst.samplesCount() ? std::move(dst) : AudioSamples::null();
 }
 
-void AudioResampler::push(const AudioSamples2 &src, error_code &ec)
+void AudioResampler::push(const AudioSamples &src, error_code &ec)
 {
     if (!m_raw)
     {

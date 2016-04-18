@@ -64,8 +64,8 @@ public:
 
     int32_t flags() const { return m_flags; }
 
-    void        rescale(VideoFrame2 &dst, const VideoFrame2 &src, std::error_code &ec = throws());
-    VideoFrame2 rescale(const VideoFrame2 &src, std::error_code &ec);
+    void        rescale(VideoFrame &dst, const VideoFrame &src, std::error_code &ec = throws());
+    VideoFrame rescale(const VideoFrame &src, std::error_code &ec);
 
     bool isValid() const;
 

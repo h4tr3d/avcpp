@@ -55,11 +55,9 @@ public:
      */
     void setPts(int64_t pts,     const Rational &tsTimeBase = Rational(0, 0)) attribute_deprecated;
     void setDts(int64_t dts,     const Rational &tsTimeBase = Rational(0, 0)) attribute_deprecated;
-    //void setFakePts(int64_t pts, const Rational &tsTimeBase = Rational(0, 0)) attribute_deprecated;
 
     void setPts(const Timestamp &pts);
     void setDts(const Timestamp &dts);
-    //void setFakePts(const Timestamp &pts);
 
     int     streamIndex() const;
     bool    isKeyPacket() const;
@@ -78,7 +76,7 @@ public:
     void        addFlags(int flags);
     void        clearFlags(int flags);
 
-    void        dump(const Stream2 & st, bool dumpPayload = false) const;
+    void        dump(const Stream & st, bool dumpPayload = false) const;
 
     const Rational& timeBase() const { return m_timeBase; }
     void setTimeBase(const Rational &value);
