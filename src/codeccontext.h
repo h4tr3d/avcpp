@@ -18,7 +18,6 @@ extern "C" {
 
 namespace av {
 
-attribute_deprecated2("Use family of the VideoEncoderContext/VideoDecoderContext/AudioEncoderContext/AudioDecoderContext classes")
 class CodecContext : public FFWrapperPtr<AVCodecContext>, public noncopyable
 {
 private:
@@ -253,17 +252,17 @@ private:
 private:
     Direction       m_direction = Direction::Invalid;
     Stream          m_stream;
-};
+} attribute_deprecated2("Use family of the VideoEncoderContext/VideoDecoderContext/AudioEncoderContext/AudioDecoderContext classes");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class CodecContextBase : public FFWrapperPtr<AVCodecContext>, public noncopyable
+class CodecContext2 : public FFWrapperPtr<AVCodecContext>, public noncopyable
 {
 protected:
-    void swap(CodecContextBase &other);
+    void swap(CodecContext2 &other);
 
     //
     // No directly created
@@ -272,18 +271,18 @@ protected:
     using BaseWrapper = FFWrapperPtr<AVCodecContext>;
     using BaseWrapper::BaseWrapper;
 
-    CodecContextBase();
+    CodecContext2();
 
     // Stream decoding/encoding
-    CodecContextBase(const Stream &st,
+    CodecContext2(const Stream &st,
                      const Codec& codec,
                      Direction direction,
                      AVMediaType type);
 
     // Stream independ decoding/encoding
-    CodecContextBase(const Codec &codec, Direction direction, AVMediaType type);
+    CodecContext2(const Codec &codec, Direction direction, AVMediaType type);
 
-    ~CodecContextBase();
+    ~CodecContext2();
 
     void setCodec(const Codec &codec, bool resetDefaults, Direction direction, AVMediaType type, std::error_code &ec = throws());
 
@@ -315,7 +314,7 @@ public:
      * @param other  stream or codec context
      */
     /// @{
-    void copyContextFrom(const CodecContextBase &other, std::error_code &ec = throws());
+    void copyContextFrom(const CodecContext2 &other, std::error_code &ec = throws());
     /// @}
 
     Rational timeBase() const noexcept;
@@ -466,7 +465,7 @@ private:
 
 
 template<typename Clazz, Direction _direction, AVMediaType _type>
-class CodecContext2 : public CodecContextBase
+class CodecContextBase : public CodecContext2
 {
 protected:
     Clazz& moveOperator(Clazz &&rhs)
@@ -479,20 +478,20 @@ protected:
 
 public:
 
-    CodecContext2()
-        : CodecContextBase()
+    CodecContextBase()
+        : CodecContext2()
     {
     }
 
     // Stream decoding/encoding
-    explicit CodecContext2(const Stream &st, const Codec& codec = Codec())
-        : CodecContextBase(st, codec, _direction, _type)
+    explicit CodecContextBase(const Stream &st, const Codec& codec = Codec())
+        : CodecContext2(st, codec, _direction, _type)
     {
     }
 
     // Stream independ decoding/encoding
-    explicit CodecContext2(const Codec &codec)
-        : CodecContextBase(codec, _direction, _type)
+    explicit CodecContextBase(const Codec &codec)
+        : CodecContext2(codec, _direction, _type)
     {
         if (checkCodec(codec, throws()))
             m_raw = avcodec_alloc_context3(codec.raw());
@@ -501,8 +500,8 @@ public:
     //
     // Disable copy/Activate move
     //
-    CodecContext2(Clazz &&other)
-        : CodecContext2()
+    CodecContextBase(Clazz &&other)
+        : CodecContextBase()
     {
         swap(other);
     }
@@ -525,40 +524,12 @@ public:
     }
 };
 
-#if 0
-template<typename Clazz, Direction _direction, AVMediaType _type>
-class CodecContext2 : public FFWrapperPtr<AVCodecContext>, public noncopyable
-{
-    // Audio
-#if 0
-    int            sampleRate() const;
-    int            channels() const;
-    SampleFormat   sampleFormat() const;
-    uint64_t       channelLayout() const;
-
-    void        setSampleRate(int sampleRate);
-    void        setChannels(int channels);
-    void        setSampleFormat(SampleFormat sampleFormat);
-    void        setChannelLayout(uint64_t layout);
-#endif
-
-    //
-    // Audio
-    //
-    AudioSamples decodeAudio(const Packet &inPacket, std::error_code &ec = throws());
-    AudioSamples decodeAudio(const Packet &inPacket, size_t offset, std::error_code &ec = throws());
-
-    Packet encodeAudio(std::error_code &ec = throws());
-    Packet encodeAudio(const AudioSamples &inSamples, std::error_code &ec = throws());
-};
-#endif
-
 
 template<typename Clazz, Direction _direction>
-class VideoCodecContext : public CodecContext2<Clazz, _direction, AVMEDIA_TYPE_VIDEO>
+class VideoCodecContext : public CodecContextBase<Clazz, _direction, AVMEDIA_TYPE_VIDEO>
 {
 public:
-    using Parent = CodecContext2<Clazz, _direction, AVMEDIA_TYPE_VIDEO>;
+    using Parent = CodecContextBase<Clazz, _direction, AVMEDIA_TYPE_VIDEO>;
     using Parent::Parent;
     using Parent::isValid;
     using Parent::isOpened;
@@ -760,6 +731,137 @@ public:
      * @return
      */
     Packet encode(const VideoFrame &inFrame, std::error_code &ec = throws());
+
+};
+
+
+template<typename Clazz, Direction _direction>
+class AudioCodecContext : public CodecContextBase<Clazz, _direction, AVMEDIA_TYPE_AUDIO>
+{
+public:
+    using Parent = CodecContextBase<Clazz, _direction, AVMEDIA_TYPE_AUDIO>;
+    using Parent::Parent;
+    using Parent::isValid;
+    using Parent::isOpened;
+
+    int sampleRate() const noexcept
+    {
+        return RAW_GET2(isValid(), sample_rate, 0);
+    }
+
+    int channels() const noexcept
+    {
+        if (!isValid())
+            return 0;
+
+        if (m_raw->channels)
+            return m_raw->channels;
+
+        if (m_raw->channel_layout)
+            return av_get_channel_layout_nb_channels(m_raw->channel_layout);
+
+        return 0;
+    }
+
+    SampleFormat sampleFormat() const noexcept
+    {
+        return RAW_GET2(isValid(), sample_fmt, AV_SAMPLE_FMT_NONE);
+    }
+
+    uint64_t channelLayout() const noexcept
+    {
+        if (!isValid())
+            return 0;
+
+        if (m_raw->channel_layout)
+            return m_raw->channel_layout;
+
+        if (m_raw->channels)
+            return av_get_default_channel_layout(m_raw->channels);
+
+        return 0;
+    }
+
+    void setSampleRate(int sampleRate) noexcept
+    {
+        if (!isValid())
+            return;
+        int sr = guessValue(sampleRate, m_raw->codec->supported_samplerates, EqualComparator<int>(0));
+        if (sr != sampleRate)
+        {
+            fflog(AV_LOG_INFO, "Guess sample rate %d instead unsupported %d\n", sr, sampleRate);
+        }
+        if (sr > 0)
+            m_raw->sample_rate = sr;
+    }
+
+    void setChannels(int channels) noexcept
+    {
+        if (!isValid() || channels <= 0)
+            return;
+        m_raw->channels = channels;
+        if (m_raw->channel_layout != 0 ||
+            av_get_channel_layout_nb_channels(m_raw->channel_layout) != channels) {
+            m_raw->channel_layout = av_get_default_channel_layout(channels);
+        }
+    }
+
+    void setSampleFormat(SampleFormat sampleFormat) noexcept
+    {
+        RAW_SET2(isValid(), sample_fmt, sampleFormat);
+    }
+
+    void setChannelLayout(uint64_t layout) noexcept
+    {
+        if (!isValid() || layout == 0)
+            return;
+
+        m_raw->channel_layout = layout;
+
+        // Make channels and channel_layout sync
+        if (m_raw->channels == 0 ||
+            (uint64_t)av_get_default_channel_layout(m_raw->channels) != layout)
+        {
+            m_raw->channels = av_get_channel_layout_nb_channels(layout);
+        }
+    }
+
+protected:
+    using Parent::moveOperator;
+    using Parent::m_raw;
+};
+
+
+class AudioDecoderContext : public AudioCodecContext<AudioDecoderContext, Direction::Decoding>
+{
+public:
+    using Parent = AudioCodecContext<AudioDecoderContext, Direction::Decoding>;
+    using Parent::Parent;
+
+    AudioDecoderContext() = default;
+    AudioDecoderContext(AudioDecoderContext&& other);
+
+    AudioDecoderContext& operator=(AudioDecoderContext&& other);
+
+    AudioSamples decode(const Packet &inPacket, std::error_code &ec = throws());
+    AudioSamples decode(const Packet &inPacket, size_t offset, std::error_code &ec = throws());
+
+};
+
+
+class AudioEncoderContext : public AudioCodecContext<AudioEncoderContext, Direction::Encoding>
+{
+public:
+    using Parent = AudioCodecContext<AudioEncoderContext, Direction::Encoding>;
+    using Parent::Parent;
+
+    AudioEncoderContext() = default;
+    AudioEncoderContext(AudioEncoderContext&& other);
+
+    AudioEncoderContext& operator=(AudioEncoderContext&& other);
+
+    Packet encode(std::error_code &ec = throws());
+    Packet encode(const AudioSamples &inSamples, std::error_code &ec = throws());
 
 };
 
