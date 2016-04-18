@@ -270,6 +270,14 @@ protected:
         swap(m_raw, other.m_raw);
     }
 
+    Clazz& moveOperator(Clazz &&rhs)
+    {
+        if (this == &rhs)
+            return static_cast<Clazz&>(*this);
+        Clazz(std::forward<Clazz>(rhs)).swap(static_cast<Clazz&>(*this));
+        return static_cast<Clazz&>(*this);
+    }
+
 public:
 
     using BaseWrapper = FFWrapperPtr<AVCodecContext>;
@@ -327,6 +335,7 @@ public:
         swap(other);
     }
 
+#if 0
     Clazz& operator=(Clazz &&rhs)
     {
         if (this == &rhs)
@@ -335,6 +344,7 @@ public:
         Clazz(std::move(rhs)).swap(*this);
         return *this;
     }
+#endif
     //
 
     // Common
@@ -1040,6 +1050,7 @@ public:
     }
 
 protected:
+    using Parent::moveOperator;
     using Parent::m_raw;
 
 //    template<typename T>
@@ -1055,6 +1066,9 @@ public:
     using Parent::Parent;
 
     VideoDecoderContext() = default;
+    VideoDecoderContext(VideoDecoderContext&& other);
+
+    VideoDecoderContext& operator=(VideoDecoderContext&& other);
 
     /**
      * @brief decodeVideo  - decode video packet
@@ -1108,6 +1122,9 @@ public:
     using Parent::Parent;
 
     VideoEncoderContext() = default;
+    VideoEncoderContext(VideoEncoderContext&& other);
+
+    VideoEncoderContext& operator=(VideoEncoderContext&& other);
 
     /**
      * @brief encodeVideo - Flush encoder

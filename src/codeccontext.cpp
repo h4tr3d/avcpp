@@ -958,6 +958,16 @@ std::pair<ssize_t, const error_category *> CodecContext::encodeCommon(Packet & o
     return st;
 }
 
+VideoDecoderContext::VideoDecoderContext(VideoDecoderContext &&other)
+    : Parent(std::move(other))
+{
+}
+
+VideoDecoderContext &VideoDecoderContext::operator=(VideoDecoderContext&& other)
+{
+    return moveOperator(std::move(other));
+}
+
 VideoFrame VideoDecoderContext::decode(const Packet &packet, error_code &ec, bool autoAllocateFrame)
 {
     return decodeVideo(ec, packet, 0, nullptr, autoAllocateFrame);
@@ -1001,6 +1011,16 @@ VideoFrame VideoDecoderContext::decodeVideo(error_code &ec, const Packet &packet
         *decodedBytes = get<0>(st);
 
     return outFrame;
+}
+
+VideoEncoderContext::VideoEncoderContext(VideoEncoderContext &&other)
+    : Parent(std::move(other))
+{
+}
+
+VideoEncoderContext &VideoEncoderContext::operator=(VideoEncoderContext&& other)
+{
+    return moveOperator(std::move(other));
 }
 
 Packet VideoEncoderContext::encode(error_code &ec)
