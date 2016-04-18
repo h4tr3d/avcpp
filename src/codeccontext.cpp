@@ -27,7 +27,7 @@ CodecContext::CodecContext(const Stream &st, const Codec &codec)
     Codec c = codec;
 
     if (codec.isNull()) {
-        if (st.direction() == Direction::DECODING)
+        if (st.direction() == Direction::Decoding)
             c = findDecodingCodec(m_raw->codec_id);
         else
             c = findEncodingCodec(m_raw->codec_id);
@@ -104,14 +104,14 @@ void CodecContext::setCodec(const Codec &codec, bool resetDefaults, error_code &
         fflog(AV_LOG_WARNING, "Try to set null codec\n");
     }
 
-    if (m_direction == Direction::ENCODING && codec.canEncode() == false)
+    if (m_direction == Direction::Encoding && codec.canEncode() == false)
     {
         fflog(AV_LOG_WARNING, "Encoding context, but codec does not support encoding\n");
         throws_if(ec, Errors::CodecInvalidDirection);
         return;
     }
 
-    if (m_direction == Direction::DECODING && codec.canDecode() == false)
+    if (m_direction == Direction::Decoding && codec.canDecode() == false)
     {
         fflog(AV_LOG_WARNING, "Decoding context, but codec does not support decoding\n");
         throws_if(ec, Errors::CodecInvalidDirection);
@@ -318,14 +318,14 @@ int CodecContext::frameNumber() const
     return RAW_GET2(isValid(), frame_number, 0);
 }
 
-bool CodecContext::isRefCountedFrames() const
+bool CodecContext::isRefCountedFrames() const noexcept
 {
     return RAW_GET2(isValid(), refcounted_frames, false);
 }
 
-void CodecContext::setRefCountedFrames(bool refcounted) const
+void CodecContext::setRefCountedFrames(bool refcounted) const noexcept
 {
-    RAW_SET2(isValid(), refcounted_frames, refcounted);
+    RAW_SET2(isValid() && !isOpened(), refcounted_frames, refcounted);
 }
 
 int CodecContext::width() const
@@ -783,7 +783,7 @@ bool CodecContext::isValidForEncode()
         return false;
     }
 
-    if (m_direction == Direction::DECODING)
+    if (m_direction == Direction::Decoding)
     {
         fflog(AV_LOG_WARNING, "Decoding coder does not valid for encoding\n");
         return false;
@@ -956,6 +956,82 @@ std::pair<ssize_t, const error_category *> CodecContext::encodeCommon(Packet & o
     outPacket.setComplete(true);
 
     return st;
+}
+
+VideoFrame VideoDecoderContext::decode(const Packet &packet, error_code &ec, bool autoAllocateFrame)
+{
+    return decodeVideo(ec, packet, 0, nullptr, autoAllocateFrame);
+}
+
+VideoFrame VideoDecoderContext::decode(const Packet &packet, size_t offset, size_t &decodedBytes, error_code &ec, bool autoAllocateFrame)
+{
+    return decodeVideo(ec, packet, offset, &decodedBytes, autoAllocateFrame);
+}
+
+VideoFrame VideoDecoderContext::decodeVideo(error_code &ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
+{
+    clear_if(ec);
+
+    VideoFrame outFrame;
+    if (!autoAllocateFrame)
+    {
+        outFrame = {pixelFormat(), width(), height(), 32};
+
+        if (!outFrame.isValid())
+        {
+            throws_if(ec, Errors::FrameInvalid);
+            return VideoFrame();
+        }
+    }
+
+    int gotFrame = 0;
+    auto st = decodeCommon(outFrame, packet, offset, gotFrame, avcodec_decode_video2);
+
+    if (get<1>(st)) {
+        throws_if(ec, get<0>(st), *get<1>(st));
+        return VideoFrame();
+    }
+
+    if (!gotFrame)
+        return VideoFrame();
+
+    outFrame.setPictureType(AV_PICTURE_TYPE_I);
+
+    if (decodedBytes)
+        *decodedBytes = get<0>(st);
+
+    return outFrame;
+}
+
+Packet VideoEncoderContext::encode(error_code &ec)
+{
+    return encode(VideoFrame(nullptr), ec);
+}
+
+Packet VideoEncoderContext::encode(const VideoFrame &inFrame, error_code &ec)
+{
+    clear_if(ec);
+
+    int gotPacket = 0;
+    Packet packet;
+    auto st = encodeCommon(packet, inFrame, gotPacket, avcodec_encode_video2);
+
+    if (get<1>(st)) {
+        throws_if(ec, get<0>(st), *get<1>(st));
+        return Packet();
+    }
+
+    if (!gotPacket) {
+        packet.setComplete(false);
+        return packet;
+    }
+
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(56, 60, 100)
+    packet.setKeyPacket(!!m_raw->coded_frame->key_frame);
+#endif
+
+    packet.setComplete(true);
+    return packet;
 }
 
 

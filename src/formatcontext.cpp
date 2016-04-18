@@ -178,7 +178,7 @@ Stream FormatContext::stream(size_t idx)
     if (!m_raw || idx >= m_raw->nb_streams)
         return Stream(m_monitor);
 
-    return Stream(m_monitor, m_raw->streams[idx], isOutput() ? Direction::ENCODING : Direction::DECODING);
+    return Stream(m_monitor, m_raw->streams[idx], isOutput() ? Direction::Encoding : Direction::Decoding);
 }
 
 Stream FormatContext::stream(size_t idx, error_code &ec)
@@ -220,7 +220,7 @@ Stream FormatContext::addStream(const Codec &codec, error_code &ec)
         return Stream();
     }
 
-    auto stream = Stream(m_monitor, st, Direction::ENCODING);
+    auto stream = Stream(m_monitor, st, Direction::Encoding);
 
     if (st->codec) {
         if (outputFormat().isFlags(AVFMT_GLOBALHEADER)) {
