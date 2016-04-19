@@ -174,10 +174,20 @@ CodecContext2::CodecContext2(const Codec &codec, Direction direction, AVMediaTyp
 
 CodecContext2::~CodecContext2()
 {
+    //
+    // Do not track stream-oriented codec:
+    //  - Stream always owned by FormatContext
+    //  - Stream always can be obtained from the FormatContext
+    //  - CodecContext can be obtained at any time from the Stream
+    //  - If FormatContext closed, all streams destroyed: all opened codec context closed too.
+    // So only stream-independ CodecContext's must be tracked and closed in ctor.
+    //
+    if (!m_stream.isNull())
+        return;
+
     std::error_code ec;
     close(ec);
-    if (m_stream.isNull())
-        av_freep(&m_raw);
+    av_freep(&m_raw);
 }
 
 void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction direction, AVMediaType type, error_code &ec)
