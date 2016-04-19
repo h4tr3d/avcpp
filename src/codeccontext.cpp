@@ -280,9 +280,7 @@ void CodecContext2::close(error_code &ec)
     clear_if(ec);
     if (isOpened())
     {
-        if (isValid()) {
-            avcodec_close(m_raw);
-        }
+        avcodec_close(m_raw);
         return;
     }
     throws_if(ec, Errors::CodecNotOpened);
@@ -290,7 +288,7 @@ void CodecContext2::close(error_code &ec)
 
 bool CodecContext2::isOpened() const noexcept
 {
-    return m_raw ? avcodec_is_open(m_raw) : false;
+    return isValid() ? avcodec_is_open(m_raw) : false;
 }
 
 bool CodecContext2::isValid() const noexcept
