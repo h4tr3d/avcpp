@@ -33,8 +33,8 @@ int main(int argc, char **argv)
     string out (argv[2]);
 
     ssize_t      audioStream = -1;
-    CodecContext adec;
-    Stream2      ast;
+    AudioDecoderContext adec;
+    Stream       ast;
     error_code   ec;
 
     int count = 0;
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
         }
 
         if (ast.isValid()) {
-            adec = CodecContext(ast);
+            adec = AudioDecoderContext(ast);
 
 
             Codec codec = findDecodingCodec(adec.raw()->codec_id);
@@ -98,8 +98,8 @@ int main(int argc, char **argv)
         octx.setFormat(ofmt);
 
         Codec        ocodec = av::findEncodingCodec(ofmt, false);
-        Stream2      ost    = octx.addStream(ocodec);
-        CodecContext enc (ost);
+        Stream      ost    = octx.addStream(ocodec);
+        AudioEncoderContext enc (ost);
 
         clog << ocodec.name() << " / " << ocodec.longName() << ", audio: " << (ocodec.type()==AVMEDIA_TYPE_AUDIO) << '\n';
 
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
             }
 #endif
 
-            AudioSamples2 samples = adec.decodeAudio(pkt, ec);
+            auto samples = adec.decode(pkt, ec);
             count++;
             //if (count > 200)
             //    break;
@@ -241,10 +241,10 @@ int main(int argc, char **argv)
             // Pop resampler data
             bool getAll = !samples;
             while (true) {
-                AudioSamples2 ouSamples(enc.sampleFormat(),
-                                        enc.frameSize(),
-                                        enc.channelLayout(),
-                                        enc.sampleRate());
+                AudioSamples ouSamples(enc.sampleFormat(),
+                                       enc.frameSize(),
+                                       enc.channelLayout(),
+                                       enc.sampleRate());
 
                 // Resample:
                 bool hasFrame = resampler.pop(ouSamples, getAll, ec);
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
                 ouSamples.setStreamIndex(0);
                 ouSamples.setTimeBase(enc.timeBase());
 
-                Packet opkt = enc.encodeAudio(ouSamples, ec);
+                Packet opkt = enc.encode(ouSamples, ec);
                 if (ec) {
                     cerr << "Encoding error: " << ec << ", " << ec.message() << endl;
                     return 1;
@@ -301,8 +301,8 @@ int main(int argc, char **argv)
         //
         clog << "Flush encoder:\n";
         while (true) {
-            AudioSamples2 null(nullptr);
-            Packet        opkt = enc.encodeAudio(null, ec);
+            AudioSamples null(nullptr);
+            Packet        opkt = enc.encode(null, ec);
             if (ec || !opkt)
                 break;
 

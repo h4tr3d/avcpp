@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     //
     FormatContext ictx;
     ssize_t      videoStream = -1;
-    CodecContext vdec;
+    VideoDecoderContext vdec;
     Stream      vst;
 
     int count = 0;
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     }
 
     if (vst.isValid()) {
-        vdec = CodecContext(vst);
+        vdec = VideoDecoderContext(vst);
         vdec.setRefCountedFrames(true);
 
         cerr << "PTR: " << (void*)vdec.raw()->codec << endl;
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
     Codec        ocodec  = findEncodingCodec(ofrmt);
     Stream      ost     = octx.addStream(ocodec);
-    CodecContext encoder {ost};
+    VideoEncoderContext encoder {ost};
 
     // Settings
     encoder.setWidth(vdec.width() * 2);
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
         clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
         // DECODING
-        auto inpFrame = vdec.decodeVideo(pkt, ec);
+        auto inpFrame = vdec.decode(pkt, ec);
 
         count++;
         if (count > 200)
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
              << " / type: " << outFrame.pictureType()  << endl;
 
         // ENCODE
-        Packet opkt = encoder.encodeVideo(outFrame, ec);
+        Packet opkt = encoder.encode(outFrame, ec);
         if (ec) {
             cerr << "Encoding error: " << ec << endl;
             return 1;

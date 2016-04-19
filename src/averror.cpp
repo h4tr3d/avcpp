@@ -32,6 +32,7 @@ std::string AvcppCategory::message(int ev) const
         case Errors::CodecDecodingOffsetToLarge: return "Decoding packet offset biggest packet size";
         case Errors::CodecInvalidForEncode: return "Codec context can't encode data";
         case Errors::CodecInvalidForDecoce: return "Codec context can't decode data";
+        case Errors::CodecInvalidMediaType: return "Codec context invalid media type";
         case Errors::FrameInvalid: return "Frame invalid (unallocated)";
         case Errors::DictOutOfRage: return "Dictionary index out of range";
         case Errors::DictNoKey: return "Dictionary does not contain entry with given key";

@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     string uri {argv[1]};
 
     ssize_t      audioStream = -1;
-    CodecContext adec;
+    AudioDecoderContext adec;
     Stream      ast;
     error_code   ec;
 
@@ -77,8 +77,7 @@ int main(int argc, char **argv)
         }
 
         if (ast.isValid()) {
-            adec = CodecContext(ast);
-
+            adec = AudioDecoderContext(ast);
 
             Codec codec = findDecodingCodec(adec.raw()->codec_id);
 
@@ -120,7 +119,7 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            AudioSamples samples = adec.decodeAudio(pkt, ec);
+            AudioSamples samples = adec.decode(pkt, ec);
 
             if (ec) {
                 cerr << "Error: " << ec << endl;
