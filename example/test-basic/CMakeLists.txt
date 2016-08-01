@@ -19,7 +19,5 @@ target_link_libraries(${AV_TEST_TARGET}
 )
 
 if(WIN32)
-target_link_libraries(${AV_TARGET}
-    ws2_32
-)
+  target_link_libraries(${AV_TEST_TARGET} ws2_32)
 endif()
