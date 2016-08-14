@@ -24,10 +24,6 @@ target_link_libraries(${AV_TARGET}_static
 )
 
 if(WIN32)
-target_link_libraries(${AV_TARGET}
-    ws2_32
-)
-target_link_libraries(${AV_TARGET}_static
-    ws2_32
-)
+  target_link_libraries(${AV_TARGET} ws2_32)
+  target_link_libraries(${AV_TARGET}_static ws2_32)
 endif()

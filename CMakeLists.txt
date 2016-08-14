@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.8)
 project(AvCpp)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+
 set(FFMPEG_PKG_CONFIG_SUFFIX "" CACHE STRING "This suffix uses for FFmpeg component names searches by pkg-config")
 
 include_directories(.)
@@ -30,17 +32,8 @@ else ()
 endif ()
 
 find_package(Threads)
-find_package(PkgConfig)
-
-pkg_check_modules(FFMPEG REQUIRED
-    libavformat${FFMPEG_PKG_CONFIG_SUFFIX}
-    libavcodec${FFMPEG_PKG_CONFIG_SUFFIX}
-    libswscale${FFMPEG_PKG_CONFIG_SUFFIX}
-    libswresample${FFMPEG_PKG_CONFIG_SUFFIX}
-    libavutil${FFMPEG_PKG_CONFIG_SUFFIX}
-    libavfilter${FFMPEG_PKG_CONFIG_SUFFIX}
-    libavdevice${FFMPEG_PKG_CONFIG_SUFFIX}
-)
+find_package(FFmpeg
+    COMPONENTS AVCODEC AVFORMAT AVUTIL AVDEVICE AVFILTER SWSCALE SWRESAMPLE REQUIRED)
 
 include_directories(${FFMPEG_INCLUDE_DIRS})
 
