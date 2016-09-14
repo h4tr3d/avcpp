@@ -101,6 +101,19 @@ bool operator!=(const Timestamp& left, const Timestamp &right) noexcept
     return !operator==(left, right);
 }
 
+inline
+bool operator>=(const Timestamp& left, const Timestamp& right) noexcept
+{
+    return av_compare_ts(left.timestamp(), left.timebase(),
+                         right.timestamp(), right.timebase()) >= 0;
+}
+
+inline
+bool operator<=(const Timestamp& left, const Timestamp& right) noexcept
+{
+    return av_compare_ts(left.timestamp(), left.timebase(),
+                         right.timestamp(), right.timebase()) <= 0;
+}
 
 //
 // Math operations
