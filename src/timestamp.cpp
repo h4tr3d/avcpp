@@ -59,6 +59,27 @@ Timestamp &Timestamp::operator+=(const Timestamp &other)
     return *this;
 }
 
+Timestamp &Timestamp::operator-=(const Timestamp &other)
+{
+    auto tmp = *this - other;
+    m_timestamp = tmp.timestamp(m_timebase);
+    return *this;
+}
+
+Timestamp &Timestamp::operator*=(const Timestamp &other)
+{
+    auto tmp = *this * other;
+    m_timestamp = tmp.timestamp(m_timebase);
+    return *this;
+}
+
+Timestamp &Timestamp::operator/=(const Timestamp &other)
+{
+    auto tmp = *this / other;
+    m_timestamp = tmp.timestamp(m_timebase);
+    return *this;
+}
+
 Timestamp::operator bool() const noexcept
 {
     return m_timestamp != AV_NOPTS_VALUE;

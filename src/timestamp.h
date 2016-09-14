@@ -61,6 +61,9 @@ public:
     }
 
     Timestamp& operator+=(const Timestamp &other);
+    Timestamp& operator-=(const Timestamp &other);
+    Timestamp& operator*=(const Timestamp &other);
+    Timestamp& operator/=(const Timestamp &other);
 
 private:
     int64_t  m_timestamp = AV_NOPTS_VALUE;
