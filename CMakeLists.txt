@@ -11,7 +11,7 @@ if(CMAKE_CROSSCOMPILING)
   set(QT_HEADERS_DIR "/usr/i486-mingw32/include")
   set(QT_LIBRARY_DIR "/usr/i486-mingw32/lib")
 
-  set(CMAKE_EXE_LINKER_FLAGS 
+  set(CMAKE_EXE_LINKER_FLAGS
     "${CMAKE_EXE_LINKER_FLAGS} -Wl,-subsystem,console -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc")
 endif()
 
@@ -42,3 +42,4 @@ add_subdirectory(src)
 #add_subdirectory(example/sample-transcode)
 add_subdirectory(example/api2-samples)
 #add_subdirectory(example/sample-view)
+

@@ -1,6 +1,12 @@
 # vim: ts=2 sw=2
 # - Try to find the required ffmpeg components(default: AVFORMAT, AVUTIL, AVCODEC)
 #
+# Next variables can be used to hint FFmpeg libs search:
+#  PC_<component>_LIBRARY_DIRS
+#  PC_FFMPEG_LIBRARY_DIRS
+#  PC_<component>_INCLUDE_DIRS
+#  PC_FFMPEG_INCLUDE_DIRS
+#
 # Once done this will define
 #  FFMPEG_FOUND         - System has the all required components.
 #  FFMPEG_INCLUDE_DIRS  - Include directory necessary for using the required components headers.
@@ -58,19 +64,20 @@ endmacro()
 #
 macro(find_component _component _pkgconfig _library _header)
 
-  if (NOT WIN32)
+  #if (NOT WIN32)
      # use pkg-config to get the directories and then use these values
      # in the FIND_PATH() and FIND_LIBRARY() calls
      find_package(PkgConfig)
      if (PKG_CONFIG_FOUND)
        pkg_check_modules(PC_${_component} REQUIRED ${_pkgconfig})
      endif ()
-  endif (NOT WIN32)
+  #endif (NOT WIN32)
 
   find_path(${_component}_INCLUDE_DIRS ${_header}
     HINTS
       ${PC_${_component}_INCLUDEDIR}
       ${PC_${_component}_INCLUDE_DIRS}
+      ${PC_FFMPEG_INCLUDE_DIRS}
     PATH_SUFFIXES
       ffmpeg
   )
@@ -79,6 +86,7 @@ macro(find_component _component _pkgconfig _library _header)
       HINTS
       ${PC_${_component}_LIBDIR}
       ${PC_${_component}_LIBRARY_DIRS}
+      ${PC_FFMPEG_LIBRARY_DIRS}
   )
 
   set(${_component}_DEFINITIONS  ${PC_${_component}_CFLAGS_OTHER} CACHE STRING "The ${_component} CFLAGS.")
