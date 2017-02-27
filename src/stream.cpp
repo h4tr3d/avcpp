@@ -58,7 +58,11 @@ Timestamp Stream::currentDts() const
 
 AVMediaType Stream::mediaType() const
 {
+#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(57,5,0)
     return RAW_GET2(isValid() && m_raw->codec, codec->codec_type, AVMEDIA_TYPE_UNKNOWN);
+#else
+    return RAW_GET2(isValid() && m_raw->codecpar, codecpar->codec_type, AVMEDIA_TYPE_UNKNOWN);
+#endif
 }
 
 bool Stream::isAudio() const

@@ -27,7 +27,7 @@ int main(int argc, char **argv)
         return 1;
 
     av::init();
-    av::setFFmpegLoggingLevel(AV_LOG_DEBUG);
+    av::setFFmpegLoggingLevel(AV_LOG_TRACE);
 
     string uri (argv[1]);
     string out (argv[2]);
@@ -73,13 +73,12 @@ int main(int argc, char **argv)
         if (ast.isValid()) {
             adec = AudioDecoderContext(ast);
 
+            //Codec codec = findDecodingCodec(adec.raw()->codec_id);
 
-            Codec codec = findDecodingCodec(adec.raw()->codec_id);
+            //adec.setCodec(codec);
+            //adec.setRefCountedFrames(true);
 
-            adec.setCodec(codec);
-            adec.setRefCountedFrames(true);
-
-            adec.open(Codec(), ec);
+            adec.open(ec);
 
             if (ec) {
                 cerr << "Can't open codec\n";

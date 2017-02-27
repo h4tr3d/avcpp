@@ -13,6 +13,7 @@
 
 extern "C" {
 #include <libavcodec/avcodec.h>
+#include <libavformat/version.h>
 }
 
 #include "codeccontext_deprecated.h"
@@ -169,8 +170,11 @@ public:
         if (frame->pts == AV_NOPTS_VALUE)
             frame->pts = av_frame_get_best_effort_timestamp(frame);
 
+        // Or: AVCODEC < 57.24.0 if this macro will be removes in future
+#if !defined(FF_API_PKT_PTS)
         if (frame->pts == AV_NOPTS_VALUE)
             frame->pts = frame->pkt_pts;
+#endif
 
         if (frame->pts == AV_NOPTS_VALUE)
             frame->pts = frame->pkt_dts;
@@ -205,9 +209,13 @@ public:
             outPacket.setTimeBase(inFrame.timeBase());
             outPacket.setStreamIndex(inFrame.streamIndex());
         } else if (m_stream.isValid()) {
+#if LIBAVFORMAT_VERSION_INT >= AV_VERSION_INT(57, 51, 100)
+            outPacket.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
+#else
             if (m_stream.raw()->codec) {
                 outPacket.setTimeBase(m_stream.raw()->codec->time_base);
             }
+#endif
             outPacket.setStreamIndex(m_stream.index());
         }
 
@@ -307,7 +315,7 @@ public:
     //
     // Disable copy/Activate move
     //
-    CodecContextBase(Clazz &&other)
+    CodecContextBase(CodecContextBase &&other)
         : CodecContextBase()
     {
         swap(other);

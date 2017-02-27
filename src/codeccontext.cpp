@@ -28,6 +28,113 @@ make_error_pair(ssize_t status)
 } // ::anonymous
 } // ::av
 
+namespace {
+
+#define NEW_CODEC_API (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57,37,100))
+
+#if NEW_CODEC_API
+// Use avcodec_send_packet() and avcodec_receive_frame()
+int decode(AVCodecContext *avctx,
+           AVFrame *picture,
+           int *got_picture_ptr,
+           const AVPacket *avpkt)
+{
+    if (got_picture_ptr)
+        *got_picture_ptr = 0;
+
+    int ret;
+    if (avpkt) {
+        ret = avcodec_send_packet(avctx, avpkt);
+        if (ret < 0 && ret != AVERROR_EOF)
+            return ret;
+    }
+
+    ret = avcodec_receive_frame(avctx, picture);
+    if (ret < 0 && ret != AVERROR(EAGAIN))
+        return ret;
+    if (ret >= 0 && got_picture_ptr)
+        *got_picture_ptr = 1;
+
+    return 0;
+}
+
+// Use avcodec_send_frame() and avcodec_receive_packet()
+int encode(AVCodecContext *avctx,
+           AVPacket *avpkt,
+           const AVFrame *frame,
+           int *got_packet_ptr)
+{
+    if (got_packet_ptr)
+        *got_packet_ptr = 0;
+
+    int ret;
+    if (frame) {
+        ret = avcodec_send_frame(avctx, frame);
+        if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+            return ret;
+    }
+
+    ret = avcodec_receive_packet(avctx, avpkt);
+    if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+        return ret;
+    if (got_packet_ptr)
+        *got_packet_ptr = 1;
+    return 0;
+}
+
+int avcodec_decode_video_legacy(AVCodecContext *avctx, AVFrame *picture,
+                                int *got_picture_ptr,
+                                const AVPacket *avpkt)
+{
+    return decode(avctx, picture, got_picture_ptr, avpkt);
+}
+
+int avcodec_encode_video_legacy(AVCodecContext *avctx, AVPacket *avpkt,
+                                const AVFrame *frame, int *got_packet_ptr)
+{
+    return encode(avctx, avpkt, frame, got_packet_ptr);
+}
+
+int avcodec_decode_audio_legacy(AVCodecContext *avctx, AVFrame *frame,
+                                int *got_frame_ptr, const AVPacket *avpkt)
+{
+    return decode(avctx, frame, got_frame_ptr, avpkt);
+}
+
+int avcodec_encode_audio_legacy(AVCodecContext *avctx, AVPacket *avpkt,
+                          const AVFrame *frame, int *got_packet_ptr)
+{
+    return encode(avctx, avpkt, frame, got_packet_ptr);
+}
+#else
+int avcodec_decode_video_legacy(AVCodecContext *avctx, AVFrame *picture,
+                                int *got_picture_ptr,
+                                const AVPacket *avpkt)
+{
+    return avcodec_decode_video2(avctx, picture, got_picture_ptr, avpkt);
+}
+
+int avcodec_encode_video_legacy(AVCodecContext *avctx, AVPacket *avpkt,
+                                const AVFrame *frame, int *got_packet_ptr)
+{
+    return avcodec_encode_video2(avctx, avpkt, frame, got_packet_ptr);
+}
+
+int avcodec_decode_audio_legacy(AVCodecContext *avctx, AVFrame *frame,
+                                int *got_frame_ptr, const AVPacket *avpkt)
+{
+    return avcodec_decode_audio4(avctx, frame, got_frame_ptr, avpkt);
+}
+
+int avcodec_encode_audio_legacy(AVCodecContext *avctx, AVPacket *avpkt,
+                          const AVFrame *frame, int *got_packet_ptr)
+{
+    return avcodec_encode_audio2(avctx, avpkt, frame, got_packet_ptr);
+}
+#endif
+
+} //::anonymous
+
 #include "codeccontext_deprecated.inl"
 
 namespace av {
@@ -70,7 +177,7 @@ VideoFrame VideoDecoderContext::decodeVideo(error_code &ec, const Packet &packet
     }
 
     int gotFrame = 0;
-    auto st = decodeCommon(outFrame, packet, offset, gotFrame, avcodec_decode_video2);
+    auto st = decodeCommon(outFrame, packet, offset, gotFrame, avcodec_decode_video_legacy);
 
     if (get<1>(st)) {
         throws_if(ec, get<0>(st), *get<1>(st));
@@ -109,7 +216,7 @@ Packet VideoEncoderContext::encode(const VideoFrame &inFrame, error_code &ec)
 
     int gotPacket = 0;
     Packet packet;
-    auto st = encodeCommon(packet, inFrame, gotPacket, avcodec_encode_video2);
+    auto st = encodeCommon(packet, inFrame, gotPacket, avcodec_encode_video_legacy);
 
     if (get<1>(st)) {
         throws_if(ec, get<0>(st), *get<1>(st));
@@ -150,20 +257,34 @@ CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction dir
     if (st.mediaType() != type)
         throw av::Exception(make_avcpp_error(Errors::CodecInvalidMediaType));
 
-    m_raw = st.raw()->codec;
+#if !defined(FF_API_LAVF_AVCTX)
+    auto const codecId = st.raw()->codec->codec_id;
+#else
+    auto const codecId = st.raw()->codecpar->codec_id;
+#endif
 
     Codec c = codec;
-
     if (codec.isNull())
     {
         if (st.direction() == Direction::Decoding)
-            c = findDecodingCodec(m_raw->codec_id);
+            c = findDecodingCodec(codecId);
         else
-            c = findEncodingCodec(m_raw->codec_id);
+            c = findEncodingCodec(codecId);
     }
 
+#if !defined(FF_API_LAVF_AVCTX)
+    m_raw = st.raw()->codec;
     if (!c.isNull())
         setCodec(c, false, direction, type);
+#else
+    m_raw = avcodec_alloc_context3(c.raw());
+    if (m_raw) {
+        avcodec_parameters_to_context(m_raw, st.raw()->codecpar);
+    }
+
+    clog << "Channels [0]: " << st.raw()->codecpar->channels << ", layout: 0x" << hex << st.raw()->codecpar->channel_layout << endl;
+    clog << "Channels [1]: " << m_raw->channels << ", layout: 0x" << hex << m_raw->channel_layout << endl;
+#endif
 }
 
 CodecContext2::CodecContext2(const Codec &codec, Direction direction, AVMediaType type)
@@ -181,13 +302,16 @@ CodecContext2::~CodecContext2()
     //  - CodecContext can be obtained at any time from the Stream
     //  - If FormatContext closed, all streams destroyed: all opened codec context closed too.
     // So only stream-independ CodecContext's must be tracked and closed in ctor.
+    // Note: new FFmpeg API declares, that AVStream not owned by codec and deals only with codecpar
     //
+#if !defined(FF_API_LAVF_AVCTX)
     if (!m_stream.isNull())
         return;
+#endif
 
     std::error_code ec;
     close(ec);
-    av_freep(&m_raw);
+    avcodec_free_context(&m_raw);
 }
 
 void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction direction, AVMediaType type, error_code &ec)
@@ -236,9 +360,14 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
         }
     }
 
+#if !defined(FF_API_LAVF_AVCTX) // AVFORMAT < 57.5.0
     if (m_stream.isValid()) {
         m_stream.raw()->codec = m_raw;
     }
+#else
+    //if (m_stream.isValid())
+    //    avcodec_parameters_from_context(m_stream.raw()->codecpar, m_raw);
+#endif
 }
 
 AVMediaType CodecContext2::codecType(AVMediaType contextType) const noexcept
@@ -339,10 +468,16 @@ void CodecContext2::copyContextFrom(const CodecContext2 &other, error_code &ec)
         return;
     }
 
+#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(57,5,0)
     int stat = avcodec_copy_context(m_raw, other.m_raw);
-    m_raw->codec_tag = 0;
     if (stat < 0)
         throws_if(ec, stat, ffmpeg_category());
+#else
+    AVCodecParameters params{};
+    avcodec_parameters_from_context(&params, other.m_raw);
+    avcodec_parameters_to_context(m_raw, &params);
+#endif
+    m_raw->codec_tag = 0;
 }
 
 Rational CodecContext2::timeBase() const noexcept
@@ -576,7 +711,7 @@ void CodecContext2::open(const Codec &codec, AVDictionary **options, error_code 
         return;
     }
 
-    int stat = avcodec_open2(m_raw, codec.isNull() ? m_raw->codec : codec.raw(), options);
+    int stat = avcodec_open2(m_raw, codec.raw(), options);
     if (stat < 0)
         throws_if(ec, stat, ffmpeg_category());
 }
@@ -651,7 +786,7 @@ AudioSamples AudioDecoderContext::decode(const Packet &inPacket, size_t offset, 
     AudioSamples outSamples;
 
     int gotFrame = 0;
-    auto st = decodeCommon(outSamples, inPacket, offset, gotFrame, avcodec_decode_audio4);
+    auto st = decodeCommon(outSamples, inPacket, offset, gotFrame, avcodec_decode_audio_legacy);
     if (get<1>(st))
     {
         throws_if(ec, get<0>(st), *get<1>(st));
@@ -692,7 +827,7 @@ Packet AudioEncoderContext::encode(const AudioSamples &inSamples, error_code &ec
     Packet outPacket;
 
     int gotFrame = 0;
-    auto st = encodeCommon(outPacket, inSamples, gotFrame, avcodec_encode_audio2);
+    auto st = encodeCommon(outPacket, inSamples, gotFrame, avcodec_encode_audio_legacy);
     if (get<1>(st))
     {
         throws_if(ec, get<0>(st), *get<1>(st));
