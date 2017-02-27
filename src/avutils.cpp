@@ -1,3 +1,7 @@
+#ifdef _WIN32
+#  include <windows.h>
+#endif
+
 #include <signal.h>
 
 #include "av.h"
@@ -85,7 +89,7 @@ void dumpBinaryBuffer(uint8_t *buffer, int buffer_size, int width)
     }
 }
 
-
+#if !defined(__MINGW32__) || defined(_GLIBCXX_HAS_GTHREADS)
 static int avcpp_lockmgr_cb(void **ctx, enum AVLockOp op)
 {
     if (!ctx)
@@ -117,6 +121,45 @@ static int avcpp_lockmgr_cb(void **ctx, enum AVLockOp op)
 
     return ret;
 }
+#elif _WIN32
+// MinGW with Win32 thread model
+static int avcpp_lockmgr_cb(void **ctx, enum AVLockOp op)
+{
+    if (!ctx)
+        return 1;
+
+    CRITICAL_SECTION *sec = static_cast<CRITICAL_SECTION*>(*ctx);
+
+    int ret = 0;
+    switch (op)
+    {
+        case AV_LOCK_CREATE:
+            sec = new CRITICAL_SECTION;
+            InitializeCriticalSection(sec);
+            *ctx = sec;
+            break;
+        case AV_LOCK_OBTAIN:
+            if (sec)
+                EnterCriticalSection(sec);
+            break;
+        case AV_LOCK_RELEASE:
+            if (sec)
+                LeaveCriticalSection(sec);
+            break;
+        case AV_LOCK_DESTROY:
+            if (ctx) {
+                DeleteCriticalSection(sec);
+                delete sec;
+            }
+            *ctx = nullptr;
+            break;
+    }
+
+    return ret;
+}
+#else
+#  error "Unknown Threading model"
+#endif
 
 
 void init()
