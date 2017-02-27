@@ -82,12 +82,15 @@ macro(find_component _component _pkgconfig _library _header)
       ffmpeg
   )
 
-  find_library(${_component}_LIBRARIES NAMES ${_library} ${PC_${_component}_LIBRARIES}
+  find_library(${_component}_LIBRARIES NAMES ${PC_${_component}_LIBRARIES} ${_library}
       HINTS
       ${PC_${_component}_LIBDIR}
       ${PC_${_component}_LIBRARY_DIRS}
       ${PC_FFMPEG_LIBRARY_DIRS}
   )
+
+  #message(STATUS ${${_component}_LIBRARIES})
+  #message(STATUS ${PC_${_component}_LIBRARIES})
 
   set(${_component}_DEFINITIONS  ${PC_${_component}_CFLAGS_OTHER} CACHE STRING "The ${_component} CFLAGS.")
   set(${_component}_VERSION      ${PC_${_component}_VERSION}      CACHE STRING "The ${_component} version number.")

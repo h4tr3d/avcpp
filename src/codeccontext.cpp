@@ -281,9 +281,6 @@ CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction dir
     if (m_raw) {
         avcodec_parameters_to_context(m_raw, st.raw()->codecpar);
     }
-
-    clog << "Channels [0]: " << st.raw()->codecpar->channels << ", layout: 0x" << hex << st.raw()->codecpar->channel_layout << endl;
-    clog << "Channels [1]: " << m_raw->channels << ", layout: 0x" << hex << m_raw->channel_layout << endl;
 #endif
 }
 
