@@ -8,7 +8,7 @@
 #include "frame.h"
 #include "avutils.h"
 #include "pixelformat.h"
-#include <averror.h>
+#include "averror.h"
 
 namespace av
 {
