@@ -3,8 +3,8 @@ AvCpp License
 
 AvCpp can be used under one of two licenses.
 
-1. The GNU Lesser General Public License, version 2.1, in LICENSE-lgpl2.txt
-2. A BSD-Style License, in LICENSE-bsd.txt.
+1. The GNU Lesser General Public License, version 2.1, in [LICENSE-lgpl2.txt](LICENSE-lgpl2.txt)
+2. A BSD-Style License, in [LICENSE-bsd.txt](LICENSE-bsd.txt).
 
 The license chosen is at the discretion of the user of AvCpp. For example:
 
