@@ -20,7 +20,7 @@ find_package(Threads)
 find_package(FFmpeg
     COMPONENTS AVCODEC AVFORMAT AVUTIL AVDEVICE AVFILTER SWSCALE SWRESAMPLE REQUIRED)
 
-include_directories(${FFMPEG_INCLUDE_DIRS})
+#NEW    include_directories(${FFMPEG_INCLUDE_DIRS})
 
 add_subdirectory(src)
 #add_subdirectory(example/test-basic)

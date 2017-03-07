@@ -1,36 +1,60 @@
-# vim: ts=2 sw=2
-# - Try to find the required ffmpeg components(default: AVFORMAT, AVUTIL, AVCODEC)
+#.rst:
+# FindFFmpeg
+# ----------
+#
+# Try to find the required ffmpeg components (default: AVFORMAT, AVUTIL, AVCODEC)
 #
 # Next variables can be used to hint FFmpeg libs search:
-#  PC_<component>_LIBRARY_DIRS
-#  PC_FFMPEG_LIBRARY_DIRS
-#  PC_<component>_INCLUDE_DIRS
-#  PC_FFMPEG_INCLUDE_DIRS
+#
+# ::
+#
+#   PC_<component>_LIBRARY_DIRS
+#   PC_FFMPEG_LIBRARY_DIRS
+#   PC_<component>_INCLUDE_DIRS
+#   PC_FFMPEG_INCLUDE_DIRS
 #
 # Once done this will define
-#  FFMPEG_FOUND         - System has the all required components.
-#  FFMPEG_INCLUDE_DIRS  - Include directory necessary for using the required components headers.
-#  FFMPEG_LIBRARIES     - Link these to use the required ffmpeg components.
-#  FFMPEG_DEFINITIONS   - Compiler switches required for using the required ffmpeg components.
+#
+# ::
+#
+#   FFMPEG_FOUND         - System has the all required components.
+#   FFMPEG_INCLUDE_DIRS  - Include directory necessary for using the required components headers.
+#   FFMPEG_LIBRARIES     - Link these to use the required ffmpeg components.
+#   FFMPEG_DEFINITIONS   - Compiler switches required for using the required ffmpeg components.
 #
 # For each of the components it will additionally set.
-#   - AVCODEC
-#   - AVDEVICE
-#   - AVFORMAT
-#   - AVFILTER
-#   - AVUTIL
-#   - POSTPROC
-#   - SWSCALE
+#
+# ::
+#
+#   AVCODEC
+#   AVDEVICE
+#   AVFORMAT
+#   AVFILTER
+#   AVUTIL
+#   POSTPROC
+#   SWSCALE
+#
 # the following variables will be defined
-#  <component>_FOUND        - System has <component>
-#  <component>_INCLUDE_DIRS - Include directory necessary for using the <component> headers
-#  <component>_LIBRARIES    - Link these to use <component>
-#  <component>_DEFINITIONS  - Compiler switches required for using <component>
-#  <component>_VERSION      - The components version
+#
+# ::
+#
+#   <component>_FOUND        - System has <component>
+#   <component>_INCLUDE_DIRS - Include directory necessary for using the <component> headers
+#   <component>_LIBRARIES    - Link these to use <component>
+#   <component>_DEFINITIONS  - Compiler switches required for using <component>
+#   <component>_VERSION      - The components version
+#
+# the following import targets is created
+#
+# ::
+#
+#   FFmpeg::FFmpeg - for all components
+#   FFmpeg::<component> - where <component> in lower case (FFmpeg::avcodec) for each components
 #
 # Copyright (c) 2006, Matthias Kretz, <kretz@kde.org>
 # Copyright (c) 2008, Alexander Neundorf, <neundorf@kde.org>
 # Copyright (c) 2011, Michael Jansen, <kde@michael-jansen.biz>
+# Copyright (c) 2017, Alexander Drozdov, <adrozdoff@gmail.com>
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
@@ -126,6 +150,16 @@ if (NOT FFMPEG_LIBRARIES)
       set(FFMPEG_LIBRARIES   ${FFMPEG_LIBRARIES}   ${${_component}_LIBRARIES})
       set(FFMPEG_DEFINITIONS ${FFMPEG_DEFINITIONS} ${${_component}_DEFINITIONS})
       list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
+
+      string(TOLOWER ${_component} _lowerComponent)
+      if (NOT TARGET FFmpeg::${_lowerComponent})
+        add_library(FFmpeg::${_lowerComponent} INTERFACE IMPORTED)
+        set_target_properties(FFmpeg::${_lowerComponent} PROPERTIES
+            INTERFACE_COMPILE_OPTIONS "${${_component}_DEFINITIONS}"
+            INTERFACE_INCLUDE_DIRECTORIES ${${_component}_INCLUDE_DIRS}
+            INTERFACE_LINK_LIBRARIES "${${_component}_LIBRARIES}")
+      endif()
+
     else ()
       # message(STATUS "Required component ${_component} missing.")
     endif ()
@@ -135,6 +169,14 @@ if (NOT FFMPEG_LIBRARIES)
   if (FFMPEG_INCLUDE_DIRS)
     list(REMOVE_DUPLICATES FFMPEG_INCLUDE_DIRS)
   endif ()
+
+  if (NOT TARGET FFmpeg::FFmpeg)
+    add_library(FFmpeg::FFmpeg INTERFACE IMPORTED)
+    set_target_properties(FFmpeg::FFmpeg PROPERTIES
+        INTERFACE_COMPILE_OPTIONS "${FFMPEG_DEFINITIONS}"
+        INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_INCLUDE_DIRS}
+        INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}")
+  endif()
 
   # cache the vars.
   set(FFMPEG_INCLUDE_DIRS ${FFMPEG_INCLUDE_DIRS} CACHE STRING "The FFmpeg include directories." FORCE)

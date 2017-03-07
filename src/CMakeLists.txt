@@ -5,9 +5,6 @@ file(GLOB_RECURSE AV_HEADERS "*.h" "*.hpp")
 
 set(AV_TARGET avcpp)
 
-link_directories(${FFMPEG_LIBRARY_DIRS})
-message(STATUS "FFMPEG library dir: " ${FFMPEG_LIBRARY_DIRS})
-
 add_library(${AV_TARGET}        SHARED ${AV_SOURCES})
 add_library(${AV_TARGET}_static STATIC ${AV_SOURCES})
 
@@ -15,12 +12,12 @@ set_target_properties(${AV_TARGET}_static PROPERTIES OUTPUT_NAME ${AV_TARGET})
 
 target_link_libraries(${AV_TARGET}
     Threads::Threads
-    ${FFMPEG_LIBRARIES}
+    FFmpeg::FFmpeg
 )
 
 target_link_libraries(${AV_TARGET}_static
     Threads::Threads
-    ${FFMPEG_LIBRARIES}
+    FFmpeg::FFmpeg
 )
 
 set(PLATFORM_LIBS
