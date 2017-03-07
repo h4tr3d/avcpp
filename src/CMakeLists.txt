@@ -14,12 +14,12 @@ add_library(${AV_TARGET}_static STATIC ${AV_SOURCES})
 set_target_properties(${AV_TARGET}_static PROPERTIES OUTPUT_NAME ${AV_TARGET})
 
 target_link_libraries(${AV_TARGET}
-    ${CMAKE_THREAD_LIBS_INIT}
+    Threads::Threads
     ${FFMPEG_LIBRARIES}
 )
 
 target_link_libraries(${AV_TARGET}_static
-    ${CMAKE_THREAD_LIBS_INIT}
+    Threads::Threads
     ${FFMPEG_LIBRARIES}
 )
 
