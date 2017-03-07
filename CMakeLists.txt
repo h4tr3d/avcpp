@@ -7,14 +7,6 @@ set(FFMPEG_PKG_CONFIG_SUFFIX "" CACHE STRING "This suffix uses for FFmpeg compon
 
 include_directories(.)
 
-if(CMAKE_CROSSCOMPILING)
-  set(QT_HEADERS_DIR "/usr/i486-mingw32/include")
-  set(QT_LIBRARY_DIR "/usr/i486-mingw32/lib")
-
-  set(CMAKE_EXE_LINKER_FLAGS
-    "${CMAKE_EXE_LINKER_FLAGS} -Wl,-subsystem,console -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc")
-endif()
-
 add_definitions(-D__STDC_CONSTANT_MACROS)
 
 # Compiler-specific C++11 activation.
