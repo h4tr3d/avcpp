@@ -58,8 +58,10 @@ Timestamp Stream::currentDts() const
 
 AVMediaType Stream::mediaType() const
 {
-#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(57,5,0)
+#if !USE_CODECPAR
+    FF_DISABLE_DEPRECATION_WARNINGS
     return RAW_GET2(isValid() && m_raw->codec, codec->codec_type, AVMEDIA_TYPE_UNKNOWN);
+    FF_ENABLE_DEPRECATION_WARNINGS
 #else
     return RAW_GET2(isValid() && m_raw->codecpar, codecpar->codec_type, AVMEDIA_TYPE_UNKNOWN);
 #endif

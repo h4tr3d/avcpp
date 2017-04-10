@@ -209,12 +209,14 @@ public:
             outPacket.setTimeBase(inFrame.timeBase());
             outPacket.setStreamIndex(inFrame.streamIndex());
         } else if (m_stream.isValid()) {
-#if LIBAVFORMAT_VERSION_INT >= AV_VERSION_INT(57, 51, 100)
+#if USE_CODECPAR
             outPacket.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
 #else
+            FF_DISABLE_DEPRECATION_WARNINGS
             if (m_stream.raw()->codec) {
                 outPacket.setTimeBase(m_stream.raw()->codec->time_base);
             }
+            FF_ENABLE_DEPRECATION_WARNINGS
 #endif
             outPacket.setStreamIndex(m_stream.index());
         }

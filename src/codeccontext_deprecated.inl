@@ -25,8 +25,10 @@ CodecContextDeprecated::CodecContextDeprecated(const Stream &st, const Codec &co
 
     Codec c = codec;
 
-#if !defined(FF_API_LAVF_AVCTX)
+#if !USE_CODECPAR
+    FF_DISABLE_DEPRECATION_WARNINGS
     auto const codecId = st.raw()->codec->codec_id;
+    FF_ENABLE_DEPRECATION_WARNINGS
 #else
     auto const codecId = st.raw()->codecpar->codec_id;
 #endif
@@ -40,8 +42,10 @@ CodecContextDeprecated::CodecContextDeprecated(const Stream &st, const Codec &co
     }
 
 
-#if !defined(FF_API_LAVF_AVCTX)
+#if !USE_CODECPAR
+    FF_DISABLE_DEPRECATION_WARNINGS
     m_raw = st.raw()->codec;
+    FF_ENABLE_DEPRECATION_WARNINGS
 #else
     m_raw = avcodec_alloc_context3(c.raw());
 #endif
@@ -59,7 +63,7 @@ CodecContextDeprecated::CodecContextDeprecated(const Codec &codec)
 
 CodecContextDeprecated::~CodecContextDeprecated()
 {
-#if !defined(FF_API_LAVF_AVCTX)
+#if !USE_CODECPAR
     if (m_stream.isNull())
         return;
 #endif
@@ -155,10 +159,12 @@ void CodecContextDeprecated::setCodec(const Codec &codec, bool resetDefaults, er
         }
     }
 
-#if !defined(FF_API_LAVF_AVCTX) // AVFORMAT < 57.5.0
+#if !USE_CODECPAR
+    FF_DISABLE_DEPRECATION_WARNINGS
     if (m_stream.isValid()) {
         m_stream.raw()->codec = m_raw;
     }
+    FF_ENABLE_DEPRECATION_WARNINGS
 #else
     avcodec_parameters_from_context(m_stream.raw()->codecpar, m_raw);
 #endif
@@ -259,10 +265,12 @@ void CodecContextDeprecated::copyContextFrom(const CodecContextDeprecated &other
         return;
     }
 
-#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(57,5,0)
+#if !USE_CODECPAR
+    FF_DISABLE_DEPRECATION_WARNINGS
     int stat = avcodec_copy_context(m_raw, other.m_raw);
     if (stat < 0)
         throws_if(ec, stat, ffmpeg_category());
+    FF_ENABLE_DEPRECATION_WARNINGS
 #else
     AVCodecParameters params{};
     avcodec_parameters_from_context(&params, other.m_raw);
@@ -951,12 +959,14 @@ std::pair<ssize_t, const error_category *> CodecContextDeprecated::encodeCommon(
         outPacket.setTimeBase(inFrame.timeBase());
         outPacket.setStreamIndex(inFrame.streamIndex());
     } else if (m_stream.isValid()) {
-#if LIBAVFORMAT_VERSION_INT >= AV_VERSION_INT(57, 51, 100)
-            outPacket.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
+#if USE_CODECPAR
+        outPacket.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
 #else
-            if (m_stream.raw()->codec) {
-                outPacket.setTimeBase(m_stream.raw()->codec->time_base);
-            }
+        FF_DISABLE_DEPRECATION_WARNINGS
+        if (m_stream.raw()->codec) {
+            outPacket.setTimeBase(m_stream.raw()->codec->time_base);
+        }
+        FF_ENABLE_DEPRECATION_WARNINGS
 #endif
         outPacket.setStreamIndex(m_stream.index());
     }
