@@ -22,19 +22,19 @@ private:
     void initCommon();
 
     // if deepCopy true - make deep copy, instead - reference is created
-    void initFromAVPacket(const AVPacket *avpacket, bool deepCopy, std::error_code &ec);
+    void initFromAVPacket(const AVPacket *avpacket, bool deepCopy, OptionalErrorCode ec);
 
 public:
     Packet();
-    Packet(const Packet &packet, std::error_code &ec = throws());
+    Packet(const Packet &packet, OptionalErrorCode ec = throws());
     Packet(Packet &&packet);
-    explicit Packet(const AVPacket *packet, std::error_code &ec = throws());
+    explicit Packet(const AVPacket *packet, OptionalErrorCode ec = throws());
     explicit Packet(const std::vector<uint8_t> &data);
     Packet(const uint8_t *data, size_t size, bool doAllign = true);
     ~Packet();
 
-    bool setData(const std::vector<uint8_t> &newData, std::error_code &ec = throws());
-    bool setData(const uint8_t *newData, size_t size, std::error_code &ec = throws());
+    bool setData(const std::vector<uint8_t> &newData, OptionalErrorCode ec = throws());
+    bool setData(const uint8_t *newData, size_t size, OptionalErrorCode ec = throws());
 
     const uint8_t* data() const { return m_raw.data; }
     uint8_t*       data() { return m_raw.data; }
@@ -83,8 +83,8 @@ public:
 
     bool     isReferenced() const;
     int      refCount() const;
-    AVPacket makeRef(std::error_code &ec = throws()) const;
-    Packet   clone(std::error_code &ec = throws()) const;
+    AVPacket makeRef(OptionalErrorCode ec = throws()) const;
+    Packet   clone(OptionalErrorCode ec = throws()) const;
 
     Packet &operator=(const Packet &rhs);
     Packet &operator=(Packet &&rhs);

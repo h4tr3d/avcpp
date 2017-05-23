@@ -33,26 +33,26 @@ public:
 
     // Public API
 
-    FilterContext filter(const std::string& name, std::error_code &ec = throws());
-    FilterContext filter(unsigned idx, std::error_code &ec = throws());
+    FilterContext filter(const std::string& name, OptionalErrorCode ec = throws());
+    FilterContext filter(unsigned idx, OptionalErrorCode ec = throws());
 
-    FilterContext allocFilter(const Filter &filter, const std::string &name, std::error_code &ec = throws());
+    FilterContext allocFilter(const Filter &filter, const std::string &name, OptionalErrorCode ec = throws());
     FilterContext createFilter(const Filter &filter,
                                const std::string& filterName,
                                const std::string& filterArgs,
-                               std::error_code &ec = throws());
+                               OptionalErrorCode ec = throws());
 
     void parse(const std::string &graphDescription,
                FilterContext     &srcFilterCtx,
                FilterContext     &sinkFilterCtx,
-               std::error_code   &ec = throws());
+               OptionalErrorCode  ec = throws());
 
-    void config(std::error_code &ec = throws());
+    void config(OptionalErrorCode ec = throws());
 
     std::string dump(bool doPrint = true, const std::string& options = std::string());
 
-    BufferSrcFilterContext  bufferSrcFilter(std::error_code &ec = throws());
-    BufferSinkFilterContext bufferSinkFilter(std::error_code &ec = throws());
+    BufferSrcFilterContext  bufferSrcFilter(OptionalErrorCode ec = throws());
+    BufferSinkFilterContext bufferSinkFilter(OptionalErrorCode ec = throws());
 
 
 private:

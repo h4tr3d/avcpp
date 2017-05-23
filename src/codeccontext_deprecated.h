@@ -35,17 +35,17 @@ public:
     CodecContextDeprecated& operator=(CodecContextDeprecated &&rhs);
 
     // Common
-    void setCodec(const Codec &codec, std::error_code &ec = throws());
-    void setCodec(const Codec &codec, bool resetDefaults, std::error_code &ec = throws());
+    void setCodec(const Codec &codec, OptionalErrorCode ec = throws());
+    void setCodec(const Codec &codec, bool resetDefaults, OptionalErrorCode ec = throws());
 
-    void open(std::error_code &ec = throws());
-    void open(const Codec &codec, std::error_code &ec = throws());
-    void open(Dictionary &options, std::error_code &ec = throws());
-    void open(Dictionary &&options, std::error_code &ec = throws());
-    void open(Dictionary &options, const Codec &codec, std::error_code &ec = throws());
-    void open(Dictionary &&options, const Codec &codec, std::error_code &ec = throws());
+    void open(OptionalErrorCode ec = throws());
+    void open(const Codec &codec, OptionalErrorCode ec = throws());
+    void open(Dictionary &options, OptionalErrorCode ec = throws());
+    void open(Dictionary &&options, OptionalErrorCode ec = throws());
+    void open(Dictionary &options, const Codec &codec, OptionalErrorCode ec = throws());
+    void open(Dictionary &&options, const Codec &codec, OptionalErrorCode ec = throws());
 
-    void close(std::error_code &ec = throws());
+    void close(OptionalErrorCode ec = throws());
 
     bool isOpened() const noexcept;
     bool isValid() const noexcept;
@@ -59,7 +59,7 @@ public:
      * @return true if context copied, false otherwise
      */
     /// @{
-    void copyContextFrom(const CodecContextDeprecated &other, std::error_code &ec = throws());
+    void copyContextFrom(const CodecContextDeprecated &other, OptionalErrorCode ec = throws());
 
     /// @}
 
@@ -71,8 +71,8 @@ public:
     Codec       codec() const;
     AVMediaType codecType() const;
 
-    void setOption(const std::string &key, const std::string &val, std::error_code &ec = throws());
-    void setOption(const std::string &key, const std::string &val, int flags, std::error_code &ec = throws());
+    void setOption(const std::string &key, const std::string &val, OptionalErrorCode ec = throws());
+    void setOption(const std::string &key, const std::string &val, int flags, OptionalErrorCode ec = throws());
 
     bool isAudio() const;
     bool isVideo() const;
@@ -159,7 +159,7 @@ public:
      *         output undefined.
      */
     VideoFrame decodeVideo(const Packet    &packet,
-                            std::error_code &ec = throws(),
+                            OptionalErrorCode ec = throws(),
                             bool             autoAllocateFrame = true);
 
     /**
@@ -178,7 +178,7 @@ public:
     VideoFrame decodeVideo(const Packet &packet,
                             size_t offset,
                             size_t &decodedBytes,
-                            std::error_code &ec = throws(),
+                            OptionalErrorCode ec = throws(),
                             bool    autoAllocateFrame = true);
 
     /**
@@ -190,7 +190,7 @@ public:
      *                       av#throws the function will throw on error instead
      * @return
      */
-    Packet encodeVideo(std::error_code &ec = throws());
+    Packet encodeVideo(OptionalErrorCode ec = throws());
 
     /**
      * @brief encodeVideo - encode video frame
@@ -203,23 +203,23 @@ public:
      *                       av#throws the function will throw on error instead
      * @return
      */
-    Packet encodeVideo(const VideoFrame &inFrame, std::error_code &ec = throws());
+    Packet encodeVideo(const VideoFrame &inFrame, OptionalErrorCode ec = throws());
 
     //
     // Audio
     //
-    AudioSamples decodeAudio(const Packet &inPacket, std::error_code &ec = throws());
-    AudioSamples decodeAudio(const Packet &inPacket, size_t offset, std::error_code &ec = throws());
+    AudioSamples decodeAudio(const Packet &inPacket, OptionalErrorCode ec = throws());
+    AudioSamples decodeAudio(const Packet &inPacket, size_t offset, OptionalErrorCode ec = throws());
 
-    Packet encodeAudio(std::error_code &ec = throws());
-    Packet encodeAudio(const AudioSamples &inSamples, std::error_code &ec = throws());
+    Packet encodeAudio(OptionalErrorCode ec = throws());
+    Packet encodeAudio(const AudioSamples &inSamples, OptionalErrorCode ec = throws());
 
     bool    isValidForEncode();
 
 private:
-    void open(const Codec &codec, AVDictionary **options, std::error_code &ec);
+    void open(const Codec &codec, AVDictionary **options, OptionalErrorCode ec);
 
-    VideoFrame decodeVideo(std::error_code &ec,
+    VideoFrame decodeVideo(OptionalErrorCode ec,
                             const Packet &packet,
                             size_t offset,
                             size_t *decodedBytes,

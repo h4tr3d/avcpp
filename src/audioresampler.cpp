@@ -13,7 +13,7 @@ AudioResampler::AudioResampler()
 
 AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                                int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
-                               error_code &ec)
+                               OptionalErrorCode ec)
     : AudioResampler()
 {
     init(dstChannelsLayout, dstRate, dstFormat, srcChannelsLayout, srcRate, srcFormat, ec);
@@ -22,7 +22,7 @@ AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFor
 AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                                int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                                Dictionary &options,
-                               error_code &ec)
+                               OptionalErrorCode ec)
     : AudioResampler()
 {
     init(dstChannelsLayout, dstRate, dstFormat, srcChannelsLayout, srcRate, srcFormat, options, ec);
@@ -31,7 +31,7 @@ AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFor
 AudioResampler::AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                                int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                                Dictionary &&options,
-                               error_code &ec)
+                               OptionalErrorCode ec)
     : AudioResampler()
 {
     init(dstChannelsLayout, dstRate, dstFormat, srcChannelsLayout, srcRate, srcFormat, options, ec);
@@ -117,7 +117,7 @@ SampleFormat AudioResampler::srcSampleFormat() const
     return m_srcFormat;
 }
 
-bool AudioResampler::pop(AudioSamples &dst, bool getall, error_code &ec)
+bool AudioResampler::pop(AudioSamples &dst, bool getall, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -170,7 +170,7 @@ bool AudioResampler::pop(AudioSamples &dst, bool getall, error_code &ec)
     return dst.samplesCount() ? true : false;
 }
 
-AudioSamples AudioResampler::pop(size_t samplesCount, error_code &ec)
+AudioSamples AudioResampler::pop(size_t samplesCount, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -220,7 +220,7 @@ AudioSamples AudioResampler::pop(size_t samplesCount, error_code &ec)
     return dst.samplesCount() ? std::move(dst) : AudioSamples::null();
 }
 
-void AudioResampler::push(const AudioSamples &src, error_code &ec)
+void AudioResampler::push(const AudioSamples &src, OptionalErrorCode ec)
 {
     if (!m_raw)
     {
@@ -277,7 +277,7 @@ int64_t AudioResampler::delay() const
 
 bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                           int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
-                          error_code &ec)
+                          OptionalErrorCode ec)
 {
     return init(dstChannelsLayout, dstRate, dstFormat,
                 srcChannelsLayout, srcRate, srcFormat,
@@ -286,7 +286,7 @@ bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, SampleFormat d
 
 bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                           int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
-                          Dictionary &options, error_code &ec)
+                          Dictionary &options, OptionalErrorCode ec)
 {
     auto ptr = options.release();
     ScopeOutAction onReturn([&ptr, &options](){
@@ -300,7 +300,7 @@ bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, SampleFormat d
 
 bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                           int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
-                          Dictionary &&options, error_code &ec)
+                          Dictionary &&options, OptionalErrorCode ec)
 {
     return init(dstChannelsLayout, dstRate, dstFormat,
                 srcChannelsLayout, srcRate, srcFormat,
@@ -323,7 +323,7 @@ bool AudioResampler::validate(int64_t channelsLayout, int rate, SampleFormat for
 
 bool AudioResampler::init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                           int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
-                          AVDictionary **dict, error_code &ec)
+                          AVDictionary **dict, OptionalErrorCode ec)
 {
     clear_if(ec);
 

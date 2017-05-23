@@ -267,7 +267,7 @@ int AudioSamples::sampleRate() const
     return m_raw ? av_frame_get_sample_rate(m_raw) : 0;
 }
 
-size_t AudioSamples::sampleBitDepth(error_code &ec) const
+size_t AudioSamples::sampleBitDepth(OptionalErrorCode ec) const
 {
     return m_raw
             ? SampleFormat(static_cast<AVSampleFormat>(m_raw->format)).bitsPerSample(ec)

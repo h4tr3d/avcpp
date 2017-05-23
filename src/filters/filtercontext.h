@@ -27,10 +27,10 @@ public:
     size_t            inputsCount()  const;
     size_t            outputsCount() const;
 
-    void init(const std::string &args, std::error_code &ec = throws());
+    void init(const std::string &args, OptionalErrorCode ec = throws());
     void free();
 
-    void link(unsigned srcPad, FilterContext& dstFilter, unsigned dstPad, std::error_code &ec = throws());
+    void link(unsigned srcPad, FilterContext& dstFilter, unsigned dstPad, OptionalErrorCode ec = throws());
 
     operator bool() const;
 

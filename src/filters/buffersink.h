@@ -23,29 +23,29 @@ class BufferSinkFilterContext
 
 public:
     BufferSinkFilterContext() = default;
-    explicit BufferSinkFilterContext(const FilterContext& ctx, std::error_code &ec = throws());
+    explicit BufferSinkFilterContext(const FilterContext& ctx, OptionalErrorCode ec = throws());
 
-    void assign(const FilterContext &ctx, std::error_code &ec = throws());
+    void assign(const FilterContext &ctx, OptionalErrorCode ec = throws());
     BufferSinkFilterContext& operator=(const FilterContext &ctx);
 
 
-    bool getVideoFrame(VideoFrame &frame, int flags, std::error_code &ec = throws());
-    bool getVideoFrame(VideoFrame &frame, std::error_code &ec = throws());
+    bool getVideoFrame(VideoFrame &frame, int flags, OptionalErrorCode ec = throws());
+    bool getVideoFrame(VideoFrame &frame, OptionalErrorCode ec = throws());
 
-    bool getAudioFrame(AudioSamples &samples, int flags, std::error_code &ec = throws());
-    bool getAudioFrame(AudioSamples &samples, std::error_code &ec = throws());
-    bool getAudioSamples(AudioSamples &samples, size_t samplesCount, std::error_code &ec = throws());
+    bool getAudioFrame(AudioSamples &samples, int flags, OptionalErrorCode ec = throws());
+    bool getAudioFrame(AudioSamples &samples, OptionalErrorCode ec = throws());
+    bool getAudioSamples(AudioSamples &samples, size_t samplesCount, OptionalErrorCode ec = throws());
 
-    void     setFrameSize(unsigned size, std::error_code &ec = throws());
-    Rational frameRate(std::error_code &ec = throws());
+    void     setFrameSize(unsigned size, OptionalErrorCode ec = throws());
+    Rational frameRate(OptionalErrorCode ec = throws());
 
     static FilterMediaType checkFilter(const Filter& filter) noexcept;
 
 private:
     // AVERROR_EOF and AVERROR(EAGAIN) never thrown, but can be returned via error_code
     // if ec == throws(), false returns silently
-    bool getFrame(AVFrame *frame, int flags, std::error_code &ec);
-    bool getSamples(AVFrame *frame, int nbSamples, std::error_code &ec);
+    bool getFrame(AVFrame *frame, int flags, OptionalErrorCode ec);
+    bool getSamples(AVFrame *frame, int nbSamples, OptionalErrorCode ec);
 
 private:
     FilterContext   m_sink;

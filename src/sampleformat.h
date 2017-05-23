@@ -34,7 +34,7 @@ public:
     explicit SampleFormat(const char* name) noexcept;
     explicit SampleFormat(const std::string& name) noexcept;
 
-    const char* name(std::error_code &ec = throws()) const;
+    const char* name(OptionalErrorCode ec = throws()) const;
 
     SampleFormat alternativeSampleFormat(bool isPlanar) const noexcept;
     SampleFormat packedSampleFormat() const noexcept;
@@ -42,16 +42,16 @@ public:
 
     bool isPlanar() const noexcept;
 
-    size_t bytesPerSample(std::error_code& ec = throws()) const;
-    size_t bitsPerSample(std::error_code& ec = throws()) const;
+    size_t bytesPerSample(OptionalErrorCode ec = throws()) const;
+    size_t bitsPerSample(OptionalErrorCode ec = throws()) const;
 
-    size_t requiredBufferSize(int nbChannels, int nbSamples, int align, std::error_code& ec = throws()) const;
-    size_t requiredBufferSize(int nbChannels, int nbSamples, int align, int &lineSize, std::error_code& ec = throws()) const;
+    size_t requiredBufferSize(int nbChannels, int nbSamples, int align, OptionalErrorCode ec = throws()) const;
+    size_t requiredBufferSize(int nbChannels, int nbSamples, int align, int &lineSize, OptionalErrorCode ec = throws()) const;
 
     // Static helper methods
 
-    static size_t requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, std::error_code& ec = throws());
-    static size_t requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, int &lineSize, std::error_code& ec = throws());
+    static size_t requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, OptionalErrorCode ec = throws());
+    static size_t requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, int &lineSize, OptionalErrorCode ec = throws());
 
     static void fillArrays(uint8_t **audioData,
                            int *linesize,
@@ -60,7 +60,7 @@ public:
                            int nbSamples,
                            SampleFormat fmt,
                            int align,
-                           std::error_code& ec = throws());
+                           OptionalErrorCode ec = throws());
 
     static void setSilence(uint8_t **audioData,
                            int offset,
@@ -77,7 +77,7 @@ public:
                              int nbSamples,
                              SampleFormat fmt,
                              int align,
-                             std::error_code& ec = throws());
+                             OptionalErrorCode ec = throws());
 #endif
 
 };

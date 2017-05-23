@@ -19,17 +19,17 @@ public:
 
     AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                    int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
-                   std::error_code &ec = throws());
+                   OptionalErrorCode ec = throws());
 
     AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                    int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    Dictionary &options,
-                   std::error_code &ec = throws());
+                   OptionalErrorCode ec = throws());
 
     AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                    int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    Dictionary &&options,
-                   std::error_code &ec = throws());
+                   OptionalErrorCode ec = throws());
 
     ~AudioResampler();
 
@@ -55,7 +55,7 @@ public:
      * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
      *                       av#throws the function will throw on error instead
      */
-    void push(const AudioSamples &src, std::error_code &ec = throws());
+    void push(const AudioSamples &src, OptionalErrorCode ec = throws());
 
     /**
      * @brief Pop frame from the rescaler context.
@@ -71,7 +71,7 @@ public:
      *                       av#throws the function will throw on error instead
      * @return false if no samples avail, true otherwise. On error false.
      */
-    bool pop(AudioSamples &dst, bool getall, std::error_code &ec = throws());
+    bool pop(AudioSamples &dst, bool getall, OptionalErrorCode ec = throws());
 
     /**
      * @brief Pop frame from the rescaler context.
@@ -86,7 +86,7 @@ public:
      *                              av#throws the function will throw on error instead
      * @return resampled samples or null-frame when no requested samples avail. On error null-frame.
      */
-    AudioSamples pop(size_t samplesCount, std::error_code &ec = throws());
+    AudioSamples pop(size_t samplesCount, OptionalErrorCode ec = throws());
 
     bool isValid() const;
     operator bool() const { return isValid(); }
@@ -95,17 +95,17 @@ public:
 
     bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
               int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
-              std::error_code &ec = throws());
+              OptionalErrorCode ec = throws());
 
     bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
               int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               Dictionary &options,
-              std::error_code &ec = throws());
+              OptionalErrorCode ec = throws());
 
     bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
               int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               Dictionary &&options,
-              std::error_code &ec = throws());
+              OptionalErrorCode ec = throws());
 
     static
     bool validate(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat);
@@ -113,7 +113,7 @@ public:
 private:
     bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
               int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
-              AVDictionary **dict, std::error_code &ec);
+              AVDictionary **dict, OptionalErrorCode ec);
 
 private:
     // Cached values to avoid access to the av_opt

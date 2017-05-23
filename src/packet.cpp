@@ -9,7 +9,7 @@ Packet::Packet()
     initCommon();
 }
 
-Packet::Packet(const Packet &packet, error_code &ec)
+Packet::Packet(const Packet &packet, OptionalErrorCode ec)
     : Packet()
 {
     initFromAVPacket(&packet.m_raw, false, ec);
@@ -28,7 +28,7 @@ Packet::Packet(Packet &&packet)
     av_init_packet(&packet.m_raw);
 }
 
-Packet::Packet(const AVPacket *packet, error_code &ec)
+Packet::Packet(const AVPacket *packet, OptionalErrorCode ec)
     : Packet()
 {
     initFromAVPacket(packet, false, ec);
@@ -74,7 +74,7 @@ void Packet::initCommon()
     //m_fakePts      = AV_NOPTS_VALUE;
 }
 
-void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, error_code &ec)
+void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -102,12 +102,12 @@ void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, error_code 
     m_completeFlag = m_raw.size > 0;
 }
 
-bool Packet::setData(const vector<uint8_t> &newData, error_code &ec)
+bool Packet::setData(const vector<uint8_t> &newData, OptionalErrorCode ec)
 {
     return setData(newData.data(), newData.size(), ec);
 }
 
-bool Packet::setData(const uint8_t *newData, size_t size, std::error_code &ec)
+bool Packet::setData(const uint8_t *newData, size_t size, OptionalErrorCode ec)
 {
     clear_if(ec);
     if ((m_raw.size >= 0 && (size_t)m_raw.size != size) || m_raw.data == 0)
@@ -282,7 +282,7 @@ int Packet::refCount() const
         return 0;
 }
 
-AVPacket Packet::makeRef(error_code &ec) const
+AVPacket Packet::makeRef(OptionalErrorCode ec) const
 {
     clear_if(ec);
     AVPacket pkt;
@@ -293,7 +293,7 @@ AVPacket Packet::makeRef(error_code &ec) const
     return pkt;
 }
 
-Packet Packet::clone(error_code &ec) const
+Packet Packet::clone(OptionalErrorCode ec) const
 {
     Packet pkt;
     pkt.initFromAVPacket(&m_raw, true, ec);

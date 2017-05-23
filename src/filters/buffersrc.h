@@ -14,26 +14,26 @@ class BufferSrcFilterContext
 {
 public:
     BufferSrcFilterContext() = default;
-    BufferSrcFilterContext(const FilterContext &ctx, std::error_code &ec = throws());
+    BufferSrcFilterContext(const FilterContext &ctx, OptionalErrorCode ec = throws());
 
-    void assign(const FilterContext &ctx, std::error_code &ec = throws());
+    void assign(const FilterContext &ctx, OptionalErrorCode ec = throws());
     BufferSrcFilterContext& operator=(const FilterContext &ctx);
 
-    void writeVideoFrame(const VideoFrame &frame, std::error_code &ec = throws());
-    void addVideoFrame(VideoFrame &frame, int flags, std::error_code &ec = throws());
-    void addVideoFrame(VideoFrame &frame, std::error_code &ec = throws());
+    void writeVideoFrame(const VideoFrame &frame, OptionalErrorCode ec = throws());
+    void addVideoFrame(VideoFrame &frame, int flags, OptionalErrorCode ec = throws());
+    void addVideoFrame(VideoFrame &frame, OptionalErrorCode ec = throws());
 
-    void writeAudioSamples(const AudioSamples &samples, std::error_code &ec = throws());
-    void addAudioSamples(AudioSamples &samples, int flags, std::error_code &ec = throws());
-    void addAudioSamples(AudioSamples &samples, std::error_code &ec = throws());
+    void writeAudioSamples(const AudioSamples &samples, OptionalErrorCode ec = throws());
+    void addAudioSamples(AudioSamples &samples, int flags, OptionalErrorCode ec = throws());
+    void addAudioSamples(AudioSamples &samples, OptionalErrorCode ec = throws());
 
     size_t failedRequestsCount();
 
     static FilterMediaType checkFilter(const Filter& filter);
 
 private:
-    void addFrame(AVFrame *frame, int flags, std::error_code &ec);
-    void writeFrame(const AVFrame *frame, std::error_code &ec);
+    void addFrame(AVFrame *frame, int flags, OptionalErrorCode ec);
+    void writeFrame(const AVFrame *frame, OptionalErrorCode ec);
 
 private:
     FilterContext   m_src;

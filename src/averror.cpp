@@ -74,6 +74,26 @@ std::string FfmpegCategory::message(int ev) const
     return error2string(ev);
 }
 
+OptionalErrorCode::OptionalErrorCode(error_code& ec)
+    : m_ec(&ec)
+{
+}
+
+OptionalErrorCode OptionalErrorCode::null()
+{
+    return OptionalErrorCode();
+}
+
+error_code&OptionalErrorCode::operator*()
+{
+    return *m_ec;
+}
+
+av::OptionalErrorCode::operator bool() const
+{
+    return !!m_ec;
+}
+
 } // ::av
 
 

@@ -150,17 +150,17 @@ VideoDecoderContext &VideoDecoderContext::operator=(VideoDecoderContext&& other)
     return moveOperator(std::move(other));
 }
 
-VideoFrame VideoDecoderContext::decode(const Packet &packet, error_code &ec, bool autoAllocateFrame)
+VideoFrame VideoDecoderContext::decode(const Packet &packet, OptionalErrorCode ec, bool autoAllocateFrame)
 {
     return decodeVideo(ec, packet, 0, nullptr, autoAllocateFrame);
 }
 
-VideoFrame VideoDecoderContext::decode(const Packet &packet, size_t offset, size_t &decodedBytes, error_code &ec, bool autoAllocateFrame)
+VideoFrame VideoDecoderContext::decode(const Packet &packet, size_t offset, size_t &decodedBytes, OptionalErrorCode ec, bool autoAllocateFrame)
 {
     return decodeVideo(ec, packet, offset, &decodedBytes, autoAllocateFrame);
 }
 
-VideoFrame VideoDecoderContext::decodeVideo(error_code &ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
+VideoFrame VideoDecoderContext::decodeVideo(OptionalErrorCode ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
 {
     clear_if(ec);
 
@@ -205,12 +205,12 @@ VideoEncoderContext &VideoEncoderContext::operator=(VideoEncoderContext&& other)
     return moveOperator(std::move(other));
 }
 
-Packet VideoEncoderContext::encode(error_code &ec)
+Packet VideoEncoderContext::encode(OptionalErrorCode ec)
 {
     return encode(VideoFrame(nullptr), ec);
 }
 
-Packet VideoEncoderContext::encode(const VideoFrame &inFrame, error_code &ec)
+Packet VideoEncoderContext::encode(const VideoFrame &inFrame, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -311,7 +311,7 @@ CodecContext2::~CodecContext2()
     avcodec_free_context(&m_raw);
 }
 
-void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction direction, AVMediaType type, error_code &ec)
+void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction direction, AVMediaType type, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -379,39 +379,39 @@ AVMediaType CodecContext2::codecType(AVMediaType contextType) const noexcept
     return contextType;
 }
 
-void CodecContext2::open(error_code &ec)
+void CodecContext2::open(OptionalErrorCode ec)
 {
     open(Codec(), ec);
 }
 
-void CodecContext2::open(const Codec &codec, error_code &ec)
+void CodecContext2::open(const Codec &codec, OptionalErrorCode ec)
 {
     open(codec, nullptr, ec);
 }
 
-void CodecContext2::open(Dictionary &&options, error_code &ec)
+void CodecContext2::open(Dictionary &&options, OptionalErrorCode ec)
 {
     open(std::move(options), Codec(), ec);
 }
 
-void CodecContext2::open(Dictionary &options, error_code &ec)
+void CodecContext2::open(Dictionary &options, OptionalErrorCode ec)
 {
     open(options, Codec(), ec);
 }
 
-void CodecContext2::open(Dictionary &&options, const Codec &codec, error_code &ec)
+void CodecContext2::open(Dictionary &&options, const Codec &codec, OptionalErrorCode ec)
 {
     open(options, codec, ec);
 }
 
-void CodecContext2::open(Dictionary &options, const Codec &codec, error_code &ec)
+void CodecContext2::open(Dictionary &options, const Codec &codec, OptionalErrorCode ec)
 {
     auto prt = options.release();
     open(codec, &prt, ec);
     options.assign(prt);
 }
 
-void CodecContext2::close(error_code &ec)
+void CodecContext2::close(OptionalErrorCode ec)
 {
     clear_if(ec);
     if (isOpened())
@@ -433,7 +433,7 @@ bool CodecContext2::isValid() const noexcept
     return ((m_stream.isValid() || m_stream.isNull()) && m_raw && m_raw->codec);
 }
 
-void CodecContext2::copyContextFrom(const CodecContext2 &other, error_code &ec)
+void CodecContext2::copyContextFrom(const CodecContext2 &other, OptionalErrorCode ec)
 {
     clear_if(ec);
     if (!isValid()) {
@@ -500,12 +500,12 @@ Codec CodecContext2::codec() const noexcept
         return Codec();
 }
 
-void CodecContext2::setOption(const string &key, const string &val, error_code &ec)
+void CodecContext2::setOption(const string &key, const string &val, OptionalErrorCode ec)
 {
     setOption(key, val, 0, ec);
 }
 
-void CodecContext2::setOption(const string &key, const string &val, int flags, error_code &ec)
+void CodecContext2::setOption(const string &key, const string &val, int flags, OptionalErrorCode ec)
 {
     clear_if(ec);
     if (isValid())
@@ -673,7 +673,7 @@ bool CodecContext2::isValidForEncode(Direction direction, AVMediaType /*type*/) 
     return true;
 }
 
-bool CodecContext2::checkCodec(const Codec &codec, Direction direction, AVMediaType type, error_code &ec)
+bool CodecContext2::checkCodec(const Codec &codec, Direction direction, AVMediaType type, OptionalErrorCode ec)
 {
     if (direction == Direction::Encoding && !codec.canEncode())
     {
@@ -699,7 +699,7 @@ bool CodecContext2::checkCodec(const Codec &codec, Direction direction, AVMediaT
     return true;
 }
 
-void CodecContext2::open(const Codec &codec, AVDictionary **options, error_code &ec)
+void CodecContext2::open(const Codec &codec, AVDictionary **options, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -771,12 +771,12 @@ AudioDecoderContext &AudioDecoderContext::operator=(AudioDecoderContext &&other)
     return moveOperator(std::move(other));
 }
 
-AudioSamples AudioDecoderContext::decode(const Packet &inPacket, error_code &ec)
+AudioSamples AudioDecoderContext::decode(const Packet &inPacket, OptionalErrorCode ec)
 {
     return decode(inPacket, 0u, ec);
 }
 
-AudioSamples AudioDecoderContext::decode(const Packet &inPacket, size_t offset, error_code &ec)
+AudioSamples AudioDecoderContext::decode(const Packet &inPacket, size_t offset, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -812,12 +812,12 @@ AudioEncoderContext &AudioEncoderContext::operator=(AudioEncoderContext &&other)
     return moveOperator(move(other));
 }
 
-Packet AudioEncoderContext::encode(error_code &ec)
+Packet AudioEncoderContext::encode(OptionalErrorCode ec)
 {
     return encode(AudioSamples(nullptr), ec);
 }
 
-Packet AudioEncoderContext::encode(const AudioSamples &inSamples, error_code &ec)
+Packet AudioEncoderContext::encode(const AudioSamples &inSamples, OptionalErrorCode ec)
 {
     clear_if(ec);
 

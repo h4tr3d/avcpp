@@ -45,7 +45,7 @@ void FilterGraph::setAutoConvert(unsigned flags)
 }
 
 
-FilterContext FilterGraph::filter(const string &name, error_code &ec)
+FilterContext FilterGraph::filter(const string &name, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -61,7 +61,7 @@ FilterContext FilterGraph::filter(const string &name, error_code &ec)
     return FilterContext(ctx);
 }
 
-FilterContext FilterGraph::filter(unsigned idx, error_code &ec)
+FilterContext FilterGraph::filter(unsigned idx, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -85,7 +85,7 @@ FilterContext FilterGraph::filter(unsigned idx, error_code &ec)
 
 }
 
-FilterContext FilterGraph::allocFilter(const Filter &filter, const std::string &name, error_code &ec)
+FilterContext FilterGraph::allocFilter(const Filter &filter, const std::string &name, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -103,7 +103,7 @@ FilterContext FilterGraph::allocFilter(const Filter &filter, const std::string &
     return FilterContext(ctx);
 }
 
-FilterContext FilterGraph::createFilter(const Filter &filter, const string &filterName, const string &filterArgs, error_code &ec)
+FilterContext FilterGraph::createFilter(const Filter &filter, const string &filterName, const string &filterArgs, OptionalErrorCode ec)
 {
     clear_if(ec);
     if (!m_raw || filter.isNull()) {
@@ -130,7 +130,7 @@ FilterContext FilterGraph::createFilter(const Filter &filter, const string &filt
 void FilterGraph::parse(const string &graphDescription,
                        FilterContext &srcFilterCtx,
                        FilterContext &sinkFilterCtx,
-                       error_code &ec)
+                       OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -209,7 +209,7 @@ void FilterGraph::parse(const string &graphDescription,
 }
 
 
-void FilterGraph::config(error_code &ec)
+void FilterGraph::config(OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -241,7 +241,7 @@ string FilterGraph::dump(bool doPrint, const string &options)
     return result;
 }
 
-BufferSrcFilterContext FilterGraph::bufferSrcFilter(error_code &ec)
+BufferSrcFilterContext FilterGraph::bufferSrcFilter(OptionalErrorCode ec)
 {
     if (m_bufferSrcSearchDone == false) {
         for (size_t i = 0; i < m_raw->nb_filters; ++i) {
@@ -257,7 +257,7 @@ BufferSrcFilterContext FilterGraph::bufferSrcFilter(error_code &ec)
     return m_bufferSrc;
 }
 
-BufferSinkFilterContext FilterGraph::bufferSinkFilter(error_code &ec)
+BufferSinkFilterContext FilterGraph::bufferSinkFilter(OptionalErrorCode ec)
 {
     if (m_bufferSinkSearchDone == false) {
         for (size_t i = 0; i < m_raw->nb_filters; ++i) {

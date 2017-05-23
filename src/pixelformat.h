@@ -34,13 +34,13 @@ public:
     explicit PixelFormat(const std::string& name) noexcept;
 
     // Info functions
-    const char* name(std::error_code &ec = throws()) const;
+    const char* name(OptionalErrorCode ec = throws()) const;
 
-    const AVPixFmtDescriptor* descriptor(std::error_code &ec = throws()) const;
+    const AVPixFmtDescriptor* descriptor(OptionalErrorCode ec = throws()) const;
 
-    int bitsPerPixel(std::error_code &ec = throws()) const;
+    int bitsPerPixel(OptionalErrorCode ec = throws()) const;
 
-    size_t planesCount(std::error_code &ec = throws()) const;
+    size_t planesCount(OptionalErrorCode ec = throws()) const;
 
     PixelFormat swapEndianness() const noexcept;
 

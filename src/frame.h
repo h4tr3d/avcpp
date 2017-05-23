@@ -320,7 +320,7 @@ public:
     int            channelsCount() const;
     int64_t        channelsLayout() const;
     int            sampleRate() const;
-    size_t         sampleBitDepth(std::error_code& ec = throws()) const;
+    size_t         sampleBitDepth(OptionalErrorCode ec = throws()) const;
 
     std::string    channelsLayoutString() const;
 };

@@ -116,7 +116,7 @@ VideoRescaler& VideoRescaler::operator=(VideoRescaler &&rhs)
     return *this;
 }
 
-void VideoRescaler::rescale(VideoFrame &dst, const VideoFrame &src, error_code &ec)
+void VideoRescaler::rescale(VideoFrame &dst, const VideoFrame &src, OptionalErrorCode ec)
 {
     m_srcWidth       = src.width();
     m_srcHeight      = src.height();
@@ -173,7 +173,7 @@ void VideoRescaler::rescale(VideoFrame &dst, const VideoFrame &src, error_code &
     dst.setComplete(true);
 }
 
-VideoFrame VideoRescaler::rescale(const VideoFrame &src, error_code &ec)
+VideoFrame VideoRescaler::rescale(const VideoFrame &src, OptionalErrorCode ec)
 {
     VideoFrame dst{m_dstPixelFormat, m_dstWidth, m_dstHeight};
     rescale(dst, src, ec);

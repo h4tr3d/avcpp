@@ -42,7 +42,7 @@ size_t FilterContext::inputsCount() const
     return count;
 }
 
-void FilterContext::init(const string& args, error_code &ec)
+void FilterContext::init(const string& args, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -63,7 +63,7 @@ void FilterContext::free()
     avfilter_free(m_raw);
 }
 
-void FilterContext::link(unsigned srcPad, FilterContext &dstFilter, unsigned dstPad, error_code &ec)
+void FilterContext::link(unsigned srcPad, FilterContext &dstFilter, unsigned dstPad, OptionalErrorCode ec)
 {
     clear_if(ec);
     if (!m_raw || !dstFilter) {

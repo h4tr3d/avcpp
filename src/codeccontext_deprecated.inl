@@ -85,7 +85,7 @@ CodecContextDeprecated &CodecContextDeprecated::operator=(CodecContextDeprecated
     return *this;
 }
 
-void CodecContextDeprecated::setCodec(const Codec &codec, error_code &ec)
+void CodecContextDeprecated::setCodec(const Codec &codec, OptionalErrorCode ec)
 {
     setCodec(codec, false, ec);
 }
@@ -98,7 +98,7 @@ void CodecContextDeprecated::swap(CodecContextDeprecated &other)
     swap(m_raw, other.m_raw);
 }
 
-void CodecContextDeprecated::setCodec(const Codec &codec, bool resetDefaults, error_code &ec)
+void CodecContextDeprecated::setCodec(const Codec &codec, bool resetDefaults, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -164,40 +164,40 @@ void CodecContextDeprecated::setCodec(const Codec &codec, bool resetDefaults, er
 #endif
 }
 
-void CodecContextDeprecated::open(error_code &ec)
+void CodecContextDeprecated::open(OptionalErrorCode ec)
 {
     open(Codec(), ec);
 }
 
-void CodecContextDeprecated::open(const Codec &codec, std::error_code &ec)
+void CodecContextDeprecated::open(const Codec &codec, OptionalErrorCode ec)
 {
     open(codec, nullptr, ec);
 }
 
-void CodecContextDeprecated::open(Dictionary &options, error_code &ec)
+void CodecContextDeprecated::open(Dictionary &options, OptionalErrorCode ec)
 {
     open(options, Codec(), ec);
 }
 
-void CodecContextDeprecated::open(Dictionary &&options, error_code &ec)
+void CodecContextDeprecated::open(Dictionary &&options, OptionalErrorCode ec)
 {
     open(std::move(options), Codec(), ec);
 }
 
-void CodecContextDeprecated::open(Dictionary &options, const Codec &codec, error_code &ec)
+void CodecContextDeprecated::open(Dictionary &options, const Codec &codec, OptionalErrorCode ec)
 {
     auto prt = options.release();
     open(codec, &prt, ec);
     options.assign(prt);
 }
 
-void CodecContextDeprecated::open(Dictionary &&options, const Codec &codec, error_code &ec)
+void CodecContextDeprecated::open(Dictionary &&options, const Codec &codec, OptionalErrorCode ec)
 {
     open(options, codec, ec);
 }
 
 
-void CodecContextDeprecated::open(const Codec &codec, AVDictionary **options, error_code &ec)
+void CodecContextDeprecated::open(const Codec &codec, AVDictionary **options, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -211,7 +211,7 @@ void CodecContextDeprecated::open(const Codec &codec, AVDictionary **options, er
         throws_if(ec, stat, ffmpeg_category());
 }
 
-void CodecContextDeprecated::close(error_code &ec)
+void CodecContextDeprecated::close(OptionalErrorCode ec)
 {
     clear_if(ec);
     if (isOpened())
@@ -235,7 +235,7 @@ bool CodecContextDeprecated::isValid() const noexcept
     return ((m_stream.isValid() || m_stream.isNull()) && m_raw && m_raw->codec);
 }
 
-void CodecContextDeprecated::copyContextFrom(const CodecContextDeprecated &other, error_code &ec)
+void CodecContextDeprecated::copyContextFrom(const CodecContextDeprecated &other, OptionalErrorCode ec)
 {
     clear_if(ec);
     if (!isValid()) {
@@ -306,12 +306,12 @@ AVMediaType CodecContextDeprecated::codecType() const
     return AVMEDIA_TYPE_UNKNOWN;
 }
 
-void CodecContextDeprecated::setOption(const string &key, const string &val, error_code &ec)
+void CodecContextDeprecated::setOption(const string &key, const string &val, OptionalErrorCode ec)
 {
     setOption(key, val, 0, ec);
 }
 
-void CodecContextDeprecated::setOption(const string &key, const string &val, int flags, error_code &ec)
+void CodecContextDeprecated::setOption(const string &key, const string &val, int flags, OptionalErrorCode ec)
 {
     clear_if(ec);
     if (isValid())
@@ -654,22 +654,22 @@ bool CodecContextDeprecated::isFlags2(int flags)
     return false;
 }
 
-VideoFrame CodecContextDeprecated::decodeVideo(const Packet &packet, error_code &ec, bool autoAllocateFrame)
+VideoFrame CodecContextDeprecated::decodeVideo(const Packet &packet, OptionalErrorCode ec, bool autoAllocateFrame)
 {
     return decodeVideo(ec, packet, 0, nullptr, autoAllocateFrame);
 }
 
-VideoFrame CodecContextDeprecated::decodeVideo(const Packet &packet, size_t offset, size_t &decodedBytes, error_code &ec, bool autoAllocateFrame)
+VideoFrame CodecContextDeprecated::decodeVideo(const Packet &packet, size_t offset, size_t &decodedBytes, OptionalErrorCode ec, bool autoAllocateFrame)
 {
     return decodeVideo(ec, packet, offset, &decodedBytes, autoAllocateFrame);
 }
 
-Packet CodecContextDeprecated::encodeVideo(error_code &ec)
+Packet CodecContextDeprecated::encodeVideo(OptionalErrorCode ec)
 {
     return encodeVideo(VideoFrame(nullptr), ec);
 }
 
-VideoFrame CodecContextDeprecated::decodeVideo(error_code &ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
+VideoFrame CodecContextDeprecated::decodeVideo(OptionalErrorCode ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
 {
     clear_if(ec);
 
@@ -705,7 +705,7 @@ VideoFrame CodecContextDeprecated::decodeVideo(error_code &ec, const Packet &pac
 }
 
 
-Packet CodecContextDeprecated::encodeVideo(const VideoFrame &inFrame, error_code &ec)
+Packet CodecContextDeprecated::encodeVideo(const VideoFrame &inFrame, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -731,12 +731,12 @@ Packet CodecContextDeprecated::encodeVideo(const VideoFrame &inFrame, error_code
     return packet;
 }
 
-AudioSamples CodecContextDeprecated::decodeAudio(const Packet &inPacket, error_code &ec)
+AudioSamples CodecContextDeprecated::decodeAudio(const Packet &inPacket, OptionalErrorCode ec)
 {
     return decodeAudio(inPacket, 0, ec);
 }
 
-AudioSamples CodecContextDeprecated::decodeAudio(const Packet &inPacket, size_t offset, error_code &ec)
+AudioSamples CodecContextDeprecated::decodeAudio(const Packet &inPacket, size_t offset, OptionalErrorCode ec)
 {
     clear_if(ec);
 
@@ -763,12 +763,12 @@ AudioSamples CodecContextDeprecated::decodeAudio(const Packet &inPacket, size_t 
 
 }
 
-Packet CodecContextDeprecated::encodeAudio(error_code &ec)
+Packet CodecContextDeprecated::encodeAudio(OptionalErrorCode ec)
 {
     return encodeAudio(AudioSamples(nullptr), ec);
 }
 
-Packet CodecContextDeprecated::encodeAudio(const AudioSamples &inSamples, error_code &ec)
+Packet CodecContextDeprecated::encodeAudio(const AudioSamples &inSamples, OptionalErrorCode ec)
 {
     clear_if(ec);
 

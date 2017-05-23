@@ -7,12 +7,12 @@ using namespace std;
 namespace av {
 
 
-BufferSinkFilterContext::BufferSinkFilterContext(const FilterContext &ctx, error_code &ec)
+BufferSinkFilterContext::BufferSinkFilterContext(const FilterContext &ctx, OptionalErrorCode ec)
 {
     assign(ctx, ec);
 }
 
-void BufferSinkFilterContext::assign(const FilterContext &ctx, error_code &ec)
+void BufferSinkFilterContext::assign(const FilterContext &ctx, OptionalErrorCode ec)
 {
     clear_if(ec);
     m_type = checkFilter(ctx.filter());
@@ -29,7 +29,7 @@ BufferSinkFilterContext &BufferSinkFilterContext::operator=(const FilterContext 
     return *this;
 }
 
-bool BufferSinkFilterContext::getVideoFrame(VideoFrame &frame, int flags, error_code &ec)
+bool BufferSinkFilterContext::getVideoFrame(VideoFrame &frame, int flags, OptionalErrorCode ec)
 {
     if (m_type != FilterMediaType::Video) {
         throws_if(ec, Errors::IncorrectBufferSinkMediaType);
@@ -39,12 +39,12 @@ bool BufferSinkFilterContext::getVideoFrame(VideoFrame &frame, int flags, error_
     return getFrame(frame.raw(), flags, ec);
 }
 
-bool BufferSinkFilterContext::getVideoFrame(VideoFrame &frame, error_code &ec)
+bool BufferSinkFilterContext::getVideoFrame(VideoFrame &frame, OptionalErrorCode ec)
 {
     return getVideoFrame(frame, 0, ec);
 }
 
-bool BufferSinkFilterContext::getAudioFrame(AudioSamples &samples, int flags, error_code &ec)
+bool BufferSinkFilterContext::getAudioFrame(AudioSamples &samples, int flags, OptionalErrorCode ec)
 {
     if (m_type != FilterMediaType::Audio) {
         throws_if(ec, Errors::IncorrectBufferSinkMediaType);
@@ -53,12 +53,12 @@ bool BufferSinkFilterContext::getAudioFrame(AudioSamples &samples, int flags, er
     return getFrame(samples.raw(), flags, ec);
 }
 
-bool BufferSinkFilterContext::getAudioFrame(AudioSamples &samples, error_code &ec)
+bool BufferSinkFilterContext::getAudioFrame(AudioSamples &samples, OptionalErrorCode ec)
 {
     return getAudioFrame(samples, 0, ec);
 }
 
-bool BufferSinkFilterContext::getAudioSamples(AudioSamples &samples, size_t samplesCount, error_code &ec)
+bool BufferSinkFilterContext::getAudioSamples(AudioSamples &samples, size_t samplesCount, OptionalErrorCode ec)
 {
     if (m_type != FilterMediaType::Audio) {
         throws_if(ec, Errors::IncorrectBufferSinkMediaType);
@@ -67,7 +67,7 @@ bool BufferSinkFilterContext::getAudioSamples(AudioSamples &samples, size_t samp
     return getSamples(samples.raw(), samplesCount, ec);
 }
 
-void BufferSinkFilterContext::setFrameSize(unsigned size, error_code &ec)
+void BufferSinkFilterContext::setFrameSize(unsigned size, OptionalErrorCode ec)
 {
     clear_if(ec);
     static_assert(LIBAVFILTER_VERSION_INT >= AV_VERSION_INT(3,17,100),
@@ -85,7 +85,7 @@ void BufferSinkFilterContext::setFrameSize(unsigned size, error_code &ec)
     av_buffersink_set_frame_size(m_sink.raw(), size);
 }
 
-Rational BufferSinkFilterContext::frameRate(error_code &ec)
+Rational BufferSinkFilterContext::frameRate(OptionalErrorCode ec)
 {
     clear_if(ec);
     static_assert(LIBAVFILTER_VERSION_INT >= AV_VERSION_INT(3,17,100),
@@ -115,7 +115,7 @@ FilterMediaType BufferSinkFilterContext::checkFilter(const Filter &filter) noexc
     return FilterMediaType::Unknown;
 }
 
-bool BufferSinkFilterContext::getFrame(AVFrame *frame, int flags, error_code &ec)
+bool BufferSinkFilterContext::getFrame(AVFrame *frame, int flags, OptionalErrorCode ec)
 {
     clear_if(ec);
     if (!m_sink) {
@@ -133,8 +133,8 @@ bool BufferSinkFilterContext::getFrame(AVFrame *frame, int flags, error_code &ec
     int sts = av_buffersink_get_frame_flags(m_sink.raw(), frame, flags);
     if (sts < 0) {
         if (sts == AVERROR_EOF || sts == AVERROR(EAGAIN)) {
-            if (&ec != &throws()) {
-                ec = make_ffmpeg_error(sts);
+            if (ec) {
+                *ec = make_ffmpeg_error(sts);
             }
         } else {
             throws_if(ec, sts, ffmpeg_category());
@@ -144,7 +144,7 @@ bool BufferSinkFilterContext::getFrame(AVFrame *frame, int flags, error_code &ec
     return true;
 }
 
-bool BufferSinkFilterContext::getSamples(AVFrame *frame, int nbSamples, error_code &ec)
+bool BufferSinkFilterContext::getSamples(AVFrame *frame, int nbSamples, OptionalErrorCode ec)
 {
     clear_if(ec);
     if (!m_sink) {
@@ -162,8 +162,8 @@ bool BufferSinkFilterContext::getSamples(AVFrame *frame, int nbSamples, error_co
     int sts = av_buffersink_get_samples(m_sink.raw(), frame, nbSamples);
     if (sts < 0) {
         if (sts == AVERROR_EOF || sts == AVERROR(EAGAIN)) {
-            if (&ec != &throws()) {
-                ec = make_ffmpeg_error(sts);
+            if (ec) {
+                *ec = make_ffmpeg_error(sts);
             }
         } else {
             throws_if(ec, sts, ffmpeg_category());

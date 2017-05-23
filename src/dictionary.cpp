@@ -203,7 +203,7 @@ const char *Dictionary::get(const std::string & key, int flags) const noexcept
     return get(key.c_str(), flags);
 }
 
-string Dictionary::toString(const char keyValSep, const char pairsSep, error_code &ec) const
+string Dictionary::toString(const char keyValSep, const char pairsSep, OptionalErrorCode ec) const
 {
     string  str;
     char   *buf = nullptr;
@@ -224,7 +224,7 @@ string Dictionary::toString(const char keyValSep, const char pairsSep, error_cod
     return std::move(str);
 }
 
-Dictionary::RawStringPtr Dictionary::toRawStringPtr(const char keyValSep, const char pairsSep, error_code &ec) const
+Dictionary::RawStringPtr Dictionary::toRawStringPtr(const char keyValSep, const char pairsSep, OptionalErrorCode ec) const
 {
     RawStringPtr  str;
     char         *buf = nullptr;
@@ -291,7 +291,7 @@ int Dictionary::parseString_priv(const char *str, const char *keyvalSep, const c
     return sts;
 }
 
-void Dictionary::parseString_priv(error_code &ec, const char *str, const char *keyvalSep, const char *pairsSep, int flags)
+void Dictionary::parseString_priv(OptionalErrorCode ec, const char *str, const char *keyvalSep, const char *pairsSep, int flags)
 {
     clear_if(ec);
     int sts;

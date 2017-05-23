@@ -60,6 +60,23 @@ enum class Errors
     MixBufferSinkAccess,
 };
 
+class OptionalErrorCode
+{
+    OptionalErrorCode() {}
+
+public:
+    OptionalErrorCode(std::error_code &ec);
+
+    static OptionalErrorCode null();
+
+    operator bool() const;
+
+    std::error_code& operator*();
+
+private:
+    std::error_code *m_ec = nullptr;
+};
+
 /**
  * @brief The AvException class
  * Default exception that thows from function that does not accept error code storage.
@@ -144,7 +161,7 @@ std::error_condition make_ffmpeg_condition(int code)
 }
 
 template<typename Exception = av::Exception>
-void throw_error_code(const std::error_code &ec)
+void throw_error_code(const std::error_code& ec)
 {
     throw Exception(ec);
 }
@@ -155,48 +172,34 @@ void throw_error_code(Errors errc)
     throw Exception(make_error_code(errc));
 }
 
-namespace detail { inline std::error_code * throws() { return 0; } }
-// From Boost.System
-//  Misuse of the error_code object is turned into a noisy failure by
-//  poisoning the reference. This particular implementation doesn't
-//  produce warnings or errors from popular compilers, is very efficient
-//  (as determined by inspecting generated code), and does not suffer
-//  from order of initialization problems. In practice, it also seems
-//  cause user function error handling implementation errors to be detected
-//  very early in the development cycle.
-inline std::error_code& throws()
+/**
+ * @brief Helper to construct null OptionalErrorCode object
+ * @return null OptionalErrorCode object
+ */
+inline OptionalErrorCode throws()
 {
-    return *detail::throws();
+    return OptionalErrorCode::null();
 }
-
 
 /**
  * @brief Throws exception if ec is av::throws() or fill error code
  */
 template<typename Category, typename Exception = av::Exception>
-void throws_if(std::error_code &ec, int errcode, const Category &cat)
+void throws_if(OptionalErrorCode ec, int errcode, const Category &cat)
 {
-    if (&ec == &throws())
-    {
-        throw Exception(std::error_code(errcode, cat));
-    }
+    if (ec)
+        *ec = std::error_code(errcode, cat);
     else
-    {
-        ec = std::error_code(errcode, cat);
-    }
+        throw Exception(std::error_code(errcode, cat));
 }
 
 template<typename T, typename Exception = av::Exception>
-void throws_if(std::error_code &ec, T errcode)
+void throws_if(OptionalErrorCode ec, T errcode)
 {
-    if (&ec == &throws())
-    {
-        throw Exception(make_error_code(errcode));
-    }
+    if (ec)
+        *ec = make_error_code(errcode);
     else
-    {
-        ec = make_error_code(errcode);
-    }
+        throw Exception(make_error_code(errcode));
 }
 
 
@@ -205,18 +208,19 @@ void throws_if(std::error_code &ec, T errcode)
  * @param ec error code to clear
  */
 inline
-void clear_if(std::error_code &ec)
+void clear_if(OptionalErrorCode ec)
 {
-    if (&ec != &throws())
-        ec.clear();
+    if (ec)
+        (*ec).clear();
 }
 
 inline
-bool is_error(std::error_code &ec)
+bool is_error(OptionalErrorCode ec)
 {
-    if (&ec == &throws())
-        return false;
-    return (bool)ec;
+    if (ec)
+        return static_cast<bool>(*ec);
+
+    return false;
 }
 
 } // ::av

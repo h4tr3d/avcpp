@@ -45,7 +45,7 @@ protected:
 
     ~CodecContext2();
 
-    void setCodec(const Codec &codec, bool resetDefaults, Direction direction, AVMediaType type, std::error_code &ec = throws());
+    void setCodec(const Codec &codec, bool resetDefaults, Direction direction, AVMediaType type, OptionalErrorCode ec = throws());
 
     AVMediaType codecType(AVMediaType contextType) const noexcept;
 
@@ -57,14 +57,14 @@ public:
     // Common
     //
 
-    void open(std::error_code &ec = throws());
-    void open(const Codec &codec, std::error_code &ec = throws());
-    void open(Dictionary &options, std::error_code &ec = throws());
-    void open(Dictionary &&options, std::error_code &ec = throws());
-    void open(Dictionary &options, const Codec &codec, std::error_code &ec = throws());
-    void open(Dictionary &&options, const Codec &codec, std::error_code &ec = throws());
+    void open(OptionalErrorCode ec = throws());
+    void open(const Codec &codec, OptionalErrorCode ec = throws());
+    void open(Dictionary &options, OptionalErrorCode ec = throws());
+    void open(Dictionary &&options, OptionalErrorCode ec = throws());
+    void open(Dictionary &options, const Codec &codec, OptionalErrorCode ec = throws());
+    void open(Dictionary &&options, const Codec &codec, OptionalErrorCode ec = throws());
 
-    void close(std::error_code &ec = throws());
+    void close(OptionalErrorCode ec = throws());
 
     bool isOpened() const noexcept;
     bool isValid() const noexcept;
@@ -77,7 +77,7 @@ public:
      * @param other  stream or codec context
      */
     /// @{
-    void copyContextFrom(const CodecContext2 &other, std::error_code &ec = throws());
+    void copyContextFrom(const CodecContext2 &other, OptionalErrorCode ec = throws());
     /// @}
 
     Rational timeBase() const noexcept;
@@ -86,8 +86,8 @@ public:
     const Stream& stream() const noexcept;
     Codec codec() const noexcept;
 
-    void setOption(const std::string &key, const std::string &val, std::error_code &ec = throws());
-    void setOption(const std::string &key, const std::string &val, int flags, std::error_code &ec = throws());
+    void setOption(const std::string &key, const std::string &val, OptionalErrorCode ec = throws());
+    void setOption(const std::string &key, const std::string &val, int flags, OptionalErrorCode ec = throws());
 
     int frameSize() const noexcept;
     int frameNumber() const noexcept;
@@ -129,9 +129,9 @@ protected:
 
     bool isValidForEncode(Direction direction, AVMediaType type) const noexcept;
 
-    bool checkCodec(const Codec& codec, Direction direction, AVMediaType type, std::error_code& ec);
+    bool checkCodec(const Codec& codec, Direction direction, AVMediaType type, OptionalErrorCode ec);
 
-    void open(const Codec &codec, AVDictionary **options, std::error_code &ec);
+    void open(const Codec &codec, AVDictionary **options, OptionalErrorCode ec);
 
 
     std::pair<ssize_t, const std::error_category*>
@@ -323,12 +323,12 @@ public:
     //
 
 
-    void setCodec(const Codec &codec, std::error_code &ec = throws())
+    void setCodec(const Codec &codec, OptionalErrorCode ec = throws())
     {
         setCodec(codec, false, _direction, _type, ec);
     }
 
-    void setCodec(const Codec &codec, bool resetDefaults, std::error_code &ec = throws())
+    void setCodec(const Codec &codec, bool resetDefaults, OptionalErrorCode ec = throws())
     {
         setCodec(codec, resetDefaults, _direction, _type, ec);
     }
@@ -479,7 +479,7 @@ public:
      *         output undefined.
      */
     VideoFrame decode(const Packet    &packet,
-                      std::error_code &ec = throws(),
+                      OptionalErrorCode ec = throws(),
                       bool             autoAllocateFrame = true);
 
     /**
@@ -498,12 +498,12 @@ public:
     VideoFrame decode(const Packet &packet,
                       size_t offset,
                       size_t &decodedBytes,
-                      std::error_code &ec = throws(),
+                      OptionalErrorCode ec = throws(),
                       bool    autoAllocateFrame = true);
 
 
 private:
-    VideoFrame decodeVideo(std::error_code &ec,
+    VideoFrame decodeVideo(OptionalErrorCode ec,
                            const Packet &packet,
                            size_t offset,
                            size_t *decodedBytes,
@@ -532,7 +532,7 @@ public:
      *                       av#throws the function will throw on error instead
      * @return
      */
-    Packet encode(std::error_code &ec = throws());
+    Packet encode(OptionalErrorCode ec = throws());
 
     /**
      * @brief encodeVideo - encode video frame
@@ -545,7 +545,7 @@ public:
      *                       av#throws the function will throw on error instead
      * @return
      */
-    Packet encode(const VideoFrame &inFrame, std::error_code &ec = throws());
+    Packet encode(const VideoFrame &inFrame, OptionalErrorCode ec = throws());
 
 };
 
@@ -659,8 +659,8 @@ public:
 
     AudioDecoderContext& operator=(AudioDecoderContext&& other);
 
-    AudioSamples decode(const Packet &inPacket, std::error_code &ec = throws());
-    AudioSamples decode(const Packet &inPacket, size_t offset, std::error_code &ec = throws());
+    AudioSamples decode(const Packet &inPacket, OptionalErrorCode ec = throws());
+    AudioSamples decode(const Packet &inPacket, size_t offset, OptionalErrorCode ec = throws());
 
 };
 
@@ -676,8 +676,8 @@ public:
 
     AudioEncoderContext& operator=(AudioEncoderContext&& other);
 
-    Packet encode(std::error_code &ec = throws());
-    Packet encode(const AudioSamples &inSamples, std::error_code &ec = throws());
+    Packet encode(OptionalErrorCode ec = throws());
+    Packet encode(const AudioSamples &inSamples, OptionalErrorCode ec = throws());
 
 };
 

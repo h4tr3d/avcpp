@@ -387,7 +387,7 @@ public:
       (std::is_same<Value, std::string>::value || std::is_same<typename std::remove_cv<typename std::decay<Value>::type>::type, char*>::value || std::is_integral<Value>::value)
       ,void
     >::type
-    set(const Key& key, const Value& value, std::error_code &ec = throws(), int flags = 0)
+    set(const Key& key, const Value& value, OptionalErrorCode ec = throws(), int flags = 0)
     {
         clear_if(ec);
         int sts;
@@ -415,7 +415,7 @@ public:
      * @return 0 on success, <0 on fail
      */
     template<typename Str, typename Sep1, typename Sep2>
-    void parseString(const Str& str, const Sep1& keyvalSep, const Sep2& pairsSep, int flags = 0, std::error_code &ec = throws())
+    void parseString(const Str& str, const Sep1& keyvalSep, const Sep2& pairsSep, int flags = 0, OptionalErrorCode ec = throws())
     {
         parseString_priv(ec,
                          _to_const_char_ptr(str),
@@ -440,7 +440,7 @@ public:
      * @note \\0 and same separator chars unapplicable.
      *
      */
-    std::string toString(const char keyValSep, const char pairsSep, std::error_code &ec = throws()) const;
+    std::string toString(const char keyValSep, const char pairsSep, OptionalErrorCode ec = throws()) const;
 
     /**
      * @brief toRawStringPtr - converts dictionary to the raw string (char*) and protect it with
@@ -458,7 +458,7 @@ public:
      *
      * @return valid string, null on error (check ec)
      */
-    RawStringPtr toRawStringPtr(const char keyValSep, const char pairsSep, std::error_code &ec = throws()) const;
+    RawStringPtr toRawStringPtr(const char keyValSep, const char pairsSep, OptionalErrorCode ec = throws()) const;
 
     /**
      * @brief copyFrom - copy data from other dictionary.
@@ -506,7 +506,7 @@ private:
     }
 
     int  parseString_priv(const char* str, const char* keyvalSep, const char* pairsSep, int flags);
-    void parseString_priv(std::error_code &ec, const char* str, const char* keyvalSep, const char* pairsSep, int flags);
+    void parseString_priv(OptionalErrorCode ec, const char* str, const char* keyvalSep, const char* pairsSep, int flags);
 
 
 private:

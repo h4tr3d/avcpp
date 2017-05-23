@@ -12,7 +12,7 @@ SampleFormat::SampleFormat(const std::string &name) noexcept
 {
 }
 
-const char *SampleFormat::name(std::error_code &ec) const
+const char *SampleFormat::name(OptionalErrorCode ec) const
 {
     if (auto nm = av_get_sample_fmt_name(m_fmt))
     {
@@ -43,7 +43,7 @@ bool SampleFormat::isPlanar() const noexcept
     return av_sample_fmt_is_planar(m_fmt);
 }
 
-size_t SampleFormat::bytesPerSample(std::error_code &ec) const
+size_t SampleFormat::bytesPerSample(OptionalErrorCode ec) const
 {
     if (auto size = av_get_bytes_per_sample(m_fmt) > 0)
     {
@@ -54,18 +54,18 @@ size_t SampleFormat::bytesPerSample(std::error_code &ec) const
     return 0;
 }
 
-size_t SampleFormat::bitsPerSample(std::error_code &ec) const
+size_t SampleFormat::bitsPerSample(OptionalErrorCode ec) const
 {
     return bytesPerSample(ec) << 3;
 }
 
-size_t SampleFormat::requiredBufferSize(int nbChannels, int nbSamples, int align, std::error_code &ec) const
+size_t SampleFormat::requiredBufferSize(int nbChannels, int nbSamples, int align, OptionalErrorCode ec) const
 {
     int lineSizeDummy;
     return requiredBufferSize(nbChannels, nbSamples, align, lineSizeDummy, ec);
 }
 
-size_t SampleFormat::requiredBufferSize(int nbChannels, int nbSamples, int align, int &lineSize, std::error_code &ec) const
+size_t SampleFormat::requiredBufferSize(int nbChannels, int nbSamples, int align, int &lineSize, OptionalErrorCode ec) const
 {
     auto sts = av_samples_get_buffer_size(&lineSize, nbChannels, nbSamples, m_fmt, align);
     if (sts < 0)
@@ -77,17 +77,17 @@ size_t SampleFormat::requiredBufferSize(int nbChannels, int nbSamples, int align
     return static_cast<size_t>(sts);
 }
 
-size_t SampleFormat::requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, std::error_code &ec)
+size_t SampleFormat::requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, OptionalErrorCode ec)
 {
     return fmt.requiredBufferSize(nbChannels, nbSamples, align, ec);
 }
 
-size_t SampleFormat::requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, int &lineSize, std::error_code &ec)
+size_t SampleFormat::requiredBufferSize(SampleFormat fmt, int nbChannels, int nbSamples, int align, int &lineSize, OptionalErrorCode ec)
 {
     return fmt.requiredBufferSize(nbChannels, nbSamples, align, lineSize, ec);
 }
 
-void SampleFormat::fillArrays(uint8_t **audioData, int *linesize, const uint8_t *buf, int nbChannels, int nbSamples, SampleFormat fmt, int align, std::error_code &ec)
+void SampleFormat::fillArrays(uint8_t **audioData, int *linesize, const uint8_t *buf, int nbChannels, int nbSamples, SampleFormat fmt, int align, OptionalErrorCode ec)
 {
     auto sts = av_samples_fill_arrays(audioData, linesize, buf, nbChannels, nbSamples, fmt, align);
     if (sts < 0)

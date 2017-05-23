@@ -12,7 +12,7 @@ PixelFormat::PixelFormat(const std::string &name) noexcept
 {
 }
 
-const char *PixelFormat::name(std::error_code &ec) const
+const char *PixelFormat::name(OptionalErrorCode ec) const
 {
     if (auto nm = av_get_pix_fmt_name(m_fmt))
     {
@@ -23,7 +23,7 @@ const char *PixelFormat::name(std::error_code &ec) const
     return nullptr;
 }
 
-const AVPixFmtDescriptor *PixelFormat::descriptor(std::error_code &ec) const
+const AVPixFmtDescriptor *PixelFormat::descriptor(OptionalErrorCode ec) const
 {
     if (auto desc = av_pix_fmt_desc_get(m_fmt))
     {
@@ -34,14 +34,14 @@ const AVPixFmtDescriptor *PixelFormat::descriptor(std::error_code &ec) const
     return nullptr;
 }
 
-int PixelFormat::bitsPerPixel(std::error_code &ec) const
+int PixelFormat::bitsPerPixel(OptionalErrorCode ec) const
 {
     if (auto desc = descriptor(ec))
         return av_get_bits_per_pixel(desc);
     return 0;
 }
 
-size_t PixelFormat::planesCount(std::error_code &ec) const
+size_t PixelFormat::planesCount(OptionalErrorCode ec) const
 {
     auto count = av_pix_fmt_count_planes(m_fmt);
     if (count < 0)
