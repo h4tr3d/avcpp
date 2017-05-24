@@ -310,7 +310,7 @@ public:
     explicit CodecContextBase(const Codec &codec)
         : CodecContext2(codec, _direction, _type)
     {
-        if (checkCodec(codec, throws()))
+        if (checkCodec(codec, _direction, _type, throws()))
             m_raw = avcodec_alloc_context3(codec.raw());
     }
 
