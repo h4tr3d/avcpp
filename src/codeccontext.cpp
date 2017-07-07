@@ -68,11 +68,9 @@ int encode(AVCodecContext *avctx,
         *got_packet_ptr = 0;
 
     int ret;
-    if (frame) {
-        ret = avcodec_send_frame(avctx, frame);
-        if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
-            return ret;
-    }
+    ret = avcodec_send_frame(avctx, frame);
+    if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+        return ret;
 
     ret = avcodec_receive_packet(avctx, avpkt);
     if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
