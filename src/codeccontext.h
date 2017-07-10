@@ -99,10 +99,10 @@ public:
     int strict() const noexcept;
     void setStrict(int strict) noexcept;
 
-    int32_t bitRate() const noexcept;
-    std::pair<int, int> bitRateRange() const noexcept;
-    void setBitRate(int32_t bitRate) noexcept;
-    void setBitRateRange(const std::pair<int, int> &bitRateRange) noexcept;
+    int64_t bitRate() const noexcept;
+    std::pair<int64_t, int64_t> bitRateRange() const noexcept;
+    void setBitRate(int64_t bitRate) noexcept;
+    void setBitRateRange(const std::pair<int64_t, int64_t> &bitRateRange) noexcept;
 
     // Flags
     /// Access to CODEC_FLAG_* flags
