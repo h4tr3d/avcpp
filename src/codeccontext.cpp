@@ -560,12 +560,12 @@ void CodecContext2::setStrict(int strict) noexcept
     RAW_SET2(isValid(), strict_std_compliance, strict);
 }
 
-int32_t CodecContext2::bitRate() const noexcept
+int64_t CodecContext2::bitRate() const noexcept
 {
-    return RAW_GET2(isValid(), bit_rate, int32_t(0));
+    return RAW_GET2(isValid(), bit_rate, int64_t(0));
 }
 
-std::pair<int, int> CodecContext2::bitRateRange() const noexcept
+std::pair<int64_t, int64_t> CodecContext2::bitRateRange() const noexcept
 {
     if (isValid())
         return std::make_pair(m_raw->rc_min_rate, m_raw->rc_max_rate);
@@ -573,12 +573,12 @@ std::pair<int, int> CodecContext2::bitRateRange() const noexcept
         return std::make_pair(0, 0);
 }
 
-void CodecContext2::setBitRate(int32_t bitRate) noexcept
+void CodecContext2::setBitRate(int64_t bitRate) noexcept
 {
     RAW_SET2(isValid(), bit_rate, bitRate);
 }
 
-void CodecContext2::setBitRateRange(const std::pair<int, int> &bitRateRange) noexcept
+void CodecContext2::setBitRateRange(const std::pair<int64_t, int64_t> &bitRateRange) noexcept
 {
     if (isValid())
     {
