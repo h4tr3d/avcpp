@@ -41,6 +41,11 @@ Rational Stream::sampleAspectRatio() const
     return RAW_GET2(isValid(), sample_aspect_ratio, AVRational{});
 }
 
+Rational Stream::averageFrameRate() const
+{
+    return RAW_GET2(isValid(), avg_frame_rate, AVRational{});
+}
+
 Timestamp Stream::startTime() const
 {
     return {RAW_GET2(isValid(), start_time, AV_NOPTS_VALUE), timeBase()};
@@ -105,6 +110,11 @@ void Stream::setFrameRate(const Rational &frameRate)
 void Stream::setSampleAspectRatio(const Rational &aspectRatio)
 {
     RAW_SET2(isValid(), sample_aspect_ratio, aspectRatio.getValue());
+}
+
+void Stream::setAverageFrameRate(const Rational &frameRate)
+{
+    RAW_SET2(isValid(), avg_frame_rate, frameRate.getValue());
 }
 
 int Stream::eventFlags() const noexcept
