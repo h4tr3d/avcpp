@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     OutputFormat  ofrmt;
     FormatContext octx;
 
-    ofrmt.setFormat("flv", out);
+    ofrmt.setFormat("mkv", out);
     octx.setFormat(ofrmt);
 
     Codec        ocodec  = findEncodingCodec(ofrmt);
@@ -108,6 +108,11 @@ int main(int argc, char **argv)
     encoder.setBitRate(vdec.bitRate());
     encoder.addFlags(octx.outputFormat().isFlags(AVFMT_GLOBALHEADER) ? CODEC_FLAG_GLOBAL_HEADER : 0);
     ost.setFrameRate(vst.frameRate());
+    ost.setAverageFrameRate(vst.frameRate()); // try to comment this out and look at the output of ffprobe or mpv
+    // it'll show 1k fps regardless of the real fps;
+    // see https://github.com/FFmpeg/FFmpeg/blob/7d4fe0c5cb9501efc4a434053cec85a70cae156e/libavformat/matroskaenc.c#L2659
+    // also used in the CLI ffmpeg utility: https://github.com/FFmpeg/FFmpeg/blob/7d4fe0c5cb9501efc4a434053cec85a70cae156e/fftools/ffmpeg.c#L3058
+    // and https://github.com/FFmpeg/FFmpeg/blob/7d4fe0c5cb9501efc4a434053cec85a70cae156e/fftools/ffmpeg.c#L3364
     ost.setTimeBase(encoder.timeBase());
 
     octx.openOutput(out, ec);
@@ -129,7 +134,7 @@ int main(int argc, char **argv)
     //
     // RESCALER
     //
-    VideoRescaler rescaler; // Rescaler will be inited on demaind
+    VideoRescaler rescaler(encoder.width(), encoder.height(), encoder.pixelFormat());
 
 
     //
@@ -182,8 +187,6 @@ int main(int argc, char **argv)
         clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts().seconds() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
 
         // SCALE
-        //VideoFrame outFrame {encoder.pixelFormat(), encoder.width(), encoder.height()};
-        //rescaler.rescale(outFrame, inpFrame, ec);
         auto outFrame = rescaler.rescale(inpFrame, ec);
         if (ec) {
             cerr << "Can't rescale frame: " << ec << ", " << ec.message() << endl;
