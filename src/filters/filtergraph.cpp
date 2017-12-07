@@ -165,25 +165,16 @@ void FilterGraph::parse(const string &graphDescription,
         return;
     }
 
-    struct FilterInOutDeleter
-    {
-        void operator()(AVFilterInOut *&ptr)
-        {
-            avfilter_inout_free(&ptr);
-        }
-    };
-    using FilterInOutPtr = std::unique_ptr<AVFilterInOut, FilterInOutDeleter>;
-
-    FilterInOutPtr inputs;
-    FilterInOutPtr outputs;
+    AVFilterInOut* inputs;
+    AVFilterInOut* outputs;
 
     if (graphDescription.empty()) {
         fflog(AV_LOG_ERROR, "Empty graph description");
         throws_if(ec, Errors::FilterGraphDescriptionEmpty);
         return;
     } else {
-        outputs.reset(avfilter_inout_alloc());
-        inputs.reset(avfilter_inout_alloc());
+        outputs = avfilter_inout_alloc();
+        inputs = avfilter_inout_alloc();
 
         if (!outputs || !inputs) {
             throws_if(ec, errc::not_enough_memory);
@@ -200,7 +191,7 @@ void FilterGraph::parse(const string &graphDescription,
         inputs->pad_idx     = 0;
         inputs->next        = 0;
 
-        int sts = avfilter_graph_parse(m_raw, graphDescription.c_str(), inputs.get(), outputs.get(), nullptr);
+        int sts = avfilter_graph_parse(m_raw, graphDescription.c_str(), inputs, outputs, nullptr);
         if (sts < 0) {
             throws_if(ec, sts, ffmpeg_category());
             return;
