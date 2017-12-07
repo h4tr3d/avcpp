@@ -517,7 +517,9 @@ void CodecContext2::setOption(const string &key, const string &val, int flags, O
     if (isValid())
     {
         auto sts = av_opt_set(m_raw->priv_data, key.c_str(), val.c_str(), flags);
-        throws_if(ec, sts, ffmpeg_category());
+        if (sts) {
+            throws_if(ec, sts, ffmpeg_category());
+        }
     }
     else
     {

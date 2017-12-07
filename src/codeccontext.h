@@ -396,6 +396,11 @@ public:
         return RAW_GET2(isValid(), max_b_frames, 0);
     }
 
+    Rational sampleAspectRatio() const
+    {
+        return RAW_GET(sample_aspect_ratio, AVRational());
+    }
+
     void setWidth(int w) // Note, it also sets coded_width
     {
         if (isValid() & !isOpened())
@@ -450,6 +455,11 @@ public:
     void setMaxBFrames(int maxBFrames)
     {
         RAW_SET2(isValid(), max_b_frames, maxBFrames);
+    }
+
+    void setSampleAspectRatio(const Rational& sampleAspectRatio)
+    {
+        RAW_SET(sample_aspect_ratio, sampleAspectRatio);
     }
 
 protected:
