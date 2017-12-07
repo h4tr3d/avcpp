@@ -176,6 +176,16 @@ void VideoFrame::setPictureType(AVPictureType type)
     RAW_SET(pict_type, type);
 }
 
+Rational VideoFrame::sampleAspectRatio() const
+{
+    return RAW_GET(sample_aspect_ratio, AVRational());
+}
+
+void VideoFrame::setSampleAspectRatio(const Rational& sampleAspectRatio)
+{
+    RAW_SET(sample_aspect_ratio, sampleAspectRatio);
+}
+
 
 AudioSamples::AudioSamples(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
 {

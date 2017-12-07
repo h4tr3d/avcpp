@@ -292,6 +292,9 @@ public:
 
     AVPictureType          pictureType() const;
     void                   setPictureType(AVPictureType type = AV_PICTURE_TYPE_NONE);
+
+    Rational               sampleAspectRatio() const;
+    void                   setSampleAspectRatio(const Rational& sampleAspectRatio);
 };
 
 // Be a little back compat
