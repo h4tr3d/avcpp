@@ -200,21 +200,23 @@ public:
     operator bool() const { return isValid() && isComplete(); }
 
     uint8_t *data(size_t plane = 0) {
-        if (!m_raw || plane >= AV_NUM_DATA_POINTERS)
+        if (!m_raw || plane >= (AV_NUM_DATA_POINTERS + m_raw->nb_extended_buf))
             return nullptr;
-        return m_raw->data[plane];
+        return m_raw->extended_data[plane];
     }
 
     const uint8_t *data(size_t plane = 0) const {
-        if (!m_raw || plane >= AV_NUM_DATA_POINTERS)
+        if (!m_raw || plane >= (AV_NUM_DATA_POINTERS + m_raw->nb_extended_buf))
             return nullptr;
-        return m_raw->data[plane];
+        return m_raw->extended_data[plane];;
     }
 
     size_t size(size_t plane) const {
-        if (!m_raw || plane >= AV_NUM_DATA_POINTERS)
+        if (!m_raw || plane >= (AV_NUM_DATA_POINTERS + m_raw->nb_extended_buf))
             return 0;
-        AVBufferRef *buf = m_raw->buf[plane];
+        AVBufferRef *buf = plane < AV_NUM_DATA_POINTERS ?
+                               m_raw->buf[plane] :
+                               m_raw->extended_buf[plane - AV_NUM_DATA_POINTERS];
         if (buf == nullptr)
             return 0;
         return buf->size;
@@ -228,19 +230,30 @@ public:
             for (size_t i = 0; i < AV_NUM_DATA_POINTERS && m_raw->buf[i]; i++) {
                 total += m_raw->buf[i]->size;
             }
+
+            for (size_t i = 0; i < m_raw->nb_extended_buf; ++i) {
+                total += m_raw->extended_buf[i]->size;
+            }
         } else if (m_raw->data[0]) {
-            uint8_t data[4] = {0};
-            int     linesizes[4] = {
-                m_raw->linesize[0],
-                m_raw->linesize[1],
-                m_raw->linesize[2],
-                m_raw->linesize[3],
-            };
-            total = av_image_fill_pointers(reinterpret_cast<uint8_t**>(&data),
-                                           static_cast<AVPixelFormat>(m_raw->format),
-                                           m_raw->height,
-                                           nullptr,
-                                           linesizes);
+            if (m_raw->width && m_raw->height) {
+                uint8_t data[4] = {0};
+                int     linesizes[4] = {
+                    m_raw->linesize[0],
+                    m_raw->linesize[1],
+                    m_raw->linesize[2],
+                    m_raw->linesize[3],
+                };
+                total = av_image_fill_pointers(reinterpret_cast<uint8_t**>(&data),
+                                               static_cast<AVPixelFormat>(m_raw->format),
+                                               m_raw->height,
+                                               nullptr,
+                                               linesizes);
+            } else if (m_raw->nb_samples && m_raw->channel_layout) {
+                for (size_t i = 0; i < m_raw->nb_extended_buf + AV_NUM_DATA_POINTERS && m_raw->extended_data[i]; ++i) {
+                    // According docs, all planes must have same size
+                    total += m_raw->linesize[0];
+                }
+            }
         }
         return total;
     }
