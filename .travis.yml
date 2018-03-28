@@ -1,0 +1,88 @@
+# Based on https://habrahabr.ru/post/329264/
+# Additional GCC / clang versions:
+#   - https://docs.travis-ci.com/user/languages/cpp/
+
+dist: trusty
+sudo: required
+
+language: cpp
+
+os:
+    - linux
+    - osx
+
+compiler:
+    - gcc
+    - clang
+
+env:
+    # список переменных окружения, влияющих на матрицу сборки:
+    - TARGET_CPU=amd64 BUILD_CONFIGURATION=Debug
+    - TARGET_CPU=amd64 BUILD_CONFIGURATION=Release
+    #- TARGET_CPU=x86 BUILD_CONFIGURATION=Debug
+    #- TARGET_CPU=x86 BUILD_CONFIGURATION=Release
+
+matrix:
+    include:
+        # works on Precise and Trusty
+        - os: linux
+          addons:
+          apt:
+            sources:
+                - ubuntu-toolchain-r-test
+            packages:
+                - g++-6
+         env:
+            - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+
+        # works on Precise and Trusty
+        - os: linux
+          addons:
+          apt:
+            sources:
+                - ubuntu-toolchain-r-test
+            packages:
+                - g++-7
+         env:
+            - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+
+    exclude:
+        # exclude some elements from build matrix:
+        - os:       osx
+          compiler: gcc
+
+#        - os:  osx
+#          env: TARGET_CPU=x86 BUILD_CONFIGURATION=Debug
+#
+#        - os:  osx
+#          env: TARGET_CPU=x86 BUILD_CONFIGURATION=Release
+
+before_install:
+    - eval "${MATRIX_EVAL}"
+
+install:
+    # setup env:
+    - source ci/travis/install-$TRAVIS_OS_NAME.sh
+
+script:
+    # build and test project:
+    - mkdir build
+    - cd build
+#    - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU
+    - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION
+    - cmake --build .
+#    - ctest --output-on-failure
+
+#deploy:
+#    # push tagged-commits to GitHub Releases:
+#    provider:     releases
+#    file:         <package-file>
+#    skip_cleanup: true
+#    overwrite:    true
+#
+#    api_key:
+#        secure:   <encrypted-github-token>
+#
+#    on:
+#        tags:     true
+
