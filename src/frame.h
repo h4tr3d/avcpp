@@ -324,6 +324,7 @@ public:
     int64_t        channelsLayout() const;
     int            sampleRate() const;
     size_t         sampleBitDepth(OptionalErrorCode ec = throws()) const;
+    bool           isPlanar() const;
 
     std::string    channelsLayoutString() const;
 };

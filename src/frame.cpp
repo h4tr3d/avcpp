@@ -284,6 +284,11 @@ size_t AudioSamples::sampleBitDepth(OptionalErrorCode ec) const
             : 0;
 }
 
+bool AudioSamples::isPlanar() const
+{
+    return m_raw ? av_sample_fmt_is_planar(static_cast<AVSampleFormat>(m_raw->format)) : false;
+}
+
 string AudioSamples::channelsLayoutString() const
 {
     if (!m_raw)
