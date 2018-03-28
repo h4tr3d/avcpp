@@ -310,8 +310,6 @@ public:
     void                   setSampleAspectRatio(const Rational& sampleAspectRatio);
 };
 
-// Be a little back compat
-using VideoFrame2 attribute_deprecated2("Use `VideoFrame` class (drop-in replacement)") = VideoFrame;
 
 class AudioSamples : public Frame<AudioSamples>
 {
@@ -341,9 +339,6 @@ public:
 
     std::string    channelsLayoutString() const;
 };
-
-// Be a little back compat
-using AudioSamples2 attribute_deprecated2("Use `AudioSamples` class (drop-in replacement)") = AudioSamples;
 
 
 } // ::av

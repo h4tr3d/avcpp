@@ -69,9 +69,6 @@ private:
     Direction           m_direction = Direction::Invalid;
 };
 
-// Back compat alias
-using Stream2 attribute_deprecated2("Use `Stream` class (drop-in replacement)") = Stream;
-
 } // ::av
 
 #endif // STREAM_H

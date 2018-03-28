@@ -16,8 +16,6 @@ extern "C" {
 #include <libavformat/version.h>
 }
 
-#include "codeccontext_deprecated.h"
-
 namespace av {
 
 class CodecContext2 : public FFWrapperPtr<AVCodecContext>, public noncopyable

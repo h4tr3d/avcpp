@@ -133,8 +133,6 @@ int avcodec_encode_audio_legacy(AVCodecContext *avctx, AVPacket *avpkt,
 
 } //::anonymous
 
-#include "codeccontext_deprecated.inl"
-
 namespace av {
 
 
