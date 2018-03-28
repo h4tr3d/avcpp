@@ -30,7 +30,6 @@ public:
     using Parent = PixSampleFmtWrapper<SampleFormat, AVSampleFormat>;
     using Parent::Parent;
 
-    SampleFormat() = default;
     explicit SampleFormat(const char* name) noexcept;
     explicit SampleFormat(const std::string& name) noexcept;
 

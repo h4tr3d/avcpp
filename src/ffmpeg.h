@@ -135,7 +135,8 @@ protected:
 template<typename WrapperClass, typename T, T NoneValue = static_cast<T>(-1)>
 struct PixSampleFmtWrapper
 {
-    PixSampleFmtWrapper(T fmt = NoneValue) noexcept : m_fmt(fmt) {}
+    PixSampleFmtWrapper() = default;
+    PixSampleFmtWrapper(T fmt) noexcept : m_fmt(fmt) {}
 
     // Access to  the stored value
     operator T() const noexcept

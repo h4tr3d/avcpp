@@ -45,7 +45,8 @@ bool SampleFormat::isPlanar() const noexcept
 
 size_t SampleFormat::bytesPerSample(OptionalErrorCode ec) const
 {
-    if (auto size = av_get_bytes_per_sample(m_fmt) > 0)
+    auto size = av_get_bytes_per_sample(m_fmt);
+    if (size > 0)
     {
         clear_if(ec);
         return static_cast<size_t>(size);
