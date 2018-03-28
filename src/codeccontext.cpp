@@ -539,12 +539,18 @@ int CodecContext2::frameNumber() const noexcept
 
 bool CodecContext2::isRefCountedFrames() const noexcept
 {
-    return RAW_GET2(isValid(), refcounted_frames, false);
+    if (!isValid())
+        return false;
+    int64_t val;
+    av_opt_get_int(m_raw, "refcounted_frames", 0, &val);
+    return !!val;
 }
 
 void CodecContext2::setRefCountedFrames(bool refcounted) const noexcept
 {
-    RAW_SET2(isValid() && !isOpened(), refcounted_frames, refcounted);
+    if (isValid() && !isOpened()) {
+        av_opt_set_int(m_raw, "refcounted_frames", refcounted, 0);
+    }
 }
 
 int CodecContext2::strict() const noexcept
