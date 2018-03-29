@@ -27,23 +27,23 @@ matrix:
         # works on Precise and Trusty
         - os: linux
           addons:
-          apt:
-            sources:
-                - ubuntu-toolchain-r-test
-            packages:
-                - g++-6
-         env:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                packages:
+                    - g++-6
+          env:
             - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
         # works on Precise and Trusty
         - os: linux
           addons:
-          apt:
-            sources:
-                - ubuntu-toolchain-r-test
-            packages:
-                - g++-7
-         env:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                packages:
+                    - g++-7
+          env:
             - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
     exclude:
@@ -68,10 +68,10 @@ script:
     # build and test project:
     - mkdir build
     - cd build
-#    - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU
+    #- cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU
     - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION
     - cmake --build .
-#    - ctest --output-on-failure
+    #- ctest --output-on-failure
 
 #deploy:
 #    # push tagged-commits to GitHub Releases:
