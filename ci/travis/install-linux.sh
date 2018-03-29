@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 JOBS=$(cat /proc/cpuinfo | grep '^processor' | wc -l)
 export MAKEFLAGS="-j${JOBS}"
@@ -41,3 +41,5 @@ export MAKEFLAGS="-j${JOBS}"
                             libswresample-dev \
                             libswscale-dev
 )
+
+set +e
