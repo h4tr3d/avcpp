@@ -22,16 +22,20 @@ env:
 matrix:
     include:
         - compiler: gcc
-          env: BUILD_CONFIGURATION=Debug   CC=gcc-7 CXX=g++-7
+          env: 
+            - MATRIX_EVAL="BUILD_CONFIGURATION=Debug && CC=gcc-7 && CXX=g++-7"
 
         - compiler: gcc
-          env: BUILD_CONFIGURATION=Release   CC=gcc-7 CXX=g++-7
+          env:
+            - MATRIX_EVAL="BUILD_CONFIGURATION=Release && CC=gcc-7 && CXX=g++-7"
 
         - compiler: gcc
-          env: BUILD_CONFIGURATION=Debug   CC=gcc-5 CXX=g++-5
+          env:
+            - MATRIX_EVAL="BUILD_CONFIGURATION=Debug && CC=gcc-5 && CXX=g++-5"
 
         - compiler: gcc
-          env: BUILD_CONFIGURATION=Release   CC=gcc-5 CXX=g++-5
+          env:
+            - MATRIX_EVAL="BUILD_CONFIGURATION=Release && CC=gcc-5 && CXX=g++-5"
 
     exclude:
         # exclude some elements from build matrix:
@@ -43,6 +47,9 @@ matrix:
 
         - compiler: gcc
           env: BUILD_CONFIGURATION=Release
+
+before_install:
+    - eval "${MATRIX_EVAL}"
 
 install:
     # setup env:
