@@ -219,7 +219,7 @@ public:
                                m_raw->extended_buf[plane - AV_NUM_DATA_POINTERS];
         if (buf == nullptr)
             return 0;
-        return buf->size;
+        return size_t(buf->size);
     }
 
     size_t size() const {
