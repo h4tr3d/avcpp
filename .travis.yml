@@ -16,6 +16,8 @@ compiler:
     - clang
 
 env:
+    global:
+        - AVCPP=1
     matix:
         - BUILD_CONFIGURATION=Debug
         - BUILD_CONFIGURATION=Release
