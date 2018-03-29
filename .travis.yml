@@ -48,12 +48,13 @@ matrix:
         - compiler: gcc
           env: BUILD_CONFIGURATION=Release
 
-before_install:
-    - eval "${MATRIX_EVAL}"
+#before_install:
+#    - eval "${MATRIX_EVAL}"
 
 install:
     # setup env:
     - source ci/travis/install-$TRAVIS_OS_NAME.sh
+    - eval "${MATRIX_EVAL}"
 
 script:
     # build and test project:
