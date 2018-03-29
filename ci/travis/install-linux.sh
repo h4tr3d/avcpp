@@ -29,8 +29,6 @@ build_cmake()
 
 build_cmake
 
-exit 0
-
 # Newer GCC
 echo "Prepare GCC"
 (
