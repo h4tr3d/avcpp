@@ -84,7 +84,6 @@ public:
         FRAME_SWAP(m_timeBase);
         FRAME_SWAP(m_streamIndex);
         FRAME_SWAP(m_isComplete);
-        FRAME_SWAP(m_fakePts);
 #undef FRAME_SWAP
     }
 
@@ -92,7 +91,6 @@ public:
         m_timeBase    = other.m_timeBase;
         m_streamIndex = other.m_streamIndex;
         m_isComplete  = other.m_isComplete;
-        m_fakePts     = other.m_fakePts;
     }
 
     bool isReferenced() const {
@@ -154,7 +152,6 @@ public:
             return;
 
         int64_t rescaledPts          = AV_NOPTS_VALUE;
-        int64_t rescaledFakePts      = AV_NOPTS_VALUE;
         int64_t rescaledBestEffortTs = AV_NOPTS_VALUE;
 
         if (m_timeBase != Rational() && value != Rational()) {
@@ -163,19 +160,14 @@ public:
 
             if (m_raw->best_effort_timestamp != AV_NOPTS_VALUE)
                 rescaledBestEffortTs = m_timeBase.rescale(m_raw->best_effort_timestamp, value);
-
-            if (m_fakePts != AV_NOPTS_VALUE)
-                rescaledFakePts = m_timeBase.rescale(m_fakePts, value);
         } else {
             rescaledPts          = m_raw->pts;
-            rescaledFakePts      = m_fakePts;
             rescaledBestEffortTs = m_raw->best_effort_timestamp;
         }
 
         if (m_timeBase != Rational()) {
             m_raw->pts                   = rescaledPts;
             m_raw->best_effort_timestamp = rescaledBestEffortTs;
-            m_fakePts                    = rescaledFakePts;
         }
 
         m_timeBase = value;
@@ -274,7 +266,6 @@ protected:
     Rational             m_timeBase;
     int                  m_streamIndex {-1};
     bool                 m_isComplete  {false};
-    int64_t              m_fakePts     {AV_NOPTS_VALUE};
 };
 
 

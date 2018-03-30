@@ -45,9 +45,7 @@ public:
     size_t size() const;
 
     /**
-     * Set packet PTS field. It also set fake pts value, so, if you need fake value, you should
-     * store it before and restore later. It useful for audio samples: PTS and DTS values in
-     * encoded packets in any cases have AV_NOPTS_VALUE!
+     * Set packet PTS field.
      *
      * @param pts new presentation timestamp value
      * @param tsTimeBase  is a time base of setted timestamp, can be omited or sets to Rational(0,0)
@@ -103,7 +101,6 @@ private:
 private:
     bool     m_completeFlag;
     Rational m_timeBase;
-    //int64_t  m_fakePts;
 };
 
 

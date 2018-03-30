@@ -15,13 +15,11 @@ Packet::Packet(const Packet &packet, OptionalErrorCode ec)
     initFromAVPacket(&packet.m_raw, false, ec);
     m_completeFlag = packet.m_completeFlag;
     m_timeBase = packet.m_timeBase;
-    //m_fakePts = packet.m_fakePts;
 }
 
 Packet::Packet(Packet &&packet)
     : m_completeFlag(packet.m_completeFlag),
       m_timeBase(packet.m_timeBase)
-      //m_fakePts(packet.m_fakePts)
 {
     // copy packet as is
     m_raw = packet.m_raw;
@@ -71,7 +69,6 @@ void Packet::initCommon()
 
     m_completeFlag = false;
     m_timeBase     = Rational(0, 0);
-    //m_fakePts      = AV_NOPTS_VALUE;
 }
 
 void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, OptionalErrorCode ec)
@@ -98,7 +95,6 @@ void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, OptionalErr
         return;
     }
 
-    //m_fakePts      = packet->pts;
     m_completeFlag = m_raw.size > 0;
 }
 
@@ -160,7 +156,6 @@ void Packet::setPts(int64_t pts, const Rational &tsTimeBase)
         m_raw.pts = pts;
     else
         m_raw.pts = tsTimeBase.rescale(pts, m_timeBase);
-//    setFakePts(pts, tsTimeBase);
 }
 
 void Packet::setDts(int64_t dts, const Rational &tsTimeBase)
@@ -170,14 +165,6 @@ void Packet::setDts(int64_t dts, const Rational &tsTimeBase)
     else
         m_raw.dts = tsTimeBase.rescale(dts, m_timeBase);
 }
-
-//void Packet::setFakePts(int64_t pts, const Rational &tsTimeBase)
-//{
-//    if (tsTimeBase == Rational(0, 0))
-//        m_fakePts = pts;
-//    else
-//        m_fakePts = tsTimeBase.rescale(pts, m_timeBase);
-//}
 
 void Packet::setPts(const Timestamp &pts)
 {

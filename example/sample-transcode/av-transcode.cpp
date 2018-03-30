@@ -48,7 +48,6 @@ void formatWriter(const ContainerPtr& container, const PacketPtr& packet)
          << ", DTS: "       << packet->getDts()
          << ", timeBase: "  << packet->getTimeBase()
          << ", time: "      << packet->getTimeBase().getDouble() * packet->getPts()
-         << ", fakeTime: "  << packet->getTimeBase().getDouble() * packet->getFakePts()
          << endl;
 
     container->writePacket(packet, true);
@@ -480,7 +479,6 @@ int main(int argc, char **argv)
 
             //clog << "Packet Size: " << pkt->getSize() << ", encoded bytes: " << size << endl;
             //clog << "Audio Inp PTS: " << pkt->getPts() << ", " << samples->getPts() << endl;
-            //clog << "FakePts: " << samples->getFakePts() << ", timeBase: " << samples->getTimeBase() << ", " << samples->getTimeBase().getDouble() * samples->getFakePts() << endl;
 
             if (samples->isComplete())
             {
@@ -523,7 +521,6 @@ int main(int argc, char **argv)
                             AudioSamplesPtr outSamples = std::static_pointer_cast<AudioSamples>(outFrame);
 
                             outSamples->setTimeBase(encoder->getTimeBase());
-                            outSamples->setFakePts(pkt->getTimeBase().rescale(pkt->getPts(), outSamples->getTimeBase()));
                             outSamples->setStreamIndex(streamMapping[pkt->getStreamIndex()]);
 
 //                            clog << "Samples: " << outSamples->getSamplesCount()
@@ -540,7 +537,6 @@ int main(int argc, char **argv)
                 AudioSamplesPtr outSamples = std::static_pointer_cast<AudioSamples>(outFrame);
 
                 outSamples->setTimeBase(encoder->getTimeBase());
-                outSamples->setFakePts(pkt->getTimeBase().rescale(pkt->getPts(), outSamples->getTimeBase()));
                 outSamples->setStreamIndex(streamMapping[pkt->getStreamIndex()]);
 
                 stat = encoder->encodeAudio(outSamples, std::bind(formatWriter, writer, std::placeholders::_1));
