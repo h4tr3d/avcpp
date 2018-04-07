@@ -27,13 +27,13 @@ using AvioInterruptCb = std::function<int()>;
 struct CustomIO
 {
     virtual ~CustomIO() {}
-    virtual ssize_t     write(const uint8_t *data, size_t size) 
+    virtual int     write(const uint8_t *data, size_t size) 
     {
         static_cast<void>(data);
         static_cast<void>(size);
         return -1; 
     }
-    virtual ssize_t     read(uint8_t *data, size_t size)
+    virtual int     read(uint8_t *data, size_t size)
     {
         static_cast<void>(data);
         static_cast<void>(size);
@@ -202,7 +202,7 @@ private:
     void        resetSocketAccess();
     void        findStreamInfo(AVDictionary **options, size_t optionsCount, OptionalErrorCode ec);
     void        closeCodecContexts();
-    ssize_t     checkPbError(ssize_t stat);
+    int         checkPbError(int stat);
 
     void        openCustomIO(CustomIO *io, size_t internalBufferSize, bool isWritable, OptionalErrorCode ec);
     void        openCustomIOInput(CustomIO *io, size_t internalBufferSize, OptionalErrorCode ec);
