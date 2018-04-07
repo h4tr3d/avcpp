@@ -53,8 +53,8 @@ public:
      * @param tsTimeBase  is a time base of setted timestamp, can be omited or sets to Rational(0,0)
      *                    that means that time base equal to packet time base.
      */
-    void setPts(int64_t pts,     const Rational &tsTimeBase = Rational(0, 0)) attribute_deprecated;
-    void setDts(int64_t dts,     const Rational &tsTimeBase = Rational(0, 0)) attribute_deprecated;
+    attribute_deprecated void setPts(int64_t pts,     const Rational &tsTimeBase = Rational(0, 0));
+    attribute_deprecated void setDts(int64_t dts,     const Rational &tsTimeBase = Rational(0, 0));
 
     void setPts(const Timestamp &pts);
     void setDts(const Timestamp &dts);
