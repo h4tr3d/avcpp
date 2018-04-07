@@ -240,7 +240,7 @@ bool FormatContext::seekable() const noexcept
 
 void FormatContext::seek(const Timestamp &timestamp, OptionalErrorCode ec)
 {
-    seek(timestamp.timestamp(AV_TIME_BASE_Q), -1, 0, ec);
+    seek(timestamp.timestamp(AV_TIME_BASE_Q_CPP), -1, 0, ec);
 }
 
 void FormatContext::seek(const Timestamp& timestamp, size_t streamIndex, OptionalErrorCode ec)
@@ -252,7 +252,7 @@ void FormatContext::seek(const Timestamp& timestamp, size_t streamIndex, Optiona
 
 void FormatContext::seek(const Timestamp& timestamp, bool anyFrame, OptionalErrorCode ec)
 {
-    seek(timestamp.timestamp(AV_TIME_BASE_Q), -1, anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
+    seek(timestamp.timestamp(AV_TIME_BASE_Q_CPP), -1, anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
 }
 
 void FormatContext::seek(const Timestamp &timestamp, size_t streamIndex, bool anyFrame, OptionalErrorCode ec)
@@ -278,7 +278,7 @@ Timestamp FormatContext::startTime() const noexcept
         return {};
     }
 
-    return {m_raw->start_time, AV_TIME_BASE_Q};
+    return {m_raw->start_time, AV_TIME_BASE_Q_CPP};
 }
 
 int FormatContext::eventFlags() const noexcept
@@ -320,7 +320,7 @@ Timestamp FormatContext::duration() const noexcept
         duration += (m_raw->duration <= INT64_MAX - 5000 ? 5000 : 0);
     }
 
-    return {duration, AV_TIME_BASE_Q};
+    return {duration, AV_TIME_BASE_Q_CPP};
 };
 
 void FormatContext::openInput(const string &uri, OptionalErrorCode ec)

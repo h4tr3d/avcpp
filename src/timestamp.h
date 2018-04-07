@@ -67,7 +67,7 @@ public:
 
 private:
     int64_t  m_timestamp = AV_NOPTS_VALUE;
-    Rational m_timebase = AV_TIME_BASE_Q;
+    Rational m_timebase = AV_TIME_BASE_Q_CPP;
 };
 
 
