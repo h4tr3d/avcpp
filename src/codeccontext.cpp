@@ -885,7 +885,7 @@ Packet AudioEncoderContext::encode(const AudioSamples &inSamples, OptionalErrorC
 }
 
 template<typename T>
-std::pair<ssize_t, const std::error_category*>
+std::pair<int, const std::error_category*>
 CodecContext2::decodeCommon(T &outFrame,
              const Packet &inPacket,
              size_t offset,
@@ -934,7 +934,7 @@ CodecContext2::decodeCommon(T &outFrame,
 }
 
 template<typename T>
-std::pair<ssize_t, const std::error_category*>
+std::pair<int, const std::error_category*>
 CodecContext2::encodeCommon(Packet &outPacket,
              const T &inFrame,
              int &gotPacket,
