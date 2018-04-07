@@ -10,6 +10,8 @@
 namespace av
 {
 
+#define AV_TIME_BASE_Q_CPP          AVRational{1, AV_TIME_BASE}
+
 enum
 {
     RationalMaxPrecision = 5
