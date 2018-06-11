@@ -809,7 +809,7 @@ AudioSamples AudioDecoderContext::decode(const Packet &inPacket, size_t offset, 
 
     // Fix channels layout
     if (outSamples.channelsCount() && !outSamples.channelsLayout())
-        av_frame_set_channel_layout(outSamples.raw(), av_get_default_channel_layout(outSamples.channelsCount()));
+        av::frame::set_channel_layout(outSamples.raw(), av_get_default_channel_layout(outSamples.channelsCount()));
 
     return outSamples;
 }

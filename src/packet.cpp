@@ -1,4 +1,5 @@
 #include "packet.h"
+#include "avutils.h"
 
 using namespace std;
 
@@ -71,6 +72,7 @@ void Packet::initCommon()
     m_timeBase     = Rational(0, 0);
 }
 
+FF_DISABLE_DEPRECATION_WARNINGS
 void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, OptionalErrorCode ec)
 {
     clear_if(ec);
@@ -97,6 +99,7 @@ void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, OptionalErr
 
     m_completeFlag = m_raw.size > 0;
 }
+FF_ENABLE_DEPRECATION_WARNINGS
 
 bool Packet::setData(const vector<uint8_t> &newData, OptionalErrorCode ec)
 {
@@ -269,6 +272,7 @@ int Packet::refCount() const
         return 0;
 }
 
+FF_DISABLE_DEPRECATION_WARNINGS
 AVPacket Packet::makeRef(OptionalErrorCode ec) const
 {
     clear_if(ec);
@@ -279,6 +283,7 @@ AVPacket Packet::makeRef(OptionalErrorCode ec) const
     }
     return pkt;
 }
+FF_ENABLE_DEPRECATION_WARNINGS
 
 Packet Packet::clone(OptionalErrorCode ec) const
 {

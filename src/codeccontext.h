@@ -166,7 +166,7 @@ public:
         AVFrame *frame = outFrame.raw();
 
         if (frame->pts == AV_NOPTS_VALUE)
-            frame->pts = av_frame_get_best_effort_timestamp(frame);
+            frame->pts = av::frame::get_best_effort_timestamp(frame);
 
         // Or: AVCODEC < 57.24.0 if this macro will be removes in future
 #if !defined(FF_API_PKT_PTS)

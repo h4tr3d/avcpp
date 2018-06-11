@@ -89,6 +89,7 @@ void dumpBinaryBuffer(uint8_t *buffer, int buffer_size, int width)
     }
 }
 
+#if LIBAVCODEC_VERSION_MAJOR < 58 // FFmpeg 4.0
 #if !defined(__MINGW32__) || defined(_GLIBCXX_HAS_GTHREADS)
 static int avcpp_lockmgr_cb(void **ctx, enum AVLockOp op)
 {
@@ -160,17 +161,26 @@ static int avcpp_lockmgr_cb(void **ctx, enum AVLockOp op)
 #else
 #  error "Unknown Threading model"
 #endif
-
+#endif
 
 void init()
 {
+#if LIBAVFORMAT_VERSION_MAJOR < 58 // FFmpeg 4.0
     av_register_all();
+#endif
     avformat_network_init();
+#if LIBAVCODEC_VERSION_MAJOR < 58 // FFmpeg 4.0
     avcodec_register_all();
+#endif
+#if LIBAVFILTER_VERSION_MAJOR < 7 // FFmpeg 4.0
     avfilter_register_all();
+#endif
     avdevice_register_all();
 
+#if LIBAVCODEC_VERSION_MAJOR < 58 // FFmpeg 4.0
     av_lockmgr_register(avcpp_lockmgr_cb);
+#endif
+
     set_logging_level(AV_LOG_ERROR);
 
     // Ignore sigpipe by default

@@ -19,6 +19,60 @@ extern "C" {
 namespace av
 {
 
+namespace frame {
+
+static inline int64_t get_best_effort_timestamp(const AVFrame* frame) {
+#if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    return av_frame_get_best_effort_timestamp(frame);
+#else
+    return frame->best_effort_timestamp;
+#endif
+}
+
+static inline int64_t get_channel_layout(const AVFrame* frame) {
+#if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    return av_frame_get_channel_layout(frame);
+#else
+    return frame->channel_layout;
+#endif
+}
+
+static inline void set_channel_layout(AVFrame* frame, int64_t layout) {
+#if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    av_frame_set_channel_layout(frame, layout);
+#else
+    frame->channel_layout = layout;
+#endif
+}
+
+
+static inline int get_channels(const AVFrame* frame) {
+#if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    return av_frame_get_channels(frame);
+#else
+    return frame->channels;
+#endif
+}
+
+static inline int get_sample_rate(const AVFrame* frame) {
+#if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    return av_frame_get_sample_rate(frame);
+#else
+    return frame->sample_rate;
+#endif
+}
+
+static inline void set_sample_rate(AVFrame* frame, int sampleRate) {
+#if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    av_frame_set_sample_rate(frame, sampleRate);
+#else
+    frame->sample_rate = sampleRate;
+#endif
+}
+
+
+} // ::frame
+
 template<typename T>
 class Frame : public FFWrapperPtr<AVFrame>
 {
