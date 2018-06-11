@@ -106,7 +106,7 @@ int main(int argc, char **argv)
     encoder.setPixelFormat(vdec.pixelFormat());
     encoder.setTimeBase(Rational{1, 1000});
     encoder.setBitRate(vdec.bitRate());
-    encoder.addFlags(octx.outputFormat().isFlags(AVFMT_GLOBALHEADER) ? CODEC_FLAG_GLOBAL_HEADER : 0);
+    encoder.addFlags(octx.outputFormat().isFlags(AVFMT_GLOBALHEADER) ? AV_CODEC_FLAG_GLOBAL_HEADER : 0);
     ost.setFrameRate(vst.frameRate());
     ost.setAverageFrameRate(vst.frameRate()); // try to comment this out and look at the output of ffprobe or mpv
     // it'll show 1k fps regardless of the real fps;

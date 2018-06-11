@@ -43,8 +43,8 @@ Packet::Packet(const uint8_t *data, size_t size, bool doAllign)
     m_raw.size = size;
     if (doAllign)
     {
-        m_raw.data = reinterpret_cast<uint8_t*>(av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE));
-        std::fill_n(m_raw.data + m_raw.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0');
+        m_raw.data = reinterpret_cast<uint8_t*>(av_malloc(size + AV_INPUT_BUFFER_PADDING_SIZE));
+        std::fill_n(m_raw.data + m_raw.size, AV_INPUT_BUFFER_PADDING_SIZE, '\0');
     }
     else
         m_raw.data = reinterpret_cast<uint8_t*>(av_malloc(size));
@@ -112,10 +112,10 @@ bool Packet::setData(const uint8_t *newData, size_t size, OptionalErrorCode ec)
             av_buffer_unref(&m_raw.buf);
         else
             av_freep(&m_raw.data);
-        m_raw.data = reinterpret_cast<uint8_t*>(av_malloc(size + FF_INPUT_BUFFER_PADDING_SIZE));
+        m_raw.data = reinterpret_cast<uint8_t*>(av_malloc(size + AV_INPUT_BUFFER_PADDING_SIZE));
         m_raw.size = size;
 
-        std::fill_n(m_raw.data + m_raw.size, FF_INPUT_BUFFER_PADDING_SIZE, '\0'); // set padding memory to zero
+        std::fill_n(m_raw.data + m_raw.size, AV_INPUT_BUFFER_PADDING_SIZE, '\0'); // set padding memory to zero
         m_raw.buf = av_buffer_create(m_raw.data, m_raw.size, av_buffer_default_free, nullptr, 0);
         if (!m_raw.buf) {
             throws_if(ec, ENOMEM, system_category());
