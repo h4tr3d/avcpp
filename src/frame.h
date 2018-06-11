@@ -132,7 +132,7 @@ public:
         return {RAW_GET(pts, AV_NOPTS_VALUE), m_timeBase};
     }
 
-    void setPts(int64_t pts, Rational ptsTimeBase) attribute_deprecated
+    attribute_deprecated void setPts(int64_t pts, Rational ptsTimeBase)
     {
         RAW_SET(pts, ptsTimeBase.rescale(pts, m_timeBase));
     }
