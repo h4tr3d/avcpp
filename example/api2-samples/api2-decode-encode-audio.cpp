@@ -189,7 +189,7 @@ int main(int argc, char **argv)
 
             clog << "Read packet: isNull=" << (bool)!pkt << ", " << pkt.pts() << "(nopts:" << pkt.pts().isNoPts() << ")" << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 #if 0
-            if (pkt.pts() == AV_NOPTS_VALUE && pkt.timeBase() == Rational())
+            if (pkt.pts() == av::NoPts && pkt.timeBase() == Rational())
             {
                 clog << "Skip invalid timestamp packet: data=" << (void*)pkt.data()
                      << ", size=" << pkt.size()

@@ -2,6 +2,7 @@
 #include <limits>
 
 #include "timestamp.h"
+#include "avutils.h"
 
 namespace av {
 
@@ -32,12 +33,12 @@ const Rational &Timestamp::timebase() const noexcept
 
 bool Timestamp::isValid() const noexcept
 {
-    return m_timestamp != AV_NOPTS_VALUE;
+    return m_timestamp != av::NoPts;
 }
 
 bool Timestamp::isNoPts() const noexcept
 {
-    return m_timestamp == AV_NOPTS_VALUE;
+    return m_timestamp == av::NoPts;
 }
 
 Timestamp::operator double() const noexcept
@@ -83,7 +84,7 @@ Timestamp &Timestamp::operator/=(const Timestamp &other)
 
 Timestamp::operator bool() const noexcept
 {
-    return m_timestamp != AV_NOPTS_VALUE;
+    return m_timestamp != av::NoPts;
 }
 
 Timestamp operator+(const Timestamp &left, const Timestamp &right) noexcept

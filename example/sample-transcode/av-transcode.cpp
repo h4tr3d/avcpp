@@ -40,7 +40,7 @@ void formatWriter(const ContainerPtr& container, const PacketPtr& packet)
 {
     packetSync.doTimeSync(packet);
 
-    //if (packet->getPts() != AV_NOPTS_VALUE)
+    //if (packet->getPts() != av::NoPts)
     //    packet->setDts(packet->getPts());
 
     clog << "Write FRAME: " << packet->getStreamIndex()
@@ -400,7 +400,7 @@ int main(int argc, char **argv)
             VideoFramePtr  frame(new VideoFrame());
             StreamCoderPtr coder = decoders[pkt->getStreamIndex()];
 
-            if (pkt->getPts() == AV_NOPTS_VALUE && pkt->getDts() != AV_NOPTS_VALUE)
+            if (pkt->getPts() == av::NoPts && pkt->getDts() != av::NoPts)
             {
                 pkt->setPts(pkt->getDts());
             }
@@ -471,8 +471,8 @@ int main(int argc, char **argv)
             AudioSamplesPtr samples(new AudioSamples());
             StreamCoderPtr  coder = decoders[pkt->getStreamIndex()];
 
-            pkt->setPts(AV_NOPTS_VALUE);
-            pkt->setDts(AV_NOPTS_VALUE);
+            pkt->setPts(av::NoPts);
+            pkt->setDts(av::NoPts);
 
             int size = coder->decodeAudio(samples, pkt);
             samples->setStreamIndex(streamMapping[pkt->getStreamIndex()]);

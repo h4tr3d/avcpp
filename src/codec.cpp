@@ -30,7 +30,7 @@ bool Codec::canEncode() const
 
 bool Codec::canDecode() const
 {
-    return RAW_GET(decode, nullptr);
+    return RAW_GET(decode, nullptr) != nullptr;
 }
 
 AVMediaType Codec::type() const

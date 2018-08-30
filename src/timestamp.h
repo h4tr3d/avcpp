@@ -1,8 +1,8 @@
-#ifndef TIMESTAMP_H
-#define TIMESTAMP_H
+#pragma once
 
 #include <chrono>
 
+#include "avutils.h"
 #include "rational.h"
 
 namespace av {
@@ -66,8 +66,8 @@ public:
     Timestamp& operator/=(const Timestamp &other);
 
 private:
-    int64_t  m_timestamp = AV_NOPTS_VALUE;
-    Rational m_timebase = AV_TIME_BASE_Q;
+    int64_t  m_timestamp = av::NoPts;
+    Rational m_timebase = av::TimeBaseQ;
 };
 
 
@@ -142,5 +142,3 @@ std::ostream& operator<<(std::ostream &ost, const Timestamp &ts)
 }
 
 } // ::av
-
-#endif // TIMESTAMP_H

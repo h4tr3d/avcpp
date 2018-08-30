@@ -11,8 +11,6 @@
 #include <functional>
 
 #include "ffmpeg.h"
-#include "packet.h"
-#include "frame.h"
 #include "avtime.h"
 
 extern "C" {
@@ -40,6 +38,12 @@ extern "C" {
 // Functions
 //
 namespace av {
+
+// Basic FFmpeg constants
+constexpr auto NoPts = static_cast<int64_t>(AV_NOPTS_VALUE);
+constexpr auto TimeBase = static_cast<int>(AV_TIME_BASE);
+constexpr auto TimeBaseQ = static_cast<AVRational>(AV_TIME_BASE_Q);
+
 
 template<typename R, typename T>
 R lexical_cast(const T& v)
@@ -122,67 +126,14 @@ struct EmptyDeleter
  */
 struct AvDeleter
 {
-    bool operator() (SwsContext* &swsContext)
-    {
-        sws_freeContext(swsContext);
-        swsContext = 0;
-        return true;
-    }
-
-
-    bool operator() (AVCodecContext* &codecContext)
-    {
-        avcodec_close(codecContext);
-        av_free(codecContext);
-        codecContext = 0;
-        return true;
-    }
-
-
-    bool operator() (AVOutputFormat* &format)
-    {
-        // Only set format to zero, it can'be freed by user
-        format = 0;
-        return true;
-    }
-
-
-    bool operator() (AVFormatContext* &formatContext)
-    {
-        avformat_free_context(formatContext);
-        formatContext = 0;
-        return true;
-    }
-
-    bool operator() (AVFrame* &frame)
-    {
-        av_freep(&frame);
-        frame = 0;
-        return true;
-    }
-
-
-    bool operator() (AVPacket* &packet)
-    {
-        avpacket_unref(packet);
-        av_free(packet);
-        packet = 0;
-        return true;
-    }
-
-
-    bool operator() (AVDictionary* &dictionary)
-    {
-        av_dict_free(&dictionary);
-        dictionary = 0;
-        return true;
-    }
-
-    bool operator ()(AVFilterInOut* &filterInOut)
-    {
-        avfilter_inout_free(&filterInOut);
-        return true;
-    }
+    bool operator() (struct SwsContext* &swsContext);
+    bool operator() (struct AVCodecContext* &codecContext);
+    bool operator() (struct AVOutputFormat* &format);
+    bool operator() (struct AVFormatContext* &formatContext);
+    bool operator() (struct AVFrame* &frame);
+    bool operator() (struct AVPacket* &packet);
+    bool operator() (struct AVDictionary* &dictionary);
+    bool operator ()(struct AVFilterInOut* &filterInOut);
 };
 
 

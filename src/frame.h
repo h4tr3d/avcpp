@@ -10,6 +10,7 @@
 #include "timestamp.h"
 #include "pixelformat.h"
 #include "sampleformat.h"
+#include "avutils.h"
 
 extern "C" {
 #include <libavutil/imgutils.h>
@@ -29,17 +30,17 @@ static inline int64_t get_best_effort_timestamp(const AVFrame* frame) {
 #endif
 }
 
-static inline int64_t get_channel_layout(const AVFrame* frame) {
+static inline uint64_t get_channel_layout(const AVFrame* frame) {
 #if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
-    return av_frame_get_channel_layout(frame);
+    return static_cast<uint64_t>(av_frame_get_channel_layout(frame));
 #else
     return frame->channel_layout;
 #endif
 }
 
-static inline void set_channel_layout(AVFrame* frame, int64_t layout) {
+static inline void set_channel_layout(AVFrame* frame, uint64_t layout) {
 #if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
-    av_frame_set_channel_layout(frame, layout);
+    av_frame_set_channel_layout(frame, static_cast<int64_t>(layout));
 #else
     frame->channel_layout = layout;
 #endif
@@ -183,7 +184,7 @@ public:
 
     Timestamp pts() const
     {
-        return {RAW_GET(pts, AV_NOPTS_VALUE), m_timeBase};
+        return {RAW_GET(pts, av::NoPts), m_timeBase};
     }
 
     attribute_deprecated void setPts(int64_t pts, Rational ptsTimeBase)
@@ -205,14 +206,14 @@ public:
         if (!m_raw)
             return;
 
-        int64_t rescaledPts          = AV_NOPTS_VALUE;
-        int64_t rescaledBestEffortTs = AV_NOPTS_VALUE;
+        int64_t rescaledPts          = NoPts;
+        int64_t rescaledBestEffortTs = NoPts;
 
         if (m_timeBase != Rational() && value != Rational()) {
-            if (m_raw->pts != AV_NOPTS_VALUE)
+            if (m_raw->pts != av::NoPts)
                 rescaledPts = m_timeBase.rescale(m_raw->pts, value);
 
-            if (m_raw->best_effort_timestamp != AV_NOPTS_VALUE)
+            if (m_raw->best_effort_timestamp != av::NoPts)
                 rescaledBestEffortTs = m_timeBase.rescale(m_raw->best_effort_timestamp, value);
         } else {
             rescaledPts          = m_raw->pts;
@@ -377,7 +378,7 @@ public:
     SampleFormat sampleFormat() const;
     int            samplesCount() const;
     int            channelsCount() const;
-    int64_t        channelsLayout() const;
+    uint64_t channelsLayout() const;
     int            sampleRate() const;
     size_t         sampleBitDepth(OptionalErrorCode ec = throws()) const;
     bool           isPlanar() const;

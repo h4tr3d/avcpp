@@ -165,7 +165,7 @@ int main(int argc, char **argv)
             }
 #else
             auto ouSamples = AudioSamples::null();
-            while (ouSamples = resampler.pop(samples.samplesCount()/2, ec)) {
+            while ((ouSamples = resampler.pop(samples.samplesCount()/2, ec))) {
                 clog << "  Samples [ou]: " << ouSamples.samplesCount()
                      << ", ch: " << ouSamples.channelsCount()
                      << ", freq: " << ouSamples.sampleRate()

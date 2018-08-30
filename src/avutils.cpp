@@ -6,6 +6,8 @@
 
 #include "av.h"
 #include "avutils.h"
+#include "packet.h"
+#include "frame.h"
 
 using namespace std;
 
@@ -195,6 +197,63 @@ string error2string(int error)
     char errorBuf[AV_ERROR_MAX_STRING_SIZE] = {0};
     av_strerror(error, errorBuf, AV_ERROR_MAX_STRING_SIZE);
     return string(errorBuf);
+}
+
+bool AvDeleter::operator()(SwsContext *&swsContext)
+{
+    sws_freeContext(swsContext);
+    swsContext = nullptr;
+    return true;
+}
+
+bool AvDeleter::operator()(AVCodecContext *&codecContext)
+{
+    avcodec_close(codecContext);
+    av_free(codecContext);
+    codecContext = nullptr;
+    return true;
+}
+
+bool AvDeleter::operator()(AVOutputFormat *&format)
+{
+    // Only set format to zero, it can'be freed by user
+    format = 0;
+    return true;
+}
+
+bool AvDeleter::operator()(AVFormatContext *&formatContext)
+{
+    avformat_free_context(formatContext);
+    formatContext = nullptr;
+    return true;
+}
+
+bool AvDeleter::operator()(AVFrame *&frame)
+{
+    av_freep(&frame);
+    frame = nullptr;
+    return true;
+}
+
+bool AvDeleter::operator()(AVPacket *&packet)
+{
+    avpacket_unref(packet);
+    av_free(packet);
+    packet = nullptr;
+    return true;
+}
+
+bool AvDeleter::operator()(AVDictionary *&dictionary)
+{
+    av_dict_free(&dictionary);
+    dictionary = nullptr;
+    return true;
+}
+
+bool AvDeleter::operator ()(AVFilterInOut *&filterInOut)
+{
+    avfilter_inout_free(&filterInOut);
+    return true;
 }
 
 

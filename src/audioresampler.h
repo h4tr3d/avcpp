@@ -17,17 +17,17 @@ class AudioResampler : public FFWrapperPtr<SwrContext>, public noncopyable
 public:
     AudioResampler();
 
-    AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
-                   int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
+    AudioResampler(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                   uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    OptionalErrorCode ec = throws());
 
-    AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
-                   int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
+    AudioResampler(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                   uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    Dictionary &options,
                    OptionalErrorCode ec = throws());
 
-    AudioResampler(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
-                   int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
+    AudioResampler(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+                   uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    Dictionary &&options,
                    OptionalErrorCode ec = throws());
 
@@ -38,12 +38,12 @@ public:
 
     void swap(AudioResampler& other);
 
-    int64_t        dstChannelLayout() const;
+    uint64_t dstChannelLayout() const;
     int            dstChannels()      const;
     int            dstSampleRate()    const;
     SampleFormat   dstSampleFormat()  const;
 
-    int64_t        srcChannelLayout() const;
+    uint64_t srcChannelLayout() const;
     int            srcChannels()      const;
     int            srcSampleRate()    const;
     SampleFormat   srcSampleFormat()  const;
@@ -93,34 +93,34 @@ public:
 
     int64_t delay() const;
 
-    bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
-              int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
+    bool init(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+              uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               OptionalErrorCode ec = throws());
 
-    bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
-              int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
+    bool init(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+              uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               Dictionary &options,
               OptionalErrorCode ec = throws());
 
-    bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
-              int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
+    bool init(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+              uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               Dictionary &&options,
               OptionalErrorCode ec = throws());
 
     static
-    bool validate(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat);
+    bool validate(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat);
 
 private:
-    bool init(int64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
-              int64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
+    bool init(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
+              uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               AVDictionary **dict, OptionalErrorCode ec);
 
 private:
     // Cached values to avoid access to the av_opt
-    int64_t        m_dstChannelsLayout;
+    uint64_t       m_dstChannelsLayout;
     int            m_dstRate;
     SampleFormat   m_dstFormat;
-    int64_t        m_srcChannelsLayout;
+    uint64_t       m_srcChannelsLayout;
     int            m_srcRate;
     SampleFormat   m_srcFormat;
 

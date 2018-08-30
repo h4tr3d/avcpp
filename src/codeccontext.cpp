@@ -4,6 +4,12 @@
 #include "avutils.h"
 #include "averror.h"
 
+#include "stream.h"
+#include "frame.h"
+#include "packet.h"
+#include "dictionary.h"
+#include "codec.h"
+
 #include "codeccontext.h"
 
 using namespace std;
@@ -25,7 +31,33 @@ make_error_pair(ssize_t status)
     return make_pair(status, nullptr);
 }
 
-} // ::anonymous
+}
+
+GenericCodecContext::GenericCodecContext(Stream st)
+    : CodecContext2(st, Codec(), st.direction(), st.mediaType())
+{
+}
+
+GenericCodecContext::GenericCodecContext(GenericCodecContext &&other)
+    : GenericCodecContext()
+{
+    swap(other);
+}
+
+GenericCodecContext &GenericCodecContext::operator=(GenericCodecContext &&rhs)
+{
+    if (this == &rhs)
+        return *this;
+    GenericCodecContext(std::move(rhs)).swap(*this);
+    return *this;
+}
+
+AVMediaType GenericCodecContext::codecType() const noexcept
+{
+    return codecType(stream().mediaType());
+}
+
+// ::anonymous
 } // ::av
 
 namespace {
@@ -850,6 +882,94 @@ Packet AudioEncoderContext::encode(const AudioSamples &inSamples, OptionalErrorC
     }
 
     return outPacket;
+}
+
+template<typename T>
+std::pair<ssize_t, const std::error_category*>
+CodecContext2::decodeCommon(T &outFrame,
+             const Packet &inPacket,
+             size_t offset,
+             int &frameFinished,
+             int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *))
+{
+    auto st = decodeCommon(outFrame.raw(), inPacket, offset, frameFinished, decodeProc);
+    if (std::get<1>(st))
+        return st;
+
+    if (!frameFinished)
+        return std::make_pair(0u, nullptr);
+
+    // Dial with PTS/DTS in packet/stream timebase
+
+    if (inPacket.timeBase() != Rational())
+        outFrame.setTimeBase(inPacket.timeBase());
+    else
+        outFrame.setTimeBase(m_stream.timeBase());
+
+    AVFrame *frame = outFrame.raw();
+
+    if (frame->pts == av::NoPts)
+        frame->pts = av::frame::get_best_effort_timestamp(frame);
+
+    // Or: AVCODEC < 57.24.0 if this macro will be removes in future
+#if !defined(FF_API_PKT_PTS)
+    if (frame->pts == av::NoPts)
+        frame->pts = frame->pkt_pts;
+#endif
+
+    if (frame->pts == av::NoPts)
+        frame->pts = frame->pkt_dts;
+
+    // Convert to decoder/frame time base. Seems not nessesary.
+    outFrame.setTimeBase(timeBase());
+
+    if (inPacket)
+        outFrame.setStreamIndex(inPacket.streamIndex());
+    else
+        outFrame.setStreamIndex(m_stream.index());
+
+    outFrame.setComplete(true);
+
+    return st;
+}
+
+template<typename T>
+std::pair<ssize_t, const std::error_category*>
+CodecContext2::encodeCommon(Packet &outPacket,
+             const T &inFrame,
+             int &gotPacket,
+             int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *))
+{
+    auto st = encodeCommon(outPacket, inFrame.raw(), gotPacket, encodeProc);
+    if (std::get<1>(st))
+        return st;
+    if (!gotPacket)
+        return std::make_pair(0u, nullptr);
+
+    if (inFrame && inFrame.timeBase() != Rational()) {
+        outPacket.setTimeBase(inFrame.timeBase());
+        outPacket.setStreamIndex(inFrame.streamIndex());
+    } else if (m_stream.isValid()) {
+#if USE_CODECPAR
+        outPacket.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
+#else
+        FF_DISABLE_DEPRECATION_WARNINGS
+        if (m_stream.raw()->codec) {
+            outPacket.setTimeBase(m_stream.raw()->codec->time_base);
+        }
+        FF_ENABLE_DEPRECATION_WARNINGS
+#endif
+        outPacket.setStreamIndex(m_stream.index());
+    }
+
+    // Recalc PTS/DTS/Duration
+    if (m_stream.isValid()) {
+        outPacket.setTimeBase(m_stream.timeBase());
+    }
+
+    outPacket.setComplete(true);
+
+    return st;
 }
 
 

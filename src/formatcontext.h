@@ -181,10 +181,10 @@ public:
     bool checkUncodedFrameWriting(size_t streamIndex, std::error_code &ec) noexcept;
     bool checkUncodedFrameWriting(size_t streamIndex) noexcept;
 
-    void writeUncodedFrame(VideoFrame &frame, size_t streamIndex, OptionalErrorCode ec = throws());
-    void writeUncodedFrameDirect(VideoFrame &frame, size_t streamIndex, OptionalErrorCode ec = throws());
-    void writeUncodedFrame(AudioSamples &frame, size_t streamIndex, OptionalErrorCode ec = throws());
-    void writeUncodedFrameDirect(AudioSamples &frame, size_t streamIndex, OptionalErrorCode ec = throws());
+    void writeUncodedFrame(class VideoFrame &frame, size_t streamIndex, OptionalErrorCode ec = throws());
+    void writeUncodedFrameDirect(class VideoFrame &frame, size_t streamIndex, OptionalErrorCode ec = throws());
+    void writeUncodedFrame(class AudioSamples &frame, size_t streamIndex, OptionalErrorCode ec = throws());
+    void writeUncodedFrameDirect(class AudioSamples &frame, size_t streamIndex, OptionalErrorCode ec = throws());
 
     void writeTrailer(OptionalErrorCode ec = throws());
 

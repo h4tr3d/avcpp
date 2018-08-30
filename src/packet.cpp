@@ -145,7 +145,7 @@ Timestamp Packet::dts() const
 
 Timestamp Packet::ts() const
 {
-    return {m_raw.pts != AV_NOPTS_VALUE ? m_raw.pts : m_raw.dts, m_timeBase};
+    return {m_raw.pts != av::NoPts ? m_raw.pts : m_raw.dts, m_timeBase};
 }
 
 size_t Packet::size() const

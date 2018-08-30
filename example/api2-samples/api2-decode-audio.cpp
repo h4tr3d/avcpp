@@ -91,7 +91,7 @@ int main(int argc, char **argv)
             }
         }
 
-        clog << "NO_PTS: " << AV_NOPTS_VALUE << endl;
+        clog << "NO_PTS: " << av::NoPts << endl;
         clog << "Duration: " << ictx.duration() << " / " << ictx.duration().seconds()
              << ", Start Time: " << ictx.startTime() << " / " << ictx.startTime().seconds()
              << endl;

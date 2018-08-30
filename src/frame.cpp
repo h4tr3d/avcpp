@@ -267,7 +267,7 @@ int AudioSamples::channelsCount() const
     return m_raw ? av::frame::get_channels(m_raw) : 0;
 }
 
-int64_t AudioSamples::channelsLayout() const
+uint64_t AudioSamples::channelsLayout() const
 {
     return m_raw ? av::frame::get_channel_layout(m_raw) : 0;
 }

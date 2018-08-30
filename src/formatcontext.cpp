@@ -2,6 +2,7 @@
 
 #include "avutils.h"
 #include "avtime.h"
+#include "frame.h"
 #include "avlog.h"
 
 #include "formatcontext.h"
@@ -316,11 +317,11 @@ Timestamp FormatContext::duration() const noexcept
 
     // Taken from the av_dump_format()
     int64_t duration = m_raw->duration;
-    if (m_raw->duration != AV_NOPTS_VALUE) {
+    if (m_raw->duration != av::NoPts) {
         duration += (m_raw->duration <= INT64_MAX - 5000 ? 5000 : 0);
     }
 
-    return {duration, AV_TIME_BASE_Q};
+    return {duration, av::TimeBaseQ};
 };
 
 void FormatContext::openInput(const string &uri, OptionalErrorCode ec)

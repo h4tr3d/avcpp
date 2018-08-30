@@ -48,17 +48,17 @@ Rational Stream::averageFrameRate() const
 
 Timestamp Stream::startTime() const
 {
-    return {RAW_GET2(isValid(), start_time, AV_NOPTS_VALUE), timeBase()};
+    return {RAW_GET2(isValid(), start_time, av::NoPts), timeBase()};
 }
 
 Timestamp Stream::duration() const
 {
-    return {RAW_GET2(isValid(), duration, AV_NOPTS_VALUE), timeBase()};
+    return {RAW_GET2(isValid(), duration, av::NoPts), timeBase()};
 }
 
 Timestamp Stream::currentDts() const
 {
-    return {RAW_GET2(isValid(), cur_dts, AV_NOPTS_VALUE), timeBase()};
+    return {RAW_GET2(isValid(), cur_dts, av::NoPts), timeBase()};
 }
 
 AVMediaType Stream::mediaType() const

@@ -9,6 +9,7 @@
 #include "filtercontext.h"
 #include "filter.h"
 #include "averror.h"
+#include "frame.h"
 
 namespace av {
 
