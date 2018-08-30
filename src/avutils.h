@@ -19,7 +19,8 @@ extern "C" {
 #include <libavfilter/avfilter.h>
 }
 
-#define USE_CODECPAR (LIBAVFORMAT_VERSION_MAJOR >= 58)
+// WA: codecpar usage need more investigation. Temporary disable it.
+#define USE_CODECPAR (0)
 
 #if defined(__ICL) || defined (__INTEL_COMPILER)
 #    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))
