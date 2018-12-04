@@ -9,14 +9,6 @@ language: cpp
 
 os:
     - linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-xenial-7
-          packages:
-            - gcc-8
-            - clang-7
     - osx
 
 compiler:
@@ -27,10 +19,19 @@ env:
     - BUILD_CONFIGURATION=Debug
     - BUILD_CONFIGURATION=Release
 
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-7
+        packages:
+            - gcc-8
+            - clang-7
+
 matrix:
     include:
         - compiler: gcc
-          env: 
+          env:
             - MATRIX_EVAL="BUILD_CONFIGURATION=Debug && CC=gcc-8 && CXX=g++-8"
 
         - compiler: gcc
@@ -44,7 +45,7 @@ matrix:
         - compiler: gcc
           env:
             - MATRIX_EVAL="BUILD_CONFIGURATION=Release && CC=gcc-5 && CXX=g++-5"
-        
+
         - compiler: clang
           os: linux
           env:
