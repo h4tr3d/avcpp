@@ -7,60 +7,88 @@ sudo: required
 
 language: cpp
 
-os:
-    - linux
-    - osx
-
-compiler:
-    - gcc
-    - clang
-
-env:
-    - BUILD_CONFIGURATION=Debug
-    - BUILD_CONFIGURATION=Release
-
-addons:
-    apt:
-        sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-xenial-7
-        packages:
-            - gcc-8
-            - clang-7
-
+# Is there any way to avoid duplication for combination of BUILD_CONFIGURATION and COMPILER?
+# in case, when non-default compiler is used?
 matrix:
     include:
-        - compiler: gcc
-          env:
-            - MATRIX_EVAL="BUILD_CONFIGURATION=Debug && CC=gcc-8 && CXX=g++-8"
-
-        - compiler: gcc
-          env:
-            - MATRIX_EVAL="BUILD_CONFIGURATION=Release && CC=gcc-8 && CXX=g++-8"
-
-        - compiler: gcc
-          env:
-            - MATRIX_EVAL="BUILD_CONFIGURATION=Debug && CC=gcc-5 && CXX=g++-5"
-
-        - compiler: gcc
-          env:
-            - MATRIX_EVAL="BUILD_CONFIGURATION=Release && CC=gcc-5 && CXX=g++-5"
-
-        - compiler: clang
-          os: linux
-          env:
-            - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
-
-    exclude:
-        # exclude some elements from build matrix:
-        - os:       osx
+        # GCC 8 / Debug
+        - os: linux
           compiler: gcc
+          addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                packages:
+                    - gcc-8
+                    - g++-8
+          env:
+            - HELLO_WORLD="GCC 8 / Debug"
+            - MATRIX_EVAL="BUILD_TYPE=Debug && CC=gcc-8 && CXX=g++-8"
 
-        - compiler: gcc
-          env: BUILD_CONFIGURATION=Debug
+        # GCC 8 / Release
+        - os: linux
+          compiler: gcc
+          addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                packages:
+                    - gcc-8
+                    - g++-8
+          env:
+            - HELLO_WORLD="GCC 8 / Release"
+            - MATRIX_EVAL="BUILD_TYPE=Release && CC=gcc-8 && CXX=g++-8"
 
-        - compiler: gcc
-          env: BUILD_CONFIGURATION=Release
+        # GCC 5 / Debug
+        - os: linux
+          compiler: gcc
+          env:
+            - HELLO_WORLD="GCC 5 / Debug"
+            - MATRIX_EVAL="BUILD_TYPE=Debug && CC=gcc-5 && CXX=g++-5"
+
+        # GCC 5 / Release
+        - os: linux
+          compiler: gcc
+          env:
+            - HELLO_WORLD="GCC 5 / Release"
+            - MATRIX_EVAL="BUILD_TYPE=Release && CC=gcc-5 && CXX=g++-5"
+
+        # CLANG 7 / Release
+        - os: linux
+          compiler: clang
+          addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                    - llvm-toolchain-xenial-7
+                packages:
+                    - clang-7
+                    - clang++-7
+          env:
+            - MATRIX_EVAL="BUILD_TYPE=Release CC=clang-7 && CXX=clang++-7"
+
+        - os: osx
+          compiler: clang
+          env:
+            - MATRIX_EVAL="BUILD_TYPE=Debug"
+            - MATRIX2="TEST1"
+
+        - os: osx
+          compiler: clang
+          env:
+            - MATRIX_EVAL="BUILD_TYPE=Release"
+            - MATRIX2="TEST2"
+
+#    exclude:
+        # exclude some elements from build matrix:
+#        - os:       osx
+#          compiler: gcc
+
+        #- compiler: gcc
+        #  env: BUILD_CONFIGURATION=Debug
+
+        #- compiler: gcc
+        #  env: BUILD_CONFIGURATION=Release
 
 #before_install:
 #    - eval "${MATRIX_EVAL}"
@@ -75,7 +103,7 @@ script:
     - mkdir build
     - cd build
     #- cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU
-    - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION
+    - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
     - cmake --build .
     #- ctest --output-on-failure
 
