@@ -91,9 +91,9 @@ matrix:
 install:
     # setup env:
     - source ci/travis/install-$TRAVIS_OS_NAME.sh
+    - eval "${MATRIX_EVAL}"
 
 script:
-    - eval "${MATRIX_EVAL}"
     # build and test project:
     - mkdir build
     - cd build
