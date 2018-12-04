@@ -1,11 +1,23 @@
 # Based on https://habrahabr.ru/post/329264/
 # Additional GCC / clang versions:
 #   - https://docs.travis-ci.com/user/languages/cpp/
+#   - https://gist.github.com/nabijaczleweli/e53219d037c4ccb34f3c
 
 dist: xenial
 sudo: required
 
 language: cpp
+
+cache:
+    apt: true
+
+addons:
+    apt:
+        sources: &apt_sources
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-7
+        packages:
+            - g++-5
 
 # Is there any way to avoid duplication for combination of BUILD_CONFIGURATION and COMPILER?
 # in case, when non-default compiler is used?
@@ -13,57 +25,42 @@ matrix:
     include:
         # GCC 8 / Debug
         - os: linux
-          compiler: gcc
-          addons:
+          addons: &gcc8
             apt:
-                sources:
-                    - ubuntu-toolchain-r-test
+                sources: *apt_sources
                 packages:
-                    - gcc-8
                     - g++-8
+          compiler: gcc
           env:
-            - HELLO_WORLD="GCC 8 / Debug"
             - MATRIX_EVAL="BUILD_TYPE=Debug && CC=gcc-8 && CXX=g++-8"
 
         # GCC 8 / Release
         - os: linux
+          addons: *gcc8
           compiler: gcc
-          addons:
-            apt:
-                sources:
-                    - ubuntu-toolchain-r-test
-                packages:
-                    - gcc-8
-                    - g++-8
           env:
-            - HELLO_WORLD="GCC 8 / Release"
             - MATRIX_EVAL="BUILD_TYPE=Release && CC=gcc-8 && CXX=g++-8"
 
         # GCC 5 / Debug
         - os: linux
           compiler: gcc
           env:
-            - HELLO_WORLD="GCC 5 / Debug"
             - MATRIX_EVAL="BUILD_TYPE=Debug && CC=gcc-5 && CXX=g++-5"
 
         # GCC 5 / Release
         - os: linux
           compiler: gcc
           env:
-            - HELLO_WORLD="GCC 5 / Release"
             - MATRIX_EVAL="BUILD_TYPE=Release && CC=gcc-5 && CXX=g++-5"
 
         # CLANG 7 / Release
         - os: linux
-          compiler: clang
           addons:
             apt:
-                sources:
-                    - ubuntu-toolchain-r-test
-                    - llvm-toolchain-xenial-7
+                sources: *apt_sources
                 packages:
-                    - clang-7
                     - clang++-7
+          compiler: clang
           env:
             - MATRIX_EVAL="BUILD_TYPE=Release CC=clang-7 && CXX=clang++-7"
 
@@ -71,13 +68,11 @@ matrix:
           compiler: clang
           env:
             - MATRIX_EVAL="BUILD_TYPE=Debug"
-            - MATRIX2="TEST1"
 
         - os: osx
           compiler: clang
           env:
             - MATRIX_EVAL="BUILD_TYPE=Release"
-            - MATRIX2="TEST2"
 
 #    exclude:
         # exclude some elements from build matrix:
@@ -96,9 +91,9 @@ matrix:
 install:
     # setup env:
     - source ci/travis/install-$TRAVIS_OS_NAME.sh
-    - eval "${MATRIX_EVAL}"
 
 script:
+    - eval "${MATRIX_EVAL}"
     # build and test project:
     - mkdir build
     - cd build
