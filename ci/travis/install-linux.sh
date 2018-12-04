@@ -30,31 +30,31 @@ build_cmake()
 build_cmake
 
 # Newer GCC
-if [ -n "$MATRIX_EVAL" ]; then
-    echo "Prepare GCC"
-    sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-    sudo apt-get -qq update
-    (
-        eval "${MATRIX_EVAL}"
-        case "${CXX}" in
-            g++-5)
-                pkg='g\+\+-5'
-            ;;
-            g++-6)
-                pkg='g\+\+-6'
-            ;;
-            g++-7)
-                pkg='g\+\+-7'
-            ;;
-            *)
-                echo "Unknown compiler: ${CXX}"
-                exit 1
-            ;;
-        esac
-        #sudo apt-get install -y 'g\+\+-5' 'g\+\+-6' 'g\+\+-7'
-        sudo apt-get install -y "${pkg}"
-    )
-fi
+#if [ -n "$MATRIX_EVAL" ]; then
+#    echo "Prepare GCC"
+#    sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+#    sudo apt-get -qq update
+#    (
+#        eval "${MATRIX_EVAL}"
+#        case "${CXX}" in
+#            g++-5)
+#                pkg='g\+\+-5'
+#            ;;
+#            g++-6)
+#                pkg='g\+\+-6'
+#            ;;
+#            g++-7)
+#                pkg='g\+\+-7'
+#            ;;
+#            *)
+#                echo "Unknown compiler: ${CXX}"
+#                exit 1
+#            ;;
+#        esac
+#        #sudo apt-get install -y 'g\+\+-5' 'g\+\+-6' 'g\+\+-7'
+#        sudo apt-get install -y "${pkg}"
+#    )
+#fi
 
 # FFmpeg
 # - https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-3
