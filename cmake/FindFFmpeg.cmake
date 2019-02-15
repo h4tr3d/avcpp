@@ -170,14 +170,6 @@ if (NOT FFMPEG_LIBRARIES)
     list(REMOVE_DUPLICATES FFMPEG_INCLUDE_DIRS)
   endif ()
 
-  if (NOT TARGET FFmpeg::FFmpeg)
-    add_library(FFmpeg::FFmpeg INTERFACE IMPORTED)
-    set_target_properties(FFmpeg::FFmpeg PROPERTIES
-        INTERFACE_COMPILE_OPTIONS "${FFMPEG_DEFINITIONS}"
-        INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_INCLUDE_DIRS}
-        INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}")
-  endif()
-
   # cache the vars.
   set(FFMPEG_INCLUDE_DIRS ${FFMPEG_INCLUDE_DIRS} CACHE STRING "The FFmpeg include directories." FORCE)
   set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    CACHE STRING "The FFmpeg libraries." FORCE)
@@ -188,6 +180,14 @@ if (NOT FFMPEG_LIBRARIES)
                    FFMPEG_DEFINITIONS)
 
 endif ()
+
+if (NOT TARGET FFmpeg::FFmpeg)
+  add_library(FFmpeg::FFmpeg INTERFACE IMPORTED)
+  set_target_properties(FFmpeg::FFmpeg PROPERTIES
+      INTERFACE_COMPILE_OPTIONS "${FFMPEG_DEFINITIONS}"
+      INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_INCLUDE_DIRS}
+      INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}")
+endif()
 
 # Now set the noncached _FOUND vars for the components.
 foreach (_component AVCODEC AVDEVICE AVFORMAT AVUTIL POSTPROCESS SWSCALE)
