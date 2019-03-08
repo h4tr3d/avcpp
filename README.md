@@ -1,4 +1,4 @@
-# AvCpp [![Build Status](https://travis-ci.org/h4tr3d/avcpp.svg?branch=master)](https://travis-ci.org/h4tr3d/avcpp)
+# AvCpp [![Build Status](https://travis-ci.org/h4tr3d/avcpp.svg?branch=master)](https://travis-ci.org/h4tr3d/avcpp) [![Total alerts](https://img.shields.io/lgtm/alerts/g/h4tr3d/avcpp.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/h4tr3d/avcpp/alerts/)
 
 Wrapper for the FFmpeg that simplify usage it from C++ projects.
 
