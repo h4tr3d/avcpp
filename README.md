@@ -60,6 +60,39 @@ sudo apt install libavcodec-dev \
                  libswscale-dev
 ```
 
+Build
+-----
+
+```
+git clone https://github.com/h4tr3d/avcpp.git avcpp-git
+cd avcpp-git
+mkdir build
+cd build
+cmake ..
+make -j8
+```
+
+If FFmpeg located in non-standard place:
+```
+cmake -DPC_FFMPEG_LIBRARY_DIRS=<some_path> -DPC_FFMPEG_INCLUDE_DIRS=<some_path> ..
+```
+
+To point install prefix:
+```
+cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+```
+
+Install:
+```
+sudo make install
+```
+or (for packaging)
+```
+sudo make DESTDIR=<some_prefix> install
+```
+
+Refer to CMake documentation for more details that can cover some special cases.
+
 Near future plans
 -----------------
 
