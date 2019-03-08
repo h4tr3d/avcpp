@@ -470,11 +470,11 @@ Packet FormatContext::readPacket(OptionalErrorCode ec)
 
     // End of file
     if (sts == AVERROR_EOF /*|| avio_feof(m_raw->pb)*/) {
-        auto ec = std::error_code(sts, ffmpeg_category());
+        auto ec_tmp = std::error_code(sts, ffmpeg_category());
         fflog(AV_LOG_DEBUG,
               "EOF reaches, error=%d, %s, isNull: %d, stream_index: %d, payload: %p\n",
               sts,
-              ec.message().c_str(),
+              ec_tmp.message().c_str(),
               packet.isNull(),
               packet.streamIndex(),
               packet.data());
