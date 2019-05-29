@@ -63,7 +63,7 @@ public:
      */
     struct RawStringDeleter
     {
-        void operator()(char *&ptr)
+        void operator()(char *ptr)
         {
             av_freep(&ptr);
         }
