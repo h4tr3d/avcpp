@@ -101,14 +101,14 @@ VideoFrame::VideoFrame(const uint8_t *data, size_t size, PixelFormat pixelFormat
     if (calcSize != size)
         throw length_error("Data size and required buffer for this format/width/height/align not equal");
 
-    uint8_t *buf[4];
-    int      linesize[4];
-    av_image_fill_arrays(buf, linesize, data, pixelFormat, width, height, align);
+    uint8_t *src_buf[4];
+    int      src_linesize[4];
+    av_image_fill_arrays(src_buf, src_linesize, data, pixelFormat, width, height, align);
 
     // copy data
-    for (size_t i = 0; i < 4 && buf[i]; ++i) {
-        std::copy(buf[i], buf[i]+linesize[i], m_raw->data[i]);
-    }
+    av_image_copy(m_raw->data, m_raw->linesize,
+                  const_cast<const uint8_t**>(src_buf), const_cast<const int*>(src_linesize),
+                  pixelFormat, width, height);
 }
 
 VideoFrame::VideoFrame(const VideoFrame &other)
