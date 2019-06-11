@@ -7,9 +7,3 @@
 
 brew update
 brew install ffmpeg
-
-cmake --version
-
-brew install cmake
-
-cmake --version
