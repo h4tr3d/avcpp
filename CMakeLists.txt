@@ -15,7 +15,7 @@ include_directories(.)
 add_definitions(-D__STDC_CONSTANT_MACROS)
 
 # Compiler-specific C++11 activation.
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED yes)
 
 # -pthread sets also some useful compile-time flags
