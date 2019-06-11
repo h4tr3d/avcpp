@@ -33,3 +33,7 @@ add_subdirectory(src)
 add_subdirectory(example/api2-samples)
 #add_subdirectory(example/sample-view)
 
+enable_testing()
+set(CATCH_BUILD_TESTING Off CACHE STRING "")
+add_subdirectory(catch2)
+add_subdirectory(tests)
