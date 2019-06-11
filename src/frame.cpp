@@ -186,6 +186,37 @@ void VideoFrame::setSampleAspectRatio(const Rational& sampleAspectRatio)
     RAW_SET(sample_aspect_ratio, sampleAspectRatio);
 }
 
+size_t VideoFrame::bufferSize(int align, OptionalErrorCode ec) const
+{
+    clear_if(ec);
+    auto sz = av_image_get_buffer_size(static_cast<AVPixelFormat>(m_raw->format), m_raw->width, m_raw->height, align);
+    if (sz < 0) {
+        throws_if(ec, sz, ffmpeg_category());
+        return 0;
+    }
+    return static_cast<size_t>(sz);
+}
+
+bool VideoFrame::copyToBuffer(uint8_t *dst, size_t size, int align, OptionalErrorCode ec)
+{
+    clear_if(ec);
+    auto sts = av_image_copy_to_buffer(dst, static_cast<int>(size), m_raw->data, m_raw->linesize, static_cast<AVPixelFormat>(m_raw->format), m_raw->width, m_raw->height, align);
+    if (sts < 0) {
+        throws_if(ec, sts, ffmpeg_category());
+        return false;
+    }
+    return true;
+}
+
+bool VideoFrame::copyToBuffer(std::vector<uint8_t> &dst, int align, OptionalErrorCode ec)
+{
+    auto sz = bufferSize(align, ec);
+    if (ec && *ec)
+        return false;
+    dst.resize(sz);
+    return copyToBuffer(dst.data(), dst.size(), align, ec);
+}
+
 
 AudioSamples::AudioSamples(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
 {
