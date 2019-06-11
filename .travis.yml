@@ -2,6 +2,10 @@
 # Additional GCC / clang versions:
 #   - https://docs.travis-ci.com/user/languages/cpp/
 #   - https://gist.github.com/nabijaczleweli/e53219d037c4ccb34f3c
+# Useful samples:
+#   - https://github.com/catchorg/Catch2/blob/master/.travis.yml
+#   - https://github.com/pinam45/dynamic_bitset/blob/master/.travis.yml
+#
 
 dist: xenial
 sudo: required
@@ -66,7 +70,7 @@ matrix:
                     - clang++-7
           compiler: clang
           env:
-            - MATRIX_EVAL="BUILD_TYPE=Release CC=clang-7 && CXX=clang++-7"
+            - MATRIX_EVAL="BUILD_TYPE=Release && CC=clang-7 && CXX=clang++-7"
 
         - os: osx
           compiler: clang
@@ -95,6 +99,16 @@ matrix:
 install:
     # setup env:
     - source ci/travis/install-$TRAVIS_OS_NAME.sh
+#    - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+#    - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+#    - |
+#      if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+#        CMAKE_URL="http://cmake.org/files/v3.14/cmake-3.14.5-Linux-x86_64.tar.gz"
+#        mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+#        export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+#      elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+#        which cmake || brew install cmake;
+#      fi
 
 script:
     - eval "${MATRIX_EVAL}"
@@ -104,7 +118,7 @@ script:
     #- cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU
     - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
     - cmake --build .
-    #- ctest --output-on-failure
+    - ctest --output-on-failure
 
 #deploy:
 #    # push tagged-commits to GitHub Releases:
