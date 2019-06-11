@@ -9,8 +9,8 @@ export MAKEFLAGS="-j${JOBS}"
 echo "Prepare CMake"
 build_cmake()
 {
-    local CMAKE_VERSION_BASE=3.11
-    local CMAKE_VERSION_MINOR=0
+    local CMAKE_VERSION_BASE=3.14
+    local CMAKE_VERSION_MINOR=5
     local CMAKE_VERSION_FULL=${CMAKE_VERSION_BASE}.${CMAKE_VERSION_MINOR}
     local CMAKE_ARCH=x86_64
 
