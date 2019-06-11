@@ -30,8 +30,19 @@ if(WIN32)
   list(APPEND PLATFORM_LIBS ws2_32)
 endif()
 
+target_include_directories(${AV_TARGET}
+  INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+# provide a namespaced alias for clients to 'link' against if catch is included as a sub-project
+add_library(AvCpp::AvCpp ALIAS ${AV_TARGET})
+
+
 ########################### Installation ######################################
 
+if (NOT_SUBPROJECT)
 set(LIB_INSTALL_DIR lib     CACHE STRING "Install location of libraries")
 set(BIN_INSTALL_DIR bin     CACHE STRING "Install location of executables")
 set(INC_INSTALL_DIR include CACHE STRING "Intall location of headers")
@@ -88,5 +99,5 @@ if (PKG_CONFIG_FOUND)
             DESTINATION "${LIB_INSTALL_DIR}/pkgconfig")
 
 endif()
-
+endif()
 
