@@ -93,23 +93,3 @@ sudo make DESTDIR=<some_prefix> install
 
 Refer to CMake documentation for more details that can cover some special cases.
 
-Near future plans
------------------
-
-  - ~~Building for Android (ready to commint but small code clean up is required)~~
-  - CI with complex build matrix:
-    - FFmpeg 3.x and FFmpeg 2.8
-    - GCC 5 and 7, MSVS 2015 and 2017, clang
-    - Linux, OSX, Windows
-    - Tests
-
-Future plans (long and not)
----------------------------
-
-  - Code cleanup
-  - Remove all deprecates in Filters module (FFmpeg 2.x)
-  - API redisign, make it more intuitively
-  - Filters module complete rework
-  - Add good samples
-  - Make hight-level entities like av::Encoder, av::Decoder, av::Muxer, av::Demuxer and declare some API to combine them.
-  - More advanced Android building
