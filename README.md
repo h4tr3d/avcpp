@@ -45,6 +45,7 @@ Note 2: Debian Wheezy repo contains only FFmpeg 1.0.8. I tested building only wi
 ### Ubuntu and Linux Mint
 
 You should add [ffmpeg-3](https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-3) PPA:
+
 ```
 sudo add-apt-repository ppa:jonathonf/ffmpeg-3 -y
 sudo add-apt-repository ppa:jonathonf/tesseract -y
@@ -60,17 +61,22 @@ sudo apt install libavcodec-dev \
                  libswscale-dev
 ```
 
+Also, you can use [ffmpeg-4](https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4) PPA if needed. Instruction mostly same. Just change PPA name.
+
 Build
 -----
 
 ```
-git clone https://github.com/h4tr3d/avcpp.git avcpp-git
+git clone --recurse-submodules https://github.com/h4tr3d/avcpp.git avcpp-git
 cd avcpp-git
 mkdir build
 cd build
 cmake ..
 make -j8
 ```
+
+If your Git version so old (refer to the [SO for clarification](https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules)) you can just
+replace `--recurse-submodules` with pair of `git submodule init && git submodule update`.
 
 If FFmpeg located in non-standard place:
 ```
