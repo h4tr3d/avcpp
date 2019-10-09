@@ -932,7 +932,7 @@ void FormatContext::closeCodecContexts()
 #endif
 }
 
-ssize_t FormatContext::checkPbError(ssize_t stat)
+int FormatContext::checkPbError(int stat)
 {
     // WORKAROUND: a lot of format specific writer_packet() functions always return zero code
     // and av_write_frame() in FFMPEG prio 1.0 does not contain follow wrapper
