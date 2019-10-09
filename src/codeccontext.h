@@ -129,17 +129,17 @@ protected:
     void open(const Codec &codec, AVDictionary **options, OptionalErrorCode ec);
 
 
-    std::pair<ssize_t, const std::error_category*>
+    std::pair<int, const std::error_category*>
     decodeCommon(AVFrame *outFrame, const class Packet &inPacket, size_t offset, int &frameFinished,
                  int (*decodeProc)(AVCodecContext*, AVFrame*,int *, const AVPacket *)) noexcept;
 
-    std::pair<ssize_t, const std::error_category*>
+    std::pair<int, const std::error_category*>
     encodeCommon(class Packet &outPacket, const AVFrame *inFrame, int &gotPacket,
                          int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*)) noexcept;
 
 public:
     template<typename T>
-    std::pair<ssize_t, const std::error_category*>
+    std::pair<int, const std::error_category*>
     decodeCommon(T &outFrame,
                  const class Packet &inPacket,
                  size_t offset,
@@ -147,7 +147,7 @@ public:
                  int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *));
 
     template<typename T>
-    std::pair<ssize_t, const std::error_category*>
+    std::pair<int, const std::error_category*>
     encodeCommon(class Packet &outPacket,
                  const T &inFrame,
                  int &gotPacket,

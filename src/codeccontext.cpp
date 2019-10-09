@@ -17,14 +17,14 @@ using namespace std;
 namespace av {
 namespace {
 
-std::pair<ssize_t, const error_category*>
+std::pair<int, const error_category*>
 make_error_pair(Errors errc)
 {
-    return make_pair(static_cast<ssize_t>(errc), &avcpp_category());
+    return make_pair(static_cast<int>(errc), &avcpp_category());
 }
 
-std::pair<ssize_t, const error_category*>
-make_error_pair(ssize_t status)
+std::pair<int, const error_category*>
+make_error_pair(int status)
 {
     if (status < 0)
         return make_pair(status, &ffmpeg_category());
@@ -757,7 +757,7 @@ void CodecContext2::open(const Codec &codec, AVDictionary **options, OptionalErr
         throws_if(ec, stat, ffmpeg_category());
 }
 
-std::pair<ssize_t, const error_category *> CodecContext2::decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *)) noexcept
+std::pair<int, const error_category *> CodecContext2::decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *)) noexcept
 {
     if (!isValid())
         return make_error_pair(Errors::CodecInvalid);
@@ -781,7 +781,7 @@ std::pair<ssize_t, const error_category *> CodecContext2::decodeCommon(AVFrame *
     return make_error_pair(decoded);
 }
 
-std::pair<ssize_t, const error_category *> CodecContext2::encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket, int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *)) noexcept
+std::pair<int, const error_category *> CodecContext2::encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket, int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *)) noexcept
 {
     if (!isValid()) {
         fflog(AV_LOG_ERROR, "Invalid context\n");
