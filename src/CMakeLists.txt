@@ -82,7 +82,7 @@ if (PKG_CONFIG_FOUND)
 
     # blacklink of the libraries that should not be in Libs.private
     if (PLIBLIST)
-        list(REMOVE_ITEM PLIBLIST "-lc" "-lpthread")
+        list(REMOVE_ITEM PLIBLIST "-lc" "-lpthread" "-pthread" "-l-pthread")
         list(REMOVE_DUPLICATES PLIBLIST)
         string(REPLACE ";" " " PRIVATE_LIBS "${PLIBLIST}")
     else()
