@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.11)
 
 if(NOT DEFINED PROJECT_NAME)
-  set(NOT_SUBPROJECT ON)
+    set(AVCPP_NOT_SUBPROJECT ON)
 endif()
 
 project(AvCpp LANGUAGES CXX VERSION 2.0.99)
