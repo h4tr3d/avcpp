@@ -9,3 +9,5 @@ brew update
 brew install python
 brew link --overwrite python
 brew install ffmpeg
+# WA for homebrew
+true
