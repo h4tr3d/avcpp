@@ -61,7 +61,7 @@ build_cmake
 echo "Prepare FFmpeg"
 (
     sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y
-    sudo add-apt-repository ppa:jonathonf/tesseract -y
+    #sudo add-apt-repository ppa:jonathonf/tesseract -y
     sudo apt-get -qq update
     sudo apt-get install -y libavcodec-dev \
                             libavdevice-dev \
