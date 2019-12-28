@@ -120,19 +120,28 @@ public:
     void openInput(const std::string& uri, Dictionary &formatOptions, InputFormat format, OptionalErrorCode ec = throws());
     void openInput(const std::string& uri, Dictionary &&formatOptions, InputFormat format, OptionalErrorCode ec = throws());
 
-    static const size_t CUSTOM_IO_DEFAULT_BUFFER_SIZE = 200000;
+    static constexpr size_t CUSTOM_IO_DEFAULT_BUFFER_SIZE = 200000;
 
     void openInput(CustomIO    *io,
                    OptionalErrorCode ec = throws(),
-                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE)
+    {
+        return openInput(io, InputFormat(), ec, internalBufferSize);
+    }
     void openInput(CustomIO    *io,
                    Dictionary  &formatOptions,
                    OptionalErrorCode ec = throws(),
-                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE)
+    {
+        return openInput(io, formatOptions, InputFormat(), ec, internalBufferSize);
+    }
     void openInput(CustomIO    *io,
                    Dictionary &&formatOptions,
                    OptionalErrorCode ec = throws(),
-                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE)
+    {
+        return openInput(io, std::move(formatOptions), InputFormat(), ec, internalBufferSize);
+    }
 
     void openInput(CustomIO    *io,
                    InputFormat  format,
