@@ -57,10 +57,10 @@ build_cmake
 #fi
 
 # FFmpeg
-# - https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-3
+# - https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4
 echo "Prepare FFmpeg"
 (
-    sudo add-apt-repository ppa:jonathonf/ffmpeg-3 -y
+    sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y
     sudo add-apt-repository ppa:jonathonf/tesseract -y
     sudo apt-get -qq update
     sudo apt-get install -y libavcodec-dev \
