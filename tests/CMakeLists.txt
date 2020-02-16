@@ -13,8 +13,8 @@ add_executable(test_executor
     VideoFrame.cpp)
 target_link_libraries(test_executor PUBLIC Catch2::Catch2 test_main PRIVATE AvCpp::AvCpp)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/catch2/contrib")
-message(STATUS "${CMAKE_SOURCE_DIR}/catch2/contrib")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../catch2/contrib")
+message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}/../catch2/contrib")
 
 include(CTest)
 include(Catch)
