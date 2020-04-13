@@ -25,15 +25,19 @@ find_package(Threads)
 find_package(FFmpeg
     COMPONENTS AVCODEC AVFORMAT AVUTIL AVDEVICE AVFILTER SWSCALE SWRESAMPLE REQUIRED)
 
-#NEW    include_directories(${FFMPEG_INCLUDE_DIRS})
-
 add_subdirectory(src)
 #add_subdirectory(example/test-basic)
 #add_subdirectory(example/sample-transcode)
 add_subdirectory(example/api2-samples)
 #add_subdirectory(example/sample-view)
 
-enable_testing()
-set(CATCH_BUILD_TESTING Off CACHE STRING "")
-add_subdirectory(catch2)
-add_subdirectory(tests)
+set(CATCH_DIR ${CMAKE_CURRENT_LIST_DIR}/catch2)
+if (EXISTS ${CATCH_DIR}/CMakeLists.txt)
+    enable_testing()
+    set(CATCH_BUILD_TESTING Off CACHE STRING "")
+    add_subdirectory(${CATCH_DIR})
+    add_subdirectory(tests)
+else()
+    message(STATUS "Catch2 not found, testing skipped")
+endif()
+
