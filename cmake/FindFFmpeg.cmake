@@ -182,11 +182,12 @@ if (NOT FFMPEG_LIBRARIES)
 endif ()
 
 if (NOT TARGET FFmpeg::FFmpeg)
-  add_library(FFmpeg::FFmpeg INTERFACE IMPORTED)
-  set_target_properties(FFmpeg::FFmpeg PROPERTIES
+  add_library(FFmpeg INTERFACE IMPORTED GLOBAL)
+  set_target_properties(FFmpeg PROPERTIES
       INTERFACE_COMPILE_OPTIONS "${FFMPEG_DEFINITIONS}"
       INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_INCLUDE_DIRS}
       INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}")
+  add_library(FFmpeg::FFmpeg ALIAS FFmpeg)
 endif()
 
 # Now set the noncached _FOUND vars for the components.

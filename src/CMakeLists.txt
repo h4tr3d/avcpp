@@ -1,61 +1,89 @@
-include_directories(.)
+include(GNUInstallDirs)
 
 file(GLOB_RECURSE AV_SOURCES "*.cpp")
 file(GLOB_RECURSE AV_HEADERS "*.h" "*.hpp")
 
-set(AV_TARGET avcpp)
+set(AV_NAMESPACE avcpp)
+set(AV_BASENAME avcpp)
 
-add_library(${AV_TARGET}        SHARED ${AV_SOURCES})
-add_library(${AV_TARGET}_static STATIC ${AV_SOURCES})
-
-set_target_properties(${AV_TARGET}_static PROPERTIES OUTPUT_NAME ${AV_TARGET})
-
-target_link_libraries(${AV_TARGET}
-    Threads::Threads
-    FFmpeg::FFmpeg
-)
-
-target_link_libraries(${AV_TARGET}_static
-    Threads::Threads
-    FFmpeg::FFmpeg
-)
-
-set(PLATFORM_LIBS
-    ${CMAKE_THREAD_LIBS_INIT}
-    ${FFMPEG_LIBRARIES})
-
-if(WIN32)
-  target_link_libraries(${AV_TARGET} ws2_32)
-  target_link_libraries(${AV_TARGET}_static ws2_32)
-  list(APPEND PLATFORM_LIBS ws2_32)
+set(AV_TARGETS avcpp)
+if (AV_ENABLE_STATIC)
+    list (APPEND AV_TARGETS ${AV_BASENAME}-static)
 endif()
 
-target_include_directories(${AV_TARGET}
-  INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
+foreach(TARGET ${AV_TARGETS})
+    set(TYPE SHARED)
+    if (${TARGET} MATCHES "-static")
+        set(TYPE STATIC)
+    endif()
 
-# provide a namespaced alias for clients to 'link' against if catch is included as a sub-project
-add_library(AvCpp::AvCpp ALIAS ${AV_TARGET})
+    add_library(${TARGET} ${TYPE} ${AV_SOURCES} ${AV_HEADERS})
 
+    target_compile_options(${TARGET} PRIVATE ${AV_WARNING_OPTIONS} INTERFACE ${FFMPEG_DEFINITIONS})
+    target_link_libraries(${TARGET} INTERFACE Threads::Threads INTERFACE ${FFMPEG_LIBRARIES})
+    #target_link_libraries(${TARGET} INTERFACE Threads::Threads INTERFACE FFmpeg::FFmpeg)
+    target_include_directories(${TARGET}
+        PUBLIC
+          ${FFMPEG_INCLUDE_DIRS}
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/avcpp>
+        PRIVATE
+          ${CMAKE_CURRENT_SOURCE_DIR})
+    set_target_properties(${TARGET} PROPERTIES PUBLIC_HEADER "${AV_HEADERS}")
+
+    if(WIN32)
+      target_link_libraries(${TARGET} PRIVATE ws2_32)
+    endif()
+
+    add_library(${AV_NAMESPACE}::${TARGET} ALIAS ${TARGET})
+endforeach()
+
+if (TARGET ${AV_BASENAME}-static)
+    set_target_properties(${AV_BASENAME}-static PROPERTIES OUTPUT_NAME ${AV_BASENAME})
+endif()
 
 ########################### Installation ######################################
 
 if (AVCPP_NOT_SUBPROJECT)
-    set(LIB_INSTALL_DIR lib     CACHE STRING "Install location of libraries")
-    set(BIN_INSTALL_DIR bin     CACHE STRING "Install location of executables")
-    set(INC_INSTALL_DIR include CACHE STRING "Intall location of headers")
+    # FFmpeg part, Ugly WA for imported libraries
+    #export(TARGETS FFmpeg
+    #    NAMESPACE FFmpeg::
+    #    APPEND
+    #    FILE ${CMAKE_CURRENT_BINARY_DIR}/avcpp-targets.cmake)
 
-    install(TARGETS ${AV_TARGET} ${AV_TARGET}_static
-        LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-        ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-        RUNTIME DESTINATION ${BIN_INSTALL_DIR})
+    install(TARGETS ${AV_TARGETS}
+        EXPORT avcpp-targets
+        LIBRARY DESTINATION        ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION        ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION        ${CMAKE_INSTALL_BINDIR}
+        INCLUDES DESTINATION       ${CMAKE_INSTALL_INCLUDEDIR}/avcpp
+        PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/avcpp
+        PUBLIC_HEADER DESTINATION  ${CMAKE_INSTALL_INCLUDEDIR}/avcpp)
 
-    #install(FILES ${AV_HEADERS} DESTINATION ${INC_INSTALL_DIR})
-    install(DIRECTORY ""
-        DESTINATION ${INC_INSTALL_DIR}/avcpp
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.inl")
+    #cmake_policy(SET CMP0022 OLD)
+    install(EXPORT avcpp-targets
+        FILE avcpp-targets.cmake
+        NAMESPACE avcpp::
+        DESTINATION lib/cmake/avcpp)
+
+    include(CMakePackageConfigHelpers)
+    configure_package_config_file(
+      "Config.cmake.in"
+      "avcpp-config.cmake"
+      INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/avcpp
+#      PATH_VARS
+#        CMAKE_INSTALL_LIBDIR
+      )
+    write_basic_package_version_file("avcpp-config-version.cmake"
+        VERSION 2.0.99
+        COMPATIBILITY SameMajorVersion)
+    install(
+        FILES
+          "${CMAKE_CURRENT_BINARY_DIR}/avcpp-config.cmake"
+          "${CMAKE_CURRENT_BINARY_DIR}/avcpp-config-version.cmake"
+        DESTINATION
+          "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/cmake/avcpp"
+      )
 
     if (PKG_CONFIG_FOUND)
         # convert lists of link libraries into -lstdc++ -lm and etc
@@ -89,14 +117,16 @@ if (AVCPP_NOT_SUBPROJECT)
             set(PRIVATE_LIBS "")
         endif()
 
+        message(STATUS "LIBS: ${PLIBLIST} / ${PRIVATE_LIBS}")
+
         configure_file(
             "${CMAKE_CURRENT_SOURCE_DIR}/libavcpp.pc.in"
             "${CMAKE_CURRENT_BINARY_DIR}/libavcpp.pc"
             @ONLY
             )
 
-        install(FILES       "${CMAKE_CURRENT_BINARY_DIR}/libavcpp.pc"
-            DESTINATION "${LIB_INSTALL_DIR}/pkgconfig")
+        install(FILES   "${CMAKE_CURRENT_BINARY_DIR}/libavcpp.pc"
+            DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig")
 
     endif()
 endif()

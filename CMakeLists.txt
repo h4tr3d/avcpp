@@ -9,14 +9,18 @@ project(AvCpp LANGUAGES CXX VERSION 2.0.99)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 set(FFMPEG_PKG_CONFIG_SUFFIX "" CACHE STRING "This suffix uses for FFmpeg component names searches by pkg-config")
-
-include_directories(.)
-
-add_definitions(-D__STDC_CONSTANT_MACROS)
+set(AV_ENABLE_STATIC On CACHE BOOL "Enable static build (On)")
 
 # Compiler-specific C++11 activation.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED yes)
+
+# Warnings
+set (AVCPP_WARNING_OPTIONS
+     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+       -Wall -Wextra>
+     $<$<CXX_COMPILER_ID:MSVC>:
+       /W4>)
 
 # -pthread sets also some useful compile-time flags
 set(THREADS_PREFER_PTHREAD_FLAG ON)
