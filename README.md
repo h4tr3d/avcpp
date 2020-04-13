@@ -44,11 +44,10 @@ Note 2: Debian Wheezy repo contains only FFmpeg 1.0.8. I tested building only wi
 
 ### Ubuntu and Linux Mint
 
-You should add [ffmpeg-3](https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-3) PPA:
+You should add [ffmpeg-4](https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4) PPA:
 
 ```
-sudo add-apt-repository ppa:jonathonf/ffmpeg-3 -y
-sudo add-apt-repository ppa:jonathonf/tesseract -y
+sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y
 sudo apt update && sudo apt upgrade
 sudo apt install libavcodec-dev \
                  libavdevice-dev \
@@ -60,8 +59,6 @@ sudo apt install libavcodec-dev \
                  libswresample-dev \
                  libswscale-dev
 ```
-
-Also, you can use [ffmpeg-4](https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4) PPA if needed. Instruction mostly same. Just change PPA name.
 
 Build
 -----
