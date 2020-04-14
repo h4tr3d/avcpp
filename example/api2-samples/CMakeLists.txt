@@ -10,8 +10,6 @@ project(AvCppSamples LANGUAGES CXX VERSION 2.0.99)
 
 if(AVCPP_SAMPLES_NOT_SUBPROJECT)
     find_package(avcpp REQUIRED)
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
-    find_package(Threads REQUIRED)
 endif()
 
 set(TARGETS
@@ -31,7 +29,6 @@ foreach(target ${TARGETS})
    add_executable(${target} ${target}.cpp)
 
    target_link_libraries(${target}
-      Threads::Threads
       avcpp::avcpp
   )
 
