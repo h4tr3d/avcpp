@@ -8,7 +8,6 @@
 #
 
 dist: xenial
-sudo: required
 
 language: cpp
 
@@ -23,13 +22,17 @@ addons:
     apt:
         sources: &apt_sources
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-xenial-7
+        #packages:
+        #    - g++-5
+
+    homebrew: &homebrew
         packages:
-            - g++-5
+            - python
+            - ffmpeg
 
 # Is there any way to avoid duplication for combination of BUILD_CONFIGURATION and COMPILER?
 # in case, when non-default compiler is used?
-matrix:
+jobs:
     include:
         # GCC 8 / Debug
         - os: linux
@@ -51,33 +54,35 @@ matrix:
 
         # GCC 5 / Debug
         - os: linux
+          addons: &gcc5
+            sources: *apt_sources
+            packages:
+              - g++-5
           compiler: gcc
           env:
             - MATRIX_EVAL="BUILD_TYPE=Debug && CC=gcc-5 && CXX=g++-5"
 
         # GCC 5 / Release
         - os: linux
+          addons: *gcc5
           compiler: gcc
           env:
             - MATRIX_EVAL="BUILD_TYPE=Release && CC=gcc-5 && CXX=g++-5"
 
-        # CLANG 7 / Release
-#        - os: linux
-#          addons:
-#            apt:
-#                sources: *apt_sources
-#                packages:
-#                    - clang++-7
-#          compiler: clang
-#          env:
-#            - MATRIX_EVAL="BUILD_TYPE=Release && CC=clang-7 && CXX=clang++-7"
+        - os: linux
+          dist: bionic
+          compiler: gcc
+          env:
+            - MATRIX_EVAL="BUILD_TYPE=Release"
 
         - os: osx
+          osx_image: xcode11.3
           compiler: clang
           env:
             - MATRIX_EVAL="BUILD_TYPE=Debug"
 
         - os: osx
+          osx_image: xcode11.3
           compiler: clang
           env:
             - MATRIX_EVAL="BUILD_TYPE=Release"
