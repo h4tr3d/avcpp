@@ -9,8 +9,8 @@ export MAKEFLAGS="-j${JOBS}"
 echo "Prepare CMake"
 build_cmake()
 {
-    local CMAKE_VERSION_BASE=3.11
-    local CMAKE_VERSION_MINOR=0
+    local CMAKE_VERSION_BASE=3.14
+    local CMAKE_VERSION_MINOR=5
     local CMAKE_VERSION_FULL=${CMAKE_VERSION_BASE}.${CMAKE_VERSION_MINOR}
     local CMAKE_ARCH=x86_64
 
@@ -57,11 +57,11 @@ build_cmake
 #fi
 
 # FFmpeg
-# - https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-3
+# - https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4
 echo "Prepare FFmpeg"
 (
-    sudo add-apt-repository ppa:jonathonf/ffmpeg-3 -y
-    sudo add-apt-repository ppa:jonathonf/tesseract -y
+    sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y
+    #sudo add-apt-repository ppa:jonathonf/tesseract -y
     sudo apt-get -qq update
     sudo apt-get install -y libavcodec-dev \
                             libavdevice-dev \

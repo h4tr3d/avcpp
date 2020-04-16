@@ -10,6 +10,11 @@ Packet::Packet()
     initCommon();
 }
 
+Packet::Packet(const Packet &packet)
+    : Packet(packet, throws())
+{
+}
+
 Packet::Packet(const Packet &packet, OptionalErrorCode ec)
     : Packet()
 {

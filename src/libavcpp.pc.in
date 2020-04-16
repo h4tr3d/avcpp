@@ -6,8 +6,8 @@ includedir=${prefix}/@INC_INSTALL_DIR@
 Name: libavcpp
 Description: FFmpeg libraries C++ interface
 Version: 0.98.0
-Requires:
-Requires.private: libavcodec >= @AVCODEC_VERSION@, libavformat >= @AVFORMAT_VERSION@, libavutil >= @AVUTIL_VERSION@, libavdevice >= @AVDEVICE_VERSION@, libavfilter >= @AVFILTER_VERSION@, libswscale >= @SWSCALE_VERSION@, libswresample >= @SWRESAMPLE_VERSION@
+Requires: libavcodec >= @AVCODEC_VERSION@, libavformat >= @AVFORMAT_VERSION@, libavutil >= @AVUTIL_VERSION@, libavdevice >= @AVDEVICE_VERSION@, libavfilter >= @AVFILTER_VERSION@, libswscale >= @SWSCALE_VERSION@, libswresample >= @SWRESAMPLE_VERSION@
+Requires.private:
 Conflicts:
 Libs: -L${libdir}  -lavcpp
 Libs.private: @PRIVATE_LIBS@

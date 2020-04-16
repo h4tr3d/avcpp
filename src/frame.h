@@ -354,6 +354,10 @@ public:
 
     Rational               sampleAspectRatio() const;
     void                   setSampleAspectRatio(const Rational& sampleAspectRatio);
+
+    size_t                 bufferSize(int align = 1, OptionalErrorCode ec = throws()) const;
+    bool                   copyToBuffer(uint8_t *dst, size_t size, int align = 1, OptionalErrorCode ec = throws());
+    bool                   copyToBuffer(std::vector<uint8_t>& dst, int align = 1, OptionalErrorCode ec = throws());
 };
 
 

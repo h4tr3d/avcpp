@@ -2,11 +2,19 @@
 # Additional GCC / clang versions:
 #   - https://docs.travis-ci.com/user/languages/cpp/
 #   - https://gist.github.com/nabijaczleweli/e53219d037c4ccb34f3c
+# Useful samples:
+#   - https://github.com/catchorg/Catch2/blob/master/.travis.yml
+#   - https://github.com/pinam45/dynamic_bitset/blob/master/.travis.yml
+#
 
 dist: xenial
 sudo: required
 
 language: cpp
+
+git:
+  #depth: 1
+  submodules: true
 
 cache:
     apt: true
@@ -54,15 +62,15 @@ matrix:
             - MATRIX_EVAL="BUILD_TYPE=Release && CC=gcc-5 && CXX=g++-5"
 
         # CLANG 7 / Release
-        - os: linux
-          addons:
-            apt:
-                sources: *apt_sources
-                packages:
-                    - clang++-7
-          compiler: clang
-          env:
-            - MATRIX_EVAL="BUILD_TYPE=Release CC=clang-7 && CXX=clang++-7"
+#        - os: linux
+#          addons:
+#            apt:
+#                sources: *apt_sources
+#                packages:
+#                    - clang++-7
+#          compiler: clang
+#          env:
+#            - MATRIX_EVAL="BUILD_TYPE=Release && CC=clang-7 && CXX=clang++-7"
 
         - os: osx
           compiler: clang
@@ -100,7 +108,7 @@ script:
     #- cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU
     - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
     - cmake --build .
-    #- ctest --output-on-failure
+    - ctest --output-on-failure
 
 #deploy:
 #    # push tagged-commits to GitHub Releases:

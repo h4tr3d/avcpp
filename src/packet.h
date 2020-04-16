@@ -26,7 +26,8 @@ private:
 
 public:
     Packet();
-    Packet(const Packet &packet, OptionalErrorCode ec = throws());
+    Packet(const Packet &packet, OptionalErrorCode ec);
+    Packet(const Packet &packet);
     Packet(Packet &&packet);
     explicit Packet(const AVPacket *packet, OptionalErrorCode ec = throws());
     explicit Packet(const std::vector<uint8_t> &data);

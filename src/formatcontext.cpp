@@ -241,7 +241,7 @@ bool FormatContext::seekable() const noexcept
 
 void FormatContext::seek(const Timestamp &timestamp, OptionalErrorCode ec)
 {
-    seek(timestamp.timestamp(AV_TIME_BASE_Q), -1, 0, ec);
+    seek(timestamp.timestamp(AV_TIME_BASE_Q_CPP), -1, 0, ec);
 }
 
 void FormatContext::seek(const Timestamp& timestamp, size_t streamIndex, OptionalErrorCode ec)
@@ -253,7 +253,7 @@ void FormatContext::seek(const Timestamp& timestamp, size_t streamIndex, Optiona
 
 void FormatContext::seek(const Timestamp& timestamp, bool anyFrame, OptionalErrorCode ec)
 {
-    seek(timestamp.timestamp(AV_TIME_BASE_Q), -1, anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
+    seek(timestamp.timestamp(AV_TIME_BASE_Q_CPP), -1, anyFrame ? AVSEEK_FLAG_ANY : 0, ec);
 }
 
 void FormatContext::seek(const Timestamp &timestamp, size_t streamIndex, bool anyFrame, OptionalErrorCode ec)
@@ -279,7 +279,7 @@ Timestamp FormatContext::startTime() const noexcept
         return {};
     }
 
-    return {m_raw->start_time, AV_TIME_BASE_Q};
+    return {m_raw->start_time, AV_TIME_BASE_Q_CPP};
 }
 
 int FormatContext::eventFlags() const noexcept
@@ -470,11 +470,11 @@ Packet FormatContext::readPacket(OptionalErrorCode ec)
 
     // End of file
     if (sts == AVERROR_EOF /*|| avio_feof(m_raw->pb)*/) {
-        auto ec = std::error_code(sts, ffmpeg_category());
+        auto ec_tmp = std::error_code(sts, ffmpeg_category());
         fflog(AV_LOG_DEBUG,
               "EOF reaches, error=%d, %s, isNull: %d, stream_index: %d, payload: %p\n",
               sts,
-              ec.message().c_str(),
+              ec_tmp.message().c_str(),
               packet.isNull(),
               packet.streamIndex(),
               packet.data());
@@ -932,7 +932,7 @@ void FormatContext::closeCodecContexts()
 #endif
 }
 
-ssize_t FormatContext::checkPbError(ssize_t stat)
+int FormatContext::checkPbError(int stat)
 {
     // WORKAROUND: a lot of format specific writer_packet() functions always return zero code
     // and av_write_frame() in FFMPEG prio 1.0 does not contain follow wrapper

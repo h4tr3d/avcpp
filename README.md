@@ -1,4 +1,4 @@
-# AvCpp [![Build Status](https://travis-ci.org/h4tr3d/avcpp.svg?branch=master)](https://travis-ci.org/h4tr3d/avcpp)
+# AvCpp [![Build Status](https://travis-ci.org/h4tr3d/avcpp.svg?branch=master)](https://travis-ci.org/h4tr3d/avcpp) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/h4tr3d/avcpp.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/h4tr3d/avcpp/context:cpp) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com) 
 
 Wrapper for the FFmpeg that simplify usage it from C++ projects.
 
@@ -44,10 +44,10 @@ Note 2: Debian Wheezy repo contains only FFmpeg 1.0.8. I tested building only wi
 
 ### Ubuntu and Linux Mint
 
-You should add [ffmpeg-3](https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-3) PPA:
+You should add [ffmpeg-4](https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4) PPA:
+
 ```
-sudo add-apt-repository ppa:jonathonf/ffmpeg-3 -y
-sudo add-apt-repository ppa:jonathonf/tesseract -y
+sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y
 sudo apt update && sudo apt upgrade
 sudo apt install libavcodec-dev \
                  libavdevice-dev \
@@ -60,23 +60,39 @@ sudo apt install libavcodec-dev \
                  libswscale-dev
 ```
 
-Near future plans
------------------
+Build
+-----
 
-  - ~~Building for Android (ready to commint but small code clean up is required)~~
-  - CI with complex build matrix:
-    - FFmpeg 3.x and FFmpeg 2.8
-    - GCC 5 and 7, MSVS 2015 and 2017, clang
-    - Linux, OSX, Windows
-    - Tests
+```
+git clone --recurse-submodules https://github.com/h4tr3d/avcpp.git avcpp-git
+cd avcpp-git
+mkdir build
+cd build
+cmake ..
+make -j8
+```
 
-Future plans (long and not)
----------------------------
+If your Git version so old (refer to the [SO for clarification](https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules)) you can just
+replace `--recurse-submodules` with pair of `git submodule init && git submodule update`.
 
-  - Code cleanup
-  - Remove all deprecates in Filters module (FFmpeg 2.x)
-  - API redisign, make it more intuitively
-  - Filters module complete rework
-  - Add good samples
-  - Make hight-level entities like av::Encoder, av::Decoder, av::Muxer, av::Demuxer and declare some API to combine them.
-  - More advanced Android building
+If FFmpeg located in non-standard place:
+```
+cmake -DPC_FFMPEG_LIBRARY_DIRS=<some_path> -DPC_FFMPEG_INCLUDE_DIRS=<some_path> ..
+```
+
+To point install prefix:
+```
+cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+```
+
+Install:
+```
+sudo make install
+```
+or (for packaging)
+```
+sudo make DESTDIR=<some_prefix> install
+```
+
+Refer to CMake documentation for more details that can cover some special cases.
+

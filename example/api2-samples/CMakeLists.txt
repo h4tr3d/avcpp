@@ -1,6 +1,16 @@
+cmake_minimum_required (VERSION 3.11)
+
 # transcoder sources
 
-include_directories(../../src)
+if(NOT DEFINED PROJECT_NAME)
+    set(AVCPP_SAMPLES_NOT_SUBPROJECT ON)
+endif()
+
+project(AvCppSamples LANGUAGES CXX VERSION 2.0.99)
+
+if(AVCPP_SAMPLES_NOT_SUBPROJECT)
+    find_package(avcpp REQUIRED)
+endif()
 
 set(TARGETS
   api2-decode
@@ -19,9 +29,7 @@ foreach(target ${TARGETS})
    add_executable(${target} ${target}.cpp)
 
    target_link_libraries(${target}
-      Threads::Threads
-      FFmpeg::FFmpeg
-      avcpp
+      avcpp::avcpp
   )
 
   if(WIN32)

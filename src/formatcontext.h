@@ -27,13 +27,13 @@ using AvioInterruptCb = std::function<int()>;
 struct CustomIO
 {
     virtual ~CustomIO() {}
-    virtual ssize_t     write(const uint8_t *data, size_t size) 
+    virtual int     write(const uint8_t *data, size_t size) 
     {
         static_cast<void>(data);
         static_cast<void>(size);
         return -1; 
     }
-    virtual ssize_t     read(uint8_t *data, size_t size)
+    virtual int     read(uint8_t *data, size_t size)
     {
         static_cast<void>(data);
         static_cast<void>(size);
@@ -120,19 +120,28 @@ public:
     void openInput(const std::string& uri, Dictionary &formatOptions, InputFormat format, OptionalErrorCode ec = throws());
     void openInput(const std::string& uri, Dictionary &&formatOptions, InputFormat format, OptionalErrorCode ec = throws());
 
-    static const size_t CUSTOM_IO_DEFAULT_BUFFER_SIZE = 200000;
+    static constexpr size_t CUSTOM_IO_DEFAULT_BUFFER_SIZE = 200000;
 
     void openInput(CustomIO    *io,
                    OptionalErrorCode ec = throws(),
-                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE)
+    {
+        return openInput(io, InputFormat(), ec, internalBufferSize);
+    }
     void openInput(CustomIO    *io,
                    Dictionary  &formatOptions,
                    OptionalErrorCode ec = throws(),
-                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE)
+    {
+        return openInput(io, formatOptions, InputFormat(), ec, internalBufferSize);
+    }
     void openInput(CustomIO    *io,
                    Dictionary &&formatOptions,
                    OptionalErrorCode ec = throws(),
-                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+                   size_t       internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE)
+    {
+        return openInput(io, std::move(formatOptions), InputFormat(), ec, internalBufferSize);
+    }
 
     void openInput(CustomIO    *io,
                    InputFormat  format,
@@ -202,7 +211,7 @@ private:
     void        resetSocketAccess();
     void        findStreamInfo(AVDictionary **options, size_t optionsCount, OptionalErrorCode ec);
     void        closeCodecContexts();
-    ssize_t     checkPbError(ssize_t stat);
+    int         checkPbError(int stat);
 
     void        openCustomIO(CustomIO *io, size_t internalBufferSize, bool isWritable, OptionalErrorCode ec);
     void        openCustomIOInput(CustomIO *io, size_t internalBufferSize, OptionalErrorCode ec);
