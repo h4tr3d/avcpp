@@ -247,4 +247,31 @@ TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")
         //CHECK(frame.raw()->data[1] - frame.raw()->data[0] == width*height);
         //REQUIRE(std::equal(begin(i420_raw_data), end(i420_raw_data), frame.raw()->data[0]));
     }
+
+    SECTION("AVFrame :: Copy/Destroy") {
+        using namespace av;
+        VideoFrame frame{PixelFormat(AV_PIX_FMT_RGB24), 1920, 1080};
+
+        auto raw = frame.raw();
+        CHECK(raw->buf[0]);
+        CHECK(raw->data[0]);
+        CHECK(raw->buf[0]->data == raw->data[0]);
+
+        auto buf_ref = raw->buf[0];
+        CHECK(buf_ref->size >= 1920*1080*3);
+        CHECK(av_buffer_get_ref_count(buf_ref) == 1);
+
+        // store
+        auto buf_ref_copy = *buf_ref;
+
+        {
+            auto clone = frame;
+            CHECK(av_buffer_get_ref_count(&buf_ref_copy) == 2);
+        }
+
+        // Scope exit, clone must reset
+        CHECK(av_buffer_get_ref_count(&buf_ref_copy) == 1);
+    }
+
+
 }

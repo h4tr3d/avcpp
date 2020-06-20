@@ -230,16 +230,13 @@ bool AvDeleter::operator()(AVFormatContext *&formatContext)
 
 bool AvDeleter::operator()(AVFrame *&frame)
 {
-    av_freep(&frame);
-    frame = nullptr;
+    av_frame_free(&frame);
     return true;
 }
 
 bool AvDeleter::operator()(AVPacket *&packet)
 {
-    avpacket_unref(packet);
-    av_free(packet);
-    packet = nullptr;
+    av_packet_free(&packet);
     return true;
 }
 
@@ -255,7 +252,6 @@ bool AvDeleter::operator ()(AVFilterInOut *&filterInOut)
     avfilter_inout_free(&filterInOut);
     return true;
 }
-
 
 } // ::av
 
