@@ -137,6 +137,24 @@ struct AvDeleter
 };
 
 
+template<typename T>
+std::unique_ptr<T, void(*)(void*)> malloc(size_t size)
+{
+    return {static_cast<T*>(av_malloc(size)), av_free};
+}
+
+template<typename T>
+std::unique_ptr<T, void(*)(void*)> mallocz(size_t size)
+{
+    return {static_cast<T*>(av_mallocz(size)), av_free};
+}
+
+template<typename T>
+std::unique_ptr<T, void(*)(void*)> memdup(const void *p, size_t size)
+{
+    return {static_cast<T*>(av_memdup(p, size)), av_free};
+}
+
 /**
  * Functor to take next element in list/array
  */
