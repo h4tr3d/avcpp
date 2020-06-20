@@ -25,6 +25,8 @@ private:
     void initFromAVPacket(const AVPacket *avpacket, bool deepCopy, OptionalErrorCode ec);
 
 public:
+    struct wrap_data {};
+
     Packet();
     Packet(const Packet &packet, OptionalErrorCode ec);
     Packet(const Packet &packet);
@@ -32,6 +34,8 @@ public:
     explicit Packet(const AVPacket *packet, OptionalErrorCode ec = throws());
     explicit Packet(const std::vector<uint8_t> &data);
     Packet(const uint8_t *data, size_t size, bool doAllign = true);
+    // data must be allocated with av_malloc() family
+    Packet(uint8_t *data, size_t size, wrap_data, OptionalErrorCode ec = throws());
     ~Packet();
 
     bool setData(const std::vector<uint8_t> &newData, OptionalErrorCode ec = throws());
