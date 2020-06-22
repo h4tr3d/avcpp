@@ -194,6 +194,8 @@ public:
 
     void setPts(const Timestamp &ts)
     {
+        if (m_timeBase == Rational())
+            m_timeBase = ts.timebase();
         RAW_SET(pts, ts.timestamp(m_timeBase));
     }
 

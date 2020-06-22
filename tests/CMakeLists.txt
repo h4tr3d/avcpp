@@ -10,7 +10,7 @@ add_library(test_main STATIC test-main.cpp)
 target_link_libraries(test_main PUBLIC Catch2::Catch2)
 
 add_executable(test_executor
-    VideoFrame.cpp
+    Frame.cpp
     AvDeleter.cpp
     Packet.cpp)
 target_link_libraries(test_executor PUBLIC Catch2::Catch2 test_main avcpp::avcpp)

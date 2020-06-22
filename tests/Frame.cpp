@@ -27,6 +27,28 @@ constexpr int alignment = 1;
 
 }
 
+TEST_CASE("Core functionality", "[Frame]")
+{
+    SECTION("setPts/Dts") {
+        {
+            av::VideoFrame frame;
+            frame.setPts({1000, {10000, 1}});
+            CHECK(frame.raw()->pts == 1000);
+            CHECK(frame.timeBase() == av::Rational{10000, 1});
+        }
+        {
+            av::VideoFrame frame;
+            frame.setPts({1000, {10000, 1}});
+            CHECK(frame.raw()->pts == 1000);
+            CHECK(frame.timeBase() == av::Rational{10000, 1});
+            frame.setTimeBase({1000, 1});
+            CHECK(frame.raw()->pts == 10000);
+            CHECK(frame.timeBase() == av::Rational{1000, 1});
+        }
+    }
+
+}
+
 TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")
 {
     SECTION("Packed RGB24 :: 1 plane") {
@@ -272,6 +294,4 @@ TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")
         // Scope exit, clone must reset
         CHECK(av_buffer_get_ref_count(&buf_ref_copy) == 1);
     }
-
-
 }
