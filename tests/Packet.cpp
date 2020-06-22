@@ -103,5 +103,49 @@ TEST_CASE("Packet define", "[Packet][Construct]")
             CHECK(pkt.timeBase() == av::Rational{1000, 1});
         }
     }
+
+    SECTION("Timebase Copy/Clone") {
+        const av::Rational tb{1000,1};
+        av::Packet in_pkt{pkt_data, sizeof(pkt_data)};
+        CHECK(in_pkt.timeBase() == av::Rational());
+        in_pkt.setTimeBase(tb);
+        CHECK(in_pkt.timeBase() == tb);
+
+        // copy ctor
+        {
+            auto pkt = in_pkt;
+            CHECK(pkt.timeBase() == tb);
+        }
+
+        // move ctor
+        {
+            auto tmp = in_pkt;
+            CHECK(tmp.timeBase() == tb);
+            auto pkt = std::move(tmp);
+            CHECK(pkt.timeBase() == tb);
+        }
+
+        // copy operator
+        {
+            av::Packet pkt;
+            pkt = in_pkt;
+            CHECK(pkt.timeBase() == tb);
+        }
+
+        // move operator
+        {
+            auto tmp = in_pkt;
+            CHECK(tmp.timeBase() == tb);
+            av::Packet pkt;
+            pkt = std::move(tmp);
+            CHECK(pkt.timeBase() == tb);
+        }
+
+        // clone
+        {
+            auto pkt = in_pkt.clone();
+            CHECK(pkt.timeBase() == tb);
+        }
+    }
 }
 

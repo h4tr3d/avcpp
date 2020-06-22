@@ -311,6 +311,7 @@ Packet Packet::clone(OptionalErrorCode ec) const
 {
     Packet pkt;
     pkt.initFromAVPacket(&m_raw, true, ec);
+    pkt.m_timeBase = m_timeBase;
     return pkt;
 }
 
