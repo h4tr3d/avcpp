@@ -13,7 +13,12 @@ using namespace std;
 
 namespace {
 
-const uint8_t pkt_data[] = {
+constexpr uint8_t pkt_data[] = {
+    1,2,3,4,5,6,7,8,9,0
+};
+
+constexpr size_t static_pkt_size = 10;
+uint8_t static_pkt_data[static_pkt_size + AV_INPUT_BUFFER_PADDING_SIZE] = {
     1,2,3,4,5,6,7,8,9,0
 };
 
@@ -71,6 +76,12 @@ TEST_CASE("Packet define", "[Packet][Construct]")
         auto ptr = data.release();
 
         CHECK(pkt.data() == ptr);
+        CHECK(pkt.refCount() == 1);
+    }
+
+    SECTION("Wrap static data") {
+        av::Packet pkt{static_pkt_data, static_pkt_size, av::Packet::wrap_data_static{}};
+        CHECK(pkt.data() == static_pkt_data);
         CHECK(pkt.refCount() == 1);
     }
 

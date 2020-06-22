@@ -69,6 +69,24 @@ Packet::Packet(uint8_t *data, size_t size, Packet::wrap_data, OptionalErrorCode 
     m_completeFlag = true;
 }
 
+static void dummy_buffer_free(void */*opaque*/, uint8_t */*ptr*/)
+{}
+
+Packet::Packet(uint8_t *data, size_t size, Packet::wrap_data_static, OptionalErrorCode ec)
+    : Packet()
+{
+    auto buf = av_buffer_create(data, size, dummy_buffer_free, nullptr, 0);
+    if (!buf) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return;
+    }
+
+    m_raw.buf = buf;
+    m_raw.data = data;
+    m_raw.size = size;
+    m_completeFlag = true;
+}
+
 Packet::~Packet()
 {
     avpacket_unref(&m_raw);
