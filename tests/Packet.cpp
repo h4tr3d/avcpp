@@ -73,5 +73,35 @@ TEST_CASE("Packet define", "[Packet][Construct]")
         CHECK(pkt.data() == ptr);
         CHECK(pkt.refCount() == 1);
     }
+
+    SECTION("setPts/Dts") {
+        {
+            av::Packet pkt;
+            pkt.setPts({1000, {10000, 1}});
+            CHECK(pkt.raw()->pts == 1000);
+            CHECK(pkt.timeBase() == av::Rational{10000, 1});
+            pkt.setDts({1000, {1000, 1}});
+            CHECK(pkt.raw()->dts == 100); // Timebase set already
+            CHECK(pkt.timeBase() == av::Rational{10000, 1});
+        }
+        {
+            av::Packet pkt;
+            pkt.setDts({1000, {10000, 1}});
+            CHECK(pkt.raw()->dts == 1000);
+            CHECK(pkt.timeBase() == av::Rational{10000, 1});
+            pkt.setPts({1000, {1000, 1}});
+            CHECK(pkt.raw()->pts == 100); // Timebase set already
+            CHECK(pkt.timeBase() == av::Rational{10000, 1});
+        }
+        {
+            av::Packet pkt;
+            pkt.setPts({1000, {10000, 1}});
+            CHECK(pkt.raw()->pts == 1000);
+            CHECK(pkt.timeBase() == av::Rational{10000, 1});
+            pkt.setTimeBase({1000, 1});
+            CHECK(pkt.raw()->pts == 10000);
+            CHECK(pkt.timeBase() == av::Rational{1000, 1});
+        }
+    }
 }
 

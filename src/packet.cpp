@@ -191,11 +191,15 @@ void Packet::setDts(int64_t dts, const Rational &tsTimeBase)
 
 void Packet::setPts(const Timestamp &pts)
 {
+    if (m_timeBase == Rational())
+        m_timeBase = pts.timebase();
     m_raw.pts = pts.timestamp(m_timeBase);
 }
 
 void Packet::setDts(const Timestamp &dts)
 {
+    if (m_timeBase == Rational())
+        m_timeBase = dts.timebase();
     m_raw.dts = dts.timestamp(m_timeBase);
 }
 
