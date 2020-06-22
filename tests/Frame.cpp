@@ -47,6 +47,49 @@ TEST_CASE("Core functionality", "[Frame]")
         }
     }
 
+    SECTION("Timebase Copy/Clone") {
+        const av::Rational tb{1000,1};
+        av::VideoFrame in_frame{AV_PIX_FMT_RGB24, 1920, 1080};
+        CHECK(in_frame.timeBase() == av::Rational());
+        in_frame.setTimeBase(tb);
+        CHECK(in_frame.timeBase() == tb);
+
+        // copy ctor
+        {
+            auto frame = in_frame;
+            CHECK(frame.timeBase() == tb);
+        }
+
+        // move ctor
+        {
+            auto tmp = in_frame;
+            CHECK(tmp.timeBase() == tb);
+            auto frame = std::move(tmp);
+            CHECK(frame.timeBase() == tb);
+        }
+
+        // copy operator
+        {
+            av::VideoFrame frame;
+            frame = in_frame;
+            CHECK(frame.timeBase() == tb);
+        }
+
+        // move operator
+        {
+            auto tmp = in_frame;
+            CHECK(tmp.timeBase() == tb);
+            av::VideoFrame frame;
+            frame = std::move(tmp);
+            CHECK(frame.timeBase() == tb);
+        }
+
+        // clone
+        {
+            auto frame = in_frame.clone();
+            CHECK(frame.timeBase() == tb);
+        }
+    }
 }
 
 TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")
