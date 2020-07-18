@@ -199,55 +199,51 @@ string error2string(int error)
     return string(errorBuf);
 }
 
-bool AvDeleter::operator()(SwsContext *&swsContext)
+bool AvUniquePtrDeleter::operator()(SwsContext *swsContext)
 {
     sws_freeContext(swsContext);
-    swsContext = nullptr;
     return true;
 }
 
-bool AvDeleter::operator()(AVCodecContext *&codecContext)
+bool AvUniquePtrDeleter::operator()(AVCodecContext *codecContext)
 {
     avcodec_close(codecContext);
     av_free(codecContext);
-    codecContext = nullptr;
     return true;
 }
 
-bool AvDeleter::operator()(AVOutputFormat *&format)
+bool AvUniquePtrDeleter::operator()(AVOutputFormat *format)
 {
     // Only set format to zero, it can'be freed by user
     format = 0;
     return true;
 }
 
-bool AvDeleter::operator()(AVFormatContext *&formatContext)
+bool AvUniquePtrDeleter::operator()(AVFormatContext *formatContext)
 {
     avformat_free_context(formatContext);
-    formatContext = nullptr;
     return true;
 }
 
-bool AvDeleter::operator()(AVFrame *&frame)
+bool AvUniquePtrDeleter::operator()(AVFrame *frame)
 {
     av_frame_free(&frame);
     return true;
 }
 
-bool AvDeleter::operator()(AVPacket *&packet)
+bool AvUniquePtrDeleter::operator()(AVPacket *packet)
 {
     av_packet_free(&packet);
     return true;
 }
 
-bool AvDeleter::operator()(AVDictionary *&dictionary)
+bool AvUniquePtrDeleter::operator()(AVDictionary *dictionary)
 {
     av_dict_free(&dictionary);
-    dictionary = nullptr;
     return true;
 }
 
-bool AvDeleter::operator ()(AVFilterInOut *&filterInOut)
+bool AvUniquePtrDeleter::operator ()(AVFilterInOut *filterInOut)
 {
     avfilter_inout_free(&filterInOut);
     return true;

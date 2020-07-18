@@ -12,8 +12,15 @@
 
 using namespace std;
 
-namespace {
-
+TEST_CASE("Deleter Checking", "[AvUniquePtrDeleter]")
+{
+#if 0
+    // use AvDeleter with unique_ptr can lead to build error:
+    using deleter_t = av::AvDeleter;
+#else
+    using deleter_t = av::AvUniquePtrDeleter;
+#endif
+    std::unique_ptr<AVPacket, deleter_t> pkt(av_packet_alloc(), deleter_t{});
 }
 
 TEST_CASE("Deleter Checking", "[AvDeleter]")

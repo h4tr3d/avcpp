@@ -120,22 +120,40 @@ struct EmptyDeleter
 };
 
 /**
+ * @brief The AvUniquePtrDeleter struct
+ * Unified delete functor for variois FFMPEG/libavformat/libavcodec and so on resource allocators.
+ * Can be used with unique_ptr<> and so on.
+ */
+struct AvUniquePtrDeleter
+{
+    bool operator() (struct SwsContext* swsContext);
+    bool operator() (struct AVCodecContext* codecContext);
+    bool operator() (struct AVOutputFormat* format);
+    bool operator() (struct AVFormatContext* formatContext);
+    bool operator() (struct AVFrame* frame);
+    bool operator() (struct AVPacket* packet);
+    bool operator() (struct AVDictionary* dictionary);
+    bool operator() (struct AVFilterInOut* filterInOut);
+};
+
+/**
  * @brief The AvDeleter struct
  * Unified delete functor for variois FFMPEG/libavformat/libavcodec and so on resource allocators.
- * Can be used with shared_ptr<> and so on.
+ * Can be used with shared_ptr<>. For unique_ptr, you should use AvUniquePtrDeleter.
  */
 struct AvDeleter
 {
-    bool operator() (struct SwsContext* &swsContext);
-    bool operator() (struct AVCodecContext* &codecContext);
-    bool operator() (struct AVOutputFormat* &format);
-    bool operator() (struct AVFormatContext* &formatContext);
-    bool operator() (struct AVFrame* &frame);
-    bool operator() (struct AVPacket* &packet);
-    bool operator() (struct AVDictionary* &dictionary);
-    bool operator ()(struct AVFilterInOut* &filterInOut);
-};
+    template<typename T>
+    bool operator() (T &t) {
+        auto ret = deleter(t);
+        if (ret)
+            t = nullptr;
+        return ret;
+    }
 
+private:
+    AvUniquePtrDeleter deleter;
+};
 
 template<typename T>
 std::unique_ptr<T, void(*)(void*)> malloc(size_t size)
