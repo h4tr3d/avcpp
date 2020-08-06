@@ -21,16 +21,26 @@ bool Codec::canEncode() const
 #if LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(54,23,100) // 0.11.1
     if (m_raw)
         return (m_raw->encode || m_raw->encode2);
-#else
+#elif LIBAVCODEC_VERSION_INT < AV_VERSION_INT(57,37,100) // 7fc329e
     if (m_raw)
         return m_raw->encode2;
+#else
+    if (m_raw)
+        return (m_raw->receive_packet || m_raw->encode2);
 #endif
     return false;
 }
 
 bool Codec::canDecode() const
 {
-    return RAW_GET(decode, nullptr) != nullptr;
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(57,37,100) // 7fc329e
+    if (m_raw)
+        return m_raw->decode;
+#else
+    if (m_raw)
+        return (m_raw->receive_frame || m_raw->decode);
+#endif
+    return false;
 }
 
 AVMediaType Codec::type() const
