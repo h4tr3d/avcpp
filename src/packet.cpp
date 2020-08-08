@@ -226,7 +226,7 @@ int Packet::streamIndex() const
     return  m_raw.stream_index;
 }
 
-int Packet::flags()
+int Packet::flags() const
 {
     return m_raw.flags;
 }

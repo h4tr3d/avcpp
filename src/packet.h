@@ -83,7 +83,7 @@ public:
     void    setComplete(bool complete);
 
     // Flags
-    int         flags();
+    int         flags() const;
     void        setFlags(int flags);
     void        addFlags(int flags);
     void        clearFlags(int flags);
