@@ -10,6 +10,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 set(FFMPEG_PKG_CONFIG_SUFFIX "" CACHE STRING "This suffix uses for FFmpeg component names searches by pkg-config")
 set(AV_ENABLE_STATIC On CACHE BOOL "Enable static build (On)")
+set(AV_BUILD_EXAMPLES Off CACHE BOOL "Build example applications (Off)")
 
 # Compiler-specific C++11 activation.
 set(CMAKE_CXX_STANDARD 17)
@@ -30,7 +31,10 @@ find_package(FFmpeg
     COMPONENTS AVCODEC AVFORMAT AVUTIL AVDEVICE AVFILTER SWSCALE SWRESAMPLE REQUIRED)
 
 add_subdirectory(src)
-add_subdirectory(example/api2-samples)
+
+if (${AV_BUILD_EXAMPLES})
+	add_subdirectory(example/api2-samples)
+endif()
 
 set(CATCH_DIR ${CMAKE_CURRENT_LIST_DIR}/catch2)
 if (EXISTS ${CATCH_DIR}/CMakeLists.txt)
