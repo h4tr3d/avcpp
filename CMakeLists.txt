@@ -9,7 +9,8 @@ project(AvCpp LANGUAGES CXX VERSION 2.0.99)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 set(FFMPEG_PKG_CONFIG_SUFFIX "" CACHE STRING "This suffix uses for FFmpeg component names searches by pkg-config")
-set(AV_ENABLE_STATIC On CACHE BOOL "Enable static build (On)")
+set(AV_ENABLE_STATIC On CACHE BOOL "Enable static library build (On)")
+set(AV_ENABLE_SHARED On CACHE BOOL "Enable shared library build (On)")
 set(AV_BUILD_EXAMPLES Off CACHE BOOL "Build example applications (Off)")
 
 # Compiler-specific C++11 activation.
