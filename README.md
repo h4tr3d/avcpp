@@ -24,7 +24,7 @@ Requirements
     - libpostproc >= 52.x.x
   - GCC >= 5.0 (C++11 is required)
 
-### Debian
+### Debian, Ubuntu 19.10 and Linux Mint 20.x or newer
 
 You should install FFmpeg packages from the deb-multimedia.org site:
 ```
@@ -42,23 +42,16 @@ Note 1: I did not test building on Debian.
 Note 2: Debian Wheezy repo contains only FFmpeg 1.0.8. I tested building only with 2.x. So it is strongly recoment use Wheezy back-ports repo.
 
 
-### Ubuntu and Linux Mint
+### Ubuntu 18.04 and Linux Mint 19.x
 
-You should add [ffmpeg-4](https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4) PPA:
+If you are on Ubuntu bionic or Linux Mint 19.x you should add [ffmpeg-4](https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4) PPA:
 
 ```
 sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y
 sudo apt update && sudo apt upgrade
-sudo apt install libavcodec-dev \
-                 libavdevice-dev \
-                 libavfilter-dev \
-                 libavformat-dev \
-                 libavresample-dev \
-                 libavutil-dev \
-                 libpostproc-dev \
-                 libswresample-dev \
-                 libswscale-dev
 ```
+
+After that  just install the same packages as above.
 
 Build
 -----
