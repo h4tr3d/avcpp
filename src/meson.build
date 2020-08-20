@@ -14,13 +14,13 @@ cc = meson.get_compiler('cpp')
 
 avcpp_deps = [
     dependency('threads', required : true),
-    dependency('libavcodec', required: true),
-    dependency('libavformat', required: true),
-    dependency('libavutil', required: true),
-    dependency('libavdevice', required: true),
-    dependency('libavfilter', required: true),
-    dependency('libswscale', required: true),
-    dependency('libswresample', required: true),
+    dependency('libavcodec', required: true, fallback : ['ffmpeg', 'declared_dep']),
+    dependency('libavformat', required: true, fallback : ['ffmpeg', 'declared_dep']),
+    dependency('libavutil', required: true, fallback : ['ffmpeg', 'declared_dep']),
+    dependency('libavdevice', required: true, fallback : ['ffmpeg', 'declared_dep']),
+    dependency('libavfilter', required: true, fallback : ['ffmpeg', 'declared_dep']),
+    dependency('libswscale', required: true, fallback : ['ffmpeg', 'declared_dep']),
+    dependency('libswresample', required: true, fallback : ['ffmpeg', 'declared_dep']),
     cc.find_library('dl', required : false),
 ]
 
