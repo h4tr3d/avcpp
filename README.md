@@ -22,6 +22,7 @@ Currently covered next functionality:
   - libswresample >= 0.x.x
   - libpostproc >= 52.x.x
 - GCC >= 5.0 (C++11 is required)
+- CMake (> 3.11) or Meson(> 50.0)
 
 ### Debian, Ubuntu 19.10 and Linux Mint 20.x or newer
 
@@ -52,7 +53,58 @@ sudo apt update && sudo apt upgrade
 
 After that  just install the same packages as above.
 
-### Build
+------
+
+## Build
+
+There are two ways to compile eitehr with CMake or with meson.
+By default meson is faster, but if your project uses CMake, those instructions might be better for integration.
+
+### Building with meson
+
+Before you can begin with the building you have to clone the repository like this:
+
+```bash
+git clone https://github.com/h4tr3d/avcpp.git avcpp-git
+cd avcpp-git
+```
+
+Building the project:
+
+If you don't have the dependencies installed, meson will download and compile them.
+Because ffmpeg is so large (~2000 c files), you should consider using your package manager to install them.
+You can then build the project with the following commands:
+
+```bash
+mkdir build
+cd build
+meson ..
+meson compile
+```
+
+Configuring the project:
+
+By default the sample projects and the test are compiled.
+If you don't want this you can disable it with the following commands:
+
+```bash
+meson configure -Dbuild_tests=false
+meson configure -Dbuild_samples=false
+```
+
+You can set the install prefix using `meson --prefix <your/own/prefix>`.
+To see all of the available options just type `meson configure` and `meson configure --help` to get more insormation.
+
+Installing the project:
+
+Just type `meson install` and the project will be installed in the configured prefix (/usr/local by default).
+
+Running the tests:
+
+To run the test just use `meson test`.
+If you disabled the test this will do nothing.
+
+### Building with CMake
 
 ```bash
 git clone --recurse-submodules https://github.com/h4tr3d/avcpp.git avcpp-git

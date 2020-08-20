@@ -14,13 +14,14 @@ cc = meson.get_compiler('cpp')
 
 avcpp_deps = [
     dependency('threads', required : true),
-    dependency('libavcodec', required: true, fallback : ['ffmpeg', 'declared_dep']),
-    dependency('libavformat', required: true, fallback : ['ffmpeg', 'declared_dep']),
-    dependency('libavutil', required: true, fallback : ['ffmpeg', 'declared_dep']),
-    dependency('libavdevice', required: true, fallback : ['ffmpeg', 'declared_dep']),
-    dependency('libavfilter', required: true, fallback : ['ffmpeg', 'declared_dep']),
-    dependency('libswscale', required: true, fallback : ['ffmpeg', 'declared_dep']),
-    dependency('libswresample', required: true, fallback : ['ffmpeg', 'declared_dep']),
+    dependency('libavcodec', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=54.0.0'),
+    dependency('libavformat', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=54.0.0'),
+    dependency('libavutil', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=51.0.0'),
+    dependency('libavdevice', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=54.0.0'),
+    dependency('libavfilter', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=3.0.0'),
+    dependency('libswscale', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=2.0.0'),
+    dependency('libswresample', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=0.0.0'),
+    dependency('libpostproc', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=52.0.0'),
     cc.find_library('dl', required : false),
 ]
 
@@ -57,6 +58,40 @@ avcpp_sources = [
 
 ]
 
+avcpp_header = [
+    'audioresampler.h',
+    'averror.h',
+    'av.h',
+    'avlog.h',
+    'avtime.h',
+    'avutils.h',
+    'codeccontext.h',
+    'codec.h',
+    'dictionary.h',
+    'ffmpeg.h',
+    'formatcontext.h',
+    'format.h',
+    'frame.h',
+    'linkedlistutils.h',
+    'packet.h',
+    'pixelformat.h',
+    'rational.h',
+    'rect.h',
+    'sampleformat.h',
+    'stream.h',
+    'timestamp.h',
+    'videorescaler.h',
+]
+
+avcpp_filter_header = [
+    'filters/buffersink.h',
+    'filters/buffersrc.h',
+    'filters/filtercontext.h',
+    'filters/filtergraph.h',
+    'filters/filter.h',
+    'filters/filterpad.h',
+]
+
 #defining how to build the library
 avcpp = library(
     'avcpp', 
@@ -64,8 +99,13 @@ avcpp = library(
     version : meson.project_version(), 
     soversion : '0', 
     include_directories : avcpp_incdir,
-    dependencies: avcpp_deps
+    dependencies: avcpp_deps, 
+    install : true
 )
+
+install_headers(avcpp_header, subdir : 'avcpp')
+install_headers(avcpp_filter_header, subdir : 'avcpp/filters')
+
 
 #export the dependency information
 avcpp_dep = declare_dependency(
