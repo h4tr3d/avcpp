@@ -1,6 +1,5 @@
 project(
-    'AvCpp', 
-    'c', 
+    'avcpp_setup',
     'cpp',
     meson_version: '>= 0.50.0',
     default_options : [
@@ -10,10 +9,12 @@ project(
     version: '2.0.99',
 )
 
-#add_project_arguments('-std=gnu++17', language : 'cpp')
-cc = meson.get_compiler('cpp')
+subproject('avcpp')
 
-subproject('libavcpp')
-subproject('AvCppSamples')
+if get_option('build_samples')
+    subproject('avcpp_samples')
+endif
 
-
+if get_option('build_tests')
+    subproject('avcpp_tests')
+endif

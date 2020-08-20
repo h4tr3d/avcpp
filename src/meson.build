@@ -1,6 +1,5 @@
 project(
-    'libavcpp', 
-    'c', 
+    'avcpp',
     'cpp',
     meson_version: '>= 0.50.0',
     default_options : [
@@ -10,12 +9,11 @@ project(
     version: '2.0.99',
 )
 
-#add_project_arguments('-std=gnu++17', language : 'cpp')
+#getting all of the dependencies
 cc = meson.get_compiler('cpp')
 
-libavcpp_deps = [
+avcpp_deps = [
     dependency('threads', required : true),
-    #dependency('FFmpeg', required : true, method : 'cmake', components : ['AVCODEC AVFORMAT AVUTIL AVDEVICE AVFILTER SWSCALE SWRESAMPLE']),
     dependency('libavcodec', required: true),
     dependency('libavformat', required: true),
     dependency('libavutil', required: true),
@@ -26,9 +24,11 @@ libavcpp_deps = [
     cc.find_library('dl', required : false),
 ]
 
-libavcpp_incdir = include_directories('.')
+#setting the include dir to the current folder (src)
+avcpp_incdir = include_directories('.','filters')
 
-libavcpp_sources = [
+#listing all the source files
+avcpp_sources = [
     'audioresampler.cpp',
     'averror.cpp',
     'avtime.cpp',
@@ -39,7 +39,6 @@ libavcpp_sources = [
     'formatcontext.cpp',
     'format.cpp',
     'frame.cpp',
-    #'libavcpp.pc.in',
     'packet.cpp',
     'pixelformat.cpp',
     'rational.cpp',
@@ -48,21 +47,34 @@ libavcpp_sources = [
     'stream.cpp',
     'timestamp.cpp',
     'videorescaler.cpp',
+
+    'filters/buffersink.cpp',
+    'filters/buffersrc.cpp',
+    'filters/filtercontext.cpp',
+    'filters/filter.cpp',
+    'filters/filtergraph.cpp',
+    'filters/filterpad.cpp',
+
 ]
 
-libavcpp = library(
-    'libavcpp', 
-    libavcpp_sources, 
+#defining how to build the library
+avcpp = library(
+    'avcpp', 
+    avcpp_sources, 
     version : meson.project_version(), 
     soversion : '0', 
-    include_directories : libavcpp_incdir,
-    dependencies: libavcpp_deps
+    include_directories : avcpp_incdir,
+    dependencies: avcpp_deps
 )
 
-libavcpp_dep = declare_dependency(
-    include_directories : libavcpp_incdir,
-    link_with : libavcpp,
-    dependencies : libavcpp_deps,
+#export the dependency information
+avcpp_dep = declare_dependency(
+    include_directories : avcpp_incdir,
+    link_with : avcpp,
+    dependencies : avcpp_deps,
     version: meson.project_version()
 )
 
+#generate pkg-config
+pkg = import('pkgconfig')
+pkg.generate(avcpp)
