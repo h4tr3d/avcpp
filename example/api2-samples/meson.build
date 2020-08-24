@@ -1,12 +1,11 @@
-project(
-    'libavcpp_samples',
-    'cpp',
-    version: '2.0.99'
-)
+#project(
+#    'libavcpp_samples',
+#    'cpp',
+#    version: '2.0.99'
+#)
 
-libavcpp = subproject('avcpp')
-
-avcpp_dep = libavcpp.get_variable('avcpp_dep')
+#libavcpp = subproject('avcpp')
+#avcpp_dep = libavcpp.get_variable('avcpp_dep')
 
 samples = [
     'api2-decode',

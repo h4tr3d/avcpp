@@ -1,4 +1,4 @@
-if !meson.project_name()
+if meson.project_name() == ''
     project(
         'avcpp',
         'cpp',

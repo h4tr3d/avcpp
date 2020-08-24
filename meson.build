@@ -1,5 +1,5 @@
 project(
-    'avcpp_setup',
+    'avcpp',
     'cpp',
     meson_version: '>= 0.50.0',
     default_options : [
@@ -9,19 +9,20 @@ project(
     version: '2.0.99',
 )
 
-if ! meson.is_subproject()
-
-    subproject('avcpp')
+if not meson.is_subproject()
+    subdir('src')
 
     if get_option('build_samples')
-        subproject('avcpp_samples')
+        subdir('example/api2-samples')
     endif
 
     if get_option('build_tests')
-        subproject('avcpp_tests')
+        subdir('tests')
     endif
 else
     subdir('src')
 endif
 
-meson.override_dependency('avcpp', avcpp_dep)
+if meson.version().version_compare('>=0.54.0')
+    meson.override_dependency('avcpp', avcpp_dep)
+endif
