@@ -18,3 +18,5 @@ endif
 if get_option('build_tests')
     subproject('avcpp_tests')
 endif
+
+meson.override_dependency('avcpp', avcpp_dep)
