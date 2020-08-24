@@ -9,14 +9,19 @@ project(
     version: '2.0.99',
 )
 
-subproject('avcpp')
+if ! meson.is_subproject()
 
-if get_option('build_samples')
-    subproject('avcpp_samples')
-endif
+    subproject('avcpp')
 
-if get_option('build_tests')
-    subproject('avcpp_tests')
+    if get_option('build_samples')
+        subproject('avcpp_samples')
+    endif
+
+    if get_option('build_tests')
+        subproject('avcpp_tests')
+    endif
+else
+    subdir('src')
 endif
 
 meson.override_dependency('avcpp', avcpp_dep)
