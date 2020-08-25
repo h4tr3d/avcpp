@@ -6,7 +6,11 @@ file(GLOB_RECURSE AV_HEADERS "*.h" "*.hpp")
 set(AV_NAMESPACE avcpp)
 set(AV_BASENAME avcpp)
 
-set(AV_TARGETS avcpp)
+# This is a little gross as it compiles everything twice, but it's good enough for my needs.
+if (AV_ENABLE_SHARED)
+    list (APPEND AV_TARGETS ${AV_BASENAME})
+endif()
+
 if (AV_ENABLE_STATIC)
     list (APPEND AV_TARGETS ${AV_BASENAME}-static)
 endif()
