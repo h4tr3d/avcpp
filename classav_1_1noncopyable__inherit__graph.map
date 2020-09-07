@@ -1,0 +1,25 @@
+<map id="av::noncopyable" name="av::noncopyable">
+<area shape="rect" id="node1" title=" " alt="" coords="5,323,133,349"/>
+<area shape="rect" id="node2" href="$classav_1_1AudioResampler.html" title=" " alt="" coords="181,247,333,273"/>
+<area shape="rect" id="node3" href="$classav_1_1CodecContext2.html" title=" " alt="" coords="185,297,329,324"/>
+<area shape="rect" id="node22" href="$classav_1_1FormatContext.html" title=" " alt="" coords="186,348,329,375"/>
+<area shape="rect" id="node23" href="$classav_1_1VideoRescaler.html" title=" " alt="" coords="188,399,327,425"/>
+<area shape="rect" id="node4" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="396,5,564,61"/>
+<area shape="rect" id="node5" href="$classav_1_1GenericCodecContext.html" title="The GenericCodecContext class to copy contexts from input streams to output one." alt="" coords="387,85,573,112"/>
+<area shape="rect" id="node6" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="381,137,579,207"/>
+<area shape="rect" id="node9" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="381,231,579,302"/>
+<area shape="rect" id="node12" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="385,327,575,383"/>
+<area shape="rect" id="node14" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="386,407,574,463"/>
+<area shape="rect" id="node16" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="381,487,579,558"/>
+<area shape="rect" id="node19" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="381,582,579,653"/>
+<area shape="rect" id="node7" href="$classav_1_1AudioCodecContext.html" title=" " alt="" coords="627,144,809,200"/>
+<area shape="rect" id="node8" href="$classav_1_1AudioDecoderContext.html" title=" " alt="" coords="857,159,1044,185"/>
+<area shape="rect" id="node10" href="$classav_1_1AudioCodecContext.html" title=" " alt="" coords="627,239,809,295"/>
+<area shape="rect" id="node11" href="$classav_1_1AudioEncoderContext.html" title=" " alt="" coords="858,253,1043,280"/>
+<area shape="rect" id="node13" href="$classav_1_1AudioCodecContext.html" title=" " alt="" coords="631,334,805,375"/>
+<area shape="rect" id="node15" href="$classav_1_1VideoCodecContext.html" title=" " alt="" coords="631,414,805,455"/>
+<area shape="rect" id="node17" href="$classav_1_1VideoCodecContext.html" title=" " alt="" coords="627,495,809,551"/>
+<area shape="rect" id="node18" href="$classav_1_1VideoDecoderContext.html" title=" " alt="" coords="857,509,1044,536"/>
+<area shape="rect" id="node20" href="$classav_1_1VideoCodecContext.html" title=" " alt="" coords="627,589,809,645"/>
+<area shape="rect" id="node21" href="$classav_1_1VideoEncoderContext.html" title=" " alt="" coords="858,604,1043,631"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="src/avlog.h" name="src/avlog.h">
+<area shape="rect" id="node1" title=" " alt="" coords="372,5,465,32"/>
+<area shape="rect" id="node2" href="$audioresampler_8cpp.html" title=" " alt="" coords="5,80,179,107"/>
+<area shape="rect" id="node3" href="$codeccontext_8cpp.html" title=" " alt="" coords="191,155,350,181"/>
+<area shape="rect" id="node4" href="$codeccontext_8h.html" title=" " alt="" coords="253,80,397,107"/>
+<area shape="rect" id="node5" href="$filtergraph_8cpp.html" title=" " alt="" coords="422,80,602,107"/>
+<area shape="rect" id="node6" href="$formatcontext_8cpp.html" title=" " alt="" coords="627,80,792,107"/>
+<area shape="rect" id="node7" href="$videorescaler_8cpp.html" title=" " alt="" coords="817,80,975,107"/>
+</map>
