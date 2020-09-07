@@ -158,7 +158,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Access to the holded string with <code>std::string</code> interface. </p>
-<dl class="section return"><dt>Returns</dt><dd>holder raw string pointer, or <code>nullptr</code> if string is not allocated </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>holded raw string pointer, or <code>nullptr</code> if string is not allocated </dd></dl>
 
 </div>
 </div>
@@ -186,8 +186,9 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>RAW string length in bytes. </p>
-<p>Note: to avoid extra size and keeps <code>sizeof(AvStringPtr) == sizeof(char*)</code> we do not cache and holds string size. As a result string length calculates every call and complexity is <code>O(n)</code>, where <code>n</code> - count of bytes in string exclude end zero.</p>
-<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+<dl class="section note"><dt>Note</dt><dd>to avoid extra size and keeps <code>sizeof(AvStringPtr) == sizeof(char*)</code> we do not cache and holds string size. As a result string length calculates every call and complexity is <code>O(n)</code>, where <code>n</code> - count of bytes in string exclude end zero.</dd></dl>
+<p>8-bit based multibyte string like UTF-8 must be processes with appropriate libraries externally.</p>
+<dl class="section return"><dt>Returns</dt><dd>calculated length of string in bytes </dd></dl>
 
 </div>
 </div>
