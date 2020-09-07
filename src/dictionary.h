@@ -116,7 +116,7 @@ public:
         }
     };
     // Our contract
-    static_assert (sizeof(AvStringPtr) == sizeof(char*));
+    static_assert (sizeof(AvStringPtr) == sizeof(char*), "Size must be same. Check and try again");
     /// @cond SKIP
     using RawStringPtr = AvStringPtr;
     /// @endcond
