@@ -27,7 +27,7 @@ int main()
         {
             shared_ptr<char> sptr;
             {
-                av::Dictionary::RawStringPtr ptr;
+                av::Dictionary::AvStringPtr ptr;
                 ptr = dict.toRawStringPtr('=', ';');
                 cout << ptr.get() << endl;
 

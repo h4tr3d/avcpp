@@ -224,9 +224,9 @@ string Dictionary::toString(const char keyValSep, const char pairsSep, OptionalE
     return std::move(str);
 }
 
-Dictionary::RawStringPtr Dictionary::toRawStringPtr(const char keyValSep, const char pairsSep, OptionalErrorCode ec) const
+Dictionary::AvStringPtr Dictionary::toRawStringPtr(const char keyValSep, const char pairsSep, OptionalErrorCode ec) const
 {
-    RawStringPtr  str;
+    AvStringPtr  str;
     char         *buf = nullptr;
 
     clear_if(ec);
