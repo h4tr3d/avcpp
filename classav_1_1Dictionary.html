@@ -175,10 +175,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5b961d04158ab0e8ab5aeafac9c00735"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a5b961d04158ab0e8ab5aeafac9c00735">set</a> (const Key &amp;key, const Value &amp;value, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>(), int flags=0) -&gt; typename std::enable_if&lt;(std::is_same&lt; Key, std::string &gt;::value||std::is_same&lt; typename std::remove_cv&lt; typename std::decay&lt; Key &gt;::type &gt;::type, char * &gt;::value) &amp;&amp;(std::is_same&lt; Value, std::string &gt;::value||std::is_same&lt; typename std::remove_cv&lt; typename std::decay&lt; Value &gt;::type &gt;::type, char * &gt;::value||std::is_integral&lt; Value &gt;::value), void &gt;::type</td></tr>
 <tr class="memdesc:a5b961d04158ab0e8ab5aeafac9c00735"><td class="mdescLeft">&#160;</td><td class="mdescRight">set - set new value for key or add new dictionary item (or create dictionary) If dictionary empty (null), it takes ownershipping too.  <a href="classav_1_1Dictionary.html#a5b961d04158ab0e8ab5aeafac9c00735">More...</a><br /></td></tr>
 <tr class="separator:a5b961d04158ab0e8ab5aeafac9c00735"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca2e3399c7eb596fe4e6ecb9506a0d79"><td class="memTemplParams" colspan="2">template&lt;typename Str , typename Sep1 , typename Sep2 &gt; </td></tr>
-<tr class="memitem:aca2e3399c7eb596fe4e6ecb9506a0d79"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#aca2e3399c7eb596fe4e6ecb9506a0d79">parseString</a> (const Str &amp;str, const Sep1 &amp;keyvalSep, const Sep2 &amp;pairsSep, int flags=0, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>())</td></tr>
-<tr class="memdesc:aca2e3399c7eb596fe4e6ecb9506a0d79"><td class="mdescLeft">&#160;</td><td class="mdescRight">parseString - process string with options and fill dictionary String examples:  <a href="classav_1_1Dictionary.html#aca2e3399c7eb596fe4e6ecb9506a0d79">More...</a><br /></td></tr>
-<tr class="separator:aca2e3399c7eb596fe4e6ecb9506a0d79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8249b09d23358d29efba0be7b2fdb5b8"><td class="memTemplParams" colspan="2">template&lt;typename Str , typename Sep1 , typename Sep2 &gt; </td></tr>
+<tr class="memitem:a8249b09d23358d29efba0be7b2fdb5b8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a8249b09d23358d29efba0be7b2fdb5b8">parseString</a> (const Str &amp;str, const Sep1 &amp;keyValSep, const Sep2 &amp;pairsSep, int flags=0, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>())</td></tr>
+<tr class="memdesc:a8249b09d23358d29efba0be7b2fdb5b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">parseString - process string with options and fill dictionary String examples:  <a href="classav_1_1Dictionary.html#a8249b09d23358d29efba0be7b2fdb5b8">More...</a><br /></td></tr>
+<tr class="separator:a8249b09d23358d29efba0be7b2fdb5b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae79928ac39d151b495e5a19d100a40a9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#ae79928ac39d151b495e5a19d100a40a9">toString</a> (const char keyValSep, const char pairsSep, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>()) const</td></tr>
 <tr class="memdesc:ae79928ac39d151b495e5a19d100a40a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">toString - converts dictionary to the string representation (serialize)  <a href="classav_1_1Dictionary.html#ae79928ac39d151b495e5a19d100a40a9">More...</a><br /></td></tr>
 <tr class="separator:ae79928ac39d151b495e5a19d100a40a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -250,7 +250,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>key for entry access </td></tr>
-    <tr><td class="paramname">flags</td><td>see Flags </td></tr>
+    <tr><td class="paramname">flags</td><td>see <a class="el" href="classav_1_1Dictionary.html#a55475283ffc37652ba2e1bcafca96c9f">Flags</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -528,7 +528,7 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">list</td><td>init list </td></tr>
-    <tr><td class="paramname">flags</td><td>see Flags </td></tr>
+    <tr><td class="paramname">flags</td><td>see <a class="el" href="classav_1_1Dictionary.html#a55475283ffc37652ba2e1bcafca96c9f">Flags</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -688,7 +688,7 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td>dict to copy from </td></tr>
-    <tr><td class="paramname">flags</td><td>see Flags </td></tr>
+    <tr><td class="paramname">flags</td><td>see <a class="el" href="classav_1_1Dictionary.html#a55475283ffc37652ba2e1bcafca96c9f">Flags</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -935,7 +935,7 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">list</td><td>init list </td></tr>
-    <tr><td class="paramname">flags</td><td>see Flags </td></tr>
+    <tr><td class="paramname">flags</td><td>see <a class="el" href="classav_1_1Dictionary.html#a55475283ffc37652ba2e1bcafca96c9f">Flags</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -1022,8 +1022,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="aca2e3399c7eb596fe4e6ecb9506a0d79"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aca2e3399c7eb596fe4e6ecb9506a0d79">&#9670;&nbsp;</a></span>parseString()</h2>
+<a id="a8249b09d23358d29efba0be7b2fdb5b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8249b09d23358d29efba0be7b2fdb5b8">&#9670;&nbsp;</a></span>parseString()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1043,7 +1043,7 @@ template&lt;typename Str , typename Sep1 , typename Sep2 &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const Sep1 &amp;&#160;</td>
-          <td class="paramname"><em>keyvalSep</em>, </td>
+          <td class="paramname"><em>keyValSep</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1198,7 +1198,7 @@ template&lt;typename Key , typename Value  = Key&gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">key</td><td>key to change (can be std::string or char*) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>key value (can be std::string, char* or integer) </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">ec</td><td>this represents the error status on exit, if this is pre-initialized to <a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b" title="Helper to construct null OptionalErrorCode object.">av::throws</a> the function will throw on error instead </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">flags</td><td>see Flags </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">flags</td><td>see <a class="el" href="classav_1_1Dictionary.html#a55475283ffc37652ba2e1bcafca96c9f">Flags</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -1344,7 +1344,7 @@ template&lt;typename Key , typename Value  = Key&gt; </div>
 </div><div class="memdoc">
 
 <p>toString - converts dictionary to the string representation (serialize) </p>
-<p>This line can be processed via <a class="el" href="classav_1_1Dictionary.html#aca2e3399c7eb596fe4e6ecb9506a0d79" title="parseString - process string with options and fill dictionary String examples:">parseString()</a> later.</p>
+<p>This line can be processed via <a class="el" href="classav_1_1Dictionary.html#a8249b09d23358d29efba0be7b2fdb5b8" title="parseString - process string with options and fill dictionary String examples:">parseString()</a> later.</p>
 <p>FFmpeg internaly allocated buffer copies to the string and freed.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
