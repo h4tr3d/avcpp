@@ -77,7 +77,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>The <a class="el" href="classav_1_1Dictionary.html" title="The Dictionary class.">Dictionary</a> class.  
+<p>Implements interface to access to the AVDictionary entity.  
  <a href="classav_1_1Dictionary.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="dictionary_8h_source.html">dictionary.h</a>&gt;</code></p>
@@ -86,7 +86,7 @@ Inheritance diagram for av::Dictionary:</div>
 <div class="dyncontent">
 <div class="center"><img src="classav_1_1Dictionary__inherit__graph.png" border="0" usemap="#av_1_1Dictionary_inherit__map" alt="Inheritance graph"/></div>
 <map name="av_1_1Dictionary_inherit__map" id="av_1_1Dictionary_inherit__map">
-<area shape="rect" title="The Dictionary class." alt="" coords="62,80,174,107"/>
+<area shape="rect" title="Implements interface to access to the AVDictionary entity." alt="" coords="62,80,174,107"/>
 <area shape="rect" href="structFFWrapperPtr.html" title=" " alt="" coords="5,5,231,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -95,21 +95,24 @@ Collaboration diagram for av::Dictionary:</div>
 <div class="dyncontent">
 <div class="center"><img src="classav_1_1Dictionary__coll__graph.png" border="0" usemap="#av_1_1Dictionary_coll__map" alt="Collaboration graph"/></div>
 <map name="av_1_1Dictionary_coll__map" id="av_1_1Dictionary_coll__map">
-<area shape="rect" title="The Dictionary class." alt="" coords="62,80,174,107"/>
+<area shape="rect" title="Implements interface to access to the AVDictionary entity." alt="" coords="62,80,174,107"/>
 <area shape="rect" href="structFFWrapperPtr.html" title=" " alt="" coords="5,5,231,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structav_1_1Dictionary_1_1AvStringDeleter.html">AvStringDeleter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleter for raw string.  <a href="structav_1_1Dictionary_1_1AvStringDeleter.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structav_1_1Dictionary_1_1AvStringPtr.html">AvStringPtr</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII holder for strings allocated by FFmpeg internals.  <a href="structav_1_1Dictionary_1_1AvStringPtr.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary_1_1DictionaryIterator.html">DictionaryIterator</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base dictionary iterator implementation.  <a href="classav_1_1Dictionary_1_1DictionaryIterator.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary_1_1Entry.html">Entry</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classav_1_1Dictionary_1_1Entry.html" title="The Entry class Dictionary key and value holder and accessor.">Entry</a> class <a class="el" href="classav_1_1Dictionary.html" title="The Dictionary class.">Dictionary</a> key and value holder and accessor.  <a href="classav_1_1Dictionary_1_1Entry.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structav_1_1Dictionary_1_1RawStringDeleter.html">RawStringDeleter</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structav_1_1Dictionary_1_1RawStringDeleter.html" title="The RawStringDeleter struct Deleter for raw string.">RawStringDeleter</a> struct Deleter for raw string.  <a href="structav_1_1Dictionary_1_1RawStringDeleter.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classav_1_1Dictionary.html" title="Implements interface to access to the AVDictionary entity.">Dictionary</a> key and value holder and accessor.  <a href="classav_1_1Dictionary_1_1Entry.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -124,11 +127,8 @@ Public Types</h2></td></tr>
 <a class="el" href="classav_1_1Dictionary.html#a55475283ffc37652ba2e1bcafca96c9fa5e69a3ceb1afc8509fb18f9359b7d324">FlagAppend</a> = AV_DICT_APPEND
 <br />
  }</td></tr>
-<tr class="memdesc:a55475283ffc37652ba2e1bcafca96c9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Flags enum AVDictionary flags mapping.  <a href="classav_1_1Dictionary.html#a55475283ffc37652ba2e1bcafca96c9f">More...</a><br /></td></tr>
+<tr class="memdesc:a55475283ffc37652ba2e1bcafca96c9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">AVDictionary flags mapping.  <a href="classav_1_1Dictionary.html#a55475283ffc37652ba2e1bcafca96c9f">More...</a><br /></td></tr>
 <tr class="separator:a55475283ffc37652ba2e1bcafca96c9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab71a8404deacc676d4a63d9d902a7c46"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#ab71a8404deacc676d4a63d9d902a7c46">RawStringPtr</a> = std::unique_ptr&lt; char, <a class="el" href="structav_1_1Dictionary_1_1RawStringDeleter.html">RawStringDeleter</a> &gt;</td></tr>
-<tr class="memdesc:ab71a8404deacc676d4a63d9d902a7c46"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAW string implementation.  <a href="classav_1_1Dictionary.html#ab71a8404deacc676d4a63d9d902a7c46">More...</a><br /></td></tr>
-<tr class="separator:ab71a8404deacc676d4a63d9d902a7c46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b36481cece0a5bfb99db53296a8d7c5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a7b36481cece0a5bfb99db53296a8d7c5">Iterator</a> = <a class="el" href="classav_1_1Dictionary_1_1DictionaryIterator.html">DictionaryIterator</a>&lt; false &gt;</td></tr>
 <tr class="memdesc:a7b36481cece0a5bfb99db53296a8d7c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-const iterator.  <a href="classav_1_1Dictionary.html#a7b36481cece0a5bfb99db53296a8d7c5">More...</a><br /></td></tr>
 <tr class="separator:a7b36481cece0a5bfb99db53296a8d7c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,7 +145,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a693138705daca9b3ed2d8540a07ea33d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign ctor Wrap around raw dictionary.  <a href="classav_1_1Dictionary.html#a693138705daca9b3ed2d8540a07ea33d">More...</a><br /></td></tr>
 <tr class="separator:a693138705daca9b3ed2d8540a07ea33d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5c75f13c43bbf4a765b53f6568de952"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#ad5c75f13c43bbf4a765b53f6568de952">~Dictionary</a> ()</td></tr>
-<tr class="memdesc:ad5c75f13c43bbf4a765b53f6568de952"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dtor If <a class="el" href="classav_1_1Dictionary.html" title="The Dictionary class.">Dictionary</a> takes ownershipping on AVDictionary, it free allocated resources.  <a href="classav_1_1Dictionary.html#ad5c75f13c43bbf4a765b53f6568de952">More...</a><br /></td></tr>
+<tr class="memdesc:ad5c75f13c43bbf4a765b53f6568de952"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dtor If <a class="el" href="classav_1_1Dictionary.html" title="Implements interface to access to the AVDictionary entity.">Dictionary</a> takes ownershipping on AVDictionary, it free allocated resources.  <a href="classav_1_1Dictionary.html#ad5c75f13c43bbf4a765b53f6568de952">More...</a><br /></td></tr>
 <tr class="separator:ad5c75f13c43bbf4a765b53f6568de952"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef74180e8af8b7c3df5620207d7d9898"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#aef74180e8af8b7c3df5620207d7d9898">Dictionary</a> (const <a class="el" href="classav_1_1Dictionary.html">Dictionary</a> &amp;other)</td></tr>
 <tr class="memdesc:aef74180e8af8b7c3df5620207d7d9898"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy ctor Make deep copy of dictionary.  <a href="classav_1_1Dictionary.html#aef74180e8af8b7c3df5620207d7d9898">More...</a><br /></td></tr>
@@ -171,10 +171,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2f837bf2c8ebb12bf47422cda1cce8e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a2f837bf2c8ebb12bf47422cda1cce8e1">assign</a> (AVDictionary *dict, bool takeOwning=true) noexcept</td></tr>
 <tr class="memdesc:a2f837bf2c8ebb12bf47422cda1cce8e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">assign - assign new resouces Old dictionary destroyes (if owning).  <a href="classav_1_1Dictionary.html#a2f837bf2c8ebb12bf47422cda1cce8e1">More...</a><br /></td></tr>
 <tr class="separator:a2f837bf2c8ebb12bf47422cda1cce8e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca152242d8ebd5d1873def44fd0386c0"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value  = Key&gt; </td></tr>
-<tr class="memitem:aca152242d8ebd5d1873def44fd0386c0"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if&lt;(std::is_same&lt; Key, std::string &gt;::value||std::is_same&lt; typename std::remove_cv&lt; typename std::decay&lt; Key &gt;::type &gt;::type, char * &gt;::value) &amp;&amp;(std::is_same&lt; Value, std::string &gt;::value||std::is_same&lt; typename std::remove_cv&lt; typename std::decay&lt; Value &gt;::type &gt;::type, char * &gt;::value||std::is_integral&lt; Value &gt;::value),void &gt;::type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#aca152242d8ebd5d1873def44fd0386c0">set</a> (const Key &amp;key, const Value &amp;value, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>(), int flags=0)</td></tr>
-<tr class="memdesc:aca152242d8ebd5d1873def44fd0386c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">set - set new value for key or add new dictionary item (or create dictionary) If dictionary empty (null), it takes ownershipping too.  <a href="classav_1_1Dictionary.html#aca152242d8ebd5d1873def44fd0386c0">More...</a><br /></td></tr>
-<tr class="separator:aca152242d8ebd5d1873def44fd0386c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b961d04158ab0e8ab5aeafac9c00735"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value  = Key&gt; </td></tr>
+<tr class="memitem:a5b961d04158ab0e8ab5aeafac9c00735"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a5b961d04158ab0e8ab5aeafac9c00735">set</a> (const Key &amp;key, const Value &amp;value, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>(), int flags=0) -&gt; typename std::enable_if&lt;(std::is_same&lt; Key, std::string &gt;::value||std::is_same&lt; typename std::remove_cv&lt; typename std::decay&lt; Key &gt;::type &gt;::type, char * &gt;::value) &amp;&amp;(std::is_same&lt; Value, std::string &gt;::value||std::is_same&lt; typename std::remove_cv&lt; typename std::decay&lt; Value &gt;::type &gt;::type, char * &gt;::value||std::is_integral&lt; Value &gt;::value), void &gt;::type</td></tr>
+<tr class="memdesc:a5b961d04158ab0e8ab5aeafac9c00735"><td class="mdescLeft">&#160;</td><td class="mdescRight">set - set new value for key or add new dictionary item (or create dictionary) If dictionary empty (null), it takes ownershipping too.  <a href="classav_1_1Dictionary.html#a5b961d04158ab0e8ab5aeafac9c00735">More...</a><br /></td></tr>
+<tr class="separator:a5b961d04158ab0e8ab5aeafac9c00735"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca2e3399c7eb596fe4e6ecb9506a0d79"><td class="memTemplParams" colspan="2">template&lt;typename Str , typename Sep1 , typename Sep2 &gt; </td></tr>
 <tr class="memitem:aca2e3399c7eb596fe4e6ecb9506a0d79"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#aca2e3399c7eb596fe4e6ecb9506a0d79">parseString</a> (const Str &amp;str, const Sep1 &amp;keyvalSep, const Sep2 &amp;pairsSep, int flags=0, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>())</td></tr>
 <tr class="memdesc:aca2e3399c7eb596fe4e6ecb9506a0d79"><td class="mdescLeft">&#160;</td><td class="mdescRight">parseString - process string with options and fill dictionary String examples:  <a href="classav_1_1Dictionary.html#aca2e3399c7eb596fe4e6ecb9506a0d79">More...</a><br /></td></tr>
@@ -182,9 +182,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae79928ac39d151b495e5a19d100a40a9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#ae79928ac39d151b495e5a19d100a40a9">toString</a> (const char keyValSep, const char pairsSep, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>()) const</td></tr>
 <tr class="memdesc:ae79928ac39d151b495e5a19d100a40a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">toString - converts dictionary to the string representation (serialize)  <a href="classav_1_1Dictionary.html#ae79928ac39d151b495e5a19d100a40a9">More...</a><br /></td></tr>
 <tr class="separator:ae79928ac39d151b495e5a19d100a40a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55b26f29e320504159e72d23b145163f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Dictionary.html#ab71a8404deacc676d4a63d9d902a7c46">RawStringPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a55b26f29e320504159e72d23b145163f">toRawStringPtr</a> (const char keyValSep, const char pairsSep, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>()) const</td></tr>
-<tr class="memdesc:a55b26f29e320504159e72d23b145163f"><td class="mdescLeft">&#160;</td><td class="mdescRight">toRawStringPtr - converts dictionary to the raw string (char*) and protect it with smart pointer (std::unique_ptr).  <a href="classav_1_1Dictionary.html#a55b26f29e320504159e72d23b145163f">More...</a><br /></td></tr>
-<tr class="separator:a55b26f29e320504159e72d23b145163f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa215b9a0be90ae23f2a5ab795672fb1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structav_1_1Dictionary_1_1AvStringPtr.html">AvStringPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#aa215b9a0be90ae23f2a5ab795672fb1b">toRawStringPtr</a> (const char keyValSep, const char pairsSep, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>()) const</td></tr>
+<tr class="memdesc:aa215b9a0be90ae23f2a5ab795672fb1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">toRawStringPtr - converts dictionary to the raw string (char*) and protect it with smart pointer (std::unique_ptr).  <a href="classav_1_1Dictionary.html#aa215b9a0be90ae23f2a5ab795672fb1b">More...</a><br /></td></tr>
+<tr class="separator:aa215b9a0be90ae23f2a5ab795672fb1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74d7bbf25f6765c73547991e4f5974e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a74d7bbf25f6765c73547991e4f5974e0">copyFrom</a> (const <a class="el" href="classav_1_1Dictionary.html">Dictionary</a> &amp;other, int flags=0) noexcept</td></tr>
 <tr class="memdesc:a74d7bbf25f6765c73547991e4f5974e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">copyFrom - copy data from other dictionary.  <a href="classav_1_1Dictionary.html#a74d7bbf25f6765c73547991e4f5974e0">More...</a><br /></td></tr>
 <tr class="separator:a74d7bbf25f6765c73547991e4f5974e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,9 +196,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae65c9f3f1d96d3f68aaaabb9ae0e7b21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26c5dc10d9153348005ee10599f7a2e8"><td class="memItemLeft" align="right" valign="top">AVDictionary **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a26c5dc10d9153348005ee10599f7a2e8">rawPtr</a> () noexcept</td></tr>
 <tr class="separator:a26c5dc10d9153348005ee10599f7a2e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupHeader">Iterator interface</div></td></tr>
 <tr class="memitem:a8e8a8d329670692e48090bff165d3306"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Dictionary.html#a7b36481cece0a5bfb99db53296a8d7c5">Iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a8e8a8d329670692e48090bff165d3306">begin</a> ()</td></tr>
-<tr class="memdesc:a8e8a8d329670692e48090bff165d3306"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterator interface.  <a href="classav_1_1Dictionary.html#a8e8a8d329670692e48090bff165d3306">More...</a><br /></td></tr>
 <tr class="separator:a8e8a8d329670692e48090bff165d3306"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acad5a8db889adf9c6548874a62f4ba63"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Dictionary.html#a7b36481cece0a5bfb99db53296a8d7c5">Iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#acad5a8db889adf9c6548874a62f4ba63">end</a> ()</td></tr>
 <tr class="separator:acad5a8db889adf9c6548874a62f4ba63"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -210,26 +209,54 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5b69a3b9eb0aba1d6d2921c5bc24e1ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52b294cfabb0c7fb8aba339ef9c4391f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Dictionary.html#a794f4e02610d8c5fc2bffc732b3f68b3">ConstIterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a52b294cfabb0c7fb8aba339ef9c4391f">cend</a> () const</td></tr>
 <tr class="separator:a52b294cfabb0c7fb8aba339ef9c4391f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupHeader">Index based access operator</div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>operator [] - access to the entry via index O(1) complexity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+</div></td></tr>
 <tr class="memitem:ad6c526315b74adbfeba5db446f3e2b7b"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#ad6c526315b74adbfeba5db446f3e2b7b">operator[]</a> (size_t index) const</td></tr>
-<tr class="memdesc:ad6c526315b74adbfeba5db446f3e2b7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">operator [] - access to the entry via index O(1) complexity.  <a href="classav_1_1Dictionary.html#ad6c526315b74adbfeba5db446f3e2b7b">More...</a><br /></td></tr>
 <tr class="separator:ad6c526315b74adbfeba5db446f3e2b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad13a780f9d577c2a21fa6ac568c64782"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Dictionary_1_1Entry.html">Entry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#ad13a780f9d577c2a21fa6ac568c64782">operator[]</a> (size_t index)</td></tr>
 <tr class="separator:ad13a780f9d577c2a21fa6ac568c64782"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupHeader">Key based access operator</div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>operator [] - access to the entry via key O(n) complexity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+</div></td></tr>
 <tr class="memitem:af60f10404db1324b3735291dbcad2d67"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#af60f10404db1324b3735291dbcad2d67">operator[]</a> (const char *key) const</td></tr>
-<tr class="memdesc:af60f10404db1324b3735291dbcad2d67"><td class="mdescLeft">&#160;</td><td class="mdescRight">operator [] - access to the entry via key O(n) complexity.  <a href="classav_1_1Dictionary.html#af60f10404db1324b3735291dbcad2d67">More...</a><br /></td></tr>
 <tr class="separator:af60f10404db1324b3735291dbcad2d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab014ddf81c2b7bc71533be312dc6a39d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Dictionary_1_1Entry.html">Entry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#ab014ddf81c2b7bc71533be312dc6a39d">operator[]</a> (const char *key) noexcept</td></tr>
 <tr class="separator:ab014ddf81c2b7bc71533be312dc6a39d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupHeader">Entries counting</div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>count/size - returns count of dictionary entries.</p>
+<p>O(1) complexity. </p><dl class="section return"><dt>Returns</dt><dd></dd></dl>
+</div></td></tr>
 <tr class="memitem:a3b16375ac8969969fe6a1cf46e52217a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a3b16375ac8969969fe6a1cf46e52217a">count</a> () const noexcept</td></tr>
-<tr class="memdesc:a3b16375ac8969969fe6a1cf46e52217a"><td class="mdescLeft">&#160;</td><td class="mdescRight">count/size - returns count of dictionary entries.  <a href="classav_1_1Dictionary.html#a3b16375ac8969969fe6a1cf46e52217a">More...</a><br /></td></tr>
 <tr class="separator:a3b16375ac8969969fe6a1cf46e52217a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b691dd92b1e6a97eeee6f8159353ce8"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a7b691dd92b1e6a97eeee6f8159353ce8">size</a> () const noexcept</td></tr>
 <tr class="separator:a7b691dd92b1e6a97eeee6f8159353ce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Key based getter interface</div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>get - gets value by key O(n) complexity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>key for entry access </td></tr>
+    <tr><td class="paramname">flags</td><td>see Flags </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>nullptr if key does not present </dd></dl>
+</div></td></tr>
 <tr class="memitem:a84f19f9de0f893f3a0057d4cb49f5465"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a84f19f9de0f893f3a0057d4cb49f5465">get</a> (const char *key, int flags=0) const noexcept</td></tr>
-<tr class="memdesc:a84f19f9de0f893f3a0057d4cb49f5465"><td class="mdescLeft">&#160;</td><td class="mdescRight">@  <a href="classav_1_1Dictionary.html#a84f19f9de0f893f3a0057d4cb49f5465">More...</a><br /></td></tr>
 <tr class="separator:a84f19f9de0f893f3a0057d4cb49f5465"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4873800630155a6daf52c198d9bec11d"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Dictionary.html#a4873800630155a6daf52c198d9bec11d">get</a> (const std::string &amp;key, int flags=0) const noexcept</td></tr>
 <tr class="separator:a4873800630155a6daf52c198d9bec11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -258,8 +285,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a5965838ceb4eeae6d752187b914a2899 inherit pro_attribs_structFFWrapperPtr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The <a class="el" href="classav_1_1Dictionary.html" title="The Dictionary class.">Dictionary</a> class. </p>
-<p>Implements interface to access to the AVDictionary entity</p>
+<div class="textblock"><p>Implements interface to access to the AVDictionary entity. </p>
 <p>It also add useful extensions, like:</p><ul>
 <li>Iterator interface: you can walk via dictionary entries via foreach cycles</li>
 <li>Initialization list construction: you can initialize dictionary simple as structure or array</li>
@@ -298,22 +324,6 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="ab71a8404deacc676d4a63d9d902a7c46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab71a8404deacc676d4a63d9d902a7c46">&#9670;&nbsp;</a></span>RawStringPtr</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="classav_1_1Dictionary.html#ab71a8404deacc676d4a63d9d902a7c46">av::Dictionary::RawStringPtr</a> =  std::unique_ptr&lt;char, <a class="el" href="structav_1_1Dictionary_1_1RawStringDeleter.html">RawStringDeleter</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>RAW string implementation. </p>
-
-</div>
-</div>
 <h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a55475283ffc37652ba2e1bcafca96c9f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a55475283ffc37652ba2e1bcafca96c9f">&#9670;&nbsp;</a></span>Flags</h2>
@@ -327,7 +337,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>The Flags enum AVDictionary flags mapping. </p>
+<p>AVDictionary flags mapping. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a55475283ffc37652ba2e1bcafca96c9fa15207d757303afc561a050dbb385439c"></a>FlagMatchCase&#160;</td><td class="fielddoc"><p>Do not ignore case. </p>
 </td></tr>
@@ -405,7 +415,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Useful to iterate with low-level FFmpeg API </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dict</td><td>dictionary to hold </td></tr>
-    <tr><td class="paramname">takeOwning</td><td>ownershipping flag. If false, <a class="el" href="classav_1_1Dictionary.html" title="The Dictionary class.">Dictionary</a> only wraps access to the AVDictionary and do not free resources on destroy. </td></tr>
+    <tr><td class="paramname">takeOwning</td><td>ownershipping flag. If false, <a class="el" href="classav_1_1Dictionary.html" title="Implements interface to access to the AVDictionary entity.">Dictionary</a> only wraps access to the AVDictionary and do not free resources on destroy. </td></tr>
   </table>
   </dd>
 </dl>
@@ -427,7 +437,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Dtor If <a class="el" href="classav_1_1Dictionary.html" title="The Dictionary class.">Dictionary</a> takes ownershipping on AVDictionary, it free allocated resources. </p>
+<p>Dtor If <a class="el" href="classav_1_1Dictionary.html" title="Implements interface to access to the AVDictionary entity.">Dictionary</a> takes ownershipping on AVDictionary, it free allocated resources. </p>
 
 </div>
 </div>
@@ -586,8 +596,6 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Iterator interface. </p>
-
 </div>
 </div>
 <a id="a4e01c68976e9db2100bd47a51cc86a64"></a>
@@ -710,9 +718,6 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>count/size - returns count of dictionary entries. </p>
-<p>O(1) complexity. </p><dl class="section return"><dt>Returns</dt><dd></dd></dl>
-
 </div>
 </div>
 <a id="acad5a8db889adf9c6548874a62f4ba63"></a>
@@ -782,16 +787,6 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>@ </p>
-<p>get - gets value by key O(n) complexity. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td></td></tr>
-    <tr><td class="paramname">flags</td><td>- see Flags </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>nullptr if key does not present </dd></dl>
 
 </div>
 </div>
@@ -963,15 +958,6 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>operator [] - access to the entry via key O(n) complexity. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd></dd></dl>
-
 </div>
 </div>
 <a id="ab014ddf81c2b7bc71533be312dc6a39d"></a>
@@ -1033,15 +1019,6 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>operator [] - access to the entry via index O(1) complexity. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">index</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd></dd></dl>
 
 </div>
 </div>
@@ -1161,8 +1138,8 @@ template&lt;typename Str , typename Sep1 , typename Sep2 &gt; </div>
 
 </div>
 </div>
-<a id="aca152242d8ebd5d1873def44fd0386c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aca152242d8ebd5d1873def44fd0386c0">&#9670;&nbsp;</a></span>set()</h2>
+<a id="a5b961d04158ab0e8ab5aeafac9c00735"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b961d04158ab0e8ab5aeafac9c00735">&#9670;&nbsp;</a></span>set()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1173,7 +1150,7 @@ template&lt;typename Key , typename Value  = Key&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::enable_if&lt; (std::is_same&lt;Key, std::string&gt;::value || std::is_same&lt;typename std::remove_cv&lt;typename std::decay&lt;Key&gt;::type&gt;::type, char*&gt;::value) &amp;&amp; (std::is_same&lt;Value, std::string&gt;::value || std::is_same&lt;typename std::remove_cv&lt;typename std::decay&lt;Value&gt;::type&gt;::type, char*&gt;::value || std::is_integral&lt;Value&gt;::value) ,void &gt;::type av::Dictionary::set </td>
+          <td class="memname">auto av::Dictionary::set </td>
           <td>(</td>
           <td class="paramtype">const Key &amp;&#160;</td>
           <td class="paramname"><em>key</em>, </td>
@@ -1199,7 +1176,13 @@ template&lt;typename Key , typename Value  = Key&gt; </div>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> -&gt; typename std::enable_if
+         &lt;
+             (std::is_same&lt;Key, std::string&gt;::value || std::is_same&lt;typename std::remove_cv&lt;typename std::decay&lt;Key&gt;::type&gt;::type, char*&gt;::value) &amp;&amp;
+             (std::is_same&lt;Value, std::string&gt;::value || std::is_same&lt;typename std::remove_cv&lt;typename std::decay&lt;Value&gt;::type&gt;::type, char*&gt;::value || std::is_integral&lt;Value&gt;::value)
+             ,void
+         &gt;::type
+    </td>
         </tr>
       </table>
   </td>
@@ -1281,14 +1264,14 @@ template&lt;typename Key , typename Value  = Key&gt; </div>
 
 </div>
 </div>
-<a id="a55b26f29e320504159e72d23b145163f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a55b26f29e320504159e72d23b145163f">&#9670;&nbsp;</a></span>toRawStringPtr()</h2>
+<a id="aa215b9a0be90ae23f2a5ab795672fb1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa215b9a0be90ae23f2a5ab795672fb1b">&#9670;&nbsp;</a></span>toRawStringPtr()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classav_1_1Dictionary.html#ab71a8404deacc676d4a63d9d902a7c46">Dictionary::RawStringPtr</a> av::Dictionary::toRawStringPtr </td>
+          <td class="memname"><a class="el" href="structav_1_1Dictionary_1_1AvStringPtr.html">Dictionary::AvStringPtr</a> av::Dictionary::toRawStringPtr </td>
           <td>(</td>
           <td class="paramtype">const char&#160;</td>
           <td class="paramname"><em>keyValSep</em>, </td>

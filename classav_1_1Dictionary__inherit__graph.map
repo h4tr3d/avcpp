@@ -1,4 +1,4 @@
 <map id="av::Dictionary" name="av::Dictionary">
-<area shape="rect" id="node1" title="The Dictionary class." alt="" coords="62,80,174,107"/>
+<area shape="rect" id="node1" title="Implements interface to access to the AVDictionary entity." alt="" coords="62,80,174,107"/>
 <area shape="rect" id="node2" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,5,231,32"/>
 </map>

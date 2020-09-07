@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>avcpp: Main Page</title>
+<title>avcpp: AvCpp &lt;a href=&quot;https://travis-ci.org/h4tr3d/avcpp&quot;&gt;&lt;img src=&quot;https://travis-ci.org/h4tr3d/avcpp.svg?branch=master&quot; alt=&quot;Build Status&quot;/&gt;&lt;/a&gt; &lt;a href=&quot;https://lgtm.com/projects/g/h4tr3d/avcpp/context:cpp&quot;&gt;&lt;img src=&quot;https://img.shields.io/lgtm/grade/cpp/g/h4tr3d/avcpp.svg?logo=lgtm&amp;logoWidth=18&quot; alt=&quot;Language grade: C/C++&quot;/&gt;&lt;/a&gt; &lt;a href=&quot;http://makeapullrequest.com&quot;&gt;&lt;img src=&quot;https://img.shields.io/badge/PRs-welcome-brightgreen.svg&quot; alt=&quot;PRs Welcome&quot;/&gt;&lt;/a&gt;</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -62,11 +62,67 @@ $(function() {
 </iframe>
 </div>
 
-<div class="header">
+<div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">avcpp Documentation</div>  </div>
+<div class="title">AvCpp <a href="https://travis-ci.org/h4tr3d/avcpp"><object type="image/svg+xml" data="https://travis-ci.org/h4tr3d/avcpp.svg?branch=master" style="pointer-events: none;">Build Status</object></a> <a href="https://lgtm.com/projects/g/h4tr3d/avcpp/context:cpp"><object type="image/svg+xml" data="https://img.shields.io/lgtm/grade/cpp/g/h4tr3d/avcpp.svg?logo=lgtm&amp;logoWidth=18" style="pointer-events: none;">Language grade: C/C++</object></a> <a href="http://makeapullrequest.com"><object type="image/svg+xml" data="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" style="pointer-events: none;">PRs Welcome</object></a> </div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><p>Wrapper for the FFmpeg that simplify usage it from C++ projects.</p>
+<p>Currently covered next functionality:</p><ul>
+<li>Core helper &amp; utility classes (AVFrame -&gt; av::AudioSample &amp; <a class="el" href="classav_1_1VideoFrame.html">av::VideoFrame</a>, AVRational -&gt; <a class="el" href="classav_1_1Rational.html">av::Rational</a> and so on)</li>
+<li>Container formats &amp; contexts muxing and demuxing</li>
+<li>Codecs &amp; codecs contexts: encoding and decoding</li>
+<li>Streams (AVStream -&gt; <a class="el" href="classav_1_1Stream.html">av::Stream</a>)</li>
+<li>Filters (audio &amp; video): parsing from string, manual adding filters to the graph &amp; other</li>
+<li>SW Video &amp; Audio resamplers</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md1"></a>
+Requirements</h1>
+<ul>
+<li>FFmpeg &gt;= 2.0<ul>
+<li>libavformat &gt;= 54.x.x</li>
+<li>libavcodec &gt;= 54.x.x</li>
+<li>libavfilter &gt;= 3.x.x</li>
+<li>libavutil &gt;= 51.x.x</li>
+<li>libswscale &gt;= 2.x.x</li>
+<li>libswresample &gt;= 0.x.x</li>
+<li>libpostproc &gt;= 52.x.x</li>
+</ul>
+</li>
+<li>GCC &gt;= 5.0 (C++11 is required)</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md2"></a>
+Debian, Ubuntu 19.10 and Linux Mint 20.x or newer</h2>
+<p>You should install FFmpeg packages from the deb-multimedia.org site: </p><div class="fragment"><div class="line">sudo apt-get install libavformat-dev \</div>
+<div class="line">                     libavcodec-dev \</div>
+<div class="line">                     libavutil-dev \</div>
+<div class="line">                     libavfilter-dev \</div>
+<div class="line">                     libswscale-dev \</div>
+<div class="line">                     libswresample-dev \</div>
+<div class="line">                     libpostproc-dev</div>
+</div><!-- fragment --><p>Note 1: I did not test building on Debian.</p>
+<p>Note 2: Debian Wheezy repo contains only FFmpeg 1.0.8. I tested building only with 2.x. So it is strongly recoment use Wheezy back-ports repo.</p>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Ubuntu 18.04 and Linux Mint 19.x</h2>
+<p>If you are on Ubuntu bionic or Linux Mint 19.x you should add <a href="https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4">ffmpeg-4</a> PPA:</p>
+<div class="fragment"><div class="line">sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y</div>
+<div class="line">sudo apt update &amp;&amp; sudo apt upgrade</div>
+</div><!-- fragment --><p>After that just install the same packages as above.</p>
+<h1><a class="anchor" id="autotoc_md4"></a>
+Build</h1>
+<div class="fragment"><div class="line">git clone --recurse-submodules https://github.com/h4tr3d/avcpp.git avcpp-git</div>
+<div class="line">cd avcpp-git</div>
+<div class="line">mkdir build</div>
+<div class="line">cd build</div>
+<div class="line">cmake ..</div>
+<div class="line">make -j8</div>
+</div><!-- fragment --><p>If your Git version so old (refer to the <a href="https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules">SO for clarification</a>) you can just replace <code>--recurse-submodules</code> with pair of <code>git submodule init &amp;&amp; git submodule update</code>.</p>
+<p>If FFmpeg located in non-standard place: </p><div class="fragment"><div class="line">cmake -DPC_FFMPEG_LIBRARY_DIRS=&lt;some_path&gt; -DPC_FFMPEG_INCLUDE_DIRS=&lt;some_path&gt; ..</div>
+</div><!-- fragment --><p>To point install prefix: </p><div class="fragment"><div class="line">cmake -DCMAKE_INSTALL_PREFIX=/usr ..</div>
+</div><!-- fragment --><p>Install: </p><div class="fragment"><div class="line">sudo make install</div>
+</div><!-- fragment --><p>or (for packaging) </p><div class="fragment"><div class="line">sudo make DESTDIR=&lt;some_prefix&gt; install</div>
+</div><!-- fragment --><p>Refer to CMake documentation for more details that can cover some special cases. </p>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
