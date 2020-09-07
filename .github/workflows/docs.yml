@@ -3,7 +3,7 @@ name: build documentation
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   doxygen:
