@@ -136,7 +136,7 @@ $(function() {
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        }</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    };</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="comment">// Our contract</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    static_assert (<span class="keyword">sizeof</span>(AvStringPtr) == <span class="keyword">sizeof</span>(<span class="keywordtype">char</span>*));</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    static_assert (<span class="keyword">sizeof</span>(AvStringPtr) == <span class="keyword">sizeof</span>(<span class="keywordtype">char</span>*), <span class="stringliteral">&quot;Size must be same. Check and try again&quot;</span>);</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keyword">using</span> RawStringPtr = AvStringPtr;</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="comment">// Fwd</span></div>
