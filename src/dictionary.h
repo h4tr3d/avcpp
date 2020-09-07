@@ -327,7 +327,7 @@ public:
      * New dictionary owning resources.
      *
      * @param list   init list
-     * @param flags  see Flags
+     * @param flags  see @ref Flags
      */
     Dictionary(std::initializer_list<std::pair<const char*, const char*>> list, int flags = 0);
 
@@ -346,7 +346,7 @@ public:
      * New dictionary owning resources. Old dictionary destroes (resource freed if owning)
      *
      * @param list   init list
-     * @param flags  see Flags
+     * @param flags  see @ref Flags
      */
     Dictionary& operator=(std::initializer_list<std::pair<const char*, const char*>> list);
 
@@ -417,7 +417,7 @@ public:
      * @brief get - gets value by key
      * O(n) complexity.
      * @param key     key for entry access
-     * @param flags   see Flags
+     * @param flags   see @ref Flags
      * @return nullptr if key does not present
      */
     /// @{
@@ -434,7 +434,7 @@ public:
      * @param[in]     value  key value (can be std::string, char* or integer)
      * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
      *                       av#throws the function will throw on error instead
-     * @param[in]     flags  see Flags
+     * @param[in]     flags  see @ref Flags
      *
      */
     template<typename Key, typename Value = Key>
@@ -472,11 +472,11 @@ public:
      * @return 0 on success, <0 on fail
      */
     template<typename Str, typename Sep1, typename Sep2>
-    void parseString(const Str& str, const Sep1& keyvalSep, const Sep2& pairsSep, int flags = 0, OptionalErrorCode ec = throws())
+    void parseString(const Str& str, const Sep1& keyValSep, const Sep2& pairsSep, int flags = 0, OptionalErrorCode ec = throws())
     {
         parseString_priv(ec,
                          _to_const_char_ptr(str),
-                         _to_const_char_ptr(keyvalSep),
+                         _to_const_char_ptr(keyValSep),
                          _to_const_char_ptr(pairsSep),
                          flags);
     }
@@ -524,7 +524,7 @@ public:
      * overrided according to flags.
      *
      * @param other   dict to copy from
-     * @param flags   see Flags
+     * @param flags   see @ref Flags
      */
     void copyFrom(const Dictionary& other, int flags = 0) noexcept;
 
