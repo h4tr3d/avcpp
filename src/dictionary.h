@@ -81,7 +81,7 @@ public:
 
         /**
          * Access to the holded string with `std::string` interface
-         * @return holder raw string pointer, or `nullptr` if string is not allocated
+         * @return holded raw string pointer, or `nullptr` if string is not allocated
          */
         char* c_str() const noexcept
         {
@@ -91,11 +91,14 @@ public:
         /**
          * RAW string length in bytes
          *
-         * Note: to avoid extra size and keeps `sizeof(AvStringPtr) == sizeof(char*)` we do not
+         * @note to avoid extra size and keeps `sizeof(AvStringPtr) == sizeof(char*)` we do not
          *       cache and holds string size. As a result string length calculates every call and
          *       complexity is `O(n)`, where `n` - count of bytes in string exclude end zero.
          *
-         * @return
+         * 8-bit based multibyte string like UTF-8 must be processes with appropriate libraries
+         * externally.
+         *
+         * @return calculated length of string in bytes
          */
         size_t length() const noexcept
         {
