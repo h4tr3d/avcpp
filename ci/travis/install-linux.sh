@@ -60,9 +60,12 @@ build_cmake
 # - https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4
 echo "Prepare FFmpeg"
 (
-    sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y
-    #sudo add-apt-repository ppa:jonathonf/tesseract -y
-    sudo apt-get -qq update
+    # Xenial has no FFmpeg yet
+    if [ "$TRAVIS_DIST" = "xenial" ]; then
+        sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y
+        sudo apt-get -qq update
+    fi
+
     sudo apt-get install -y libavcodec-dev \
                             libavdevice-dev \
                             libavfilter-dev \
@@ -71,12 +74,12 @@ echo "Prepare FFmpeg"
                             libavutil-dev \
                             libpostproc-dev \
                             libswresample-dev \
-                            libswscale-dev 
+                            libswscale-dev
 )
 
-echo "prepare meson"
+echo "Prepare Meson"
 (
-    sudo apt-get install -y python3-pip ninja-build
+    sudo apt-get install -y python3-pip python3-setuptools  ninja-build
     sudo -H python3 -m pip install meson
 )
 
