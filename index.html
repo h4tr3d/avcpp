@@ -68,7 +68,8 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Wrapper for the FFmpeg that simplify usage it from C++ projects.</p>
-<p>Currently covered next functionality:</p><ul>
+<p>Currently covered next functionality:</p>
+<ul>
 <li>Core helper &amp; utility classes (AVFrame -&gt; av::AudioSample &amp; <a class="el" href="classav_1_1VideoFrame.html">av::VideoFrame</a>, AVRational -&gt; <a class="el" href="classav_1_1Rational.html">av::Rational</a> and so on)</li>
 <li>Container formats &amp; contexts muxing and demuxing</li>
 <li>Codecs &amp; codecs contexts: encoding and decoding</li>
@@ -90,10 +91,12 @@ Requirements</h1>
 </ul>
 </li>
 <li>GCC &gt;= 5.0 (C++11 is required)</li>
+<li>CMake (&gt; 3.11) or Meson(&gt; 50.0)</li>
 </ul>
 <h2><a class="anchor" id="autotoc_md2"></a>
 Debian, Ubuntu 19.10 and Linux Mint 20.x or newer</h2>
-<p>You should install FFmpeg packages from the deb-multimedia.org site: </p><div class="fragment"><div class="line">sudo apt-get install libavformat-dev \</div>
+<p>You should install FFmpeg packages from the deb-multimedia.org site:</p>
+<div class="fragment"><div class="line">sudo apt-get install libavformat-dev \</div>
 <div class="line">                     libavcodec-dev \</div>
 <div class="line">                     libavutil-dev \</div>
 <div class="line">                     libavfilter-dev \</div>
@@ -108,8 +111,12 @@ Ubuntu 18.04 and Linux Mint 19.x</h2>
 <div class="fragment"><div class="line">sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y</div>
 <div class="line">sudo apt update &amp;&amp; sudo apt upgrade</div>
 </div><!-- fragment --><p>After that just install the same packages as above.</p>
-<h1><a class="anchor" id="autotoc_md4"></a>
+<hr  />
+<h1><a class="anchor" id="autotoc_md5"></a>
 Build</h1>
+<p>There are two ways to compile eitehr with CMake or with meson. By default meson is faster, but if your project uses CMake, those instructions might be better for integration.</p>
+<h2><a class="anchor" id="autotoc_md6"></a>
+Building with CMake</h2>
 <div class="fragment"><div class="line">git clone --recurse-submodules https://github.com/h4tr3d/avcpp.git avcpp-git</div>
 <div class="line">cd avcpp-git</div>
 <div class="line">mkdir build</div>
@@ -117,11 +124,37 @@ Build</h1>
 <div class="line">cmake ..</div>
 <div class="line">make -j8</div>
 </div><!-- fragment --><p>If your Git version so old (refer to the <a href="https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules">SO for clarification</a>) you can just replace <code>--recurse-submodules</code> with pair of <code>git submodule init &amp;&amp; git submodule update</code>.</p>
-<p>If FFmpeg located in non-standard place: </p><div class="fragment"><div class="line">cmake -DPC_FFMPEG_LIBRARY_DIRS=&lt;some_path&gt; -DPC_FFMPEG_INCLUDE_DIRS=&lt;some_path&gt; ..</div>
-</div><!-- fragment --><p>To point install prefix: </p><div class="fragment"><div class="line">cmake -DCMAKE_INSTALL_PREFIX=/usr ..</div>
-</div><!-- fragment --><p>Install: </p><div class="fragment"><div class="line">sudo make install</div>
-</div><!-- fragment --><p>or (for packaging) </p><div class="fragment"><div class="line">sudo make DESTDIR=&lt;some_prefix&gt; install</div>
-</div><!-- fragment --><p>Refer to CMake documentation for more details that can cover some special cases. </p>
+<p>If FFmpeg located in non-standard place:</p>
+<div class="fragment"><div class="line">cmake -DPC_FFMPEG_LIBRARY_DIRS=&lt;some_path&gt; -DPC_FFMPEG_INCLUDE_DIRS=&lt;some_path&gt; ..</div>
+</div><!-- fragment --><p>To point install prefix:</p>
+<div class="fragment"><div class="line">cmake -DCMAKE_INSTALL_PREFIX=/usr ..</div>
+</div><!-- fragment --><p>Install:</p>
+<div class="fragment"><div class="line">sudo make install</div>
+</div><!-- fragment --><p>or (for packaging)</p>
+<div class="fragment"><div class="line">sudo make DESTDIR=&lt;some_prefix&gt; install</div>
+</div><!-- fragment --><p>Refer to CMake documentation for more details that can cover some special cases.</p>
+<h2><a class="anchor" id="autotoc_md7"></a>
+Building with meson</h2>
+<p>Before you can begin with the building you have to clone the repository like this:</p>
+<div class="fragment"><div class="line">git clone https://github.com/h4tr3d/avcpp.git avcpp-git</div>
+<div class="line">cd avcpp-git</div>
+</div><!-- fragment --><p>IDE Integration:</p>
+<p>There are extentions for various IDEs like VS Code/Codium, Eclipse, Xcode, etc. Refer to the <a href="https://mesonbuild.com/IDE-integration.html">docs</a> for more information.</p>
+<p>Building the project:</p>
+<p>If you don't have the dependencies installed, meson will download and compile them. Because ffmpeg is so large (~2000 c files), you should consider using your package manager to install them. You can then build the project with the following commands:</p>
+<div class="fragment"><div class="line">mkdir build</div>
+<div class="line">cd build</div>
+<div class="line">meson ..</div>
+<div class="line">meson compile</div>
+</div><!-- fragment --><p>Configuring the project:</p>
+<p>By default the sample projects and the test are compiled. If you don't want this you can disable it with the following commands:</p>
+<div class="fragment"><div class="line">meson configure -Dbuild_tests=false</div>
+<div class="line">meson configure -Dbuild_samples=false</div>
+</div><!-- fragment --><p>You can set the install prefix using <code>meson --prefix &lt;your/own/prefix&gt;</code>. To see all of the available options just type <code>meson configure</code> and <code>meson configure --help</code> to get more insormation.</p>
+<p>Installing the project:</p>
+<p>Just type <code>meson install</code> and the project will be installed in the configured prefix (/usr/local by default).</p>
+<p>Running the tests:</p>
+<p>To run the test just use <code>meson test</code>. If you disabled the test this will do nothing. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
