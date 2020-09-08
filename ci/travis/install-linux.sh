@@ -71,7 +71,13 @@ echo "Prepare FFmpeg"
                             libavutil-dev \
                             libpostproc-dev \
                             libswresample-dev \
-                            libswscale-dev
+                            libswscale-dev 
+)
+
+echo "prepare meson"
+(
+    sudo apt-get install -y python3-pip ninja-build
+    sudo -H python3 -m pip install meson
 )
 
 set +e

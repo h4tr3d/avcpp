@@ -7,3 +7,7 @@ qtcreator-build-*/
 scripts/valgrind.txt
 transcoder-manager-*-win32.zip
 build
+
+.cache
+subprojects/Catch2-*
+subprojects/packagecache

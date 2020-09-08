@@ -1,0 +1,6 @@
+[wrap-git]
+url = https://gitlab.freedesktop.org/gstreamer/meson-ports/ffmpeg.git
+revision = meson-4.3
+
+[provide]
+dependency_names = libavcodec,libavformat,libavutil,libavdevice,libavfilter,libswscale,libswresample,libpostproc

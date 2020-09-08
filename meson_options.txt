@@ -1,0 +1,2 @@
+option('build_samples', type : 'boolean', value : true, description: 'set to false if you do not want to compile the sample programs.')
+option('build_tests', type : 'boolean', value : true, description: 'set to false if you do not want to compile the tests.')

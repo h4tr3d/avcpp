@@ -29,6 +29,7 @@ addons:
         packages:
             - python
             - ffmpeg
+            - meson
 
 # Is there any way to avoid duplication for combination of BUILD_CONFIGURATION and COMPILER?
 # in case, when non-default compiler is used?
@@ -55,9 +56,10 @@ jobs:
         # GCC 5 / Debug
         - os: linux
           addons: &gcc5
-            sources: *apt_sources
-            packages:
-              - g++-5
+            apt:
+              sources: *apt_sources
+              packages:
+                - g++-5
           compiler: gcc
           env:
             - MATRIX_EVAL="BUILD_TYPE=Debug && CC=gcc-5 && CXX=g++-5"
@@ -107,13 +109,22 @@ install:
 
 script:
     - eval "${MATRIX_EVAL}"
-    # build and test project:
+    # build and test project with cmake:
     - mkdir build
     - cd build
     #- cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU
     - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
     - cmake --build .
     - ctest --output-on-failure
+    - cd ..
+    # build and test project with meson:
+    - mkdir builddir
+    - cd builddir
+    - meson setup ..
+    - meson configure --buildtype $BUILD_TYPE
+    - meson compile
+    - meson test
+    - cd ..
 
 #deploy:
 #    # push tagged-commits to GitHub Releases:
