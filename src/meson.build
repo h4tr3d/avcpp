@@ -14,18 +14,33 @@ endif
 #getting all of the dependencies
 cc = meson.get_compiler('cpp')
 
+#system
 avcpp_deps = [
     dependency('threads', required : true),
-    dependency('libavcodec', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=54.0.0'),
-    dependency('libavformat', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=54.0.0'),
-    dependency('libavutil', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=51.0.0'),
-    dependency('libavdevice', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=54.0.0'),
-    dependency('libavfilter', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=3.0.0'),
-    dependency('libswscale', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=2.0.0'),
-    dependency('libswresample', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=0.0.0'),
-    dependency('libpostproc', required: true, fallback : ['ffmpeg', 'declared_dep'], version : '>=52.0.0'),
     cc.find_library('dl', required : false),
 ]
+
+#ffmpeg devpendecies
+av_libs = [
+    ['avcodec', '54.0.0'],
+    ['avformat',  '54.0.0'],
+    ['avutil', '51.0.0'],
+    ['avdevice', '54.0.0'],
+    ['avfilter', '3.0.0'],
+    ['swscale', '2.0.0'],
+    ['swresample', '0.0.0'],
+    ['postproc', '52.0.0'],
+]
+
+foreach lib : av_libs
+    avcpp_deps += [
+        dependency(
+            'lib@0@'.format(lib[0]),
+            required: true,
+            fallback : ['ffmpeg', 'lib@0@_dep'.format(lib[0])],
+            version : '>=@0@'.format(lib[1]))
+    ]
+endforeach
 
 #setting the include dir to the current folder (src)
 avcpp_incdir = include_directories('.','filters')
