@@ -166,6 +166,8 @@ bool Packet::setData(const uint8_t *newData, size_t size, OptionalErrorCode ec)
         return false;
     }
 
+    data.release();
+
     m_completeFlag = true;
 
     return true;
