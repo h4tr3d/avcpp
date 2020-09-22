@@ -31,7 +31,7 @@ var searchData=
   ['avcpp_5fcategory_30',['avcpp_category',['../namespaceav.html#a11b25bc772016a4ecbad186bf0a04ae0',1,'av']]],
   ['avcpp_5flockmgr_5fcb_31',['avcpp_lockmgr_cb',['../namespaceav.html#aa031f70574dbb7ef14e2fdd19b7e5093',1,'av']]],
   ['avcppcategory_32',['AvcppCategory',['../classav_1_1AvcppCategory.html',1,'av']]],
-  ['avdeleter_33',['AvDeleter',['../structav_1_1AvDeleter.html',1,'av']]],
+  ['avdeleter_33',['AvDeleter',['../structav_1_1v1_1_1AvDeleter.html',1,'av::v1']]],
   ['averageframerate_34',['averageFrameRate',['../classav_1_1Stream.html#a7d4e5a87559eb2f1f314cacdda080351',1,'av::Stream']]],
   ['averror_2ecpp_35',['averror.cpp',['../averror_8cpp.html',1,'']]],
   ['averror_2eh_36',['averror.h',['../averror_8h.html',1,'']]],
@@ -47,5 +47,7 @@ var searchData=
   ['frame_46',['frame',['../namespaceav_1_1frame.html',1,'av']]],
   ['avcpp_20_3ca_20href_3d_22https_3a_2f_2ftravis_2dci_2eorg_2fh4tr3d_2favcpp_22_3e_3cimg_20src_3d_22https_3a_2f_2ftravis_2dci_2eorg_2fh4tr3d_2favcpp_2esvg_3fbranch_3dmaster_22_20alt_3d_22build_20status_22_2f_3e_3c_2fa_3e_20_3ca_20href_3d_22https_3a_2f_2flgtm_2ecom_2fprojects_2fg_2fh4tr3d_2favcpp_2fcontext_3acpp_22_3e_3cimg_20src_3d_22https_3a_2f_2fimg_2eshields_2eio_2flgtm_2fgrade_2fcpp_2fg_2fh4tr3d_2favcpp_2esvg_3flogo_3dlgtm_26logowidth_3d18_22_20alt_3d_22language_20grade_3a_20c_2fc_2b_2b_22_2f_3e_3c_2fa_3e_20_3ca_20href_3d_22http_3a_2f_2fmakeapullrequest_2ecom_22_3e_3cimg_20src_3d_22https_3a_2f_2fimg_2eshields_2eio_2fbadge_2fprs_2dwelcome_2dbrightgreen_2esvg_22_20alt_3d_22prs_20welcome_22_2f_3e_3c_2fa_3e_47',['AvCpp &lt;a href=&quot;https://travis-ci.org/h4tr3d/avcpp&quot;&gt;&lt;img src=&quot;https://travis-ci.org/h4tr3d/avcpp.svg?branch=master&quot; alt=&quot;Build Status&quot;/&gt;&lt;/a&gt; &lt;a href=&quot;https://lgtm.com/projects/g/h4tr3d/avcpp/context:cpp&quot;&gt;&lt;img src=&quot;https://img.shields.io/lgtm/grade/cpp/g/h4tr3d/avcpp.svg?logo=lgtm&amp;logoWidth=18&quot; alt=&quot;Language grade: C/C++&quot;/&gt;&lt;/a&gt; &lt;a href=&quot;http://makeapullrequest.com&quot;&gt;&lt;img src=&quot;https://img.shields.io/badge/PRs-welcome-brightgreen.svg&quot; alt=&quot;PRs Welcome&quot;/&gt;&lt;/a&gt;',['../index.html',1,'']]],
   ['internal_48',['internal',['../namespaceav_1_1internal.html',1,'av']]],
-  ['avcpp_20license_49',['AvCpp License',['../md_LICENSE.html',1,'']]]
+  ['avcpp_20license_49',['AvCpp License',['../md_LICENSE.html',1,'']]],
+  ['v1_50',['v1',['../namespaceav_1_1v1.html',1,'av']]],
+  ['v2_51',['v2',['../namespaceav_1_1v2.html',1,'av']]]
 ];
