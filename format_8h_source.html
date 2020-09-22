@@ -125,55 +125,54 @@ $(function() {
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">using</span> <a class="code" href="structFFWrapperPtr.html">FFWrapperPtr&lt;T&gt;::m_raw</a>;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;};</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classav_1_1InputFormat.html">   56</a></span>&#160;<span class="keyword">class </span><a class="code" href="classav_1_1InputFormat.html">InputFormat</a> : <span class="keyword">public</span> <a class="code" href="structav_1_1Format.html">Format</a>&lt;AVInputFormat&gt;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;{</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keyword">using</span> <a class="code" href="structav_1_1Format.html">Format&lt;AVInputFormat&gt;::Format</a>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keyword">using</span> <a class="code" href="structav_1_1Format.html">Format&lt;AVInputFormat&gt;::setFormat</a>;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="classav_1_1InputFormat.html#a5bdd0e1d62a9e8bab0c711bb26a0347c">InputFormat</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <a class="code" href="classav_1_1InputFormat.html#a5bdd0e1d62a9e8bab0c711bb26a0347c">InputFormat</a>(<span class="keyword">const</span> std::string&amp; <a class="code" href="structav_1_1Format.html#a553d2d6b2d7dc22dee46a6fb826aac7c">name</a>) noexcept;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classav_1_1InputFormat.html#ad57f6fc9b2ad2ca9c507ff009d2ff3d1">setFormat</a>(<span class="keyword">const</span> std::string&amp; <a class="code" href="structav_1_1Format.html#a553d2d6b2d7dc22dee46a6fb826aac7c">name</a>) noexcept;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;};</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="classav_1_1InputFormat.html">   55</a></span>&#160;<span class="keyword">class </span><a class="code" href="classav_1_1InputFormat.html">InputFormat</a> : <span class="keyword">public</span> <a class="code" href="structav_1_1Format.html">Format</a>&lt;const AVInputFormat&gt;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;{</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keyword">using</span> <a class="code" href="structav_1_1Format.html">Format&lt;const AVInputFormat&gt;::Format</a>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keyword">using</span> <a class="code" href="structav_1_1Format.html">Format&lt;const AVInputFormat&gt;::setFormat</a>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <a class="code" href="classav_1_1InputFormat.html#a5bdd0e1d62a9e8bab0c711bb26a0347c">InputFormat</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <a class="code" href="classav_1_1InputFormat.html#a5bdd0e1d62a9e8bab0c711bb26a0347c">InputFormat</a>(<span class="keyword">const</span> std::string&amp; <a class="code" href="structav_1_1Format.html#a553d2d6b2d7dc22dee46a6fb826aac7c">name</a>) noexcept;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classav_1_1InputFormat.html#ad57f6fc9b2ad2ca9c507ff009d2ff3d1">setFormat</a>(<span class="keyword">const</span> std::string&amp; <a class="code" href="structav_1_1Format.html#a553d2d6b2d7dc22dee46a6fb826aac7c">name</a>) noexcept;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;};</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="classav_1_1OutputFormat.html">   71</a></span>&#160;<span class="keyword">class </span><a class="code" href="classav_1_1OutputFormat.html">OutputFormat</a> : <span class="keyword">public</span> <a class="code" href="structav_1_1Format.html">Format</a>&lt;AVOutputFormat&gt;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;{</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">using</span> <a class="code" href="structav_1_1Format.html">Format&lt;AVOutputFormat&gt;::Format</a>;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keyword">using</span> <a class="code" href="structav_1_1Format.html">Format&lt;AVOutputFormat&gt;::setFormat</a>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="classav_1_1OutputFormat.html#ae053c74fcb611e63c0a28c2e1cca6704">OutputFormat</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <a class="code" href="classav_1_1OutputFormat.html#ae053c74fcb611e63c0a28c2e1cca6704">OutputFormat</a>(<span class="keyword">const</span> std::string&amp; <a class="code" href="structav_1_1Format.html#a553d2d6b2d7dc22dee46a6fb826aac7c">name</a>,</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                 <span class="keyword">const</span> std::string&amp; url  = std::string(),</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                 <span class="keyword">const</span> std::string&amp; mime = std::string()) noexcept;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">bool</span>        <a class="code" href="classav_1_1OutputFormat.html#a6450d75481c6a605c7a613b3151f0498">setFormat</a>(<span class="keyword">const</span> std::string&amp; <a class="code" href="structav_1_1Format.html#a553d2d6b2d7dc22dee46a6fb826aac7c">name</a>,</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                          <span class="keyword">const</span> std::string&amp; url  = std::string(),</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                          <span class="keyword">const</span> std::string&amp; mime = std::string()) noexcept;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    AVCodecID   <a class="code" href="classav_1_1OutputFormat.html#ade1b0a0c023dbe99880f84547052891e">defaultVideoCodecId</a>() <span class="keyword">const</span> noexcept;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    AVCodecID   <a class="code" href="classav_1_1OutputFormat.html#a79fce31917f42711d05f3fe6c9ebc3b9">defaultAudioCodecId</a>() <span class="keyword">const</span> noexcept;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;};</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classav_1_1OutputFormat.html">   70</a></span>&#160;<span class="keyword">class </span><a class="code" href="classav_1_1OutputFormat.html">OutputFormat</a> : <span class="keyword">public</span> <a class="code" href="structav_1_1Format.html">Format</a>&lt;const AVOutputFormat&gt;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;{</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keyword">using</span> <a class="code" href="structav_1_1Format.html">Format&lt;const AVOutputFormat&gt;::Format</a>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">using</span> <a class="code" href="structav_1_1Format.html">Format&lt;const AVOutputFormat&gt;::setFormat</a>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <a class="code" href="classav_1_1OutputFormat.html#ae053c74fcb611e63c0a28c2e1cca6704">OutputFormat</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <a class="code" href="classav_1_1OutputFormat.html#ae053c74fcb611e63c0a28c2e1cca6704">OutputFormat</a>(<span class="keyword">const</span> std::string&amp; <a class="code" href="structav_1_1Format.html#a553d2d6b2d7dc22dee46a6fb826aac7c">name</a>,</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                 <span class="keyword">const</span> std::string&amp; url  = std::string(),</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                 <span class="keyword">const</span> std::string&amp; mime = std::string()) noexcept;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">bool</span>        <a class="code" href="classav_1_1OutputFormat.html#a6450d75481c6a605c7a613b3151f0498">setFormat</a>(<span class="keyword">const</span> std::string&amp; <a class="code" href="structav_1_1Format.html#a553d2d6b2d7dc22dee46a6fb826aac7c">name</a>,</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                          <span class="keyword">const</span> std::string&amp; url  = std::string(),</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                          <span class="keyword">const</span> std::string&amp; mime = std::string()) noexcept;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    AVCodecID   <a class="code" href="classav_1_1OutputFormat.html#ade1b0a0c023dbe99880f84547052891e">defaultVideoCodecId</a>() <span class="keyword">const</span> noexcept;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    AVCodecID   <a class="code" href="classav_1_1OutputFormat.html#a79fce31917f42711d05f3fe6c9ebc3b9">defaultAudioCodecId</a>() <span class="keyword">const</span> noexcept;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<a class="code" href="classav_1_1OutputFormat.html">OutputFormat</a> <a class="code" href="namespaceav.html#ac6cd5fdcc456bfcfe4d3e972f6ede0f8">guessOutputFormat</a>(<span class="keyword">const</span> std::string&amp; name,</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                               <span class="keyword">const</span> std::string&amp; url  = std::string(),</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                               <span class="keyword">const</span> std::string&amp; mime = std::string());</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;} <span class="comment">// namespace av</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor">#endif // AV_FORMAT_H</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<a class="code" href="classav_1_1OutputFormat.html">OutputFormat</a> <a class="code" href="namespaceav.html#ac6cd5fdcc456bfcfe4d3e972f6ede0f8">guessOutputFormat</a>(<span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                               <span class="keyword">const</span> std::string&amp; url  = std::string(),</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                               <span class="keyword">const</span> std::string&amp; mime = std::string());</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;} <span class="comment">// namespace av</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#endif // AV_FORMAT_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespaceav_html_a009ddf632b891495420361e0aa71bb9a"><div class="ttname"><a href="namespaceav.html#a009ddf632b891495420361e0aa71bb9a">av::FmtCodec</a></div><div class="ttdeci">class Codec FmtCodec</div><div class="ttdef"><b>Definition:</b> format.h:11</div></div>
-<div class="ttc" id="aclassav_1_1OutputFormat_html"><div class="ttname"><a href="classav_1_1OutputFormat.html">av::OutputFormat</a></div><div class="ttdef"><b>Definition:</b> format.h:71</div></div>
+<div class="ttc" id="aclassav_1_1OutputFormat_html"><div class="ttname"><a href="classav_1_1OutputFormat.html">av::OutputFormat</a></div><div class="ttdef"><b>Definition:</b> format.h:70</div></div>
 <div class="ttc" id="astructav_1_1Format_html_a76a75832000e3f4278b0c6339dbf1eb3"><div class="ttname"><a href="structav_1_1Format.html#a76a75832000e3f4278b0c6339dbf1eb3">av::Format::isFlags</a></div><div class="ttdeci">bool isFlags(int32_t flags) const noexcept</div><div class="ttdef"><b>Definition:</b> format.h:33</div></div>
-<div class="ttc" id="aclassav_1_1InputFormat_html"><div class="ttname"><a href="classav_1_1InputFormat.html">av::InputFormat</a></div><div class="ttdef"><b>Definition:</b> format.h:56</div></div>
+<div class="ttc" id="aclassav_1_1InputFormat_html"><div class="ttname"><a href="classav_1_1InputFormat.html">av::InputFormat</a></div><div class="ttdef"><b>Definition:</b> format.h:55</div></div>
 <div class="ttc" id="affmpeg_8h_html"><div class="ttname"><a href="ffmpeg_8h.html">ffmpeg.h</a></div></div>
 <div class="ttc" id="aclassav_1_1OutputFormat_html_ade1b0a0c023dbe99880f84547052891e"><div class="ttname"><a href="classav_1_1OutputFormat.html#ade1b0a0c023dbe99880f84547052891e">av::OutputFormat::defaultVideoCodecId</a></div><div class="ttdeci">AVCodecID defaultVideoCodecId() const noexcept</div><div class="ttdef"><b>Definition:</b> format.cpp:52</div></div>
 <div class="ttc" id="astructFFWrapperPtr_html"><div class="ttname"><a href="structFFWrapperPtr.html">FFWrapperPtr</a></div><div class="ttdef"><b>Definition:</b> ffmpeg.h:67</div></div>
