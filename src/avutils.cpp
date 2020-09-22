@@ -199,6 +199,7 @@ string error2string(int error)
     return string(errorBuf);
 }
 
+namespace v1 {
 bool AvDeleter::operator()(SwsContext *&swsContext)
 {
     sws_freeContext(swsContext);
@@ -252,6 +253,7 @@ bool AvDeleter::operator ()(AVFilterInOut *&filterInOut)
     avfilter_inout_free(&filterInOut);
     return true;
 }
+} // ::v1
 
 } // ::av
 

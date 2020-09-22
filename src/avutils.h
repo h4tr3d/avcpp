@@ -124,6 +124,7 @@ struct EmptyDeleter
  * Unified delete functor for variois FFMPEG/libavformat/libavcodec and so on resource allocators.
  * Can be used with shared_ptr<> and so on.
  */
+namespace v1 {
 struct AvDeleter
 {
     bool operator() (struct SwsContext* &swsContext);
@@ -135,7 +136,17 @@ struct AvDeleter
     bool operator() (struct AVDictionary* &dictionary);
     bool operator ()(struct AVFilterInOut* &filterInOut);
 };
+} // ::v1
 
+inline namespace v2 {
+struct SmartDeleter
+{
+    template<typename T>
+    bool operator() (T *ptr) {
+        return v1::AvDeleter()(ptr);
+    }
+};
+}
 
 template<typename T>
 std::unique_ptr<T, void(*)(void*)> malloc(size_t size)

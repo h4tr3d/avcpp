@@ -19,7 +19,7 @@ namespace {
 TEST_CASE("Deleter Checking", "[AvDeleter]")
 {
     SECTION("AVFrame") {
-        av::AvDeleter deleter;
+        av::v1::AvDeleter deleter;
 
         AVFrame *frame = av_frame_alloc();
         CHECK(frame);
@@ -53,7 +53,7 @@ TEST_CASE("Deleter Checking", "[AvDeleter]")
     }
 
     SECTION("AVPacket") {
-        av::AvDeleter deleter;
+        av::v1::AvDeleter deleter;
 
         AVPacket *pkt = av_packet_alloc();
         CHECK(pkt);
@@ -79,4 +79,36 @@ TEST_CASE("Deleter Checking", "[AvDeleter]")
         CHECK(pkt == nullptr);
     }
 
+    SECTION("AvDeleter :: unique_ptr") {
+        {
+            auto pkt = std::unique_ptr<AVPacket, av::SmartDeleter>(av_packet_alloc());
+            CHECK(pkt);
+            CHECK(!pkt->buf);
+
+            int sts = av_new_packet(pkt.get(), 31337);
+            CHECK(sts == 0);
+            CHECK(pkt->buf);
+            CHECK(pkt->data);
+            CHECK(pkt->size == 31337);
+            CHECK(pkt->buf->data == pkt->data);
+
+            pkt.release();
+
+            CHECK(!pkt);
+        }
+    }
+
+    SECTION("AvDeleter :: shared_ptr") {
+        auto pkt = std::shared_ptr<AVPacket>(av_packet_alloc(), av::SmartDeleter());
+        CHECK(pkt);
+        CHECK(pkt.use_count() == 1);
+
+        auto pkt2 = pkt;
+        CHECK(pkt.use_count() == 2);
+
+        pkt2.reset();
+        pkt.reset();
+
+        CHECK(!pkt);
+    }
 }
