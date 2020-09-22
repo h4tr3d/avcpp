@@ -52,12 +52,11 @@ protected:
     using FFWrapperPtr<T>::m_raw;
 };
 
-
-class InputFormat : public Format<AVInputFormat>
+class InputFormat : public Format<const AVInputFormat>
 {
 public:
-    using Format<AVInputFormat>::Format;
-    using Format<AVInputFormat>::setFormat;
+    using Format<const AVInputFormat>::Format;
+    using Format<const AVInputFormat>::setFormat;
 
     InputFormat() = default;
 
@@ -68,11 +67,11 @@ public:
 };
 
 
-class OutputFormat : public Format<AVOutputFormat>
+class OutputFormat : public Format<const AVOutputFormat>
 {
 public:
-    using Format<AVOutputFormat>::Format;
-    using Format<AVOutputFormat>::setFormat;
+    using Format<const AVOutputFormat>::Format;
+    using Format<const AVOutputFormat>::setFormat;
 
     OutputFormat() = default;
 
