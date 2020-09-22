@@ -11,6 +11,8 @@ Currently covered next functionality:
 - Filters (audio & video): parsing from string, manual adding filters to the graph & other
 - SW Video & Audio resamplers
 
+You can read the full documentation [here](https://h4tr3d.github.io/avcpp/).
+
 ## Requirements
 
 - FFmpeg >= 2.0
