@@ -22,6 +22,7 @@ tests = [
     'Frame',
     'AvDeleter',
     'Packet',
+    'Format',
 ]
 
 #create all the tests

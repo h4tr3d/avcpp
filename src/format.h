@@ -1,10 +1,16 @@
-#ifndef AV_FORMAT_H
-#define AV_FORMAT_H
+#pragma once
 
 #include <memory>
 #include <string>
 
 #include "ffmpeg.h"
+
+// ff_const59 is not part of public API
+#if AVCPP_API_AVIOFORMAT
+#define avcpp_format_const
+#else
+#define avcpp_format_const const
+#endif
 
 namespace av {
 
@@ -37,8 +43,8 @@ struct Format : public FFWrapperPtr<T>
         return false;
     }
 
-    void setFormat(const T* format) noexcept {
-        reset(format);
+    void setFormat(avcpp_format_const T* format) noexcept {
+        FFWrapperPtr<T>::reset(format);
     }
 
     bool codecSupported(const class Codec &codec) const noexcept
@@ -52,11 +58,11 @@ protected:
     using FFWrapperPtr<T>::m_raw;
 };
 
-class InputFormat : public Format<const AVInputFormat>
+class InputFormat : public Format<avcpp_format_const AVInputFormat>
 {
 public:
-    using Format<const AVInputFormat>::Format;
-    using Format<const AVInputFormat>::setFormat;
+    using Format<avcpp_format_const AVInputFormat>::Format;
+    using Format<avcpp_format_const AVInputFormat>::setFormat;
 
     InputFormat() = default;
 
@@ -67,11 +73,11 @@ public:
 };
 
 
-class OutputFormat : public Format<const AVOutputFormat>
+class OutputFormat : public Format<avcpp_format_const AVOutputFormat>
 {
 public:
-    using Format<const AVOutputFormat>::Format;
-    using Format<const AVOutputFormat>::setFormat;
+    using Format<avcpp_format_const AVOutputFormat>::Format;
+    using Format<avcpp_format_const AVOutputFormat>::setFormat;
 
     OutputFormat() = default;
 
@@ -94,4 +100,3 @@ OutputFormat guessOutputFormat(const std::string& name,
 
 } // namespace av
 
-#endif // AV_FORMAT_H
