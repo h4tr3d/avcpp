@@ -9,12 +9,12 @@ namespace av {
 
 // AVFormat 59 will introduce `const` for all muxer/demuxer description operations
 template<typename T>
-using avcpp_format_const = std::conditional_t<
-    std::is_const_v<
-        std::remove_pointer_t<
+using avcpp_format_const = typename std::conditional<
+    std::is_const<
+        typename std::remove_pointer<
             decltype(AVFormatContext::iformat)
-        >
-    >, const T, T>;
+        >::type
+    >::value, const T, T>::type;
 
 using FmtCodec = class Codec;
 namespace internal {
