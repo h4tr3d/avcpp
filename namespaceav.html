@@ -214,6 +214,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:a1f53cdb548da1e76e614c1c1c96e1d1e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a1f53cdb548da1e76e614c1c1c96e1d1e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#a1f53cdb548da1e76e614c1c1c96e1d1e">avcpp_format_const</a> = typename std::conditional&lt; std::is_const&lt; typename std::remove_pointer&lt; decltype(AVFormatContext::iformat) &gt;::type &gt;::value, const T, T &gt;::type</td></tr>
+<tr class="separator:a1f53cdb548da1e76e614c1c1c96e1d1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a009ddf632b891495420361e0aa71bb9a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a009ddf632b891495420361e0aa71bb9a">FmtCodec</a> = class <a class="el" href="classav_1_1Codec.html">Codec</a></td></tr>
 <tr class="separator:a009ddf632b891495420361e0aa71bb9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5ef1f07385738af31cce671a2c2dbe2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#aa5ef1f07385738af31cce671a2c2dbe2">AvioInterruptCb</a> = std::function&lt; int()&gt;</td></tr>
@@ -465,6 +468,22 @@ Variables</h2></td></tr>
 <tr class="separator:abcb73c7c5313ad4925dcf634c9edcf62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
+<a id="a1f53cdb548da1e76e614c1c1c96e1d1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f53cdb548da1e76e614c1c1c96e1d1e">&#9670;&nbsp;</a></span>avcpp_format_const</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceav.html#a1f53cdb548da1e76e614c1c1c96e1d1e">av::avcpp_format_const</a> = typedef typename std::conditional&lt; std::is_const&lt; typename std::remove_pointer&lt; decltype(AVFormatContext::iformat) &gt;::type &gt;::value, const T, T&gt;::type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aa5ef1f07385738af31cce671a2c2dbe2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa5ef1f07385738af31cce671a2c2dbe2">&#9670;&nbsp;</a></span>AvioInterruptCb</h2>
 
