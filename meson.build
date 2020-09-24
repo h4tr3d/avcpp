@@ -1,7 +1,7 @@
 project(
     'avcpp',
     'cpp',
-    meson_version: '>= 0.50.0',
+    meson_version: '>= 0.54.0',
     default_options : [
         'c_std=c11', 
         'cpp_std=c++17'
