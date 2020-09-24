@@ -5,14 +5,16 @@
 
 #include "ffmpeg.h"
 
-// ff_const59 is not part of public API
-#if AVCPP_API_AVIOFORMAT
-#define avcpp_format_const
-#else
-#define avcpp_format_const const
-#endif
-
 namespace av {
+
+// AVFormat 59 will introduce `const` for all muxer/demuxer description operations
+template<typename T>
+using avcpp_format_const = typename std::conditional<
+    std::is_const<
+        typename std::remove_pointer<
+            decltype(AVFormatContext::iformat)
+        >::type
+    >::value, const T, T>::type;
 
 using FmtCodec = class Codec;
 namespace internal {
@@ -43,7 +45,7 @@ struct Format : public FFWrapperPtr<T>
         return false;
     }
 
-    void setFormat(avcpp_format_const T* format) noexcept {
+    void setFormat(T* format) noexcept {
         FFWrapperPtr<T>::reset(format);
     }
 
@@ -58,11 +60,11 @@ protected:
     using FFWrapperPtr<T>::m_raw;
 };
 
-class InputFormat : public Format<avcpp_format_const AVInputFormat>
+class InputFormat : public Format<avcpp_format_const<AVInputFormat>>
 {
 public:
-    using Format<avcpp_format_const AVInputFormat>::Format;
-    using Format<avcpp_format_const AVInputFormat>::setFormat;
+    using Format<avcpp_format_const<AVInputFormat>>::Format;
+    using Format<avcpp_format_const<AVInputFormat>>::setFormat;
 
     InputFormat() = default;
 
@@ -73,11 +75,11 @@ public:
 };
 
 
-class OutputFormat : public Format<avcpp_format_const AVOutputFormat>
+class OutputFormat : public Format<avcpp_format_const<AVOutputFormat>>
 {
 public:
-    using Format<avcpp_format_const AVOutputFormat>::Format;
-    using Format<avcpp_format_const AVOutputFormat>::setFormat;
+    using Format<avcpp_format_const<AVOutputFormat>>::Format;
+    using Format<avcpp_format_const<AVOutputFormat>>::setFormat;
 
     OutputFormat() = default;
 

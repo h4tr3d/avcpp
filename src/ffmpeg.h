@@ -31,11 +31,6 @@ extern "C" {
 #endif
 }
 
-// Related to FF_API_AVIOFORMAT
-#ifndef AVCPP_API_AVIOFORMAT
-#define AVCPP_API_AVIOFORMAT   (LIBAVFORMAT_VERSION_MAJOR < 59)
-#endif
-
 // Compat level
 
 // avcodec
