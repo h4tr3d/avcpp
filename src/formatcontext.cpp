@@ -603,7 +603,7 @@ void FormatContext::openOutput(const string &uri, OutputFormat format, AVDiction
     resetSocketAccess();
     if (!(format.flags() & AVFMT_NOFILE))
     {
-        int sts = avio_open2(&m_raw->pb, uri.c_str(), AVIO_FLAG_WRITE, nullptr, options);
+        int sts = avio_open2(&m_raw->pb, uri.c_str(), AVIO_FLAG_WRITE, &m_raw->interrupt_callback, options);
         if (sts < 0)
         {
             throws_if(ec, sts, ffmpeg_category());
