@@ -81,6 +81,8 @@ $(function() {
 <code>#include &quot;<a class="el" href="pixelformat_8h_source.html">pixelformat.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sampleformat_8h_source.html">sampleformat.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="avlog_8h_source.html">avlog.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="frame_8h_source.html">frame.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="codec_8h_source.html">codec.h</a>&quot;</code><br />
 <code>#include &lt;libavcodec/avcodec.h&gt;</code><br />
 <code>#include &lt;libavformat/version.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -88,47 +90,54 @@ Include dependency graph for codeccontext.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="codeccontext_8h__incl.png" border="0" usemap="#src_2codeccontext_8h" alt=""/></div>
 <map name="src_2codeccontext_8h" id="src_2codeccontext_8h">
-<area shape="rect" title=" " alt="" coords="2116,5,2260,32"/>
-<area shape="rect" href="ffmpeg_8h.html" title=" " alt="" coords="1368,379,1448,405"/>
-<area shape="rect" title=" " alt="" coords="5,453,168,480"/>
-<area shape="rect" href="stream_8h.html" title=" " alt="" coords="1249,80,1329,107"/>
-<area shape="rect" href="avutils_8h.html" title=" " alt="" coords="1634,229,1713,256"/>
-<area shape="rect" href="averror_8h.html" title=" " alt="" coords="2633,379,2713,405"/>
-<area shape="rect" href="pixelformat_8h.html" title=" " alt="" coords="2188,304,2297,331"/>
-<area shape="rect" href="sampleformat_8h.html" title=" " alt="" coords="2373,304,2499,331"/>
-<area shape="rect" href="avlog_8h.html" title=" " alt="" coords="2153,80,2223,107"/>
-<area shape="rect" title=" " alt="" coords="2575,80,2737,107"/>
-<area shape="rect" title=" " alt="" coords="2377,453,2457,480"/>
-<area shape="rect" title=" " alt="" coords="1163,453,1291,480"/>
-<area shape="rect" title=" " alt="" coords="1315,453,1469,480"/>
-<area shape="rect" title=" " alt="" coords="1494,453,1671,480"/>
-<area shape="rect" title=" " alt="" coords="1696,453,1808,480"/>
-<area shape="rect" title=" " alt="" coords="2212,453,2353,480"/>
-<area shape="rect" title=" " alt="" coords="1833,453,2005,480"/>
-<area shape="rect" title=" " alt="" coords="2029,453,2187,480"/>
-<area shape="rect" title=" " alt="" coords="362,453,574,480"/>
-<area shape="rect" title=" " alt="" coords="193,453,338,480"/>
-<area shape="rect" title=" " alt="" coords="597,453,763,480"/>
-<area shape="rect" title=" " alt="" coords="787,453,944,480"/>
-<area shape="rect" title=" " alt="" coords="968,453,1139,480"/>
-<area shape="rect" title=" " alt="" coords="1248,304,1325,331"/>
-<area shape="rect" href="rational_8h.html" title=" " alt="" coords="1167,229,1251,256"/>
-<area shape="rect" href="timestamp_8h.html" title=" " alt="" coords="1327,155,1433,181"/>
-<area shape="rect" title=" " alt="" coords="1062,304,1122,331"/>
-<area shape="rect" title=" " alt="" coords="1347,229,1413,256"/>
-<area shape="rect" title=" " alt="" coords="2313,379,2372,405"/>
-<area shape="rect" title=" " alt="" coords="1555,304,1618,331"/>
-<area shape="rect" title=" " alt="" coords="1642,304,1705,331"/>
-<area shape="rect" title=" " alt="" coords="1729,304,1793,331"/>
-<area shape="rect" title=" " alt="" coords="1817,304,1892,331"/>
-<area shape="rect" title=" " alt="" coords="1916,304,2001,331"/>
-<area shape="rect" title=" " alt="" coords="2026,304,2113,331"/>
-<area shape="rect" href="avtime_8h.html" title=" " alt="" coords="1400,304,1480,331"/>
-<area shape="rect" title=" " alt="" coords="2522,453,2630,480"/>
-<area shape="rect" title=" " alt="" coords="2654,453,2741,480"/>
-<area shape="rect" title=" " alt="" coords="2103,379,2238,405"/>
-<area shape="rect" title=" " alt="" coords="2447,379,2609,405"/>
-<area shape="rect" title=" " alt="" coords="2188,155,2263,181"/>
+<area shape="rect" title=" " alt="" coords="2093,5,2237,32"/>
+<area shape="rect" href="ffmpeg_8h.html" title=" " alt="" coords="1134,379,1214,405"/>
+<area shape="rect" title=" " alt="" coords="2443,453,2606,480"/>
+<area shape="rect" href="stream_8h.html" title=" " alt="" coords="791,80,871,107"/>
+<area shape="rect" href="avutils_8h.html" title=" " alt="" coords="1187,229,1265,256"/>
+<area shape="rect" href="averror_8h.html" title=" " alt="" coords="2378,304,2458,331"/>
+<area shape="rect" href="pixelformat_8h.html" title=" " alt="" coords="2143,229,2253,256"/>
+<area shape="rect" href="sampleformat_8h.html" title=" " alt="" coords="1711,229,1837,256"/>
+<area shape="rect" href="avlog_8h.html" title=" " alt="" coords="2231,80,2301,107"/>
+<area shape="rect" href="frame_8h.html" title=" " alt="" coords="1593,80,1667,107"/>
+<area shape="rect" href="codec_8h.html" title=" " alt="" coords="707,155,779,181"/>
+<area shape="rect" title=" " alt="" coords="2639,80,2802,107"/>
+<area shape="rect" title=" " alt="" coords="2025,453,2105,480"/>
+<area shape="rect" title=" " alt="" coords="1491,453,1619,480"/>
+<area shape="rect" title=" " alt="" coords="1643,453,1798,480"/>
+<area shape="rect" title=" " alt="" coords="1823,453,2000,480"/>
+<area shape="rect" title=" " alt="" coords="175,453,287,480"/>
+<area shape="rect" title=" " alt="" coords="2201,453,2342,480"/>
+<area shape="rect" title=" " alt="" coords="312,453,484,480"/>
+<area shape="rect" title=" " alt="" coords="508,453,667,480"/>
+<area shape="rect" title=" " alt="" coords="691,453,903,480"/>
+<area shape="rect" title=" " alt="" coords="5,453,151,480"/>
+<area shape="rect" title=" " alt="" coords="926,453,1091,480"/>
+<area shape="rect" title=" " alt="" coords="1115,453,1273,480"/>
+<area shape="rect" title=" " alt="" coords="1297,453,1467,480"/>
+<area shape="rect" title=" " alt="" coords="467,304,545,331"/>
+<area shape="rect" href="rational_8h.html" title=" " alt="" coords="789,229,873,256"/>
+<area shape="rect" href="timestamp_8h.html" title=" " alt="" coords="945,155,1051,181"/>
+<area shape="rect" title=" " alt="" coords="569,304,629,331"/>
+<area shape="rect" title=" " alt="" coords="965,229,1031,256"/>
+<area shape="rect" title=" " alt="" coords="1594,304,1653,331"/>
+<area shape="rect" title=" " alt="" coords="1456,304,1519,331"/>
+<area shape="rect" title=" " alt="" coords="653,304,716,331"/>
+<area shape="rect" title=" " alt="" coords="1269,304,1333,331"/>
+<area shape="rect" title=" " alt="" coords="1357,304,1431,331"/>
+<area shape="rect" title=" " alt="" coords="893,304,978,331"/>
+<area shape="rect" title=" " alt="" coords="1003,304,1089,331"/>
+<area shape="rect" href="avtime_8h.html" title=" " alt="" coords="1114,304,1194,331"/>
+<area shape="rect" title=" " alt="" coords="2345,379,2453,405"/>
+<area shape="rect" title=" " alt="" coords="2477,379,2564,405"/>
+<area shape="rect" title=" " alt="" coords="2067,304,2201,331"/>
+<area shape="rect" title=" " alt="" coords="1778,304,1941,331"/>
+<area shape="rect" title=" " alt="" coords="2303,155,2378,181"/>
+<area shape="rect" title=" " alt="" coords="1693,155,1780,181"/>
+<area shape="rect" title=" " alt="" coords="1805,155,1949,181"/>
+<area shape="rect" title=" " alt="" coords="1973,155,2127,181"/>
+<area shape="rect" title=" " alt="" coords="722,229,765,256"/>
+<area shape="rect" href="format_8h.html" title=" " alt="" coords="481,229,560,256"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
