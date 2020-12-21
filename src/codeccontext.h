@@ -284,12 +284,12 @@ public:
         return RAW_GET2(isValid(), pix_fmt, AV_PIX_FMT_NONE);
     }
 
-    int32_t globalQuality()
+    int32_t globalQuality() const
     {
         return RAW_GET2(isValid(), global_quality, FF_LAMBDA_MAX);
     }
 
-    int32_t gopSize()
+    int32_t gopSize() const
     {
         return RAW_GET2(isValid(), gop_size, 0);
     }
