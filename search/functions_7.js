@@ -18,8 +18,8 @@ var searchData=
   ['getwidth_925',['getWidth',['../classav_1_1Rect.html#a3a8f1315359e41a419861e488a166742',1,'av::Rect']]],
   ['getx_926',['getX',['../classav_1_1Rect.html#abc73a809f3abe79d8b236b40fc88865b',1,'av::Rect']]],
   ['gety_927',['getY',['../classav_1_1Rect.html#ad36d3b22c422d477225e3b75d7578103',1,'av::Rect']]],
-  ['globalquality_928',['globalQuality',['../classav_1_1VideoCodecContext.html#ab786908b43712c6ea75f4385407dac81',1,'av::VideoCodecContext']]],
-  ['gopsize_929',['gopSize',['../classav_1_1VideoCodecContext.html#aa8d4baa216e8d9014b0085bbe29d3ead',1,'av::VideoCodecContext']]],
+  ['globalquality_928',['globalQuality',['../classav_1_1VideoCodecContext.html#ae2e7f31d76139278813884a4d9b26bf6',1,'av::VideoCodecContext']]],
+  ['gopsize_929',['gopSize',['../classav_1_1VideoCodecContext.html#aeefdea97b0bd3fc725c4d5db741eff3b',1,'av::VideoCodecContext']]],
   ['guessencodingcodec_930',['guessEncodingCodec',['../namespaceav.html#af43fbf0a8d0273dd3fc4d3a141aad412',1,'av']]],
   ['guessoutputformat_931',['guessOutputFormat',['../namespaceav.html#ac6cd5fdcc456bfcfe4d3e972f6ede0f8',1,'av']]],
   ['guessvalue_932',['guessValue',['../namespaceav.html#aadbb55c6f6246bf598742169191aa4d7',1,'av']]]
