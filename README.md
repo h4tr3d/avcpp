@@ -37,7 +37,8 @@ sudo apt-get install libavformat-dev \
                      libavfilter-dev \
                      libswscale-dev \
                      libswresample-dev \
-                     libpostproc-dev
+                     libpostproc-dev \
+                     libavdevice-dev
 ```
 
 Note 1: I did not test building on Debian.
