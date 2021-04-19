@@ -12,3 +12,6 @@ doc
 .cache
 subprojects/Catch2-*
 subprojects/packagecache
+
+.idea
+cmake-*
