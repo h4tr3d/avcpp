@@ -2,7 +2,7 @@ name: CMake CI
 
 on:
   push:
-    branches: [ ** ]
+    branches: [ '**' ]
   pull_request:
     branches: [ master ]
   schedule:
@@ -55,6 +55,6 @@ jobs:
         BUILD_TYPE: ${{ matrix.build_type }}
         SKIP_MESON: ${{ matrix.skip_meson }}
       # TBD
-      run: true
+      run: /bin/true
         
       
