@@ -42,7 +42,7 @@ namespace av {
 // Basic FFmpeg constants
 constexpr auto NoPts = static_cast<int64_t>(AV_NOPTS_VALUE);
 constexpr auto TimeBase = static_cast<int>(AV_TIME_BASE);
-constexpr auto TimeBaseQ = static_cast<AVRational>(AV_TIME_BASE_Q);
+constexpr auto TimeBaseQ = AVRational{1, AV_TIME_BASE};
 
 
 template<typename R, typename T>
