@@ -77,10 +77,12 @@ echo "Prepare FFmpeg"
                             libswscale-dev
 )
 
-echo "Prepare Meson"
-(
-    sudo apt-get install -y python3-pip python3-setuptools  ninja-build
-    sudo -H python3 -m pip install meson
-)
+if [ -z "$SKIP_MESON" ]; then
+    echo "Prepare Meson"
+    (
+        sudo apt-get install -y python3-pip python3-setuptools  ninja-build
+        sudo -H python3 -m pip install meson
+    )
+fi
 
 set +e

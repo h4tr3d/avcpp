@@ -24,12 +24,13 @@ meson_build() {
 }
 
 main() {
-    if [ x"$NO_MESON" = x"1" ]; then
+    if [ -n "$SKIP_MESON" ]; then
         echo "Meson build skipped"
-    else
-        meson_build || return 1
+        return 0
     fi
-    return 0
+
+    meson_build
+    return $?
 }
 
 main
