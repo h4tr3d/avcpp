@@ -14,7 +14,7 @@ meson_build() {
     meson setup .. || return 1
     meson configure --buildtype $meson_build_type || return 1
     # Old Ubuntu Meson does not recognize -C ., OSX require it
-    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+    if [ "$TRAVIS_OS_NAME" = "osx" -o "$OS_NAME" = "macos-latest" ]; then
         meson compile -C . || return 1
     else
         meson compile || return 1
@@ -24,7 +24,7 @@ meson_build() {
 }
 
 main() {
-    if [ -n "$SKIP_MESON" ]; then
+    if [ -n "$SKIP_MESON" -a "$SKIP_MESON" != "false" ]; then
         echo "Meson build skipped"
         return 0
     fi

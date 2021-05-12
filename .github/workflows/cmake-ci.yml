@@ -17,12 +17,17 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, ubuntu-16.04]
+        os: [ubuntu-latest, macos-latest]
         build_type: [Release, Debug]
         skip_meson: [false]
         include:
           - os: ubuntu-16.04
+            build_type: Release
             skip_meson: true
+          - os: ubuntu-16.04
+            build_type: Debug
+            skip_meson: true
+
         
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
@@ -30,9 +35,26 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ${{ matrix.os }}
 
+    # Env for all steps
+    env:
+      OS_NAME: ${{ matrix.os }}
+      BUILD_TYPE: ${{ matrix.build_type }}
+      SKIP_MESON: ${{ matrix.skip_meson }}
+    
     steps:
     - uses: actions/checkout@v2
 
+    - name: Dump environment variables
+      run: echo "OS_NAME=$OS_NAME, BUILD_TYPE=$BUILD_TYPE, SKIP_MESON=$SKIP_MESON"
+      
+    - name: Install packages for Linux
+      if: ${{ matrix.os != 'macos-latest' && matrix.os != 'windows-latest' }}
+      run: ci/travis/install-linux.sh
+
+    - name: Install packages for macOS
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: ci/travis/install-osx.sh
+      
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -49,12 +71,5 @@ jobs:
       run: ctest -C ${{ matrix.build_type }}
       
     - name: Meson
-      if: ${{ matrix.skip_meson == 'false' }}
-      env:
-        TRAVIS_OS_NAME: ${{ matrix.os }}
-        BUILD_TYPE: ${{ matrix.build_type }}
-        SKIP_MESON: ${{ matrix.skip_meson }}
-      # TBD
-      run: /bin/true
-        
-      
+      if: ${{ matrix.skip_meson == false }}
+      run: ci/travis/meson-build.sh

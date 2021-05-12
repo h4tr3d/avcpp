@@ -8,6 +8,14 @@
 #brew update
 #brew install python
 brew link --overwrite python
-#brew install ffmpeg
+
+# GH workflow specific part
+if [ -n "$GITHUB_WORKFLOW" ]; then
+    if [ -z "$SKIP_MESON" -o "$SKIP_MESON" = "false" ]; then
+        brew install meson
+        brew install ffmpeg
+    fi
+fi
+
 # WA for homebrew
 true

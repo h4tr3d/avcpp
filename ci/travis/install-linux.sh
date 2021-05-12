@@ -6,9 +6,10 @@ JOBS=$(cat /proc/cpuinfo | grep '^processor' | wc -l)
 export MAKEFLAGS="-j${JOBS}"
 
 # CMake
-echo "Prepare CMake"
 build_cmake()
 {
+    echo "Prepare CMake"
+
     local CMAKE_VERSION_BASE=3.14
     local CMAKE_VERSION_MINOR=5
     local CMAKE_VERSION_FULL=${CMAKE_VERSION_BASE}.${CMAKE_VERSION_MINOR}
@@ -61,7 +62,7 @@ build_cmake
 echo "Prepare FFmpeg"
 (
     # Xenial has no FFmpeg yet
-    if [ "$TRAVIS_DIST" = "xenial" ]; then
+    if [ "$TRAVIS_DIST" = "xenial" -o "$OS_NAME" = "ubuntu-16.04" ]; then
         sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y
         sudo apt-get -qq update
     fi
@@ -77,7 +78,7 @@ echo "Prepare FFmpeg"
                             libswscale-dev
 )
 
-if [ -z "$SKIP_MESON" ]; then
+if [ -z "$SKIP_MESON" -o "$SKIP_MESON" = "false" ]; then
     echo "Prepare Meson"
     (
         sudo apt-get install -y python3-pip python3-setuptools  ninja-build
