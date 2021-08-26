@@ -16,11 +16,14 @@ extern "C" {
 
 namespace av {
 
-class Packet : public FFWrapperRef<AVPacket>
+class Packet :
+#if DEPRECATED_INIT_PACKET
+    public FFWrapperPtr<AVPacket>
+#else
+    public FFWrapperRef<AVPacket>
+#endif
 {
 private:
-    void initCommon();
-
     // if deepCopy true - make deep copy, instead - reference is created
     void initFromAVPacket(const AVPacket *avpacket, bool deepCopy, OptionalErrorCode ec);
 
@@ -50,8 +53,8 @@ public:
     bool setData(const std::vector<uint8_t> &newData, OptionalErrorCode ec = throws());
     bool setData(const uint8_t *newData, size_t size, OptionalErrorCode ec = throws());
 
-    const uint8_t* data() const { return m_raw.data; }
-    uint8_t*       data() { return m_raw.data; }
+    const uint8_t* data() const;
+    uint8_t*       data();
 
     Timestamp pts() const;
     Timestamp dts() const;
@@ -95,12 +98,23 @@ public:
 
     bool     isReferenced() const;
     int      refCount() const;
+
+#if DEPRECATED_INIT_PACKET
+    AVPacket* makeRef(OptionalErrorCode ec) const;
+#else
     AVPacket makeRef(OptionalErrorCode ec = throws()) const;
+#endif
+
     Packet   clone(OptionalErrorCode ec = throws()) const;
 
     Packet &operator=(const Packet &rhs);
     Packet &operator=(Packet &&rhs);
+
+#if DEPRECATED_INIT_PACKET
+    Packet &operator=(const AVPacket *rhs);
+#else
     Packet &operator=(const AVPacket &rhs);
+#endif
 
     void swap(Packet &other);
 

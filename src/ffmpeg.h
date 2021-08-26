@@ -62,6 +62,8 @@ inline AVMediaType avfilter_pad_get_type(AVFilterPad *pads, int pad_idx)
 #define avpacket_unref(p) av_packet_unref(p)
 #endif
 
+#define NO_INIT_PACKET (LIBAVCODEC_VERSION_MAJOR >= 60)
+#define DEPRECATED_INIT_PACKET (LIBAVCODEC_VERSION_MAJOR >= 58)
 
 template<typename T>
 struct FFWrapperPtr
@@ -102,6 +104,7 @@ protected:
 #define IF_GET2(cond, ptr, field, def) (ptr && (cond) ? ptr->field : def)
 #define IF_SET2(cond, ptr, field, val) (if(ptr && (cond)) ptr->field = (val))
 
+#if !DEPRECATED_INIT_PACKET
 template<typename T>
 struct FFWrapperRef
 {
@@ -132,7 +135,7 @@ struct FFWrapperRef
 protected:
     T m_raw = T();
 };
-
+#endif
 
 template<typename WrapperClass, typename T, T NoneValue = static_cast<T>(-1)>
 struct PixSampleFmtWrapper

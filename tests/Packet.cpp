@@ -37,6 +37,9 @@ TEST_CASE("Packet define", "[Packet][Construct]")
     SECTION("initFromAVPacket") {
         av::Packet in_pkt{pkt_data, sizeof(pkt_data)};
 
+        in_pkt.setPts({60, {1, 1}});
+        in_pkt.setDts({61, {1, 1}});
+
         CHECK(in_pkt.refCount() == 1);
 
         {
@@ -44,6 +47,9 @@ TEST_CASE("Packet define", "[Packet][Construct]")
             CHECK(in_pkt.refCount() == 2);
             CHECK(pkt.raw() != in_pkt.raw());
             CHECK(pkt.raw()->data == in_pkt.raw()->data);
+            // TBD: Properties check
+            CHECK(pkt.pts() == in_pkt.pts());
+            CHECK(pkt.dts() == in_pkt.dts());
         }
 
         CHECK(in_pkt.refCount() == 1);
@@ -56,6 +62,9 @@ TEST_CASE("Packet define", "[Packet][Construct]")
             CHECK(pkt.raw()->data != in_pkt.raw()->data);
             CHECK(pkt.raw()->size == in_pkt.raw()->size);
             CHECK(memcmp(pkt.raw()->data, in_pkt.raw()->data, in_pkt.size()) == 0);
+            // TBD: Properties check
+            CHECK(pkt.pts() == in_pkt.pts());
+            CHECK(pkt.dts() == in_pkt.dts());
         }
     }
 

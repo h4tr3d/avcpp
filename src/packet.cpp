@@ -7,7 +7,17 @@ namespace av {
 
 Packet::Packet()
 {
-    initCommon();
+#if DEPRECATED_INIT_PACKET
+    m_raw = av_packet_alloc();
+#else
+    av_init_packet(raw());
+#endif
+
+    raw()->stream_index = -1; // no stream
+
+    m_completeFlag = false;
+    m_timeBase     = Rational(0, 0);
+
 }
 
 Packet::Packet(const Packet &packet)
@@ -18,16 +28,17 @@ Packet::Packet(const Packet &packet)
 Packet::Packet(const Packet &packet, OptionalErrorCode ec)
     : Packet()
 {
-    initFromAVPacket(&packet.m_raw, false, ec);
+    initFromAVPacket(packet.raw(), false, ec);
     m_completeFlag = packet.m_completeFlag;
     m_timeBase = packet.m_timeBase;
 }
 
 Packet::Packet(Packet &&packet)
-    : m_completeFlag(packet.m_completeFlag),
-      m_timeBase(packet.m_timeBase)
+    : Packet()
 {
-    av_packet_move_ref(&m_raw, &packet.m_raw);
+    m_completeFlag = packet.m_completeFlag;
+    m_timeBase = packet.m_timeBase;
+    av_packet_move_ref(raw(), packet.raw());
 }
 
 Packet::Packet(const AVPacket *packet, OptionalErrorCode ec)
@@ -49,7 +60,7 @@ Packet::Packet(const uint8_t *data, size_t size, bool /*doAllign*/)
         return;
     }
 
-    auto sts = av_packet_from_data(&m_raw, pkt_data.get(), size);
+    auto sts = av_packet_from_data(raw(), pkt_data.get(), size);
     if (sts < 0)
         return;
 
@@ -61,7 +72,7 @@ Packet::Packet(const uint8_t *data, size_t size, bool /*doAllign*/)
 Packet::Packet(uint8_t *data, size_t size, Packet::wrap_data, OptionalErrorCode ec)
     : Packet()
 {
-    auto sts = av_packet_from_data(&m_raw, data, size);
+    auto sts = av_packet_from_data(raw(), data, size);
     if (sts < 0) {
         throws_if(ec, sts, ffmpeg_category());
         return;
@@ -81,51 +92,62 @@ Packet::Packet(uint8_t *data, size_t size, Packet::wrap_data_static, OptionalErr
         return;
     }
 
-    m_raw.buf = buf;
-    m_raw.data = data;
-    m_raw.size = size;
+    raw()->buf = buf;
+    raw()->data = data;
+    raw()->size = size;
     m_completeFlag = true;
 }
 
 Packet::~Packet()
 {
+#if DEPRECATED_INIT_PACKET
+    av_packet_free(&m_raw);
+#else
     avpacket_unref(&m_raw);
+#endif
 }
 
-void Packet::initCommon()
-{
-    av_init_packet(&m_raw);
 
-    m_raw.stream_index = -1; // no stream
-
-    m_completeFlag = false;
-    m_timeBase     = Rational(0, 0);
-}
-
-void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, OptionalErrorCode ec)
+void Packet::initFromAVPacket(const AVPacket *src, bool deepCopy, OptionalErrorCode ec)
 {
     clear_if(ec);
 
-    if (!packet || packet->size <= 0)
+    if (!src || src->size <= 0)
     {
         return;
     }
 
-    avpacket_unref(&m_raw);
+    if (raw())
+        avpacket_unref(raw());
 
     if (deepCopy) {
-        m_raw = *packet;
-        m_raw.buf = nullptr;
-        m_raw.size = 0;
-        m_raw.data = nullptr;
+#if DEPRECATED_INIT_PACKET
+        if (!m_raw)
+            m_raw = av_packet_alloc();
 
-        auto data = av::memdup<uint8_t>(packet->data, packet->size);
+        // Copy properties first
+        av_packet_copy_props(m_raw, src);
+
+        // Referecen to the same data as src
+        m_raw->data = src->data;
+        m_raw->size = src->size;
+
+        // Make new package reference counted: this allocates pkt->buf, copy data from the pkt->data
+        // to the pkt->buf->data and setup pkt->data to the pkt->buf->data
+        av_packet_make_refcounted(m_raw);
+#else
+        m_raw = *src;
+        raw()->buf = nullptr;
+        raw()->size = 0;
+        raw()->data = nullptr;
+
+        auto data = av::memdup<uint8_t>(src->data, src->size);
         if (!data) {
             throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
             return;
         }
 
-        auto sts = av_packet_from_data(&m_raw, data.get(), packet->size);
+        auto sts = av_packet_from_data(raw(), data.get(), src->size);
         if (sts < 0) {
             throws_if(ec, sts, ffmpeg_category());
             return;
@@ -133,15 +155,16 @@ void Packet::initFromAVPacket(const AVPacket *packet, bool deepCopy, OptionalErr
 
         // all ok, packet now own data, drop owning
         data.release();
+#endif
     } else {
-        auto sts = av_packet_ref(&m_raw, packet);
+        auto sts = av_packet_ref(raw(), src);
         if (sts < 0) {
             throws_if(ec, sts, ffmpeg_category());
             return;
         }
     }
 
-    m_completeFlag = m_raw.size > 0;
+    m_completeFlag = raw()->size > 0;
 }
 
 bool Packet::setData(const vector<uint8_t> &newData, OptionalErrorCode ec)
@@ -152,7 +175,7 @@ bool Packet::setData(const vector<uint8_t> &newData, OptionalErrorCode ec)
 bool Packet::setData(const uint8_t *newData, size_t size, OptionalErrorCode ec)
 {
     clear_if(ec);
-    av_packet_unref(&m_raw);
+    av_packet_unref(raw());
 
     auto data = av::memdup<uint8_t>(newData, size);
     if (!data) {
@@ -160,7 +183,7 @@ bool Packet::setData(const uint8_t *newData, size_t size, OptionalErrorCode ec)
         return false;
     }
 
-    auto sts = av_packet_from_data(&m_raw, data.get(), size);
+    auto sts = av_packet_from_data(raw(), data.get(), size);
     if (sts < 0) {
         throws_if(ec, sts, ffmpeg_category());
         return false;
@@ -173,112 +196,122 @@ bool Packet::setData(const uint8_t *newData, size_t size, OptionalErrorCode ec)
     return true;
 }
 
+const uint8_t *Packet::data() const
+{
+    return raw()->data;
+}
+
+uint8_t *Packet::data()
+{
+    return raw()->data;
+}
+
 Timestamp Packet::pts() const
 {
-    return {m_raw.pts, m_timeBase};
+    return {raw()->pts, m_timeBase};
 }
 
 Timestamp Packet::dts() const
 {
-    return {m_raw.dts, m_timeBase};
+    return {raw()->dts, m_timeBase};
 }
 
 Timestamp Packet::ts() const
 {
-    return {m_raw.pts != av::NoPts ? m_raw.pts : m_raw.dts, m_timeBase};
+    return {raw()->pts != av::NoPts ? raw()->pts : raw()->dts, m_timeBase};
 }
 
 size_t Packet::size() const
 {
-    return m_raw.size < 0 ? 0 : (size_t)m_raw.size;
+    return raw()->size < 0 ? 0 : (size_t)raw()->size;
 }
 
 void Packet::setPts(int64_t pts, const Rational &tsTimeBase)
 {
     if (tsTimeBase == Rational(0,0))
-        m_raw.pts = pts;
+        raw()->pts = pts;
     else
-        m_raw.pts = tsTimeBase.rescale(pts, m_timeBase);
+        raw()->pts = tsTimeBase.rescale(pts, m_timeBase);
 }
 
 void Packet::setDts(int64_t dts, const Rational &tsTimeBase)
 {
     if (tsTimeBase == Rational(0,0))
-        m_raw.dts = dts;
+        raw()->dts = dts;
     else
-        m_raw.dts = tsTimeBase.rescale(dts, m_timeBase);
+        raw()->dts = tsTimeBase.rescale(dts, m_timeBase);
 }
 
 void Packet::setPts(const Timestamp &pts)
 {
     if (m_timeBase == Rational())
         m_timeBase = pts.timebase();
-    m_raw.pts = pts.timestamp(m_timeBase);
+    raw()->pts = pts.timestamp(m_timeBase);
 }
 
 void Packet::setDts(const Timestamp &dts)
 {
     if (m_timeBase == Rational())
         m_timeBase = dts.timebase();
-    m_raw.dts = dts.timestamp(m_timeBase);
+    raw()->dts = dts.timestamp(m_timeBase);
 }
 
 int Packet::streamIndex() const
 {
-    return  m_raw.stream_index;
+    return  raw()->stream_index;
 }
 
 int Packet::flags() const
 {
-    return m_raw.flags;
+    return raw()->flags;
 }
 
 bool Packet::isKeyPacket() const
 {
-    return (m_raw.flags & AV_PKT_FLAG_KEY);
+    return (raw()->flags & AV_PKT_FLAG_KEY);
 }
 
 int Packet::duration() const
 {
-    return m_raw.duration;
+    return raw()->duration;
 }
 
 bool Packet::isComplete() const
 {
-    return m_completeFlag && m_raw.data && m_raw.size;
+    return m_completeFlag && raw()->data && raw()->size;
 }
 
 bool Packet::isNull() const
 {
-    return m_raw.data == nullptr || m_raw.size == 0;
+    return raw()->data == nullptr || raw()->size == 0;
 }
 
 void Packet::setStreamIndex(int idx)
 {
-    m_raw.stream_index = idx;
+    raw()->stream_index = idx;
 }
 
 void Packet::setKeyPacket(bool keyPacket)
 {
     if (keyPacket)
-        m_raw.flags |= AV_PKT_FLAG_KEY;
+        raw()->flags |= AV_PKT_FLAG_KEY;
     else
-        m_raw.flags &= ~AV_PKT_FLAG_KEY;
+        raw()->flags &= ~AV_PKT_FLAG_KEY;
 }
 
 void Packet::setFlags(int flags)
 {
-    m_raw.flags = flags;
+    raw()->flags = flags;
 }
 
 void Packet::addFlags(int flags)
 {
-    m_raw.flags |= flags;
+    raw()->flags |= flags;
 }
 
 void Packet::clearFlags(int flags)
 {
-    m_raw.flags &= ~flags;
+    raw()->flags &= ~flags;
 }
 
 void Packet::dump(const Stream &st, bool dumpPayload) const
@@ -286,7 +319,7 @@ void Packet::dump(const Stream &st, bool dumpPayload) const
     if (!st.isNull())
     {
         const AVStream *stream = st.raw();
-        av_pkt_dump2(stdout, const_cast<AVPacket*>(&m_raw), dumpPayload ? 1 : 0, stream);
+        av_pkt_dump2(stdout, raw(), dumpPayload ? 1 : 0, stream);
     }
 }
 
@@ -296,7 +329,7 @@ void Packet::setTimeBase(const Rational &tb)
         return;
 
     if (m_timeBase != Rational())
-        av_packet_rescale_ts(&m_raw,
+        av_packet_rescale_ts(raw(),
                              m_timeBase.getValue(),
                              tb.getValue());
 
@@ -305,16 +338,38 @@ void Packet::setTimeBase(const Rational &tb)
 
 bool Packet::isReferenced() const
 {
-    return m_raw.buf;
+    return raw()->buf;
 }
 
 int Packet::refCount() const
 {
-    if (m_raw.buf)
-        return av_buffer_get_ref_count(m_raw.buf);
+    if (raw()->buf)
+        return av_buffer_get_ref_count(raw()->buf);
     else
         return 0;
 }
+
+#if DEPRECATED_INIT_PACKET
+AVPacket *Packet::makeRef(OptionalErrorCode ec) const
+{
+    clear_if(ec);
+    AVPacket *pkt = av_packet_alloc();
+    if (!pkt) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return nullptr;
+    }
+
+    auto const sts = av_packet_ref(pkt, raw());
+    if (sts < 0) {
+        av_packet_free(&pkt);
+        throws_if(ec, sts, ffmpeg_category());
+        return nullptr;
+    }
+
+    return pkt;
+}
+
+#else
 
 AVPacket Packet::makeRef(OptionalErrorCode ec) const
 {
@@ -326,11 +381,12 @@ AVPacket Packet::makeRef(OptionalErrorCode ec) const
     }
     return pkt;
 }
+#endif
 
 Packet Packet::clone(OptionalErrorCode ec) const
 {
     Packet pkt;
-    pkt.initFromAVPacket(&m_raw, true, ec);
+    pkt.initFromAVPacket(raw(), true, ec);
     pkt.m_timeBase = m_timeBase;
     return pkt;
 }
@@ -360,15 +416,27 @@ Packet &Packet::operator=(Packet &&rhs)
     return *this;
 }
 
+#if DEPRECATED_INIT_PACKET
+Packet &Packet::operator=(const AVPacket *rhs)
+{
+    if (rhs == raw())
+        return *this;
+
+    initFromAVPacket(rhs, false, throws());
+    m_timeBase = Rational();
+    return *this;
+}
+#else
 Packet &Packet::operator=(const AVPacket &rhs)
 {
-    if (&rhs == &m_raw)
+    if (&rhs == raw())
         return *this;
 
     initFromAVPacket(&rhs, false, throws());
     m_timeBase = Rational();
     return *this;
 }
+#endif
 
 void Packet::swap(Packet &other)
 {
@@ -381,9 +449,9 @@ void Packet::swap(Packet &other)
 void Packet::setDuration(int duration, const Rational &durationTimeBase)
 {
     if (durationTimeBase == Rational())
-        m_raw.duration = duration;
+        raw()->duration = duration;
     else
-        m_raw.duration = durationTimeBase.rescale(duration, m_timeBase);
+        raw()->duration = durationTimeBase.rescale(duration, m_timeBase);
 }
 
 } // ::av
