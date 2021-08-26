@@ -23,7 +23,7 @@ foreach(TARGET ${AV_TARGETS})
 
     add_library(${TARGET} ${TYPE} ${AV_SOURCES} ${AV_HEADERS})
 
-    target_compile_options(${TARGET} PRIVATE ${AV_WARNING_OPTIONS})
+    target_compile_options(${TARGET} PRIVATE ${AVCPP_WARNING_OPTIONS})
     target_link_libraries(${TARGET} PRIVATE Threads::Threads PUBLIC FFmpeg::FFmpeg)
     target_include_directories(${TARGET}
         PUBLIC
