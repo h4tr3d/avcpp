@@ -180,6 +180,10 @@ Classes</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:a1d284cd1d98085b420f9cd0992f8a6c0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a1d284cd1d98085b420f9cd0992f8a6c0">avpacket_unref</a>(p)&#160;&#160;&#160;av_packet_unref(p)</td></tr>
 <tr class="separator:a1d284cd1d98085b420f9cd0992f8a6c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab64c2e657565cc0982a41c9fba2eb3a3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#ab64c2e657565cc0982a41c9fba2eb3a3">NO_INIT_PACKET</a>&#160;&#160;&#160;(LIBAVCODEC_VERSION_MAJOR &gt;= 60)</td></tr>
+<tr class="separator:ab64c2e657565cc0982a41c9fba2eb3a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a086774d462f217747324bf8d7a3c629b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a086774d462f217747324bf8d7a3c629b">DEPRECATED_INIT_PACKET</a>&#160;&#160;&#160;(LIBAVCODEC_VERSION_MAJOR &gt;= 58)</td></tr>
+<tr class="separator:a086774d462f217747324bf8d7a3c629b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83fba7eae42c601ef5b085a2a4a591e6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a83fba7eae42c601ef5b085a2a4a591e6">RAW_GET</a>(field,  def)&#160;&#160;&#160;(m_raw ? m_raw-&gt;field : (def))</td></tr>
 <tr class="separator:a83fba7eae42c601ef5b085a2a4a591e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac52f2553590f4bc63719a73a6258379b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#ac52f2553590f4bc63719a73a6258379b">RAW_SET</a>(field,  val)&#160;&#160;&#160;if(m_raw) m_raw-&gt;field = (val)</td></tr>
@@ -230,6 +234,20 @@ Macros</h2></td></tr>
           <td class="paramtype">&#160;</td>
           <td class="paramname">p</td><td>)</td>
           <td>&#160;&#160;&#160;av_packet_unref(p)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a086774d462f217747324bf8d7a3c629b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a086774d462f217747324bf8d7a3c629b">&#9670;&nbsp;</a></span>DEPRECATED_INIT_PACKET</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEPRECATED_INIT_PACKET&#160;&#160;&#160;(LIBAVCODEC_VERSION_MAJOR &gt;= 58)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -378,6 +396,20 @@ Macros</h2></td></tr>
           <td></td>
           <td>)</td>
           <td></td><td>&#160;&#160;&#160;(if(ptr &amp;&amp; (cond)) ptr-&gt;field = (val))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab64c2e657565cc0982a41c9fba2eb3a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab64c2e657565cc0982a41c9fba2eb3a3">&#9670;&nbsp;</a></span>NO_INIT_PACKET</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NO_INIT_PACKET&#160;&#160;&#160;(LIBAVCODEC_VERSION_MAJOR &gt;= 60)</td>
         </tr>
       </table>
 </div><div class="memdoc">
