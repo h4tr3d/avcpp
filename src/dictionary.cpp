@@ -221,7 +221,7 @@ string Dictionary::toString(const char keyValSep, const char pairsSep, OptionalE
         throws_if(ec, sts, ffmpeg_category());
     }
 
-    return std::move(str);
+    return str;
 }
 
 Dictionary::AvStringPtr Dictionary::toRawStringPtr(const char keyValSep, const char pairsSep, OptionalErrorCode ec) const
@@ -241,7 +241,7 @@ Dictionary::AvStringPtr Dictionary::toRawStringPtr(const char keyValSep, const c
         throws_if(ec, sts, ffmpeg_category());
     }
 
-    return std::move(str);
+    return str;
 }
 
 int Dictionary::set_priv(const char * key, const char * value, int flags) noexcept
