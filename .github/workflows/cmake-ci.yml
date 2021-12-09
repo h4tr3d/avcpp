@@ -21,14 +21,14 @@ jobs:
         build_type: [Release, Debug]
         skip_meson: [false]
         include:
-          - os: ubuntu-16.04
+          - os: ubuntu-18.04
             build_type: Release
             skip_meson: true
-          - os: ubuntu-16.04
+          - os: ubuntu-18.04
             build_type: Debug
             skip_meson: true
 
-        
+
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
