@@ -4,9 +4,15 @@ using namespace std;
 
 namespace av {
 
+FilterPadList::FilterPadList(const AVFilterPad *begin, size_t count)
+    : FFWrapperPtr<const AVFilterPad>(begin),
+      m_count(count)
+{
+}
+
 size_t FilterPadList::count() const noexcept
 {
-    return avfilter_pad_count(m_raw);
+    return m_count;
 }
 
 string FilterPadList::name(size_t index) const noexcept

@@ -4,6 +4,14 @@ using namespace std;
 
 namespace av {
 
+static size_t get_pad_count(const AVFilter *filter, bool output)
+{
+#if LIBAVFILTER_VERSION_MAJOR >= 8 // FFmpeg 5.0
+    return avfilter_filter_pad_count(filter, output);
+#else
+    return avfilter_pad_count(output ? filter->outputs : filter->inputs);
+#endif
+}
 
 Filter::Filter(const AVFilter *ptr)
     : FFWrapperPtr<const AVFilter>(ptr)
@@ -43,12 +51,12 @@ string Filter::description() const
 
 FilterPadList Filter::inputs() const
 {
-    return (m_raw ? FilterPadList(m_raw->inputs) : FilterPadList());
+    return (m_raw ? FilterPadList(m_raw->inputs, get_pad_count(m_raw, false)) : FilterPadList());
 }
 
 FilterPadList Filter::outputs() const
 {
-    return (m_raw ? FilterPadList(m_raw->outputs) : FilterPadList());
+    return (m_raw ? FilterPadList(m_raw->outputs, get_pad_count(m_raw, true)) : FilterPadList());
 }
 
 int Filter::flags() const
