@@ -38,6 +38,8 @@ public:
     Rational    averageFrameRate()   const;
     Timestamp   startTime()          const;
     Timestamp   duration()           const;
+
+    [[deprecated("For FFmpeg 5.0+ return NO_PTS")]]
     Timestamp   currentDts()         const;
     AVMediaType mediaType()          const;
 

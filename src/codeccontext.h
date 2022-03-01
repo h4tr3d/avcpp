@@ -61,6 +61,7 @@ public:
     void open(class Dictionary &options, const Codec &codec, OptionalErrorCode ec = throws());
     void open(class Dictionary &&options, const Codec &codec, OptionalErrorCode ec = throws());
 
+    [[deprecated("Start from FFmpeg 4.0 it is recommended to destroy and recreate codec context insted of close")]]
     void close(OptionalErrorCode ec = throws());
 
     bool isOpened() const noexcept;

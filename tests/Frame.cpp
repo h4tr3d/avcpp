@@ -111,7 +111,7 @@ TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")
         //    frame = av::VideoFrame{rgb24_raw_data.data(), rgb24_raw_data.size(), rgb24_pixfmt, width, height, alignment};
         //});
 
-        frame = std::move(av::VideoFrame{raw_data.data(), raw_data.size(), pixfmt, width, height, alignment});
+        frame = av::VideoFrame{raw_data.data(), raw_data.size(), pixfmt, width, height, alignment};
 
         CHECK(frame.raw());
 
@@ -191,7 +191,7 @@ TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")
         //    frame = av::VideoFrame{rgb24_raw_data.data(), rgb24_raw_data.size(), rgb24_pixfmt, width, height, alignment};
         //});
 
-        frame = std::move(av::VideoFrame{raw_data.data(), raw_data.size(), pixfmt, width, height, alignment});
+        frame = av::VideoFrame{raw_data.data(), raw_data.size(), pixfmt, width, height, alignment};
 
         CHECK(frame.raw());
 
@@ -269,7 +269,7 @@ TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")
         //    frame = av::VideoFrame{rgb24_raw_data.data(), rgb24_raw_data.size(), rgb24_pixfmt, width, height, alignment};
         //});
 
-        frame = std::move(av::VideoFrame{raw_data.data(), raw_data.size(), pixfmt, width, height, alignment});
+        frame = av::VideoFrame{raw_data.data(), raw_data.size(), pixfmt, width, height, alignment};
 
         CHECK(frame.raw());
 

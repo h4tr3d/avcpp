@@ -338,8 +338,10 @@ CodecContext2::~CodecContext2()
         return;
 #endif
 
+#if LIBAVCODEC_VERSION_MAJOR < 58 // FFmpeg 4.0
     std::error_code ec;
     close(ec);
+#endif
     avcodec_free_context(&m_raw);
 }
 
@@ -370,12 +372,8 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
         return;
 
     if (resetDefaults) {
-        if (!m_raw->codec) {
-            avcodec_free_context(&m_raw);
-            m_raw = avcodec_alloc_context3(codec.raw());
-        } else {
-            avcodec_get_context_defaults3(m_raw, codec.raw());
-        }
+        avcodec_free_context(&m_raw);
+        m_raw = avcodec_alloc_context3(codec.raw());
     } else {
         m_raw->codec_id   = !codec.isNull() ? codec.raw()->id : AV_CODEC_ID_NONE;
         m_raw->codec_type = type;
@@ -396,8 +394,9 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
     }
     FF_ENABLE_DEPRECATION_WARNINGS
 #else
-    //if (m_stream.isValid())
-    //    avcodec_parameters_from_context(m_stream.raw()->codecpar, m_raw);
+    // TBD: need a check
+    if (m_stream.isValid())
+        avcodec_parameters_from_context(m_stream.raw()->codecpar, m_raw);
 #endif
 }
 
@@ -911,8 +910,7 @@ CodecContext2::decodeCommon(T &outFrame,
     if (frame->pts == av::NoPts)
         frame->pts = av::frame::get_best_effort_timestamp(frame);
 
-    // Or: AVCODEC < 57.24.0 if this macro will be removes in future
-#if !defined(FF_API_PKT_PTS)
+#if LIBAVCODEC_VERSION_MAJOR < 57
     if (frame->pts == av::NoPts)
         frame->pts = frame->pkt_pts;
 #endif

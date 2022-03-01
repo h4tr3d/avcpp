@@ -1,5 +1,4 @@
-#ifndef AV_UTILS_H
-#define AV_UTILS_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -18,7 +17,7 @@ extern "C" {
 }
 
 // WA: codecpar usage need more investigation. Temporary disable it.
-#define USE_CODECPAR (0)
+#define USE_CODECPAR ((LIBAVCODEC_VERSION_MAJOR) >= 59) // FFmpeg 5.0
 
 #if defined(__ICL) || defined (__INTEL_COMPILER)
 #    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))
@@ -385,4 +384,3 @@ void array_to_container(const T* array, Container &container, Compare isEnd)
 
 } // ::av
 
-#endif // AV_UTILS_H

@@ -9,6 +9,10 @@
 #include "packet.h"
 #include "frame.h"
 
+extern "C" {
+#  include <libavcodec/avcodec.h>
+}
+
 using namespace std;
 
 //
@@ -209,9 +213,13 @@ bool AvDeleter::operator()(SwsContext *&swsContext)
 
 bool AvDeleter::operator()(AVCodecContext *&codecContext)
 {
+#if LIBAVCODEC_VERSION_MAJOR >= 58
+    avcodec_free_context(&codecContext);
+#else
     avcodec_close(codecContext);
     av_free(codecContext);
     codecContext = nullptr;
+#endif
     return true;
 }
 
