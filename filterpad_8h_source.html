@@ -85,29 +85,37 @@ $(function() {
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
 <div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classav_1_1FilterPadList.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="classav_1_1FilterPadList.html">FilterPadList</a> : <span class="keyword">public</span> <a class="code" href="structFFWrapperPtr.html">FFWrapperPtr</a>&lt;const AVFilterPad&gt;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">using</span> <a class="code" href="structFFWrapperPtr.html">FFWrapperPtr&lt;const AVFilterPad&gt;::FFWrapperPtr</a>;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classav_1_1FilterPadList.html#a861883c21e72ce14310c26dfdd99fb9e">count</a>() <span class="keyword">const</span> noexcept;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    std::string <a class="code" href="classav_1_1FilterPadList.html#a35101b9f36a2f532456f2ee449f5a9d6">name</a>(<span class="keywordtype">size_t</span> index) <span class="keyword">const</span> noexcept;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="classav_1_1FilterPadList.html#aaf3cbbeebd33643f746c1b6faae3925c">nameCStr</a>(<span class="keywordtype">size_t</span> index) <span class="keyword">const</span> noexcept;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    AVMediaType <a class="code" href="classav_1_1FilterPadList.html#aad1dcaa9433d555ad2097fe05d18a41e">type</a>(<span class="keywordtype">size_t</span> index) <span class="keyword">const</span> noexcept;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;} <span class="comment">// namespace av</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#endif // AV_FILTERPAD_H</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="classav_1_1FilterPadList.html#a34f7bc7cd29643e53d23b7d500d21739">   16</a></span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classav_1_1Filter.html">Filter</a>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="classav_1_1FilterPadList.html">FilterPadList</a>(<span class="keyword">const</span> AVFilterPad *begin, <span class="keywordtype">size_t</span> <a class="code" href="classav_1_1FilterPadList.html#a861883c21e72ce14310c26dfdd99fb9e">count</a>);</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">using</span> <a class="code" href="structFFWrapperPtr.html">FFWrapperPtr&lt;const AVFilterPad&gt;::FFWrapperPtr</a>;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classav_1_1FilterPadList.html#a861883c21e72ce14310c26dfdd99fb9e">count</a>() const noexcept;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> <a class="code" href="classav_1_1FilterPadList.html#a35101b9f36a2f532456f2ee449f5a9d6">name</a>(<span class="keywordtype">size_t</span> index) const noexcept;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    const <span class="keywordtype">char</span>* <a class="code" href="classav_1_1FilterPadList.html#aaf3cbbeebd33643f746c1b6faae3925c">nameCStr</a>(<span class="keywordtype">size_t</span> index) const noexcept;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    AVMediaType <a class="code" href="classav_1_1FilterPadList.html#aad1dcaa9433d555ad2097fe05d18a41e">type</a>(<span class="keywordtype">size_t</span> index) const noexcept;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;private:</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordtype">size_t</span> m_count = 0;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;} <span class="comment">// namespace av</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#endif // AV_FILTERPAD_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassav_1_1FilterPadList_html_aad1dcaa9433d555ad2097fe05d18a41e"><div class="ttname"><a href="classav_1_1FilterPadList.html#aad1dcaa9433d555ad2097fe05d18a41e">av::FilterPadList::type</a></div><div class="ttdeci">AVMediaType type(size_t index) const noexcept</div><div class="ttdef"><b>Definition:</b> filterpad.cpp:22</div></div>
-<div class="ttc" id="aclassav_1_1FilterPadList_html_a35101b9f36a2f532456f2ee449f5a9d6"><div class="ttname"><a href="classav_1_1FilterPadList.html#a35101b9f36a2f532456f2ee449f5a9d6">av::FilterPadList::name</a></div><div class="ttdeci">std::string name(size_t index) const noexcept</div><div class="ttdef"><b>Definition:</b> filterpad.cpp:12</div></div>
+<div class="ttc" id="aclassav_1_1FilterPadList_html_aad1dcaa9433d555ad2097fe05d18a41e"><div class="ttname"><a href="classav_1_1FilterPadList.html#aad1dcaa9433d555ad2097fe05d18a41e">av::FilterPadList::type</a></div><div class="ttdeci">AVMediaType type(size_t index) const noexcept</div><div class="ttdef"><b>Definition:</b> filterpad.cpp:28</div></div>
+<div class="ttc" id="aclassav_1_1FilterPadList_html_a35101b9f36a2f532456f2ee449f5a9d6"><div class="ttname"><a href="classav_1_1FilterPadList.html#a35101b9f36a2f532456f2ee449f5a9d6">av::FilterPadList::name</a></div><div class="ttdeci">std::string name(size_t index) const noexcept</div><div class="ttdef"><b>Definition:</b> filterpad.cpp:18</div></div>
+<div class="ttc" id="aclassav_1_1Filter_html"><div class="ttname"><a href="classav_1_1Filter.html">av::Filter</a></div><div class="ttdef"><b>Definition:</b> filter.h:23</div></div>
 <div class="ttc" id="affmpeg_8h_html"><div class="ttname"><a href="ffmpeg_8h.html">ffmpeg.h</a></div></div>
 <div class="ttc" id="astructFFWrapperPtr_html"><div class="ttname"><a href="structFFWrapperPtr.html">FFWrapperPtr</a></div><div class="ttdef"><b>Definition:</b> ffmpeg.h:69</div></div>
 <div class="ttc" id="aavutils_8h_html"><div class="ttname"><a href="avutils_8h.html">avutils.h</a></div></div>
-<div class="ttc" id="aclassav_1_1FilterPadList_html_aaf3cbbeebd33643f746c1b6faae3925c"><div class="ttname"><a href="classav_1_1FilterPadList.html#aaf3cbbeebd33643f746c1b6faae3925c">av::FilterPadList::nameCStr</a></div><div class="ttdeci">const char * nameCStr(size_t index) const noexcept</div><div class="ttdef"><b>Definition:</b> filterpad.cpp:17</div></div>
+<div class="ttc" id="aclassav_1_1FilterPadList_html_aaf3cbbeebd33643f746c1b6faae3925c"><div class="ttname"><a href="classav_1_1FilterPadList.html#aaf3cbbeebd33643f746c1b6faae3925c">av::FilterPadList::nameCStr</a></div><div class="ttdeci">const char * nameCStr(size_t index) const noexcept</div><div class="ttdef"><b>Definition:</b> filterpad.cpp:23</div></div>
 <div class="ttc" id="anamespaceav_html"><div class="ttname"><a href="namespaceav.html">av</a></div><div class="ttdef"><b>Definition:</b> audioresampler.cpp:8</div></div>
-<div class="ttc" id="aclassav_1_1FilterPadList_html_a861883c21e72ce14310c26dfdd99fb9e"><div class="ttname"><a href="classav_1_1FilterPadList.html#a861883c21e72ce14310c26dfdd99fb9e">av::FilterPadList::count</a></div><div class="ttdeci">size_t count() const noexcept</div><div class="ttdef"><b>Definition:</b> filterpad.cpp:7</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> averror.h:228</div></div>
+<div class="ttc" id="aclassav_1_1FilterPadList_html_a861883c21e72ce14310c26dfdd99fb9e"><div class="ttname"><a href="classav_1_1FilterPadList.html#a861883c21e72ce14310c26dfdd99fb9e">av::FilterPadList::count</a></div><div class="ttdeci">size_t count() const noexcept</div><div class="ttdef"><b>Definition:</b> filterpad.cpp:13</div></div>
 <div class="ttc" id="aclassav_1_1FilterPadList_html"><div class="ttname"><a href="classav_1_1FilterPadList.html">av::FilterPadList</a></div><div class="ttdef"><b>Definition:</b> filterpad.h:13</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
