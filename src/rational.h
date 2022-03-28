@@ -1,9 +1,12 @@
-#ifndef RATIONAL_H
-#define RATIONAL_H
+#pragma once
 
 #include <utility>
 #include <iostream>
 #include <memory>
+
+#if __cplusplus > 201703L
+#include <compare>
+#endif
 
 #include "ffmpeg.h"
 
@@ -46,8 +49,16 @@ public:
     Rational& operator=  (double value) noexcept;
 
     bool      operator== (const Rational   &other) const noexcept;
+#if __cplusplus > 201703L
+    std::strong_ordering operator<=>(const Rational &other) const noexcept;
+#else
     bool      operator!= (const Rational   &other) const noexcept;
     bool      operator<  (const Rational   &other) const noexcept;
+    bool      operator>  (const Rational   &other) const noexcept;
+    bool      operator<= (const Rational   &other) const noexcept;
+    bool      operator>= (const Rational   &other) const noexcept;
+#endif
+
     Rational  operator+  (const Rational   &value) const noexcept;
     Rational  operator-  (const Rational   &value) const noexcept;
     Rational  operator*  (const Rational   &value) const noexcept;
@@ -94,5 +105,3 @@ inline std::istream& operator>> (std::istream &stream, Rational &value)
 
 
 } // ::av
-
-#endif // RATIONAL_H

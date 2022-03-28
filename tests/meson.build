@@ -23,6 +23,7 @@ tests = [
     'AvDeleter',
     'Packet',
     'Format',
+    'Rational',
 ]
 
 #create all the tests
