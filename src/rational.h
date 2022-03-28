@@ -64,21 +64,6 @@ private:
     AVRational m_value;
 };
 
-//inline
-//bool      operator== (const Rational &other) const noexcept;
-//inline
-//bool      operator!= (const Rational &other) const noexcept;
-//inline
-//bool      operator<  (const Rational &other) const noexcept;
-//inline
-//Rational  operator+(Rational left, const Rational &value) noexcept
-//inline
-//Rational  operator-(Rational left, const Rational &value) noexcept;
-//inline
-//Rational  operator*(Rational left, const Rational &value) noexcept;
-//inline
-//Rational  operator/(Rational left, const Rational &value) noexcept;
-
 
 inline std::ostream& operator<< (std::ostream &stream, const Rational &value)
 {
