@@ -1,5 +1,7 @@
 # AvCpp [![Build Status](https://github.com/h4tr3d/avcpp/actions/workflows/cmake-ci.yml/badge.svg)](https://github.com/h4tr3d/avcpp/actions/workflows/cmake-ci.yml) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/h4tr3d/avcpp.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/h4tr3d/avcpp/context:cpp) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
+***Note:* this is maintanence branch for the FFmpeg prior to 5.0**. FFmpeg 5.0 introduce a lot of changes, that affects encoding/decoding/transmuxing initialization sequence. So, for FFmpeg 5.0+ still use `master` branch or future `api-3.0`.
+
 Wrapper for the FFmpeg that simplify usage it from C++ projects.
 
 Currently covered next functionality:
@@ -15,7 +17,7 @@ You can read the full documentation [here](https://h4tr3d.github.io/avcpp/).
 
 ## Requirements
 
-- FFmpeg >= 2.0
+- FFmpeg >= 2.0 && FFmpeg < 5.0
   - libavformat >= 54.x.x
   - libavcodec >= 54.x.x
   - libavfilter >= 3.x.x
