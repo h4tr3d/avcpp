@@ -194,9 +194,16 @@ public:
      * @brief Base dictionary iterator implementation
      */
     template<bool constIterator = false>
-    class DictionaryIterator :
-            public std::iterator<std::forward_iterator_tag, typename std::conditional<constIterator, const Entry, Entry>::type>
+    class DictionaryIterator
     {
+    public:
+        // Iterator interface
+        using iterator_category = std::forward_iterator_tag;
+        using value_type = typename std::conditional<constIterator, const Entry, Entry>::type;
+        using difference_type = ptrdiff_t;
+        using pointer = value_type*;
+        using reference = value_type&;
+
     private:
         using DictType  = typename std::conditional<constIterator, const Dictionary, Dictionary>::type;
         using EntryType = typename std::conditional<constIterator, const Entry, Entry>::type;
