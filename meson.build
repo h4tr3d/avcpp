@@ -6,7 +6,7 @@ project(
         'c_std=c11', 
         'cpp_std=c++17'
     ],
-    version: '2.0.99',
+    version: '2.1.0',
 )
 
 if not meson.is_subproject()
