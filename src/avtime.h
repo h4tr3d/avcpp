@@ -1,5 +1,4 @@
-#ifndef AVCPP_TIME_H
-#define AVCPP_TIME_H
+#pragma once
 
 #include "ffmpeg.h"
 
@@ -24,4 +23,3 @@ int usleep(unsigned usec);
 
 } // ::av
 
-#endif // AVCPP_TIME_H

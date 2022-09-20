@@ -1,5 +1,4 @@
-#ifndef AV_FORMATCONTEXT_H
-#define AV_FORMATCONTEXT_H
+#pragma once
 
 #include <memory>
 #include <chrono>
@@ -233,4 +232,3 @@ private:
 
 } // namespace av
 
-#endif // AV_FORMATCONTEXT_H

@@ -1,5 +1,4 @@
-#ifndef AV_STREAM_H
-#define AV_STREAM_H
+#pragma once
 
 #include <memory>
 
@@ -73,4 +72,3 @@ private:
 
 } // ::av
 
-#endif // STREAM_H

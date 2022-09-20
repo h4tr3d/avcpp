@@ -1,5 +1,4 @@
-#ifndef AV_AUDIORESAMPLER_H
-#define AV_AUDIORESAMPLER_H
+#pragma once
 
 #include <functional>
 
@@ -131,4 +130,3 @@ private:
 
 } // namespace av
 
-#endif // AV_AUDIORESAMPLER_H

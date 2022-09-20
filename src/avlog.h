@@ -1,5 +1,4 @@
-#ifndef AVLOG_H
-#define AVLOG_H
+#pragma once
 
 #include <stdarg.h>
 
@@ -27,4 +26,3 @@
 /// Default in-class logger
 #define fflog(level, format, ...) _log(level, "%s: " format, LOGGED_NAME, ##__VA_ARGS__)
 
-#endif // LOG_H

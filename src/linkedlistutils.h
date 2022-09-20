@@ -1,5 +1,4 @@
-#ifndef LINKEDLISTUTILS_H
-#define LINKEDLISTUTILS_H
+#pragma once
 
 #include <iterator>
 
@@ -269,4 +268,3 @@ protected:
 };
 }
 
-#endif // LINKEDLISTUTILS_H

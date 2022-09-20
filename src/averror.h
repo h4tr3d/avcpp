@@ -1,5 +1,4 @@
-#ifndef AV_AVERROR_H
-#define AV_AVERROR_H
+#pragma once
 
 #include <system_error>
 #include <exception>
@@ -232,5 +231,3 @@ template<> struct is_error_condition_enum<av::Errors> : public true_type {};
 //template<> struct is_error_code_enum<av::AvError> : public true_type {};
 }
 
-
-#endif // AV_AVERROR_H

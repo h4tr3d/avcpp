@@ -1,5 +1,4 @@
-#ifndef VIDEORESCALER_H
-#define VIDEORESCALER_H
+#pragma once
 
 #include <iostream>
 #include <memory>
@@ -91,4 +90,3 @@ private:
 
 } // ::av
 
-#endif // VIDEORESAMPLER_H

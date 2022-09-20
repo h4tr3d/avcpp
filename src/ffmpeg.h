@@ -1,5 +1,4 @@
-#ifndef FFMPEG_H
-#define FFMPEG_H
+#pragma once
 
 #include <iostream>
 
@@ -190,5 +189,3 @@ protected:
 #    define attribute_deprecated2(x)
 #endif
 
-
-#endif // FFMPEG_H

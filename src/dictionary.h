@@ -1,5 +1,4 @@
-#ifndef AV_DICTIONARY_H
-#define AV_DICTIONARY_H
+#pragma once
 
 #include <tuple>
 #include <memory>
@@ -626,4 +625,3 @@ private:
 
 } // namespace av
 
-#endif // AV_DICTIONARY_H

@@ -1,5 +1,4 @@
-#ifndef AV_H
-#define AV_H
+#pragma once
 
 namespace av {
 
@@ -10,4 +9,3 @@ void init();
 
 } // ::av
 
-#endif // AV_H

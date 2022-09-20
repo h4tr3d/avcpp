@@ -1,5 +1,4 @@
-#ifndef PACKET_H
-#define PACKET_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -135,5 +134,3 @@ private:
 
 } // ::av
 
-
-#endif // PACKET_H

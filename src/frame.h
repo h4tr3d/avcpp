@@ -1,5 +1,4 @@
-#ifndef FRAME_H
-#define FRAME_H
+#pragma once
 
 #include <vector>
 #include <memory>
@@ -395,4 +394,3 @@ public:
 
 } // ::av
 
-#endif // FRAME_H

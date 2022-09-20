@@ -1,5 +1,4 @@
-#ifndef RECT_H
-#define RECT_H
+#pragma once
 
 namespace av {
 
@@ -29,4 +28,3 @@ private:
 
 } // ::av
 
-#endif // RECT_H
