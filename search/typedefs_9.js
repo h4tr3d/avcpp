@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['wrapper_5fcast_5ftype_1200',['wrapper_cast_type',['../classav_1_1LinkedListWrapper.html#acbc2a624c2827d24405fd426ba006c07',1,'av::LinkedListWrapper']]],
-  ['wrapper_5freset_5ftype_1201',['wrapper_reset_type',['../classav_1_1LinkedListWrapper.html#acc2f9a64d4fa0c4a1f3651442598b33e',1,'av::LinkedListWrapper']]]
+  ['reference_1212',['reference',['../classav_1_1Dictionary_1_1DictionaryIterator.html#ad3e7264a16b93922ae39232d4edeb2ab',1,'av::Dictionary::DictionaryIterator::reference()'],['../classav_1_1LinkedListWrapper_1_1base__iterator.html#adc32f3ee811ea043e53942849195bada',1,'av::LinkedListWrapper::base_iterator::reference()']]]
 ];

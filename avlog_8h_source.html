@@ -71,31 +71,29 @@ $(function() {
 <div class="title">avlog.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="avlog_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef AVLOG_H</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define AVLOG_H</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;stdarg.h&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="ffmpeg_8h.html">ffmpeg.h</a>&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifdef __PRETTY_FUNCTION__</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#define LOGGED_NAME __PRETTY_FUNCTION__</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">// should exist on C++11 compiler</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="avlog_8h.html#aea36973a15a7f7f18834571f1d6465ce">   12</a></span>&#160;<span class="preprocessor">#define LOGGED_NAME __func__</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="avlog_8h.html#a65b0cd16e32c6d2d6ee30965cf3611b3">   16</a></span>&#160;<span class="preprocessor">#define null_log(level, format, ...)     av_log(nullptr, level, &quot;%s: &quot; format,  LOGGED_NAME, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="avlog_8h.html#aaaba0e683b53cd4c111306282439f4bc">   19</a></span>&#160;<span class="preprocessor">#define ptr_log(level, format, ...)      av_log(m_raw, level, &quot;%s: &quot; format,  LOGGED_NAME, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="avlog_8h.html#a5b5d934964997f98e8074ae694e73a0c">   22</a></span>&#160;<span class="preprocessor">#define ref_log(level, format, ...)      av_log(&amp;m_raw, level, &quot;%s: &quot; format,  LOGGED_NAME, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="avlog_8h.html#a0cffe637fbbab563c4462d55f74a5923">   25</a></span>&#160;<span class="preprocessor">#define ctx_log(ctx, level, format, ...) av_log(ctx, level, &quot;%s: &quot; format,  LOGGED_NAME, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="avlog_8h.html#a75f494e591248bf34f416b38e6da2821">   28</a></span>&#160;<span class="preprocessor">#define fflog(level, format, ...) _log(level, &quot;%s: &quot; format, LOGGED_NAME, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#endif // LOG_H</span></div>
+<a href="avlog_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;stdarg.h&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="ffmpeg_8h.html">ffmpeg.h</a>&quot;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifdef __PRETTY_FUNCTION__</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#define LOGGED_NAME __PRETTY_FUNCTION__</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">// should exist on C++11 compiler</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="avlog_8h.html#aea36973a15a7f7f18834571f1d6465ce">   11</a></span>&#160;<span class="preprocessor">#define LOGGED_NAME __func__</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="avlog_8h.html#a65b0cd16e32c6d2d6ee30965cf3611b3">   15</a></span>&#160;<span class="preprocessor">#define null_log(level, format, ...)     av_log(nullptr, level, &quot;%s: &quot; format,  LOGGED_NAME, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="avlog_8h.html#aaaba0e683b53cd4c111306282439f4bc">   18</a></span>&#160;<span class="preprocessor">#define ptr_log(level, format, ...)      av_log(m_raw, level, &quot;%s: &quot; format,  LOGGED_NAME, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="avlog_8h.html#a5b5d934964997f98e8074ae694e73a0c">   21</a></span>&#160;<span class="preprocessor">#define ref_log(level, format, ...)      av_log(&amp;m_raw, level, &quot;%s: &quot; format,  LOGGED_NAME, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="avlog_8h.html#a0cffe637fbbab563c4462d55f74a5923">   24</a></span>&#160;<span class="preprocessor">#define ctx_log(ctx, level, format, ...) av_log(ctx, level, &quot;%s: &quot; format,  LOGGED_NAME, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="avlog_8h.html#a75f494e591248bf34f416b38e6da2821">   27</a></span>&#160;<span class="preprocessor">#define fflog(level, format, ...) _log(level, &quot;%s: &quot; format, LOGGED_NAME, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="affmpeg_8h_html"><div class="ttname"><a href="ffmpeg_8h.html">ffmpeg.h</a></div></div>
 <!-- start footer part -->

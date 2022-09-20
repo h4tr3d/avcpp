@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['timebase_1183',['TimeBase',['../namespaceav.html#adc387fdcb6d587c7ab1cea14f5f9fe8f',1,'av']]],
-  ['timebaseq_1184',['TimeBaseQ',['../namespaceav.html#abcb73c7c5313ad4925dcf634c9edcf62',1,'av']]]
+  ['nopts_1192',['NoPts',['../namespaceav.html#aff3e757c09f123b1f607190142d00a77',1,'av']]]
 ];
