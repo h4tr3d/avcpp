@@ -14,6 +14,7 @@
 
 extern "C" {
 #include <libavfilter/avfilter.h>
+#include <libavcodec/avcodec.h>
 }
 
 // WA: codecpar usage need more investigation. Temporary disable it.

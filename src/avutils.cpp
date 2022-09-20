@@ -9,10 +9,6 @@
 #include "packet.h"
 #include "frame.h"
 
-extern "C" {
-#  include <libavcodec/avcodec.h>
-}
-
 using namespace std;
 
 //

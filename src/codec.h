@@ -1,5 +1,4 @@
-#ifndef CODEC_H
-#define CODEC_H
+#pragma once
 
 #include <list>
 #include <deque>
@@ -22,6 +21,8 @@ public:
     const char *longName() const;
     bool        canEncode() const;
     bool        canDecode() const;
+    bool        isEncoder() const;
+    bool        isDecoder() const;
     AVMediaType type() const;
 
     std::deque<Rational>       supportedFramerates()    const;
@@ -44,5 +45,3 @@ Codec findDecodingCodec(const std::string& name);
 Codec guessEncodingCodec(OutputFormat format, const char *name, const char *url, const char* mime, AVMediaType mediaType);
 
 } // ::fmpeg
-
-#endif // CODEC_H

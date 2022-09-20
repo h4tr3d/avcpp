@@ -24,9 +24,11 @@ bool Codec::canEncode() const
 #elif LIBAVCODEC_VERSION_INT < AV_VERSION_INT(57,37,100) // 7fc329e
     if (m_raw)
         return m_raw->encode2;
-#else
+#elif LIBAVCODEC_VERSION_INT < AV_VERSION_INT(59,37,100) // <5.1
     if (m_raw)
         return (m_raw->receive_packet || m_raw->encode2);
+#else
+    return av_codec_is_encoder(m_raw);
 #endif
     return false;
 }
@@ -36,11 +38,23 @@ bool Codec::canDecode() const
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(57,37,100) // 7fc329e
     if (m_raw)
         return m_raw->decode;
-#else
+#elif LIBAVCODEC_VERSION_INT < AV_VERSION_INT(59,37,100) // <5.1
     if (m_raw)
         return (m_raw->receive_frame || m_raw->decode);
+#else
+    return av_codec_is_decoder(m_raw);
 #endif
     return false;
+}
+
+bool Codec::isEncoder() const
+{
+    return canEncode();
+}
+
+bool Codec::isDecoder() const
+{
+    return canDecode();
 }
 
 AVMediaType Codec::type() const
