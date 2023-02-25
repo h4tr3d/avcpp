@@ -197,6 +197,8 @@ Namespaces</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:a344d10fddfeaf21ce3c957457dae4928"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="avutils_8h.html#a344d10fddfeaf21ce3c957457dae4928">USE_CODECPAR</a>&#160;&#160;&#160;((LIBAVCODEC_VERSION_MAJOR) &gt;= 59)</td></tr>
 <tr class="separator:a344d10fddfeaf21ce3c957457dae4928"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2de54a31f39ac548d20b4b61a65e019"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="avutils_8h.html#ab2de54a31f39ac548d20b4b61a65e019">API_NEW_CHANNEL_LAYOUT</a>&#160;&#160;&#160;((LIBAVUTIL_VERSION_MAJOR &gt; 57) || (LIBAVUTIL_VERSION_MAJOR == 57 &amp;&amp; (LIBAVUTIL_VERSION_MINOR &gt;= 24)))</td></tr>
+<tr class="separator:ab2de54a31f39ac548d20b4b61a65e019"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5837cafc419c2b5ecdb1dfa330675d13"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="avutils_8h.html#a5837cafc419c2b5ecdb1dfa330675d13">FF_DISABLE_DEPRECATION_WARNINGS</a></td></tr>
 <tr class="separator:a5837cafc419c2b5ecdb1dfa330675d13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6ef004d10669ab4ee062367a014ea33"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="avutils_8h.html#aa6ef004d10669ab4ee062367a014ea33">FF_ENABLE_DEPRECATION_WARNINGS</a></td></tr>
@@ -234,12 +236,18 @@ Functions</h2></td></tr>
 <tr class="memitem:aadbb55c6f6246bf598742169191aa4d7"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#aadbb55c6f6246bf598742169191aa4d7">av::guessValue</a> (const T &amp;value, const L *list, C endListComparator)</td></tr>
 <tr class="memdesc:aadbb55c6f6246bf598742169191aa4d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select more approptiate value from given value list.  <a href="namespaceav.html#aadbb55c6f6246bf598742169191aa4d7">More...</a><br /></td></tr>
 <tr class="separator:aadbb55c6f6246bf598742169191aa4d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae53c9e86ddfbb29a6ef4b668c0cfac7a"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container &gt; </td></tr>
-<tr class="memitem:ae53c9e86ddfbb29a6ef4b668c0cfac7a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#ae53c9e86ddfbb29a6ef4b668c0cfac7a">av::array_to_container</a> (const T *array, std::size_t nelemnts, Container &amp;container)</td></tr>
-<tr class="separator:ae53c9e86ddfbb29a6ef4b668c0cfac7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8d8f09ba07c7864c1204d6786fe3710"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container &gt; </td></tr>
+<tr class="memitem:ae8d8f09ba07c7864c1204d6786fe3710"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#ae8d8f09ba07c7864c1204d6786fe3710">av::array_to_container</a> (const T *array, std::size_t nelements, Container &amp;container)</td></tr>
+<tr class="separator:ae8d8f09ba07c7864c1204d6786fe3710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a021bea9d41fe77db2d13981a76796c85"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container , typename Callable &gt; </td></tr>
+<tr class="memitem:a021bea9d41fe77db2d13981a76796c85"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#a021bea9d41fe77db2d13981a76796c85">av::array_to_container</a> (const T *array, std::size_t nelements, Container &amp;container, Callable convert)</td></tr>
+<tr class="separator:a021bea9d41fe77db2d13981a76796c85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad297f78da09a7ed62a2ff24f04ec61b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container , typename Compare &gt; </td></tr>
 <tr class="memitem:aad297f78da09a7ed62a2ff24f04ec61b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#aad297f78da09a7ed62a2ff24f04ec61b">av::array_to_container</a> (const T *array, Container &amp;container, Compare isEnd)</td></tr>
 <tr class="separator:aad297f78da09a7ed62a2ff24f04ec61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec7c6a90827fb63e7e3bc90ff4b7da0b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container , typename Compare , typename Callable &gt; </td></tr>
+<tr class="memitem:aec7c6a90827fb63e7e3bc90ff4b7da0b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#aec7c6a90827fb63e7e3bc90ff4b7da0b">av::array_to_container</a> (const T *array, Container &amp;container, Compare isEnd, Callable convert)</td></tr>
+<tr class="separator:aec7c6a90827fb63e7e3bc90ff4b7da0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -251,6 +259,20 @@ Variables</h2></td></tr>
 <tr class="separator:abcb73c7c5313ad4925dcf634c9edcf62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="ab2de54a31f39ac548d20b4b61a65e019"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2de54a31f39ac548d20b4b61a65e019">&#9670;&nbsp;</a></span>API_NEW_CHANNEL_LAYOUT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define API_NEW_CHANNEL_LAYOUT&#160;&#160;&#160;((LIBAVUTIL_VERSION_MAJOR &gt; 57) || (LIBAVUTIL_VERSION_MAJOR == 57 &amp;&amp; (LIBAVUTIL_VERSION_MINOR &gt;= 24)))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a5837cafc419c2b5ecdb1dfa330675d13"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5837cafc419c2b5ecdb1dfa330675d13">&#9670;&nbsp;</a></span>FF_DISABLE_DEPRECATION_WARNINGS</h2>
 

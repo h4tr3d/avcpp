@@ -77,6 +77,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
+<tr class="memitem:namespaceav_1_1codec__context"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav_1_1codec__context.html">codec_context</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceav_1_1frame"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav_1_1frame.html">frame</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceav_1_1internal"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav_1_1internal.html">internal</a></td></tr>
@@ -401,12 +403,18 @@ Functions</h2></td></tr>
 <tr class="memitem:aadbb55c6f6246bf598742169191aa4d7"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#aadbb55c6f6246bf598742169191aa4d7">guessValue</a> (const T &amp;value, const L *list, C endListComparator)</td></tr>
 <tr class="memdesc:aadbb55c6f6246bf598742169191aa4d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select more approptiate value from given value list.  <a href="namespaceav.html#aadbb55c6f6246bf598742169191aa4d7">More...</a><br /></td></tr>
 <tr class="separator:aadbb55c6f6246bf598742169191aa4d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae53c9e86ddfbb29a6ef4b668c0cfac7a"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container &gt; </td></tr>
-<tr class="memitem:ae53c9e86ddfbb29a6ef4b668c0cfac7a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#ae53c9e86ddfbb29a6ef4b668c0cfac7a">array_to_container</a> (const T *array, std::size_t nelemnts, Container &amp;container)</td></tr>
-<tr class="separator:ae53c9e86ddfbb29a6ef4b668c0cfac7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8d8f09ba07c7864c1204d6786fe3710"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container &gt; </td></tr>
+<tr class="memitem:ae8d8f09ba07c7864c1204d6786fe3710"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#ae8d8f09ba07c7864c1204d6786fe3710">array_to_container</a> (const T *array, std::size_t nelements, Container &amp;container)</td></tr>
+<tr class="separator:ae8d8f09ba07c7864c1204d6786fe3710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a021bea9d41fe77db2d13981a76796c85"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container , typename Callable &gt; </td></tr>
+<tr class="memitem:a021bea9d41fe77db2d13981a76796c85"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#a021bea9d41fe77db2d13981a76796c85">array_to_container</a> (const T *array, std::size_t nelements, Container &amp;container, Callable convert)</td></tr>
+<tr class="separator:a021bea9d41fe77db2d13981a76796c85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad297f78da09a7ed62a2ff24f04ec61b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container , typename Compare &gt; </td></tr>
 <tr class="memitem:aad297f78da09a7ed62a2ff24f04ec61b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#aad297f78da09a7ed62a2ff24f04ec61b">array_to_container</a> (const T *array, Container &amp;container, Compare isEnd)</td></tr>
 <tr class="separator:aad297f78da09a7ed62a2ff24f04ec61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec7c6a90827fb63e7e3bc90ff4b7da0b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container , typename Compare , typename Callable &gt; </td></tr>
+<tr class="memitem:aec7c6a90827fb63e7e3bc90ff4b7da0b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#aec7c6a90827fb63e7e3bc90ff4b7da0b">array_to_container</a> (const T *array, Container &amp;container, Compare isEnd, Callable convert)</td></tr>
+<tr class="separator:aec7c6a90827fb63e7e3bc90ff4b7da0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a408162e68f938a6e670534016383927a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Codec.html">Codec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a408162e68f938a6e670534016383927a">findEncodingCodec</a> (AVCodecID id)</td></tr>
 <tr class="separator:a408162e68f938a6e670534016383927a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2cc826606151062d3288238ab7c3051a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Codec.html">Codec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a2cc826606151062d3288238ab7c3051a">findEncodingCodec</a> (const string &amp;name)</td></tr>
@@ -689,7 +697,7 @@ template&lt;typename T &gt; </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="aad297f78da09a7ed62a2ff24f04ec61b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad297f78da09a7ed62a2ff24f04ec61b">&#9670;&nbsp;</a></span>array_to_container() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aad297f78da09a7ed62a2ff24f04ec61b">&#9670;&nbsp;</a></span>array_to_container() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -724,8 +732,50 @@ template&lt;typename T , typename Container , typename Compare &gt; </div>
 
 </div>
 </div>
-<a id="ae53c9e86ddfbb29a6ef4b668c0cfac7a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae53c9e86ddfbb29a6ef4b668c0cfac7a">&#9670;&nbsp;</a></span>array_to_container() <span class="overload">[2/2]</span></h2>
+<a id="aec7c6a90827fb63e7e3bc90ff4b7da0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec7c6a90827fb63e7e3bc90ff4b7da0b">&#9670;&nbsp;</a></span>array_to_container() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Container , typename Compare , typename Callable &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void av::array_to_container </td>
+          <td>(</td>
+          <td class="paramtype">const T *&#160;</td>
+          <td class="paramname"><em>array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Container &amp;&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Compare&#160;</td>
+          <td class="paramname"><em>isEnd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Callable&#160;</td>
+          <td class="paramname"><em>convert</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae8d8f09ba07c7864c1204d6786fe3710"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8d8f09ba07c7864c1204d6786fe3710">&#9670;&nbsp;</a></span>array_to_container() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -742,13 +792,55 @@ template&lt;typename T , typename Container &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>nelemnts</em>, </td>
+          <td class="paramname"><em>nelements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Container &amp;&#160;</td>
           <td class="paramname"><em>container</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a021bea9d41fe77db2d13981a76796c85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a021bea9d41fe77db2d13981a76796c85">&#9670;&nbsp;</a></span>array_to_container() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Container , typename Callable &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void av::array_to_container </td>
+          <td>(</td>
+          <td class="paramtype">const T *&#160;</td>
+          <td class="paramname"><em>array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>nelements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Container &amp;&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Callable&#160;</td>
+          <td class="paramname"><em>convert</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
