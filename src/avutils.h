@@ -20,6 +20,9 @@ extern "C" {
 // WA: codecpar usage need more investigation. Temporary disable it.
 #define USE_CODECPAR ((LIBAVCODEC_VERSION_MAJOR) >= 59) // FFmpeg 5.0
 
+// New Audio Channel Layout API
+#define API_NEW_CHANNEL_LAYOUT ((LIBAVUTIL_VERSION_MAJOR > 57) || (LIBAVUTIL_VERSION_MAJOR == 57 && (LIBAVUTIL_VERSION_MINOR >= 24)))
+
 #if defined(__ICL) || defined (__INTEL_COMPILER)
 #    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))
 #    define FF_ENABLE_DEPRECATION_WARNINGS  __pragma(warning(pop))
@@ -366,11 +369,23 @@ T guessValue(const T& value, const L * list, C endListComparator)
 
 
 template<typename T, typename Container>
-void array_to_container(const T* array, std::size_t nelemnts, Container &container)
+void array_to_container(const T* array, std::size_t nelements, Container &container)
 {
-    if (!array || nelemnts == 0)
+    if (!array || nelements == 0)
         return;
-    std::copy_n(array, array + nelemnts, std::back_inserter(container));
+    std::copy_n(array, array + nelements, std::back_inserter(container));
+}
+
+template<typename T, typename Container, typename Callable>
+void array_to_container(const T* array, std::size_t nelements, Container &container, Callable convert)
+{
+    if (!array || nelements == 0)
+        return;
+    // TBD: implement in more clean way
+    //std::copy_n(array, array + nelemnts, std::back_inserter(container));
+    for (auto i = 0u; i < nelements; ++i) {
+        container.push_back(convert(array[i]));
+    }
 }
 
 template<typename T, typename Container, typename Compare>
@@ -381,6 +396,16 @@ void array_to_container(const T* array, Container &container, Compare isEnd)
     T value;
     while (!isEnd(value = *array++))
         container.push_back(value);
+}
+
+template<typename T, typename Container, typename Compare, typename Callable>
+void array_to_container(const T* array, Container &container, Compare isEnd, Callable convert)
+{
+    if (!array)
+        return;
+    T value;
+    while (!isEnd(value = *array++))
+        container.push_back(convert(value));
 }
 
 } // ::av

@@ -21,6 +21,10 @@ namespace av
 
 namespace frame {
 
+namespace priv {
+void channel_layout_copy(AVFrame &dst, const AVFrame &src);
+}
+
 static inline int64_t get_best_effort_timestamp(const AVFrame* frame) {
 #if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
     return av_frame_get_best_effort_timestamp(frame);
@@ -29,9 +33,12 @@ static inline int64_t get_best_effort_timestamp(const AVFrame* frame) {
 #endif
 }
 
+// Based on db6efa1815e217ed76f39aee8b15ee5c64698537
 static inline uint64_t get_channel_layout(const AVFrame* frame) {
 #if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
     return static_cast<uint64_t>(av_frame_get_channel_layout(frame));
+#elif API_NEW_CHANNEL_LAYOUT
+    return frame->ch_layout.order == AV_CHANNEL_ORDER_NATIVE ? frame->ch_layout.u.mask : 0;
 #else
     return frame->channel_layout;
 #endif
@@ -40,6 +47,9 @@ static inline uint64_t get_channel_layout(const AVFrame* frame) {
 static inline void set_channel_layout(AVFrame* frame, uint64_t layout) {
 #if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
     av_frame_set_channel_layout(frame, static_cast<int64_t>(layout));
+#elif API_NEW_CHANNEL_LAYOUT
+    av_channel_layout_uninit(&frame->ch_layout);
+    av_channel_layout_from_mask(&frame->ch_layout, layout);
 #else
     frame->channel_layout = layout;
 #endif
@@ -49,8 +59,19 @@ static inline void set_channel_layout(AVFrame* frame, uint64_t layout) {
 static inline int get_channels(const AVFrame* frame) {
 #if LIBAVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
     return av_frame_get_channels(frame);
+#elif API_NEW_CHANNEL_LAYOUT
+    return frame->ch_layout.nb_channels;
 #else
     return frame->channels;
+#endif
+}
+
+static inline bool is_valid_channel_layout(const AVFrame *frame)
+{
+#if API_NEW_CHANNEL_LAYOUT
+    return av_channel_layout_check(&frame->ch_layout);
+#else
+    return frame->channel_layout;
 #endif
 }
 
@@ -170,8 +191,8 @@ public:
         result.m_raw->width          = m_raw->width;
         result.m_raw->height         = m_raw->height;
         result.m_raw->nb_samples     = m_raw->nb_samples;
-        result.m_raw->channel_layout = m_raw->channel_layout;
-        result.m_raw->channels       = m_raw->channels;
+
+        frame::priv::channel_layout_copy(*result.m_raw, *m_raw);
 
         result.copyInfoFrom(static_cast<const T&>(*this));
 
@@ -296,7 +317,7 @@ public:
                                                m_raw->height,
                                                nullptr,
                                                linesizes);
-            } else if (m_raw->nb_samples && m_raw->channel_layout) {
+            } else if (m_raw->nb_samples && frame::is_valid_channel_layout(m_raw)) {
                 for (size_t i = 0; i < m_raw->nb_extended_buf + AV_NUM_DATA_POINTERS && m_raw->extended_data[i]; ++i) {
                     // According docs, all planes must have same size
                     total += m_raw->linesize[0];

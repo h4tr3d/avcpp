@@ -17,6 +17,13 @@ extern "C" {
 
 namespace av {
 
+namespace codec_context::audio {
+void set_channels(AVCodecContext *obj, int channels);
+void set_channel_layout_mask(AVCodecContext *obj, uint64_t mask);
+int get_channels(const AVCodecContext *obj);
+uint64_t get_channel_layout_mask(const AVCodecContext *obj);
+}
+
 class CodecContext2 : public FFWrapperPtr<AVCodecContext>, public noncopyable
 {
 protected:
@@ -490,14 +497,7 @@ public:
     {
         if (!isValid())
             return 0;
-
-        if (m_raw->channels)
-            return m_raw->channels;
-
-        if (m_raw->channel_layout)
-            return av_get_channel_layout_nb_channels(m_raw->channel_layout);
-
-        return 0;
+        return codec_context::audio::get_channels(m_raw);
     }
 
     SampleFormat sampleFormat() const noexcept
@@ -509,14 +509,7 @@ public:
     {
         if (!isValid())
             return 0;
-
-        if (m_raw->channel_layout)
-            return m_raw->channel_layout;
-
-        if (m_raw->channels)
-            return av_get_default_channel_layout(m_raw->channels);
-
-        return 0;
+        return codec_context::audio::get_channel_layout_mask(m_raw);
     }
 
     void setSampleRate(int sampleRate) noexcept
@@ -536,11 +529,7 @@ public:
     {
         if (!isValid() || channels <= 0)
             return;
-        m_raw->channels = channels;
-        if (m_raw->channel_layout != 0 ||
-            av_get_channel_layout_nb_channels(m_raw->channel_layout) != channels) {
-            m_raw->channel_layout = av_get_default_channel_layout(channels);
-        }
+        codec_context::audio::set_channels(m_raw, channels);
     }
 
     void setSampleFormat(SampleFormat sampleFormat) noexcept
@@ -552,15 +541,7 @@ public:
     {
         if (!isValid() || layout == 0)
             return;
-
-        m_raw->channel_layout = layout;
-
-        // Make channels and channel_layout sync
-        if (m_raw->channels == 0 ||
-            (uint64_t)av_get_default_channel_layout(m_raw->channels) != layout)
-        {
-            m_raw->channels = av_get_channel_layout_nb_channels(layout);
-        }
+        codec_context::audio::set_channel_layout_mask(m_raw, layout);
     }
 
 protected:

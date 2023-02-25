@@ -838,21 +838,23 @@ AudioSamples AudioDecoderContext::decode(const Packet &inPacket, size_t offset, 
         outSamples.setComplete(false);
     }
 
-    // Fix channels layout
+    // Fix channels layout, only for legacy Channel Layout, new API assumes both parameters more sync
+#if !API_NEW_CHANNEL_LAYOUT
     if (outSamples.channelsCount() && !outSamples.channelsLayout())
         av::frame::set_channel_layout(outSamples.raw(), av_get_default_channel_layout(outSamples.channelsCount()));
+#endif
 
     return outSamples;
 }
 
 AudioEncoderContext::AudioEncoderContext(AudioEncoderContext &&other)
-    : Parent(move(other))
+    : Parent(std::move(other))
 {
 }
 
 AudioEncoderContext &AudioEncoderContext::operator=(AudioEncoderContext &&other)
 {
-    return moveOperator(move(other));
+    return moveOperator(std::move(other));
 }
 
 Packet AudioEncoderContext::encode(OptionalErrorCode ec)
@@ -973,5 +975,79 @@ CodecContext2::encodeCommon(Packet &outPacket,
 
 #undef warnIfNotAudio
 #undef warnIfNotVideo
+
+namespace codec_context::audio {
+
+//
+// TBD: make a generic function
+//
+void set_channels(AVCodecContext *obj, int channels)
+{
+#if API_NEW_CHANNEL_LAYOUT
+    if (!av_channel_layout_check(&obj->ch_layout) || (obj->ch_layout.nb_channels != channels)) {
+        av_channel_layout_uninit(&obj->ch_layout);
+        av_channel_layout_default(&obj->ch_layout, channels);
+    }
+#else
+    obj->channels = channels;
+    if (obj->channel_layout != 0 || av_get_channel_layout_nb_channels(obj->channel_layout) != channels) {
+        obj->channel_layout = av_get_default_channel_layout(channels);
+    }
+#endif
+}
+
+void set_channel_layout_mask(AVCodecContext *obj, uint64_t mask)
+{
+#if API_NEW_CHANNEL_LAYOUT
+    if (!av_channel_layout_check(&obj->ch_layout) ||
+        (obj->ch_layout.order != AV_CHANNEL_ORDER_NATIVE) ||
+        ((obj->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) && (obj->ch_layout.u.mask != mask))) {
+        av_channel_layout_uninit(&obj->ch_layout);
+        av_channel_layout_from_mask(&obj->ch_layout, mask);
+    }
+#else
+    obj->channel_layout = mask;
+
+    // Make channels and channel_layout sync
+    if (obj->channels == 0 ||
+        (uint64_t)av_get_default_channel_layout(obj->channels) != mask)
+    {
+        obj->channels = av_get_channel_layout_nb_channels(mask);
+    }
+#endif
+}
+
+int get_channels(const AVCodecContext *obj)
+{
+#if API_NEW_CHANNEL_LAYOUT
+    return obj->ch_layout.nb_channels;
+#else
+    if (obj->channels)
+        return obj->channels;
+
+    if (obj->channel_layout)
+        return av_get_channel_layout_nb_channels(obj->channel_layout);
+
+    return 0;
+#endif
+}
+
+
+uint64_t get_channel_layout_mask(const AVCodecContext *obj)
+{
+#if API_NEW_CHANNEL_LAYOUT
+    return obj->ch_layout.order == AV_CHANNEL_ORDER_NATIVE ? obj->ch_layout.u.mask : 0;
+#else
+    if (obj->channel_layout)
+        return obj->channel_layout;
+
+    if (obj->channels)
+        return av_get_default_channel_layout(obj->channels);
+
+    return 0;
+#endif
+}
+
+}
 
 } // namespace av

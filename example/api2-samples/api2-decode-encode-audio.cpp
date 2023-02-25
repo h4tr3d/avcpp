@@ -119,10 +119,17 @@ int main(int argc, char **argv)
         clog << "Supported sample layouts:\n";
         for (const auto &lay : layouts) {
             char buf[128] = {0};
+            // FIXME: Add AVChannelLayout API
+#if API_NEW_CHANNEL_LAYOUT
+            AVChannelLayout layout{};
+            av_channel_layout_from_mask(&layout, lay);
+            av_channel_layout_describe(&layout, buf, sizeof(buf));
+#else
             av_get_channel_layout_string(buf,
                                          sizeof(buf),
                                          av_get_channel_layout_nb_channels(lay),
                                          lay);
+#endif
 
             clog << "  " << buf << '\n';
         }
