@@ -340,7 +340,7 @@ public:
     }
 
 protected:
-    Rational             m_timeBase;
+    Rational             m_timeBase{};
     int                  m_streamIndex {-1};
     bool                 m_isComplete  {false};
 };
