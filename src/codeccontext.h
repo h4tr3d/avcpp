@@ -95,7 +95,7 @@ public:
     void setOption(const std::string &key, const std::string &val, int flags, OptionalErrorCode ec = throws());
 
     int frameSize() const noexcept;
-    int frameNumber() const noexcept;
+    int64_t frameNumber() const noexcept;
 
     // Note, set ref counted to enable for multithreaded processing
     bool isRefCountedFrames() const noexcept;

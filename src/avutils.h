@@ -22,6 +22,8 @@ extern "C" {
 
 // New Audio Channel Layout API
 #define API_NEW_CHANNEL_LAYOUT ((LIBAVUTIL_VERSION_MAJOR > 57) || (LIBAVUTIL_VERSION_MAJOR == 57 && (LIBAVUTIL_VERSION_MINOR >= 24)))
+// `int64_t frame_num` has been added in the 60.2, in the 61.0 it should be removed
+#define API_FRAME_NUM          ((LIBAVCODEC_VERSION_MAJOR > 60) || (LIBAVCODEC_VERSION_MAJOR == 60 && LIBAVCODEC_VERSION_MINOR >= 2))
 
 #if defined(__ICL) || defined (__INTEL_COMPILER)
 #    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))

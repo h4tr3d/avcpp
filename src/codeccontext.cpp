@@ -561,9 +561,13 @@ int CodecContext2::frameSize() const noexcept
     return RAW_GET2(isValid(), frame_size, 0);
 }
 
-int CodecContext2::frameNumber() const noexcept
+int64_t CodecContext2::frameNumber() const noexcept
 {
+#if API_FRAME_NUM
+    return RAW_GET2(isValid(), frame_num, 0);
+#else
     return RAW_GET2(isValid(), frame_number, 0);
+#endif
 }
 
 bool CodecContext2::isRefCountedFrames() const noexcept
