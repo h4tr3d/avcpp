@@ -296,11 +296,11 @@ public:
             return 0;
         size_t total = 0;
         if (m_raw->buf[0]) {
-            for (size_t i = 0; i < AV_NUM_DATA_POINTERS && m_raw->buf[i]; i++) {
+            for (auto i = 0; i < AV_NUM_DATA_POINTERS && m_raw->buf[i]; i++) {
                 total += m_raw->buf[i]->size;
             }
 
-            for (size_t i = 0; i < m_raw->nb_extended_buf; ++i) {
+            for (auto i = 0; i < m_raw->nb_extended_buf; ++i) {
                 total += m_raw->extended_buf[i]->size;
             }
         } else if (m_raw->data[0]) {
@@ -318,7 +318,7 @@ public:
                                                nullptr,
                                                linesizes);
             } else if (m_raw->nb_samples && frame::is_valid_channel_layout(m_raw)) {
-                for (size_t i = 0; i < m_raw->nb_extended_buf + AV_NUM_DATA_POINTERS && m_raw->extended_data[i]; ++i) {
+                for (auto i = 0; i < m_raw->nb_extended_buf + AV_NUM_DATA_POINTERS && m_raw->extended_data[i]; ++i) {
                     // According docs, all planes must have same size
                     total += m_raw->linesize[0];
                 }
