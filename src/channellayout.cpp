@@ -136,12 +136,29 @@ bool ChannelLayoutView::operator==(const ChannelLayoutView &other) const noexcep
     return av_channel_layout_compare(&m_layout, &other.m_layout) == 0;
 }
 
+ChannelLayout ChannelLayoutView::clone() const
+{
+    return ChannelLayout{*this};
+}
+
 
 ChannelLayout::ChannelLayout(const ChannelLayout &other)
     : ChannelLayout()
 {
     // TODO: error checking
     av_channel_layout_copy(&m_layout, &other.m_layout);
+}
+
+//ChannelLayout::ChannelLayout(ChannelLayoutView &&view)
+//    : ChannelLayout()
+//{
+//
+//}
+
+ChannelLayout::ChannelLayout(const ChannelLayoutView &view)
+    : ChannelLayout()
+{
+    av_channel_layout_copy(&m_layout, view.raw());
 }
 
 ChannelLayout &ChannelLayout::operator=(const ChannelLayout &other)

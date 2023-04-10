@@ -134,6 +134,19 @@ std::deque<uint64_t> Codec::supportedChannelLayouts() const
     return channelLayouts;
 }
 
+std::deque<ChannelLayoutView> Codec::supportedChannelLayouts2() const
+{
+    deque<ChannelLayoutView> channelLayouts;
+    if (!m_raw)
+        return channelLayouts;
+
+    array_to_container(m_raw->ch_layouts, channelLayouts, [](const auto& layout) {
+        return layout.nb_channels == 0;
+    });
+
+    return channelLayouts;
+}
+
 AVCodecID Codec::id() const
 {
     return RAW_GET(id, AV_CODEC_ID_NONE);

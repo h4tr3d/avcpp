@@ -9,6 +9,7 @@
 #include "avlog.h"
 #include "frame.h"
 #include "codec.h"
+#include "channellayout.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -512,6 +513,13 @@ public:
         return codec_context::audio::get_channel_layout_mask(m_raw);
     }
 
+    ChannelLayoutView channelLayout2() const noexcept
+    {
+        if (!isValid())
+            return ChannelLayoutView{};
+        return ChannelLayoutView{m_raw.ch_layout};
+    }
+
     void setSampleRate(int sampleRate) noexcept
     {
         if (!isValid())
@@ -542,6 +550,14 @@ public:
         if (!isValid() || layout == 0)
             return;
         codec_context::audio::set_channel_layout_mask(m_raw, layout);
+    }
+
+    void setChannelLayout(ChannelLayout layout) noexcept
+    {
+        if (!isValid() || !layout.isValid())
+            return;
+        m_raw.ch_layout = *layout.raw();
+        layout.release(); // is controlled by the CodecContext
     }
 
 protected:

@@ -15,6 +15,8 @@ std::string channel_description(AVChannel channel);
 AVChannel   channel_from_string(const std::string &name);
 AVChannel   channel_from_string(const char *name);
 
+class ChannelLayout;
+
 class ChannelLayoutView
 {
 public:
@@ -63,6 +65,8 @@ public:
 
     bool operator==(const ChannelLayoutView &other) const noexcept;
 
+    ChannelLayout clone() const;
+
 protected:
     AVChannelLayout m_layout{};
 };
@@ -73,6 +77,8 @@ class ChannelLayout : public ChannelLayoutView
 {
 public:
     ChannelLayout() = default;
+    //explicit ChannelLayout(ChannelLayoutView &&view);
+    explicit ChannelLayout(const ChannelLayoutView &view);
 
     using ChannelLayoutView::ChannelLayoutView;
 
