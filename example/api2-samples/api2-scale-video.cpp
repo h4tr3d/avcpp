@@ -96,9 +96,8 @@ int main(int argc, char **argv)
     ofrmt.setFormat("mkv", out);
     octx.setFormat(ofrmt);
 
-    Codec        ocodec  = findEncodingCodec(ofrmt);
-    Stream      ost     = octx.addStream(ocodec);
-    VideoEncoderContext encoder {ost};
+    Codec               ocodec = findEncodingCodec(ofrmt);
+    VideoEncoderContext encoder {ocodec};
 
     // Settings
     encoder.setWidth(vdec.width() * 2);
@@ -107,6 +106,14 @@ int main(int argc, char **argv)
     encoder.setTimeBase(Rational{1, 1000});
     encoder.setBitRate(vdec.bitRate());
     encoder.addFlags(octx.outputFormat().isFlags(AVFMT_GLOBALHEADER) ? AV_CODEC_FLAG_GLOBAL_HEADER : 0);
+
+    encoder.open(ec);
+    if (ec) {
+        cerr << "Can't opent encoder\n";
+        return 1;
+    }
+
+    Stream ost = octx.addStream(encoder);
     ost.setFrameRate(vst.frameRate());
     ost.setAverageFrameRate(vst.frameRate()); // try to comment this out and look at the output of ffprobe or mpv
     // it'll show 1k fps regardless of the real fps;
@@ -118,12 +125,6 @@ int main(int argc, char **argv)
     octx.openOutput(out, ec);
     if (ec) {
         cerr << "Can't open output\n";
-        return 1;
-    }
-
-    encoder.open(ec);
-    if (ec) {
-        cerr << "Can't opent encoder\n";
         return 1;
     }
 

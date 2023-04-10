@@ -27,6 +27,7 @@ std::string AvcppCategory::message(int ev) const
         case Errors::CodecAlreadyOpened: return "Codec context already opened";
         case Errors::CodecInvalid: return "Codec context invalid";
         case Errors::CodecNotOpened: return "Codec context does not opened";
+        case Errors::CodecIsNotOpened: return "Codec context is not opened";
         case Errors::CodecInvalidDecodeProc: return "Provided null decode proc";
         case Errors::CodecInvalidEncodeProc: return "Provided null encode proc";
         case Errors::CodecDecodingOffsetToLarge: return "Decoding packet offset biggest packet size";

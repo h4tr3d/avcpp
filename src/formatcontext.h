@@ -82,6 +82,7 @@ public:
     Stream addStream(const Codec &codec, OptionalErrorCode ec = throws());
     Stream addStream(OptionalErrorCode ec = throws());
     Stream addStream(const class VideoEncoderContext& encCtx, OptionalErrorCode ec = throws());
+    Stream addStream(const class AudioEncoderContext& encCtx, OptionalErrorCode ec = throws());
 
     //
     // Seeking
@@ -206,6 +207,7 @@ private:
     void writePacket(const Packet &pkt, OptionalErrorCode ec, int(*write_proc)(AVFormatContext *, AVPacket *));
     void writeFrame(AVFrame *frame, int streamIndex, OptionalErrorCode ec, int(*write_proc)(AVFormatContext*,int,AVFrame*));
 
+    Stream addStream(const class CodecContext2 &ctx, OptionalErrorCode ec);
 
     static int  avioInterruptCb(void *opaque);
     int         avioInterruptCb();

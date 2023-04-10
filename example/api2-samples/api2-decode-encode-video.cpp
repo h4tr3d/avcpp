@@ -87,9 +87,8 @@ int main(int argc, char **argv)
     ofrmt.setFormat(string(), out);
     octx.setFormat(ofrmt);
 
-    Codec        ocodec  = findEncodingCodec(ofrmt);
-    Stream      ost     = octx.addStream(ocodec);
-    VideoEncoderContext encoder {ost};
+    Codec               ocodec  = findEncodingCodec(ofrmt);
+    VideoEncoderContext encoder {ocodec};
 
     // Settings
     encoder.setWidth(vdec.width());
@@ -98,17 +97,19 @@ int main(int argc, char **argv)
         encoder.setPixelFormat(vdec.pixelFormat());
     encoder.setTimeBase(Rational{1, 1000});
     encoder.setBitRate(vdec.bitRate());
+
+    encoder.open(Codec(), ec);
+    if (ec) {
+        cerr << "Can't opent encodec\n";
+        return 1;
+    }
+
+    Stream ost = octx.addStream(encoder);
     ost.setFrameRate(vst.frameRate());
 
     octx.openOutput(out, ec);
     if (ec) {
         cerr << "Can't open output\n";
-        return 1;
-    }
-
-    encoder.open(Codec(), ec);
-    if (ec) {
-        cerr << "Can't opent encodec\n";
         return 1;
     }
 

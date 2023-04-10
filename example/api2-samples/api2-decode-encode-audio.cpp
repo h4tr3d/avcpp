@@ -96,9 +96,8 @@ int main(int argc, char **argv)
         clog << "Output format: " << ofmt.name() << " / " << ofmt.longName() << '\n';
         octx.setFormat(ofmt);
 
-        Codec        ocodec = av::findEncodingCodec(ofmt, false);
-        Stream      ost    = octx.addStream(ocodec);
-        AudioEncoderContext enc (ost);
+        Codec ocodec = av::findEncodingCodec(ofmt, false);
+        AudioEncoderContext enc (ocodec);
 
         clog << ocodec.name() << " / " << ocodec.longName() << ", audio: " << (ocodec.type()==AVMEDIA_TYPE_AUDIO) << '\n';
 
@@ -155,15 +154,16 @@ int main(int argc, char **argv)
         enc.setBitRate(adec.bitRate());
 #endif
 
-        octx.openOutput(out, ec);
-        if (ec) {
-            cerr << "Can't open output\n";
-            return 1;
-        }
-
         enc.open(ec);
         if (ec) {
             cerr << "Can't open encoder\n";
+            return 1;
+        }
+
+        Stream ost = octx.addStream(enc);
+        octx.openOutput(out, ec);
+        if (ec) {
+            cerr << "Can't open output\n";
             return 1;
         }
 

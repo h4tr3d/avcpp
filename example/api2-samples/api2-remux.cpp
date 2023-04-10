@@ -122,6 +122,11 @@ int main(int argc, char **argv)
             continue;
         }
 
+        auto ocoder = GenericCodecContext();
+        // copy codec settings
+        ocoder.copyContextFrom(icoder);
+
+        // TBD: rework, does not work now
         auto ost = octx.addStream(icoder.codec(), ec);
 
         // We can omit codec checking above and got error FormatCodecUnsupported (error code or exception)
@@ -135,11 +140,6 @@ int main(int argc, char **argv)
         }
 
         ost.setTimeBase(ist.timeBase());
-
-        auto ocoder = GenericCodecContext(ost);
-
-        // copy codec settings
-        ocoder.copyContextFrom(icoder);
 
         // setup mapping
         streamMapping[i] = ostIdx++;
