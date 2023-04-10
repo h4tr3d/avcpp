@@ -1,12 +1,12 @@
 <map id="src/channellayout.h" name="src/channellayout.h">
-<area shape="rect" id="node1" title=" " alt="" coords="133,5,282,32"/>
-<area shape="rect" id="node2" href="$channellayout_8cpp.html" title=" " alt="" coords="5,80,169,107"/>
-<area shape="rect" id="node3" href="$codec_8h.html" title=" " alt="" coords="348,80,443,107"/>
-<area shape="rect" id="node6" href="$codeccontext_8h.html" title=" " alt="" coords="101,155,245,181"/>
-<area shape="rect" id="node4" href="$codec_8cpp.html" title=" " alt="" coords="409,155,520,181"/>
-<area shape="rect" id="node5" href="$codeccontext_8cpp.html" title=" " alt="" coords="261,229,420,256"/>
-<area shape="rect" id="node7" href="$format_8cpp.html" title=" " alt="" coords="269,155,385,181"/>
-<area shape="rect" id="node8" href="$formatcontext_8h.html" title=" " alt="" coords="596,155,747,181"/>
-<area shape="rect" id="node9" href="$formatcontext_8cpp.html" title=" " alt="" coords="671,229,837,256"/>
-<area shape="rect" id="node10" href="$stream_8cpp.html" title=" " alt="" coords="529,229,648,256"/>
+<area shape="rect" id="node1" title=" " alt="" coords="302,5,451,32"/>
+<area shape="rect" id="node2" href="$channellayout_8cpp.html" title=" " alt="" coords="141,80,305,107"/>
+<area shape="rect" id="node3" href="$codec_8h.html" title=" " alt="" coords="329,80,424,107"/>
+<area shape="rect" id="node6" href="$codeccontext_8h.html" title=" " alt="" coords="455,155,599,181"/>
+<area shape="rect" id="node4" href="$codec_8cpp.html" title=" " alt="" coords="5,155,116,181"/>
+<area shape="rect" id="node5" href="$codeccontext_8cpp.html" title=" " alt="" coords="609,229,768,256"/>
+<area shape="rect" id="node9" href="$format_8cpp.html" title=" " alt="" coords="140,155,256,181"/>
+<area shape="rect" id="node10" href="$formatcontext_8h.html" title=" " alt="" coords="280,155,431,181"/>
+<area shape="rect" id="node7" href="$formatcontext_8cpp.html" title=" " alt="" coords="419,229,585,256"/>
+<area shape="rect" id="node8" href="$stream_8cpp.html" title=" " alt="" coords="277,229,396,256"/>
 </map>
