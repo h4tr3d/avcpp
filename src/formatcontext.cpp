@@ -6,6 +6,7 @@
 #include "avlog.h"
 
 #include "formatcontext.h"
+#include "codeccontext.h"
 
 using namespace std;
 
@@ -33,6 +34,30 @@ int64_t custom_io_seek(void *opaque, int64_t offset, int whence)
         return -1;
     av::CustomIO *io = static_cast<av::CustomIO*>(opaque);
     return io->seek(offset, whence);
+}
+
+string_view get_uri(const AVFormatContext *ctx)
+{
+#if API_AVFORMAT_URL
+    return ctx->url;
+#else
+    return ctx->filename;
+#endif
+}
+
+void set_uri(AVFormatContext *ctx, string_view uri)
+{
+    if (!uri.empty()) {
+#if API_AVFORMAT_URL
+        if (ctx->url)
+            av_free(ctx->url);
+        ctx->url = av_strdup(uri.data());
+#else
+        av_strlcpy(ctx->filename, uri.data(), std::min<size_t>(sizeof(m_raw->filename), uri.size() + 1));
+        ctx->filename[uri.size()] = '\0';
+#endif
+    }
+
 }
 
 } // anonymous
@@ -165,7 +190,7 @@ void FormatContext::dump() const
 {
     if (m_raw)
     {
-        av_dump_format(m_raw, 0, m_uri.c_str(), !outputFormat().isNull());
+        av_dump_format(m_raw, 0, get_uri(m_raw).data(), !outputFormat().isNull());
     }
 }
 
@@ -427,7 +452,7 @@ void FormatContext::openInput(const std::string &uri, InputFormat format, AVDict
         return;
     }
 
-    m_uri      = uri;
+    set_uri(m_raw, uri);
     m_isOpened = true;
 }
 
@@ -645,6 +670,8 @@ void FormatContext::openOutput(const string &uri, OutputFormat format, AVDiction
     FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
+    set_uri(m_raw, string_view(uri));
+
     resetSocketAccess();
     if (!(format.flags() & AVFMT_NOFILE))
     {
@@ -656,7 +683,6 @@ void FormatContext::openOutput(const string &uri, OutputFormat format, AVDiction
         }
     }
 
-    m_uri = uri;
     m_isOpened = true;
 }
 
@@ -666,7 +692,6 @@ void FormatContext::openOutput(CustomIO *io, OptionalErrorCode ec, size_t intern
     if (!is_error(ec))
     {
         m_isOpened = true;
-        m_uri.clear();
     }
 }
 
@@ -955,7 +980,7 @@ void FormatContext::findStreamInfo(AVDictionary **options, size_t optionsCount, 
     m_streamsInfoFound = true;
     if (sts >= 0 && m_raw->nb_streams > 0)
     {
-        av_dump_format(m_raw, 0, m_uri.c_str(), 0);
+        av_dump_format(m_raw, 0, get_uri(m_raw).data(), 0);
         return;
     }
     cerr << "Could not found streams in input container\n";

@@ -227,7 +227,6 @@ private:
 
     bool                                               m_isOpened = false;
     bool                                               m_customIO = false;
-    std::string                                        m_uri;
     bool                                               m_streamsInfoFound = false;
     bool                                               m_headerWriten     = false;
     bool                                               m_substractStartTime = false;
