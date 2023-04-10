@@ -26,14 +26,18 @@ set(TARGETS
 )
 
 foreach(target ${TARGETS})
-   add_executable(${target} ${target}.cpp)
+    add_executable(${target} ${target}.cpp)
 
-   target_link_libraries(${target}
-      avcpp::avcpp
-  )
+    target_link_libraries(${target}
+        avcpp::avcpp
+    )
 
-  if(WIN32)
-    target_link_libraries(${target} ws2_32)
-  endif()
+    if (AVCPP_WARNING_OPTIONS)
+        target_compile_options(${target} PRIVATE ${AVCPP_WARNING_OPTIONS})
+    endif()
+
+    if(WIN32)
+        target_link_libraries(${target} ws2_32)
+    endif()
 
 endforeach()
