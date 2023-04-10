@@ -53,6 +53,31 @@
 #   FFmpeg::FFmpeg - for all components
 #   FFmpeg::<component> - where <component> in lower case (FFmpeg::avcodec) for each components
 #
+# Windows cross building
+# ----------------------
+#
+# pkg-config is used on the Nix platforms. You should point proper pkg-config wrappers:
+#
+# ::
+#
+#   PKG_CONFIG_EXECUTABLE - simplest way is a ponting proper pkg-config wrapper, if provided:
+#
+#       /usr/bin/x86_64-w64-mingw32-pkg-config
+#       /usr/bin/i686-w64-mingw32-pkg-config
+#
+#          Sample usage in the Toolchain file:
+#             find_program(PKG_CONFIG_EXECUTABLE NAMES ${COMPILER_PREFIX}-pkg-config)
+#
+#          It also can be pointed via ENV: 
+#             export PKG_CONFIG=...
+#
+#   Env variables of the pkg-config:
+#       see `man pkg-config`
+#
+#
+# Credits
+# -------
+#
 # Copyright (c) 2006, Matthias Kretz, <kretz@kde.org>
 # Copyright (c) 2008, Alexander Neundorf, <neundorf@kde.org>
 # Copyright (c) 2011, Michael Jansen, <kde@michael-jansen.biz>
