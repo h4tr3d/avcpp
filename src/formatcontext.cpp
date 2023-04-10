@@ -197,7 +197,7 @@ Stream FormatContext::stream(size_t idx, OptionalErrorCode ec)
     return stream(idx);
 }
 
-Stream FormatContext::addStream(const Codec &codec, OptionalErrorCode ec)
+Stream FormatContext::addStream(const Codec &/*codec*/, OptionalErrorCode ec)
 {
     clear_if(ec);
     if (!m_raw)
@@ -206,10 +206,7 @@ Stream FormatContext::addStream(const Codec &codec, OptionalErrorCode ec)
         return Stream();
     }
 
-    auto rawcodec = codec.raw();
-    AVStream *st = nullptr;
-
-    st = avformat_new_stream(m_raw, rawcodec);
+    auto st = avformat_new_stream(m_raw, nullptr);
     if (!st)
     {
         throws_if(ec, Errors::FormatCantAddStream);
@@ -229,6 +226,54 @@ Stream FormatContext::addStream(const Codec &codec, OptionalErrorCode ec)
 #endif
 
     return stream;
+}
+
+Stream FormatContext::addStream(OptionalErrorCode ec)
+{
+    clear_if(ec);
+    if (!m_raw)
+    {
+        throws_if(ec, Errors::Unallocated);
+        return Stream();
+    }
+
+    auto st = avformat_new_stream(m_raw, nullptr);
+    if (!st)
+    {
+        throws_if(ec, Errors::FormatCantAddStream);
+        return Stream();
+    }
+
+    return Stream(m_monitor, st, Direction::Encoding);
+}
+
+Stream FormatContext::addStream(const VideoEncoderContext &encCtx, OptionalErrorCode ec)
+{
+    clear_if(ec);
+    if (!m_raw)
+    {
+        throws_if(ec, Errors::Unallocated);
+        return Stream();
+    }
+
+    if (!encCtx.isOpened()) {
+        throws_if(ec, Errors::CodecIsNotOpened);
+        return Stream();
+    }
+
+    auto st = avformat_new_stream(m_raw, nullptr);
+    if (!st)
+    {
+        throws_if(ec, Errors::FormatCantAddStream);
+        return Stream();
+    }
+
+    auto ret = avcodec_parameters_from_context(st->codecpar, encCtx.raw());
+    if (ret < 0) {
+        throws_if(ec, ret, ffmpeg_category());
+    }
+
+    return Stream(m_monitor, st, Direction::Encoding);
 }
 
 bool FormatContext::seekable() const noexcept

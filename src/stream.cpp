@@ -1,4 +1,5 @@
 #include "formatcontext.h"
+#include "codeccontext.h"
 #include "stream.h"
 
 namespace av
@@ -140,6 +141,19 @@ void Stream::eventFlagsClear(int flags) noexcept
     if (!isValid() || m_direction != Direction::Decoding)
         return;
     m_raw->event_flags &= ~flags;
+}
+
+void Stream::setupEncodingParameters(const VideoEncoderContext &ctx, OptionalErrorCode ec)
+{
+    if (!isValid())
+        return;
+
+    if (!ctx.isOpened()) {
+        throws_if(ec, Errors::CodecIsNotOpened);
+        return;
+    }
+
+    avcodec_parameters_from_context(m_raw->codecpar, ctx.raw());
 }
 
 } // ::av

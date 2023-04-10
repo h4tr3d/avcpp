@@ -78,7 +78,10 @@ public:
     size_t streamsCount() const;
     Stream stream(size_t idx);
     Stream stream(size_t idx, OptionalErrorCode ec);
+    [[deprecated("Codec is not used by the FFmpeg API. Use addStream() without codec and point configured codec context after")]]
     Stream addStream(const Codec &codec, OptionalErrorCode ec = throws());
+    Stream addStream(OptionalErrorCode ec = throws());
+    Stream addStream(const class VideoEncoderContext& encCtx, OptionalErrorCode ec = throws());
 
     //
     // Seeking

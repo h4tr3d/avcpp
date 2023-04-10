@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "averror.h"
 #include "ffmpeg.h"
 #include "rational.h"
 #include "timestamp.h"
@@ -64,6 +65,8 @@ public:
     int eventFlags() const noexcept;
     bool eventFlags(int flags) const noexcept;
     void eventFlagsClear(int flags) noexcept;
+
+    void setupEncodingParameters(const class VideoEncoderContext& ctx, OptionalErrorCode ec = throws());
 
 private:
     std::weak_ptr<char> m_parentMonitor;
