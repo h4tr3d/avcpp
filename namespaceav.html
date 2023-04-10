@@ -108,6 +108,10 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1BufferSrcFilterContext.html">BufferSrcFilterContext</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1ChannelLayout.html">ChannelLayout</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1ChannelLayoutView.html">ChannelLayoutView</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Codec.html">Codec</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html">CodecContext2</a></td></tr>
@@ -415,6 +419,14 @@ Functions</h2></td></tr>
 <tr class="memitem:aec7c6a90827fb63e7e3bc90ff4b7da0b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Container , typename Compare , typename Callable &gt; </td></tr>
 <tr class="memitem:aec7c6a90827fb63e7e3bc90ff4b7da0b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#aec7c6a90827fb63e7e3bc90ff4b7da0b">array_to_container</a> (const T *array, Container &amp;container, Compare isEnd, Callable convert)</td></tr>
 <tr class="separator:aec7c6a90827fb63e7e3bc90ff4b7da0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dd6f30bb4364c4f655b9ec370fc49a5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a6dd6f30bb4364c4f655b9ec370fc49a5">channel_name</a> (AVChannel channel)</td></tr>
+<tr class="separator:a6dd6f30bb4364c4f655b9ec370fc49a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabce99cbcd0a2cd5132beadef97096e8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#aabce99cbcd0a2cd5132beadef97096e8">channel_description</a> (AVChannel channel)</td></tr>
+<tr class="separator:aabce99cbcd0a2cd5132beadef97096e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6497b865fd6cb4234796525bb82a70b7"><td class="memItemLeft" align="right" valign="top">AVChannel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a6497b865fd6cb4234796525bb82a70b7">channel_from_string</a> (const std::string &amp;name)</td></tr>
+<tr class="separator:a6497b865fd6cb4234796525bb82a70b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e3245871dfc2fc533d325b8b590e6b3"><td class="memItemLeft" align="right" valign="top">AVChannel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a2e3245871dfc2fc533d325b8b590e6b3">channel_from_string</a> (const char *name)</td></tr>
+<tr class="separator:a2e3245871dfc2fc533d325b8b590e6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a408162e68f938a6e670534016383927a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Codec.html">Codec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a408162e68f938a6e670534016383927a">findEncodingCodec</a> (AVCodecID id)</td></tr>
 <tr class="separator:a408162e68f938a6e670534016383927a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2cc826606151062d3288238ab7c3051a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Codec.html">Codec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a2cc826606151062d3288238ab7c3051a">findEncodingCodec</a> (const string &amp;name)</td></tr>
@@ -476,6 +488,8 @@ Variables</h2></td></tr>
 <tr class="separator:adc387fdcb6d587c7ab1cea14f5f9fe8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abcb73c7c5313ad4925dcf634c9edcf62"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#abcb73c7c5313ad4925dcf634c9edcf62">TimeBaseQ</a> = AVRational{1, AV_TIME_BASE}</td></tr>
 <tr class="separator:abcb73c7c5313ad4925dcf634c9edcf62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a544286f57cebaba29971596d62f03643"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a544286f57cebaba29971596d62f03643">BufferSize</a> = 128</td></tr>
+<tr class="separator:a544286f57cebaba29971596d62f03643"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a1f53cdb548da1e76e614c1c1c96e1d1e"></a>
@@ -909,6 +923,78 @@ template&lt;typename T , typename Container , typename Callable &gt; </div>
 <span class="mlabels"><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aabce99cbcd0a2cd5132beadef97096e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabce99cbcd0a2cd5132beadef97096e8">&#9670;&nbsp;</a></span>channel_description()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string av::channel_description </td>
+          <td>(</td>
+          <td class="paramtype">AVChannel&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2e3245871dfc2fc533d325b8b590e6b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e3245871dfc2fc533d325b8b590e6b3">&#9670;&nbsp;</a></span>channel_from_string() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AVChannel av::channel_from_string </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6497b865fd6cb4234796525bb82a70b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6497b865fd6cb4234796525bb82a70b7">&#9670;&nbsp;</a></span>channel_from_string() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AVChannel av::channel_from_string </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6dd6f30bb4364c4f655b9ec370fc49a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dd6f30bb4364c4f655b9ec370fc49a5">&#9670;&nbsp;</a></span>channel_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string av::channel_name </td>
+          <td>(</td>
+          <td class="paramtype">AVChannel&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
 </div><div class="memdoc">
 
 </div>
@@ -2452,6 +2538,28 @@ template&lt;typename T , typename Exception  = av::Exception&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="a544286f57cebaba29971596d62f03643"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a544286f57cebaba29971596d62f03643">&#9670;&nbsp;</a></span>BufferSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t av::BufferSize = 128</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aff3e757c09f123b1f607190142d00a77"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aff3e757c09f123b1f607190142d00a77">&#9670;&nbsp;</a></span>NoPts</h2>
 
