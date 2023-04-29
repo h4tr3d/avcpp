@@ -1,4 +1,9 @@
 #get catch2
+
+if not get_option('build_tests')
+    subdir_done()
+endif
+
 catch2 = dependency('catch2', required: true, fallback:['catch2','catch2_dep'])
 
 #create main_test as library and export the dependency

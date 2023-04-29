@@ -7,6 +7,10 @@
 #libavcpp = subproject('avcpp')
 #avcpp_dep = libavcpp.get_variable('avcpp_dep')
 
+if not get_option('build_samples')
+   subdir_done()
+endif
+
 samples = [
     'api2-decode',
     'api2-decode-encode-video',

@@ -1,28 +1,24 @@
 project(
     'avcpp',
     'cpp',
-    meson_version: '>= 0.50.0',
+    meson_version: '>= 0.54.0',
     default_options : [
         'c_std=c11', 
-        'cpp_std=c++17'
+        'cpp_std=c++17',
+        'build_tests=@0@'.format(not meson.is_subproject()),
+        'build_samples=@0@'.format(not meson.is_subproject()),
     ],
     version: '2.1.0',
 )
 
-if not meson.is_subproject()
-    subdir('src')
+subdir('src')
+subdir('example/api2-samples')
+subdir('tests')
 
-    if get_option('build_samples')
-        subdir('example/api2-samples')
-    endif
+meson.override_dependency('avcpp', avcpp_dep)
 
-    if get_option('build_tests')
-        subdir('tests')
-    endif
-else
-    subdir('src')
-endif
-
-if meson.version().version_compare('>=0.54.0')
-    meson.override_dependency('avcpp', avcpp_dep)
-endif
+summary({
+    'Build samples' : get_option('build_samples'),
+    'Build tests' : get_option('build_tests')
+    }, section: 'Extra', bool_yn: true,
+)
