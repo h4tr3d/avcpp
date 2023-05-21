@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.19)
 
 project(avcpp_tests LANGUAGES CXX VERSION 0.0.1)
 

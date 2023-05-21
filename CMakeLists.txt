@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.11)
+cmake_minimum_required (VERSION 3.19)
 
 if(NOT DEFINED PROJECT_NAME)
     set(AVCPP_NOT_SUBPROJECT ON)
