@@ -24,7 +24,7 @@ You can read the full documentation [here](https://h4tr3d.github.io/avcpp/).
   - libswresample >= 0.x.x
   - libpostproc >= 52.x.x
 - GCC >= 5.0 (C++11 is required)
-- CMake (> 3.11) or Meson(> 50.0)
+- CMake (> 3.19) or Meson(> 50.0)
 
 ### Debian, Ubuntu 19.10 and Linux Mint 20.x or newer
 
