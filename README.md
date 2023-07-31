@@ -141,7 +141,7 @@ meson configure -Dbuild_samples=false
 ```
 
 You can set the install prefix using `meson --prefix <your/own/prefix>`.
-To see all of the available options just type `meson configure` and `meson configure --help` to get more insormation.
+To see all of the available options just type `meson configure` and `meson configure --help` to get more information.
 
 Installing the project:
 
