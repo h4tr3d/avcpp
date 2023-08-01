@@ -10,6 +10,7 @@
 #include "pixelformat.h"
 #include "sampleformat.h"
 #include "channellayout.h"
+#include "avutils.h"
 
 namespace av {
 
@@ -31,7 +32,10 @@ public:
     std::deque<int>            supportedSamplerates()   const;
     std::deque<SampleFormat>   supportedSampleFormats() const;
     std::deque<uint64_t>       supportedChannelLayouts() const;
+
+#if API_NEW_CHANNEL_LAYOUT
     std::deque<ChannelLayoutView> supportedChannelLayouts2() const;
+#endif
 
     AVCodecID id() const;
 };

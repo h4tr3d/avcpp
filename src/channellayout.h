@@ -4,6 +4,9 @@
 #include <string_view>
 #include <bitset>
 
+#include "avutils.h"
+
+#if API_NEW_CHANNEL_LAYOUT
 extern "C" {
 #include <libavutil/channel_layout.h>
 }
@@ -110,6 +113,6 @@ private:
 
 };
 
-
 } // namespace av
 
+#endif

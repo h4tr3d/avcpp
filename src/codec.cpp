@@ -134,6 +134,7 @@ std::deque<uint64_t> Codec::supportedChannelLayouts() const
     return channelLayouts;
 }
 
+#if API_NEW_CHANNEL_LAYOUT
 std::deque<ChannelLayoutView> Codec::supportedChannelLayouts2() const
 {
     deque<ChannelLayoutView> channelLayouts;
@@ -146,6 +147,7 @@ std::deque<ChannelLayoutView> Codec::supportedChannelLayouts2() const
 
     return channelLayouts;
 }
+#endif
 
 AVCodecID Codec::id() const
 {
