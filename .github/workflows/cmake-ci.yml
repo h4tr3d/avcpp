@@ -21,10 +21,10 @@ jobs:
         build_type: [Release, Debug]
         skip_meson: [false]
         include:
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             build_type: Release
             skip_meson: true
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             build_type: Debug
             skip_meson: true
 
