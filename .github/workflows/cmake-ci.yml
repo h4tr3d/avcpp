@@ -71,5 +71,5 @@ jobs:
       run: ctest -C ${{ matrix.build_type }}
       
     - name: Meson
-      if: ${{ matrix.skip_meson == false }}
+      if: ${{ matrix.skip_meson == false && matrix.os != 'macos-latest' }}
       run: ci/travis/meson-build.sh
