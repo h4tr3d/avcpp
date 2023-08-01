@@ -16,6 +16,7 @@ build_cmake()
     local CMAKE_VERSION_MINOR=0
     local CMAKE_VERSION_FULL=${CMAKE_VERSION_BASE}.${CMAKE_VERSION_MINOR}
     local CMAKE_ARCH=x86_64
+    local CMAKE_OS=linux
 
     #wget -c http://www.cmake.org/files/v${CMAKE_VERSION_BASE}/cmake-${CMAKE_VERSION_FULL}.tar.gz
     #tar -xzf cmake-${CMAKE_VERSION_FULL}.tar.gz
@@ -24,9 +25,9 @@ build_cmake()
     #make
     #sudo make install
 
-    wget -c https://cmake.org/files/v${CMAKE_VERSION_BASE}/cmake-${CMAKE_VERSION_FULL}-Linux-${CMAKE_ARCH}.tar.gz
-    tar -xzf cmake-${CMAKE_VERSION_FULL}-Linux-${CMAKE_ARCH}.tar.gz
-    export PATH=$(pwd)/cmake-${CMAKE_VERSION_FULL}-Linux-${CMAKE_ARCH}/bin:$PATH
+    wget -c https://cmake.org/files/v${CMAKE_VERSION_BASE}/cmake-${CMAKE_VERSION_FULL}-${CMAKE_OS}-${CMAKE_ARCH}.tar.gz
+    tar -xzf cmake-${CMAKE_VERSION_FULL}-${CMAKE_OS}-${CMAKE_ARCH}.tar.gz
+    export PATH=$(pwd)/cmake-${CMAKE_VERSION_FULL}-${CMAKE_OS}-${CMAKE_ARCH}/bin:$PATH
     cmake --version
 }
 
