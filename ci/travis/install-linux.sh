@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 set -e
+# dump env
+printenv
 
 JOBS=$(cat /proc/cpuinfo | grep '^processor' | wc -l)
 export MAKEFLAGS="-j${JOBS}"
@@ -10,8 +12,8 @@ build_cmake()
 {
     echo "Prepare CMake"
 
-    local CMAKE_VERSION_BASE=3.14
-    local CMAKE_VERSION_MINOR=5
+    local CMAKE_VERSION_BASE=3.27
+    local CMAKE_VERSION_MINOR=0
     local CMAKE_VERSION_FULL=${CMAKE_VERSION_BASE}.${CMAKE_VERSION_MINOR}
     local CMAKE_ARCH=x86_64
 
@@ -74,8 +76,9 @@ echo "Prepare FFmpeg"
                             libavresample-dev \
                             libavutil-dev \
                             libpostproc-dev \
-                            libswresample-dev \
                             libswscale-dev
+    # fail silently
+    sudo apt-get install -y libswresample-dev || true
 )
 
 if [ -z "$SKIP_MESON" -o "$SKIP_MESON" = "false" ]; then
