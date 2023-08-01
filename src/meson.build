@@ -11,6 +11,9 @@ if meson.project_name() == ''
     )
 endif
 
+# TBD
+add_project_arguments('-D__STDC_CONSTANT_MACROS', language : ['c', 'cpp'])
+
 #getting all of the dependencies
 cc = meson.get_compiler('cpp')
 
@@ -51,6 +54,7 @@ avcpp_sources = [
     'averror.cpp',
     'avtime.cpp',
     'avutils.cpp',
+    'channellayout.cpp',
     'codeccontext.cpp',
     'codec.cpp',
     'dictionary.cpp',
@@ -82,6 +86,7 @@ avcpp_header = [
     'avlog.h',
     'avtime.h',
     'avutils.h',
+    'channellayout.h',
     'codeccontext.h',
     'codec.h',
     'dictionary.h',
