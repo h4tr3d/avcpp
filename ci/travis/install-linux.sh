@@ -74,12 +74,12 @@ echo "Prepare FFmpeg"
                             libavdevice-dev \
                             libavfilter-dev \
                             libavformat-dev \
-                            libavresample-dev \
                             libavutil-dev \
                             libpostproc-dev \
-                            libswscale-dev
+                            libswscale-dev \
+                            libswresample-dev
     # fail silently
-    sudo apt-get install -y libswresample-dev || true
+    sudo apt-get install -y libavresample-dev || true
 )
 
 if [ -z "$SKIP_MESON" -o "$SKIP_MESON" = "false" ]; then
