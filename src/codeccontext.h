@@ -513,12 +513,14 @@ public:
         return codec_context::audio::get_channel_layout_mask(m_raw);
     }
 
+#if API_NEW_CHANNEL_LAYOUT
     ChannelLayoutView channelLayout2() const noexcept
     {
         if (!isValid())
             return ChannelLayoutView{};
         return ChannelLayoutView{m_raw.ch_layout};
     }
+#endif
 
     void setSampleRate(int sampleRate) noexcept
     {
@@ -552,6 +554,7 @@ public:
         codec_context::audio::set_channel_layout_mask(m_raw, layout);
     }
 
+#if API_NEW_CHANNEL_LAYOUT
     void setChannelLayout(ChannelLayout layout) noexcept
     {
         if (!isValid() || !layout.isValid())
@@ -559,6 +562,7 @@ public:
         m_raw.ch_layout = *layout.raw();
         layout.release(); // is controlled by the CodecContext
     }
+#endif
 
 protected:
     using Parent::moveOperator;

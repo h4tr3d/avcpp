@@ -21,10 +21,10 @@ jobs:
         build_type: [Release, Debug]
         skip_meson: [false]
         include:
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             build_type: Release
             skip_meson: true
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             build_type: Debug
             skip_meson: true
 
@@ -42,7 +42,7 @@ jobs:
       SKIP_MESON: ${{ matrix.skip_meson }}
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Dump environment variables
       run: echo "OS_NAME=$OS_NAME, BUILD_TYPE=$BUILD_TYPE, SKIP_MESON=$SKIP_MESON"
@@ -71,5 +71,5 @@ jobs:
       run: ctest -C ${{ matrix.build_type }}
       
     - name: Meson
-      if: ${{ matrix.skip_meson == false }}
+      if: ${{ matrix.skip_meson == false && matrix.os != 'macos-latest' }}
       run: ci/travis/meson-build.sh

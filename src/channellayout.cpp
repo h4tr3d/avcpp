@@ -3,6 +3,7 @@
 
 #include "channellayout.h"
 
+#if API_NEW_CHANNEL_LAYOUT
 namespace av {
 
 static constexpr size_t BufferSize = 128;
@@ -214,5 +215,6 @@ void ChannelLayout::swap(ChannelLayout &other)
     std::swap(m_layout, other.m_layout);
 }
 
-
 } // namespace av
+
+#endif

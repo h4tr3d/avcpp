@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 set -e
+# dump env
+printenv
 
 JOBS=$(cat /proc/cpuinfo | grep '^processor' | wc -l)
 export MAKEFLAGS="-j${JOBS}"
@@ -10,10 +12,11 @@ build_cmake()
 {
     echo "Prepare CMake"
 
-    local CMAKE_VERSION_BASE=3.14
-    local CMAKE_VERSION_MINOR=5
+    local CMAKE_VERSION_BASE=3.27
+    local CMAKE_VERSION_MINOR=0
     local CMAKE_VERSION_FULL=${CMAKE_VERSION_BASE}.${CMAKE_VERSION_MINOR}
     local CMAKE_ARCH=x86_64
+    local CMAKE_OS=linux
 
     #wget -c http://www.cmake.org/files/v${CMAKE_VERSION_BASE}/cmake-${CMAKE_VERSION_FULL}.tar.gz
     #tar -xzf cmake-${CMAKE_VERSION_FULL}.tar.gz
@@ -22,9 +25,9 @@ build_cmake()
     #make
     #sudo make install
 
-    wget -c https://cmake.org/files/v${CMAKE_VERSION_BASE}/cmake-${CMAKE_VERSION_FULL}-Linux-${CMAKE_ARCH}.tar.gz
-    tar -xzf cmake-${CMAKE_VERSION_FULL}-Linux-${CMAKE_ARCH}.tar.gz
-    export PATH=$(pwd)/cmake-${CMAKE_VERSION_FULL}-Linux-${CMAKE_ARCH}/bin:$PATH
+    wget -c https://cmake.org/files/v${CMAKE_VERSION_BASE}/cmake-${CMAKE_VERSION_FULL}-${CMAKE_OS}-${CMAKE_ARCH}.tar.gz
+    tar -xzf cmake-${CMAKE_VERSION_FULL}-${CMAKE_OS}-${CMAKE_ARCH}.tar.gz
+    export PATH=$(pwd)/cmake-${CMAKE_VERSION_FULL}-${CMAKE_OS}-${CMAKE_ARCH}/bin:$PATH
     cmake --version
 }
 
@@ -71,11 +74,12 @@ echo "Prepare FFmpeg"
                             libavdevice-dev \
                             libavfilter-dev \
                             libavformat-dev \
-                            libavresample-dev \
                             libavutil-dev \
                             libpostproc-dev \
-                            libswresample-dev \
-                            libswscale-dev
+                            libswscale-dev \
+                            libswresample-dev
+    # fail silently
+    sudo apt-get install -y libavresample-dev || true
 )
 
 if [ -z "$SKIP_MESON" -o "$SKIP_MESON" = "false" ]; then
