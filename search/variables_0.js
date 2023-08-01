@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['buffersize_1236',['BufferSize',['../namespaceav.html#a544286f57cebaba29971596d62f03643',1,'av']]]
+  ['custom_5fio_5fdefault_5fbuffer_5fsize_1207',['CUSTOM_IO_DEFAULT_BUFFER_SIZE',['../classav_1_1FormatContext.html#a8db0445fb71c75f5a2717e6c95b3cff8',1,'av::FormatContext']]]
 ];

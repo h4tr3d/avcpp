@@ -13,7 +13,7 @@ var searchData=
   ['buffersink_2eh_68',['buffersink.h',['../buffersink_8h.html',1,'']]],
   ['buffersinkfilter_69',['bufferSinkFilter',['../classav_1_1FilterGraph.html#a3c56285a279a63190f532bad34310d89',1,'av::FilterGraph']]],
   ['buffersinkfiltercontext_70',['BufferSinkFilterContext',['../classav_1_1BufferSinkFilterContext.html',1,'av::BufferSinkFilterContext'],['../classav_1_1BufferSinkFilterContext.html#aa98fe2ae49ce362f5c10fb4ffd878965',1,'av::BufferSinkFilterContext::BufferSinkFilterContext()=default'],['../classav_1_1BufferSinkFilterContext.html#a0b37726268a9b1be65ffb7872b7431de',1,'av::BufferSinkFilterContext::BufferSinkFilterContext(const FilterContext &amp;ctx, OptionalErrorCode ec=throws())']]],
-  ['buffersize_71',['bufferSize',['../classav_1_1VideoFrame.html#aa0d2d775732a541d7246fdadbf78cb3c',1,'av::VideoFrame::bufferSize()'],['../namespaceav.html#a544286f57cebaba29971596d62f03643',1,'av::BufferSize()']]],
+  ['buffersize_71',['bufferSize',['../classav_1_1VideoFrame.html#aa0d2d775732a541d7246fdadbf78cb3c',1,'av::VideoFrame']]],
   ['buffersrc_2ecpp_72',['buffersrc.cpp',['../buffersrc_8cpp.html',1,'']]],
   ['buffersrc_2eh_73',['buffersrc.h',['../buffersrc_8h.html',1,'']]],
   ['buffersrcfilter_74',['bufferSrcFilter',['../classav_1_1FilterGraph.html#a683378a9404a9762e8b11975b79a4058',1,'av::FilterGraph']]],
