@@ -60,7 +60,7 @@ After that  just install the same packages as above.
 
 ## Build
 
-There are two ways to compile eitehr with CMake or with meson.
+There are two ways to compile either with CMake or with meson.
 By default meson is faster, but if your project uses CMake, those instructions might be better for integration.
 
 ### Building with CMake
