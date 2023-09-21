@@ -70,6 +70,7 @@ echo "Prepare FFmpeg"
         sudo apt-get -qq update
     fi
 
+    sudo apt-get update
     sudo apt-get install -y libavcodec-dev \
                             libavdevice-dev \
                             libavfilter-dev \
