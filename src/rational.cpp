@@ -84,66 +84,23 @@ double Rational::operator ()() const noexcept
     return av_q2d(m_value);
 }
 
+int Rational::threewaycmp(const Rational &other) const noexcept
+{
+    // HACK: in this case av_cmp_q() return INT_MIN;
+    if (m_value.den == 0 &&
+        m_value.num == 0 &&
+        other.getDenominator() == 0 &&
+        other.getNumerator()   == 0)
+    {
+        return 0;
+    }
+    auto const result = av_cmp_q(m_value, other.getValue());
+    return result == 0 ? 0 : result == -1 ? -1 : 1;
+}
+
 bool Rational::operator ==(const Rational &other) const noexcept
 {
-    // HACK: in this case av_cmp_q() return INT_MIN;
-    if (m_value.den == 0 &&
-        m_value.num == 0 &&
-        other.getDenominator() == 0 &&
-        other.getNumerator()   == 0)
-    {
-        return true;
-    }
-
-    return (av_cmp_q(m_value, other.getValue()) == 0 ? true : false);
+    return threewaycmp(other) == 0;
 }
-
-#if __cplusplus > 201703L
-
-std::strong_ordering Rational::operator<=>(const Rational &other) const noexcept
-{
-    // HACK: in this case av_cmp_q() return INT_MIN;
-    if (m_value.den == 0 &&
-        m_value.num == 0 &&
-        other.getDenominator() == 0 &&
-        other.getNumerator()   == 0)
-    {
-        return std::strong_ordering::equal;
-    }
-    auto const result = av_cmp_q(m_value, other.getValue());
-    return result == 0 ? std::strong_ordering::equal :
-               result == -1 ? std::strong_ordering::less : std::strong_ordering::greater;
-}
-
-#else
-
-bool Rational::operator!=(const Rational &other) const noexcept
-{
-    return !(*this == other);
-}
-
-bool Rational::operator <(const Rational &other) const noexcept
-{
-    return (av_cmp_q(m_value, other.getValue()) == -1 ? true : false);
-}
-
-bool Rational::operator>(const Rational &other) const noexcept
-{
-    return (av_cmp_q(m_value, other.getValue()) == 1 ? true : false);
-}
-
-bool Rational::operator<=(const Rational &other) const noexcept
-{
-    auto const result = av_cmp_q(m_value, other.getValue());
-    return *this == other || result == -1;
-}
-
-bool Rational::operator>=(const Rational &other) const noexcept
-{
-    auto const result = av_cmp_q(m_value, other.getValue());
-    return *this == other || result == 1;
-}
-
-#endif
 
 } // ::av

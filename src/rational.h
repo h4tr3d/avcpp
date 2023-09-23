@@ -50,13 +50,34 @@ public:
 
     bool      operator== (const Rational   &other) const noexcept;
 #if __cplusplus > 201703L
-    std::strong_ordering operator<=>(const Rational &other) const noexcept;
+    std::strong_ordering operator<=>(const Rational &other) const noexcept
+    {
+        switch (threewaycmp(other)) {
+        case -1:
+            return std::strong_ordering::less;
+        case 0:
+            return std::strong_ordering::equal;
+        case 1:
+            return std::strong_ordering::greater;
+        }
+        return std::strong_ordering::equal; // make a compiler happy
+    }
 #else
-    bool      operator!= (const Rational   &other) const noexcept;
-    bool      operator<  (const Rational   &other) const noexcept;
-    bool      operator>  (const Rational   &other) const noexcept;
-    bool      operator<= (const Rational   &other) const noexcept;
-    bool      operator>= (const Rational   &other) const noexcept;
+    bool operator!= (const Rational &other) const noexcept {
+        return threewaycmp(other) != 0;
+    }
+    bool operator<(const Rational &other) const noexcept {
+        return threewaycmp(other) < 0;
+    }
+    bool operator>(const Rational &other) const noexcept {
+        return threewaycmp(other) > 0;
+    }
+    bool operator<=(const Rational &other) const noexcept {
+        return (*this < other) || (*this == other);
+    }
+    bool operator>=(const Rational &other) const noexcept {
+        return (*this > other) || (*this == other);
+    }
 #endif
 
     Rational  operator+  (const Rational   &value) const noexcept;
@@ -70,6 +91,9 @@ public:
     {
         return m_value;
     }
+
+private:
+    int threewaycmp(const Rational &other) const noexcept;
 
 private:
     AVRational m_value;
