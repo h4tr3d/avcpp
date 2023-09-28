@@ -69,5 +69,5 @@ var searchData=
   ['currentdts_143',['currentDts',['../classav_1_1Stream.html#a46c7ebe7577d4aa3ad5a5694721ee0ed',1,'av::Stream']]],
   ['custom_5fio_5fdefault_5fbuffer_5fsize_144',['CUSTOM_IO_DEFAULT_BUFFER_SIZE',['../classav_1_1FormatContext.html#a8db0445fb71c75f5a2717e6c95b3cff8',1,'av::FormatContext']]],
   ['customio_145',['CustomIO',['../structav_1_1CustomIO.html',1,'av']]],
-  ['contributing_146',['CONTRIBUTING',['../md_CONTRIBUTING.html',1,'']]]
+  ['contributing_20information_146',['Contributing information',['../md_CONTRIBUTING.html',1,'']]]
 ];
