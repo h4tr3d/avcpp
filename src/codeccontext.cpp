@@ -314,6 +314,8 @@ CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction dir
         avcodec_parameters_to_context(m_raw, st.raw()->codecpar);
     }
 #endif
+
+    setTimeBase(st.timeBase());
 }
 
 CodecContext2::CodecContext2(const Codec &codec, Direction direction, AVMediaType type)
