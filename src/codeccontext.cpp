@@ -82,7 +82,7 @@ int decode(AVCodecContext *avctx,
     }
 
     ret = avcodec_receive_frame(avctx, picture);
-    if (ret < 0 && ret != AVERROR(EAGAIN))
+    if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
         return ret;
     if (ret >= 0 && got_picture_ptr)
         *got_picture_ptr = 1;
@@ -964,11 +964,8 @@ CodecContext2::encodeCommon(Packet &outPacket,
         FF_ENABLE_DEPRECATION_WARNINGS
 #endif
         outPacket.setStreamIndex(m_stream.index());
-    }
-
-    // Recalc PTS/DTS/Duration
-    if (m_stream.isValid()) {
-        outPacket.setTimeBase(m_stream.timeBase());
+    } else if (timeBase().getNumerator() != 0) {
+        outPacket.setTimeBase(timeBase());
     }
 
     outPacket.setComplete(true);
