@@ -964,7 +964,7 @@ CodecContext2::encodeCommon(Packet &outPacket,
         FF_ENABLE_DEPRECATION_WARNINGS
 #endif
         outPacket.setStreamIndex(m_stream.index());
-    } else if (timeBase().getNumerator() != 0) {
+    } else if (timeBase() != Rational()) {
         outPacket.setTimeBase(timeBase());
     }
 
