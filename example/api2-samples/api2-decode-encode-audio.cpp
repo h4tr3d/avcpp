@@ -190,7 +190,7 @@ int main(int argc, char **argv)
                 break;
             }
 
-            if (pkt.streamIndex() != audioStream) {
+            if (pkt && pkt.streamIndex() != audioStream) {
                 continue;
             }
 
