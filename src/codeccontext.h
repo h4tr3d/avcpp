@@ -559,7 +559,7 @@ public:
     {
         if (!isValid() || !layout.isValid())
             return;
-        m_raw.ch_layout = *layout.raw();
+        m_raw->ch_layout = *layout.raw();
         layout.release(); // is controlled by the CodecContext
     }
 #endif
