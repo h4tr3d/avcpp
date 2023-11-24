@@ -254,7 +254,7 @@ public:
 
     AVMediaType codecType() const noexcept
     {
-        return codecType(_type);
+        return CodecContext2::codecType(_type);
     }
 };
 
