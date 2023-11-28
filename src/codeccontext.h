@@ -518,7 +518,7 @@ public:
     {
         if (!isValid())
             return ChannelLayoutView{};
-        return ChannelLayoutView{m_raw.ch_layout};
+        return ChannelLayoutView{m_raw->ch_layout};
     }
 #endif
 
