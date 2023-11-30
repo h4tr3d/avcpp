@@ -165,7 +165,8 @@ bool AudioResampler::pop(AudioSamples &dst, bool getall, OptionalErrorCode ec)
     //clog << "  delay [pop]: " << result << endl;
 
     // Need more data
-    if (result < dst.samplesCount() + m_filterSize / 2 && getall == false) {
+    if (result < dst.samplesCount() + m_filterSize / 2 && getall == false)
+    {
         return false;
     }
 
@@ -208,7 +209,8 @@ AudioSamples AudioResampler::pop(size_t samplesCount, OptionalErrorCode ec)
     auto delay = swr_get_delay(m_raw, m_dstRate);
 
     // Need more data
-    if (size_t(delay) < samplesCount + m_filterSize / 2 && samplesCount) {
+    if (size_t(delay) < samplesCount + m_filterSize / 2 && samplesCount)
+    {
         return AudioSamples(nullptr);
     }
 
