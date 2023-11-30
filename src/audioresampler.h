@@ -128,6 +128,8 @@ private:
     int            m_streamIndex = -1;
     Timestamp      m_prevPts;
     Timestamp      m_nextPts;
+
+    int64_t        m_filterSize;
 };
 
 } // namespace av

@@ -165,8 +165,7 @@ bool AudioResampler::pop(AudioSamples &dst, bool getall, OptionalErrorCode ec)
     //clog << "  delay [pop]: " << result << endl;
 
     // Need more data
-    if (result < dst.samplesCount() && getall == false)
-    {
+    if (result < dst.samplesCount() + m_filterSize / 2 && getall == false) {
         return false;
     }
 
@@ -209,8 +208,7 @@ AudioSamples AudioResampler::pop(size_t samplesCount, OptionalErrorCode ec)
     auto delay = swr_get_delay(m_raw, m_dstRate);
 
     // Need more data
-    if (size_t(delay) < samplesCount && samplesCount)
-    {
+    if (size_t(delay) < samplesCount + m_filterSize / 2 && samplesCount) {
         return AudioSamples(nullptr);
     }
 
@@ -401,6 +399,10 @@ bool AudioResampler::init(uint64_t dstChannelsLayout, int dstRate, SampleFormat 
         goto ffmpeg_internal_fails;
 
     sts = av_opt_set_sample_fmt(m_raw,     "out_sample_fmt",        dstFormat,         0);
+    if (sts < 0)
+        goto ffmpeg_internal_fails;
+
+    sts = av_opt_get_int(m_raw,            "filter_size",           0,     &m_filterSize);
     if (sts < 0)
         goto ffmpeg_internal_fails;
 
