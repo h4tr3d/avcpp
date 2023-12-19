@@ -39,6 +39,8 @@ int64_t custom_io_seek(void *opaque, int64_t offset, int whence)
 string_view get_uri(const AVFormatContext *ctx)
 {
 #if API_AVFORMAT_URL
+    if (ctx->url == nullptr)
+        return {};
     return ctx->url;
 #else
     return ctx->filename;
