@@ -99,8 +99,8 @@ int main(int argc, char **argv)
         }
 
         // Setup filter
-        auto filter_buffer_src = Filter("buffer");
-        auto filter_buffer_sink = Filter("buffersink");
+        Filter filter_buffer_src{"buffer"};
+        Filter filter_buffer_sink{"buffersink"};
         FilterGraph filter_graph;
 
         // Input and ouput contexts
@@ -136,8 +136,8 @@ int main(int argc, char **argv)
         }
 
         // Setup the entry/exit points
-        auto buffer_src = BufferSrcFilterContext(src_ctx);
-        auto buffer_sink = BufferSinkFilterContext(sink_ctx);
+        BufferSrcFilterContext buffer_src{src_ctx};
+        BufferSinkFilterContext buffer_sink{sink_ctx};
 
         while (Packet pkt = ictx.readPacket(ec))
         {
