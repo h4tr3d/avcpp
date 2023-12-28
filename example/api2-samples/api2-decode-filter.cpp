@@ -169,7 +169,7 @@ int main(int argc, char **argv)
                 continue;
             }
 
-            // Push in the filter
+            // Push into the filter
             buffer_src.addVideoFrame(frame, AV_BUFFERSRC_FLAG_KEEP_REF, ec);
             if (ec)
             {
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
                 return 1;
             }
 
-            // Pull until there are more incoming frames
+            // Pull until there are no more incoming frames
             VideoFrame filtered;
             while (buffer_sink.getVideoFrame(filtered, ec))
             {
@@ -207,7 +207,7 @@ int main(int argc, char **argv)
             if (!frame)
                 break;
 
-            // Push in the filter
+            // Push into the filter
             buffer_src.addVideoFrame(frame, ec);
             if (ec)
             {
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
                 return 1;
             }
 
-            // Pull until there are more incoming frames
+            // Pull until there are no more incoming frames
             VideoFrame filtered;
             while (buffer_sink.getVideoFrame(filtered, ec))
             {
