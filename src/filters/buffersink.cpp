@@ -36,7 +36,9 @@ bool BufferSinkFilterContext::getVideoFrame(VideoFrame &frame, int flags, Option
         return false;
     }
 
-    return getFrame(frame.raw(), flags, ec);
+    bool sts = getFrame(frame.raw(), flags, ec);
+    frame.setComplete(sts);
+    return sts;
 }
 
 bool BufferSinkFilterContext::getVideoFrame(VideoFrame &frame, OptionalErrorCode ec)
