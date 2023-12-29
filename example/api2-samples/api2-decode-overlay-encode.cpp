@@ -24,7 +24,8 @@
 using namespace std;
 using namespace av;
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     if (argc < 3)
         return 1;
 
@@ -48,33 +49,39 @@ int main(int argc, char **argv) {
     int count = 0;
 
     ictx.openInput(uri, ec);
-    if (ec) {
+    if (ec)
+    {
         cerr << "Can't open input\n";
         return 1;
     }
 
     ictx.findStreamInfo();
 
-    for (size_t i = 0; i < ictx.streamsCount(); ++i) {
+    for (size_t i = 0; i < ictx.streamsCount(); ++i)
+    {
         auto st = ictx.stream(i);
-        if (st.mediaType() == AVMEDIA_TYPE_VIDEO) {
+        if (st.mediaType() == AVMEDIA_TYPE_VIDEO)
+        {
             videoStream = i;
             vst = st;
             break;
         }
     }
 
-    if (vst.isNull()) {
+    if (vst.isNull())
+    {
         cerr << "Video stream not found\n";
         return 1;
     }
 
-    if (vst.isValid()) {
+    if (vst.isValid())
+    {
         vdec = VideoDecoderContext(vst);
         vdec.setRefCountedFrames(true);
 
         vdec.open(Codec(), ec);
-        if (ec) {
+        if (ec)
+        {
             cerr << "Can't open codec\n";
             return 1;
         }
@@ -89,34 +96,40 @@ int main(int argc, char **argv) {
     Stream image_st;
 
     static_image_ctx.openInput(image, ec);
-    if (ec) {
+    if (ec)
+    {
         cerr << "Can't open static image\n";
         return 1;
     }
 
     static_image_ctx.findStreamInfo();
 
-    for (size_t i = 0; i < static_image_ctx.streamsCount(); ++i) {
+    for (size_t i = 0; i < static_image_ctx.streamsCount(); ++i)
+    {
         auto st = static_image_ctx.stream(i);
         // An image is still a video stream in the ffmpeg world
-        if (st.mediaType() == AVMEDIA_TYPE_VIDEO) {
+        if (st.mediaType() == AVMEDIA_TYPE_VIDEO)
+        {
             imageStream = i;
             image_st = st;
             break;
         }
     }
 
-    if (image_st.isNull()) {
+    if (image_st.isNull())
+    {
         cerr << "Image stream not found\n";
         return 1;
     }
 
-    if (image_st.isValid()) {
+    if (image_st.isValid())
+    {
         static_image_dec = VideoDecoderContext(image_st);
         static_image_dec.setRefCountedFrames(true);
 
         static_image_dec.open(Codec(), ec);
-        if (ec) {
+        if (ec)
+        {
             cerr << "Can't open codec\n";
             return 1;
         }
@@ -143,7 +156,8 @@ int main(int argc, char **argv) {
     encoder.setBitRate(vdec.bitRate());
 
     encoder.open(Codec(), ec);
-    if (ec) {
+    if (ec)
+    {
         cerr << "Can't opent encodec\n";
         return 1;
     }
@@ -152,7 +166,8 @@ int main(int argc, char **argv) {
     ost.setFrameRate(vst.frameRate());
 
     octx.openOutput(out, ec);
-    if (ec) {
+    if (ec)
+    {
         cerr << "Can't open output\n";
         return 1;
     }
@@ -174,7 +189,7 @@ int main(int argc, char **argv) {
     filter_desc << "buffer@image=video_size=" << static_image_dec.width() << "x" << static_image_dec.height()
                 << ":pix_fmt=" << static_image_dec.pixelFormat() << ":time_base=" << encoder.timeBase()
                 << ":pixel_aspect=" << static_image_dec.sampleAspectRatio() << " [image_unscaled];  ";
-    filter_desc << "[image_unscaled] scale="  <<  vdec.width()/4 << "x" << vdec.height()/4 << " [image];  ";
+    filter_desc << "[image_unscaled] scale=" << vdec.width() / 4 << "x" << vdec.height() / 4 << " [image];  ";
     // * for the output
     filter_desc << "[in][image] overlay=x=50:y=50:repeatlast=1 [out];  ";
     filter_desc << "[out] buffersink@out";
@@ -182,12 +197,14 @@ int main(int argc, char **argv) {
     // Setup the filter chain
     clog << "Filter descriptor: " << filter_desc.str() << endl;
     filter_graph.parse(filter_desc.str(), ec);
-    if (ec) {
+    if (ec)
+    {
         clog << "Error parsing filter chain: " << ec << ", " << ec.message() << endl;
         return 1;
     }
     filter_graph.config(ec);
-    if (ec) {
+    if (ec)
+    {
         clog << "Error configuring filter chain: " << ec << ", " << ec.message() << endl;
         return 1;
     }
@@ -200,12 +217,14 @@ int main(int argc, char **argv) {
     // Load the static image into buffer_image_src, it won't change
     {
         auto image_pkt = static_image_ctx.readPacket(ec);
-        if (ec) {
+        if (ec)
+        {
             clog << "Image reading error: " << ec << ", " << ec.message() << endl;
             return 1;
         }
         auto image_frame = static_image_dec.decode(image_pkt, ec);
-        if (ec) {
+        if (ec)
+        {
             clog << "Image decoding error: " << ec << ", " << ec.message() << endl;
             return 1;
         }
@@ -217,7 +236,8 @@ int main(int argc, char **argv) {
              << ", size=" << image_frame.size() << ", ref=" << image_frame.isReferenced() << ":"
              << image_frame.refCount() << " / type: " << image_frame.pictureType() << endl;
         buffer_image_src.addVideoFrame(image_frame, ec);
-        if (ec) {
+        if (ec)
+        {
             clog << "Image processing error: " << ec << ", " << ec.message() << endl;
             return 1;
         }
@@ -230,29 +250,36 @@ int main(int argc, char **argv) {
     //
     // PROCESS
     //
-    while (true) {
+    while (true)
+    {
 
         // READING
         Packet pkt = ictx.readPacket(ec);
-        if (ec) {
+        if (ec)
+        {
             clog << "Packet reading error: " << ec << ", " << ec.message() << endl;
             break;
         }
 
         bool flushDecoder = false;
         // !EOF
-        if (pkt) {
-            if (pkt.streamIndex() != videoStream) {
+        if (pkt)
+        {
+            if (pkt.streamIndex() != videoStream)
+            {
                 continue;
             }
 
             clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts().seconds() << " / "
                  << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
-        } else {
+        }
+        else
+        {
             flushDecoder = true;
         }
 
-        do {
+        do
+        {
             // DECODING
             auto frame = vdec.decode(pkt, ec);
 
@@ -262,18 +289,23 @@ int main(int argc, char **argv) {
 
             bool flushEncoder = false;
 
-            if (ec) {
+            if (ec)
+            {
                 cerr << "Decoding error: " << ec << endl;
                 return 1;
-            } else if (!frame) {
-                if (flushDecoder) {
+            }
+            else if (!frame)
+            {
+                if (flushDecoder)
+                {
                     flushEncoder = true;
                 }
             }
 
-            if (frame) {
-                clog << "Frame from decoder: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase()
-                     << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size()
+            if (frame)
+            {
+                clog << "Frame from decoder: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / "
+                     << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size()
                      << ", ref=" << frame.isReferenced() << ":" << frame.refCount()
                      << " / type: " << frame.pictureType() << endl;
 
@@ -283,7 +315,8 @@ int main(int argc, char **argv) {
 
                 // Push into the filter
                 buffer_video_src.addVideoFrame(frame, ec);
-                if (ec) {
+                if (ec)
+                {
                     clog << "Filter push error: " << ec << ", " << ec.message() << endl;
                     return 1;
                 }
@@ -291,7 +324,8 @@ int main(int argc, char **argv) {
 
             // Pull from the filter until there are no more incoming frames
             VideoFrame filtered;
-            while (buffer_sink.getVideoFrame(filtered, ec)) {
+            while (buffer_sink.getVideoFrame(filtered, ec))
+            {
                 // Change timebase
                 filtered.setTimeBase(encoder.timeBase());
                 filtered.setStreamIndex(0);
@@ -301,14 +335,19 @@ int main(int argc, char **argv) {
                      << ", size=" << filtered.size() << ", ref=" << filtered.isReferenced() << ":"
                      << filtered.refCount() << " / type: " << filtered.pictureType() << endl;
 
-                if (filtered || flushEncoder) {
-                    do {
+                if (filtered || flushEncoder)
+                {
+                    do
+                    {
                         // Encode
                         Packet opkt = filtered ? encoder.encode(filtered, ec) : encoder.encode(ec);
-                        if (ec) {
+                        if (ec)
+                        {
                             cerr << "Encoding error: " << ec << endl;
                             return 1;
-                        } else if (!opkt) {
+                        }
+                        else if (!opkt)
+                        {
                             // cerr << "Empty packet\n";
                             // continue;
                             break;
@@ -322,14 +361,16 @@ int main(int argc, char **argv) {
                              << endl;
 
                         octx.writePacket(opkt, ec);
-                        if (ec) {
+                        if (ec)
+                        {
                             cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
                             return 1;
                         }
                     } while (flushEncoder);
                 }
             }
-            if (ec && ec.value() != -EAGAIN) {
+            if (ec && ec.value() != -EAGAIN)
+            {
                 cerr << "Error reading frame from the filter chain: " << ec << ", " << ec.message() << endl;
                 return 1;
             }
