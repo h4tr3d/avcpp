@@ -52,7 +52,9 @@ bool BufferSinkFilterContext::getAudioFrame(AudioSamples &samples, int flags, Op
         throws_if(ec, Errors::IncorrectBufferSinkMediaType);
         return false;
     }
-    return getFrame(samples.raw(), flags, ec);
+    bool sts = getFrame(samples.raw(), flags, ec);
+    samples.setComplete(sts);
+    return sts;
 }
 
 bool BufferSinkFilterContext::getAudioFrame(AudioSamples &samples, OptionalErrorCode ec)
