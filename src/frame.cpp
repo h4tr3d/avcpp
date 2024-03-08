@@ -148,12 +148,26 @@ int VideoFrame::height() const
 
 bool VideoFrame::isKeyFrame() const
 {
+#if API_FRAME_KEY
+    return !!(RAW_GET(flags, 0) & AV_FRAME_FLAG_KEY);
+#else
     return RAW_GET(key_frame, false);
+#endif
 }
 
 void VideoFrame::setKeyFrame(bool isKey)
 {
+#if API_FRAME_KEY
+    if (m_raw) {
+        if (isKey) {
+            m_raw->flags |= AV_FRAME_FLAG_KEY;
+        } else {
+            m_raw->flags &= ~(AV_FRAME_FLAG_KEY);
+        }
+    }
+#else
     RAW_SET(key_frame, isKey);
+#endif
 }
 
 int VideoFrame::quality() const
