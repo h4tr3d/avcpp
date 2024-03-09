@@ -100,6 +100,60 @@ int CodecParametersView::getAudioFrameDuration(int frame_bytes) const
     return av_get_audio_frame_duration2(const_cast<AVCodecParameters*>(m_raw), frame_bytes);
 }
 
+AVMediaType CodecParametersView::codecType() const
+{
+    return m_raw ? m_raw->codec_type : AVMEDIA_TYPE_UNKNOWN;
+}
+
+void CodecParametersView::codecType(AVMediaType codec_type)
+{
+    if (m_raw)
+        m_raw->codec_type = codec_type;
+}
+
+
+AVMediaType CodecParametersView::mediaType() const
+{
+    return codecType();
+}
+
+void CodecParametersView::mediaType(AVMediaType media_type)
+{
+    codecType(media_type);
+}
+
+
+AVCodecID CodecParametersView::codecId() const
+{
+    return m_raw ? m_raw->codec_id : AV_CODEC_ID_NONE;
+}
+
+void CodecParametersView::codecId(AVCodecID codec_id)
+{
+    if (m_raw)
+        m_raw->codec_id = codec_id;
+}
+
+Codec CodecParametersView::encodingCodec() const
+{
+    return m_raw ? findEncodingCodec(m_raw->codec_id) : Codec();
+}
+
+Codec CodecParametersView::decodingCodec() const
+{
+    return m_raw ? findDecodingCodec(m_raw->codec_id) : Codec();
+}
+
+uint32_t CodecParametersView::codecTag() const
+{
+    return m_raw ? m_raw->codec_tag : 0u;
+}
+
+void CodecParametersView::codecTag(uint32_t codec_tag)
+{
+    if (m_raw)
+        m_raw->codec_tag = codec_tag;
+}
 
 
 CodecParameters::CodecParameters()

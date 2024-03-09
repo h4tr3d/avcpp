@@ -3,6 +3,7 @@
 #include "averror.h"
 #include "ffmpeg.h"
 #include "avutils.h"
+#include "codec.h"
 
 extern "C" {
 #include <libavcodec/codec_par.h>
@@ -29,6 +30,25 @@ public:
     void copyTo(class CodecContext2& dst, OptionalErrorCode ec = throws()) const;
 
     int getAudioFrameDuration(int frame_bytes) const;
+
+    // Getters & Setters
+
+    AVMediaType  codecType() const;
+    void         codecType(AVMediaType codec_type);
+
+    AVMediaType  mediaType() const;
+    void         mediaType(AVMediaType media_type);
+
+    AVCodecID    codecId() const;
+    void         codecId(AVCodecID codec_id);
+
+    Codec        encodingCodec() const;
+    Codec        decodingCodec() const;
+
+    uint32_t     codecTag() const;
+    void         codecTag(uint32_t codec_tag);
+
+    // TBD
 };
 
 class CodecParameters : public CodecParametersView, public noncopyable
