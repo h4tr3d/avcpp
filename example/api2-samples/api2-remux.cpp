@@ -114,7 +114,7 @@ int main(int argc, char **argv)
     for (size_t i = 0, ostIdx = 0; i < ictx.streamsCount(); ++i) {
         auto ist    = ictx.stream(i);
         auto icodecpar = ist.codecParameters();
-        auto ocodec = av::findEncodingCodec(icodecpar.raw()->codec_id);
+        auto ocodec = icodecpar.decodingCodec();
 
         // Source codec can be unsupprted by the target format. Transcoding required or simple skip.
         if (!octx.outputFormat().codecSupported(ocodec)) {
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 
         auto ost = octx.addStream(ec);
         ost.setCodecParameters(icodecpar);
-        ost.codecParameters().raw()->codec_tag = 0;
+        ost.codecParameters().codecTag(0);
 
         // We can omit codec checking above and got error FormatCodecUnsupported (error code or exception)
         if (ec) {
