@@ -6,9 +6,9 @@
 #include "codec.h"
 
 extern "C" {
-#include <libavcodec/codec_par.h>
+// codec_par.h included if needed
+#include <libavcodec/avcodec.h>
 }
-
 
 namespace av {
 
