@@ -7,6 +7,7 @@
 
 #include "formatcontext.h"
 #include "codeccontext.h"
+#include "codecparameters.h"
 
 using namespace std;
 
@@ -901,12 +902,10 @@ Stream FormatContext::addStream(const CodecContext2 &ctx, OptionalErrorCode ec)
         return Stream();
     }
 
-    auto ret = avcodec_parameters_from_context(st->codecpar, ctx.raw());
-    if (ret < 0) {
-        throws_if(ec, ret, ffmpeg_category());
-    }
+    auto stream = Stream(m_monitor, st, Direction::Encoding);
+    stream.codecParameters().copyFrom(ctx, ec);
 
-    return Stream(m_monitor, st, Direction::Encoding);
+    return stream;
 }
 
 void FormatContext::writeTrailer(OptionalErrorCode ec)

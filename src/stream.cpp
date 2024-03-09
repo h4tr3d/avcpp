@@ -122,6 +122,18 @@ void Stream::setAverageFrameRate(const Rational &frameRate)
     RAW_SET2(isValid(), avg_frame_rate, frameRate.getValue());
 }
 
+CodecParametersView Stream::codecParameters() const
+{
+    return m_raw ? m_raw->codecpar : nullptr;
+}
+
+void Stream::setCodecParameters(CodecParametersView codecpar, OptionalErrorCode ec)
+{
+    if (m_raw && m_raw->codecpar) {
+        codecpar.copyTo(m_raw->codecpar, ec);
+    }
+}
+
 int Stream::eventFlags() const noexcept
 {
     if (!isValid() || m_direction != Direction::Decoding)
@@ -153,7 +165,7 @@ void Stream::setupEncodingParameters(const VideoEncoderContext &ctx, OptionalErr
         return;
     }
 
-    avcodec_parameters_from_context(m_raw->codecpar, ctx.raw());
+    codecParameters().copyFrom(ctx);
 }
 
 } // ::av

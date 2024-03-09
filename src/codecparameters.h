@@ -31,7 +31,7 @@ public:
     int getAudioFrameDuration(int frame_bytes) const;
 };
 
-class CodecParameters : CodecParametersView, public noncopyable
+class CodecParameters : public CodecParametersView, public noncopyable
 {
 public:
     CodecParameters();

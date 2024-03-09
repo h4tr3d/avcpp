@@ -9,6 +9,7 @@
 #include "packet.h"
 #include "dictionary.h"
 #include "codec.h"
+#include "codecparameters.h"
 
 #include "codeccontext.h"
 
@@ -311,7 +312,7 @@ CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction dir
 #else
     m_raw = avcodec_alloc_context3(c.raw());
     if (m_raw) {
-        avcodec_parameters_to_context(m_raw, st.raw()->codecpar);
+        st.codecParameters().copyTo(*this);
     }
 #endif
 
@@ -397,8 +398,9 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
     FF_ENABLE_DEPRECATION_WARNINGS
 #else
     // TBD: need a check
-    if (m_stream.isValid())
-        avcodec_parameters_from_context(m_stream.raw()->codecpar, m_raw);
+    if (m_stream.isValid()) {
+        m_stream.codecParameters().copyFrom(*this);
+    }
 #endif
 }
 
@@ -507,9 +509,9 @@ void CodecContext2::copyContextFrom(const CodecContext2 &other, OptionalErrorCod
         throws_if(ec, stat, ffmpeg_category());
     FF_ENABLE_DEPRECATION_WARNINGS
 #else
-    AVCodecParameters params{};
-    avcodec_parameters_from_context(&params, other.m_raw);
-    avcodec_parameters_to_context(m_raw, &params);
+    CodecParameters params;
+    params.copyFrom(other);
+    params.copyTo(*this);
 #endif
     m_raw->codec_tag = 0;
 }
