@@ -19,6 +19,7 @@ using avcpp_format_const = typename std::conditional<
 using FmtCodec = class Codec;
 namespace internal {
 bool codec_supported(const AVCodecTag *const *codecTag, const FmtCodec &codec);
+bool codec_supported(const AVCodecTag *const *codecTag, AVCodecID codec_id);
 } // ::internal
 
 template<typename T>
@@ -54,6 +55,13 @@ struct Format : public FFWrapperPtr<T>
         if (!m_raw)
             return false;
         return internal::codec_supported(m_raw->codec_tag, codec);
+    }
+
+    bool codecSupported(AVCodecID codec_id) const noexcept
+    {
+        if (!m_raw)
+            return false;
+        return internal::codec_supported(m_raw->codec_tag, codec_id);
     }
 
 protected:

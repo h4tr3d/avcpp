@@ -7,11 +7,16 @@ namespace internal {
 
 bool codec_supported(const AVCodecTag * const *codecTag, const FmtCodec &codec)
 {
+    return codec_supported(codecTag, codec.id());
+}
+
+bool codec_supported(const AVCodecTag *const *codecTag, AVCodecID codec_id)
+{
     if (!codecTag) // any codec supported
         return true;
 
     unsigned int tag;
-    return !!av_codec_get_tag2(codecTag, codec.id(), &tag);
+    return !!av_codec_get_tag2(codecTag, codec_id, &tag);
 }
 
 } // ::internal
