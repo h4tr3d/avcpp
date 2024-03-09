@@ -113,21 +113,19 @@ int main(int argc, char **argv)
     // Copy streams
     for (size_t i = 0, ostIdx = 0; i < ictx.streamsCount(); ++i) {
         auto ist    = ictx.stream(i);
-        auto icoder = GenericCodecContext(ist);
+        auto icodecpar = ist.codecParameters();
+        auto ocodec = av::findEncodingCodec(icodecpar.raw()->codec_id);
 
         // Source codec can be unsupprted by the target format. Transcoding required or simple skip.
-        if (!octx.outputFormat().codecSupported(icoder.codec())) {
-            clog << "Input stream " << i << " codec '" << icoder.codec().name() <<
+        if (!octx.outputFormat().codecSupported(ocodec)) {
+            clog << "Input stream " << i << " codec '" << ocodec.name() <<
                     "' does not supported by the output format '" << oformat.name() << "'\n";
             continue;
         }
 
-        auto ocoder = GenericCodecContext();
-        // copy codec settings
-        ocoder.copyContextFrom(icoder);
-
-        // TBD: rework, does not work now
-        auto ost = octx.addStream(icoder.codec(), ec);
+        auto ost = octx.addStream(ec);
+        ost.setCodecParameters(icodecpar);
+        ost.codecParameters().raw()->codec_tag = 0;
 
         // We can omit codec checking above and got error FormatCodecUnsupported (error code or exception)
         if (ec) {
