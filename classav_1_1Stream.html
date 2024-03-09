@@ -142,6 +142,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5be73cdb36835e3fa4c89870b6253f14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7ea63a220c3a3220c3073fc553d207b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Stream.html#ad7ea63a220c3a3220c3073fc553d207b">setAverageFrameRate</a> (const <a class="el" href="classav_1_1Rational.html">Rational</a> &amp;<a class="el" href="classav_1_1Stream.html#a6d8ac1bc868ac1f9419f5d496415c06c">frameRate</a>)</td></tr>
 <tr class="separator:ad7ea63a220c3a3220c3073fc553d207b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2320d50fa0fa240eb5c363a4ab0ff3d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1CodecParametersView.html">CodecParametersView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Stream.html#a2320d50fa0fa240eb5c363a4ab0ff3d9">codecParameters</a> () const</td></tr>
+<tr class="separator:a2320d50fa0fa240eb5c363a4ab0ff3d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47b0df4abf878b48d066cb66233b0c42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Stream.html#a47b0df4abf878b48d066cb66233b0c42">setCodecParameters</a> (<a class="el" href="classav_1_1CodecParametersView.html">CodecParametersView</a> codecpar, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>())</td></tr>
+<tr class="separator:a47b0df4abf878b48d066cb66233b0c42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa79138b7c159f820a9065bfa5e607832"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Stream.html#aa79138b7c159f820a9065bfa5e607832">eventFlags</a> () const noexcept</td></tr>
 <tr class="memdesc:aa79138b7c159f820a9065bfa5e607832"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags to the user to detect events happening on the stream.  <a href="classav_1_1Stream.html#aa79138b7c159f820a9065bfa5e607832">More...</a><br /></td></tr>
 <tr class="separator:aa79138b7c159f820a9065bfa5e607832"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -215,6 +219,23 @@ Additional Inherited Members</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="classav_1_1Rational.html">Rational</a> av::Stream::averageFrameRate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2320d50fa0fa240eb5c363a4ab0ff3d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2320d50fa0fa240eb5c363a4ab0ff3d9">&#9670;&nbsp;</a></span>codecParameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classav_1_1CodecParametersView.html">CodecParametersView</a> av::Stream::codecParameters </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -563,6 +584,34 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramtype">const <a class="el" href="classav_1_1Rational.html">Rational</a> &amp;&#160;</td>
           <td class="paramname"><em>frameRate</em></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a47b0df4abf878b48d066cb66233b0c42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47b0df4abf878b48d066cb66233b0c42">&#9670;&nbsp;</a></span>setCodecParameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void av::Stream::setCodecParameters </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classav_1_1CodecParametersView.html">CodecParametersView</a>&#160;</td>
+          <td class="paramname"><em>codecpar</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a>&#160;</td>
+          <td class="paramname"><em>ec</em> = <code><a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
