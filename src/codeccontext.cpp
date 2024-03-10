@@ -72,21 +72,25 @@ int decode(AVCodecContext *avctx,
            int *got_picture_ptr,
            const AVPacket *avpkt)
 {
-    if (got_picture_ptr)
-        *got_picture_ptr = 0;
+    int _storage;
+    auto& got_picture = got_picture_ptr ? *got_picture_ptr : _storage;
+
+    got_picture = 0;
 
     int ret;
     if (avpkt) {
         ret = avcodec_send_packet(avctx, avpkt);
-        if (ret < 0 && ret != AVERROR_EOF)
+        if (ret < 0)
             return ret;
     }
 
     ret = avcodec_receive_frame(avctx, picture);
-    if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+        return 0; // just musk error, but no frame
+    else if (ret < 0)
         return ret;
-    if (ret >= 0 && got_picture_ptr)
-        *got_picture_ptr = 1;
+
+    got_picture = 1;
 
     return 0;
 }
@@ -97,19 +101,23 @@ int encode(AVCodecContext *avctx,
            const AVFrame *frame,
            int *got_packet_ptr)
 {
-    if (got_packet_ptr)
-        *got_packet_ptr = 0;
+    int _storage;
+    auto& got_packet = got_packet_ptr ? *got_packet_ptr : _storage;
+
+    got_packet = 0;
 
     int ret;
     ret = avcodec_send_frame(avctx, frame);
-    if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+    if (ret < 0)
         return ret;
 
     ret = avcodec_receive_packet(avctx, avpkt);
-    if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+        return 0;
+    else if (ret < 0)
         return ret;
-    if (got_packet_ptr)
-        *got_packet_ptr = 1;
+
+    got_packet = 1;
     return 0;
 }
 
@@ -765,7 +773,7 @@ void CodecContext2::open(const Codec &codec, AVDictionary **options, OptionalErr
 }
 
 std::pair<int, const error_category *> CodecContext2::decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *)) noexcept
-{
+{    
     if (!isValid())
         return make_error_pair(Errors::CodecInvalid);
 
@@ -975,6 +983,21 @@ CodecContext2::encodeCommon(Packet &outPacket,
     outPacket.setComplete(true);
 
     return st;
+}
+
+error_code CodecContext2::decodeCheckPreconditions() const noexcept
+{
+    if (!isValid())
+        return make_error_code(Errors::CodecInvalid);
+
+    if (!isOpened())
+        return make_error_code(Errors::CodecNotOpened);
+
+    // if (!decodeProc)
+    //     return make_error_code(Errors::CodecInvalidDecodeProc);
+    // if (offset && inPacket.size() && offset >= inPacket.size())
+    //     return make_error_code(Errors::CodecDecodingOffsetToLarge);
+    return {};
 }
 
 

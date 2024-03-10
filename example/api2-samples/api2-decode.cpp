@@ -103,6 +103,29 @@ int main(int argc, char **argv)
             auto ts = pkt.ts();
             clog << "Read packet: " << ts << " / " << ts.seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
+#if 1
+            vdec.decode(pkt, [&](VideoFrame frame) {
+                    count++;
+                    //if (count > 100)
+                    //    return 0;
+
+                    if (!frame) {
+                        cerr << "Empty frame\n";
+                        //return 1;
+                    }
+
+                    ts = frame.pts();
+
+                    clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << ", tm: " << ts.seconds() << ", tb: " << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
+
+                    return 1; // continue
+                }, ec);
+
+            if (ec) {
+                cerr << "Error: " << ec << ", " << ec.message() << endl;
+                return 1;
+            }
+#else
             VideoFrame frame = vdec.decode(pkt, ec);
 
             count++;
@@ -120,11 +143,27 @@ int main(int argc, char **argv)
             ts = frame.pts();
 
             clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << ", tm: " << ts.seconds() << ", tb: " << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
-
+#endif
         }
 
-        clog << "Flush frames;\n";
+        clog << "Flush frames:\n";
+#if 1
+        vdec.decodeFlush([&](auto frame) {
+                // Handle such case
+                // if (!frame)
+                //     return 0; // stop frame extracting
+                auto ts = frame.pts();
+                clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << ", tm: " << ts.seconds() << ", tb: " << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
+                return 1; // continue
+            }, ec);
+
+        if (ec) {
+            cerr << "Flush Error: " << ec << ", " << ec.message() << endl;
+            return 1;
+        }
+#else
         while (true) {
+
             VideoFrame frame = vdec.decode(Packet(), ec);
             if (ec) {
                 cerr << "Error: " << ec << ", " << ec.message() << endl;
@@ -135,6 +174,7 @@ int main(int argc, char **argv)
             auto ts = frame.pts();
             clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << ", tm: " << ts.seconds() << ", tb: " << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
         }
+#endif
 
         // NOTE: stream decodec must be closed/destroyed before
         //ictx.close();

@@ -10,6 +10,7 @@
 #include "frame.h"
 #include "codec.h"
 #include "channellayout.h"
+#include "packet.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -17,6 +18,13 @@ extern "C" {
 }
 
 namespace av {
+
+namespace detail {
+template<typename T>
+concept valid_frame_type = std::is_same_v<T, VideoFrame> || std::is_same_v<T, AudioSamples>;
+template<typename Ret, typename Fn, typename... Args>
+concept invocable_r = std::is_invocable_r_v<Ret, Fn, Args...>;
+}
 
 namespace codec_context::audio {
 void set_channels(AVCodecContext *obj, int channels);
@@ -148,6 +156,8 @@ protected:
     encodeCommon(class Packet &outPacket, const AVFrame *inFrame, int &gotPacket,
                          int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*)) noexcept;
 
+    std::error_code decodeCheckPreconditions() const noexcept;
+
 public:
     template<typename T>
     std::pair<int, const std::error_category*>
@@ -163,6 +173,86 @@ public:
                  const T &inFrame,
                  int &gotPacket,
                  int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *));
+
+
+    template<typename T, typename Fn>
+        requires detail::valid_frame_type<T> &&
+                 detail::invocable_r<int, Fn, T>
+    std::error_code decodeCommon(const class Packet &pkt, Fn on_frame) noexcept
+    {
+        auto ec = decodeCheckPreconditions();
+        if (ec)
+            return ec;
+
+        auto ret = avcodec_send_packet(m_raw, pkt.raw());
+        if (ret) {
+            return {ret, ffmpeg_category()};
+        }
+
+        AVFrame *frame = av_frame_alloc();
+        if (!frame) {
+            return make_error_code(Errors::CantAllocateFrame);
+        }
+
+        while (ret >= 0) {
+            ret = avcodec_receive_frame(m_raw, frame);
+            if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                return {};
+            else if (ret < 0)
+                return {ret, ffmpeg_category()};
+
+            // Wrap frame
+            T frm(frame);
+
+            // Dial with PTS/DTS in packet/stream timebase
+
+            if (pkt.timeBase() != Rational())
+                frm.setTimeBase(pkt.timeBase());
+            else
+                frm.setTimeBase(m_stream.timeBase());
+
+            AVFrame *frm_raw = frm.raw();
+
+            if (frm_raw->pts == av::NoPts)
+                frm_raw->pts = av::frame::get_best_effort_timestamp(frm_raw);
+
+#if LIBAVCODEC_VERSION_MAJOR < 57
+            if (frame->pts == av::NoPts)
+                frame->pts = frame->pkt_pts;
+#endif
+
+            if (frm_raw->pts == av::NoPts)
+                frm_raw->pts = frm_raw->pkt_dts;
+
+            // Convert to decoder/frame time base. Seems not nessesary.
+            frm.setTimeBase(timeBase());
+
+            if (pkt)
+                frm.setStreamIndex(pkt.streamIndex());
+            else
+                frm.setStreamIndex(m_stream.index());
+
+            frm.setComplete(true);
+
+            if constexpr (std::is_same_v<T, VideoFrame>) {
+                frm.setPictureType(AV_PICTURE_TYPE_I);
+            }
+
+            if constexpr (std::is_same_v<T, AudioSamples>) {
+                // Fix channels layout, only for legacy Channel Layout, new API assumes both parameters more sync
+#if !API_NEW_CHANNEL_LAYOUT
+                if (frm.channelsCount() && !frm.channelsLayout())
+                    av::frame::set_channel_layout(frm.raw(), av_get_default_channel_layout(frm.channelsCount()));
+#endif
+            }
+
+            auto const sts = on_frame(std::move(frm));
+            if (sts <= 0)
+                break;
+        }
+
+        return {};
+    }
 
 private:
     Stream m_stream;
@@ -429,6 +519,25 @@ public:
                       bool    autoAllocateFrame = true);
 
 
+
+    template<typename Fn>
+        requires detail::invocable_r<int, Fn, VideoFrame>
+    void decode(const Packet &packet, Fn on_frame, OptionalErrorCode ec = throws())
+    {
+        clear_if(ec);
+        auto sts = decodeCommon<VideoFrame>(packet, std::move(on_frame));
+        if (sts) {
+            throws_if(ec, sts.value(), sts.category());
+        }
+    }
+
+    template<typename Fn>
+        requires detail::invocable_r<int, Fn, VideoFrame>
+    void decodeFlush(Fn on_frame, OptionalErrorCode ec = throws())
+    {
+        decode(Packet(), std::move(on_frame), ec);
+    }
+
 private:
     VideoFrame decodeVideo(OptionalErrorCode ec,
                            const Packet &packet,
@@ -582,6 +691,17 @@ public:
     AudioSamples decode(const Packet &inPacket, OptionalErrorCode ec = throws());
     AudioSamples decode(const Packet &inPacket, size_t offset, OptionalErrorCode ec = throws());
 
+
+    template<typename Fn>
+        requires detail::invocable_r<int, Fn, AudioSamples>
+    void decode(const Packet &packet, Fn on_frame, OptionalErrorCode ec = throws())
+    {
+        clear_if(ec);
+        auto sts = decodeCommon<AudioSamples>(packet, std::move(on_frame));
+        if (sts) {
+            throws_if(ec, sts.value(), sts.category());
+        }
+    }
 };
 
 
