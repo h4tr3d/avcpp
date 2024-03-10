@@ -7,18 +7,22 @@ set(AV_NAMESPACE avcpp)
 set(AV_BASENAME avcpp)
 
 # This is a little gross as it compiles everything twice, but it's good enough for my needs.
-if (AV_ENABLE_SHARED)
-    list (APPEND AV_TARGETS ${AV_BASENAME})
-endif()
+list (APPEND AV_TARGETS ${AV_BASENAME})
 
-if (AV_ENABLE_STATIC)
+if (AV_ENABLE_STATIC AND AV_ENABLE_SHARED)
     list (APPEND AV_TARGETS ${AV_BASENAME}-static)
 endif()
 
 foreach(TARGET ${AV_TARGETS})
-    set(TYPE SHARED)
+
     if (${TARGET} MATCHES "-static")
         set(TYPE STATIC)
+    else()
+        if (AV_ENABLE_SHARED)
+            set(TYPE SHARED)
+        else()
+            set(TYPE STATIC)
+        endif()
     endif()
 
     add_library(${TARGET} ${TYPE} ${AV_SOURCES} ${AV_HEADERS})
