@@ -60,7 +60,8 @@ std::string AvcppCategory::message(int ev) const
         case Errors::IncorrectBufferSinkFilter: return "Given filter context not an type of BufferSink filters";
         case Errors::IncorrectBufferSinkMediaType: return "Incorrect frame media type provided for BufferSink filter";
         case Errors::MixBufferSinkAccess: return "Mix getFrame() and getSamples() calls on BufferSink";
-    }
+        case Errors::CantAllocatePacket: return "Can't allocate packet";
+        }
 
     return "Uknown AvCpp error";
 }

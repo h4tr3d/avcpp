@@ -58,6 +58,7 @@ enum class Errors
     IncorrectBufferSinkFilter,
     IncorrectBufferSinkMediaType,
     MixBufferSinkAccess,
+    CantAllocatePacket,
 };
 
 class OptionalErrorCode
