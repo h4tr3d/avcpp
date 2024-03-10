@@ -147,33 +147,9 @@ protected:
 
     void open(const Codec &codec, AVDictionary **options, OptionalErrorCode ec);
 
-
-    std::pair<int, const std::error_category*>
-    decodeCommon(AVFrame *outFrame, const class Packet &inPacket, size_t offset, int &frameFinished,
-                 int (*decodeProc)(AVCodecContext*, AVFrame*,int *, const AVPacket *)) noexcept;
-
-    std::pair<int, const std::error_category*>
-    encodeCommon(class Packet &outPacket, const AVFrame *inFrame, int &gotPacket,
-                         int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*)) noexcept;
-
     std::error_code checkDecodeEncodePreconditions() const noexcept;
 
 public:
-    template<typename T>
-    std::pair<int, const std::error_category*>
-    decodeCommon(T &outFrame,
-                 const class Packet &inPacket,
-                 size_t offset,
-                 int &frameFinished,
-                 int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *));
-
-    template<typename T>
-    std::pair<int, const std::error_category*>
-    encodeCommon(class Packet &outPacket,
-                 const T &inFrame,
-                 int &gotPacket,
-                 int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *));
-
 
     template<typename T, typename Fn>
         requires detail::valid_frame_type<T> &&
@@ -554,42 +530,6 @@ public:
 
     VideoDecoderContext& operator=(VideoDecoderContext&& other);
 
-    /**
-     * @brief decodeVideo  - decode video packet
-     *
-     * @param packet   packet to decode
-     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
-     *                       av#throws the function will throw on error instead
-     * @param autoAllocateFrame  it true - output will be allocated at the ffmpeg internal, otherwise
-     *                           it will be allocated before decode proc call.
-     * @return encoded video frame, if error: exception thrown or error code returns, in both cases
-     *         output undefined.
-     */
-    VideoFrame decode(const Packet    &packet,
-                      OptionalErrorCode ec = throws(),
-                      bool             autoAllocateFrame = true);
-
-    /**
-     * @brief decodeVideo - decode video packet with additional parameters
-     *
-     * @param[in] packet         packet to decode
-     * @param[in] offset         data offset in packet
-     * @param[out] decodedBytes  amount of decoded bytes
-     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
-     *                       av#throws the function will throw on error instead
-     * @param autoAllocateFrame  it true - output will be allocated at the ffmpeg internal, otherwise
-     *                           it will be allocated before decode proc call.
-     * @return encoded video frame, if error: exception thrown or error code returns, in both cases
-     *         output undefined.
-     */
-    VideoFrame decode(const Packet &packet,
-                      size_t offset,
-                      size_t &decodedBytes,
-                      OptionalErrorCode ec = throws(),
-                      bool    autoAllocateFrame = true);
-
-
-
     template<typename Fn>
         requires detail::invocable_r<int, Fn, VideoFrame>
     void decode(const Packet &packet, Fn on_frame, OptionalErrorCode ec = throws())
@@ -607,14 +547,6 @@ public:
     {
         decode(Packet(), std::move(on_frame), ec);
     }
-
-private:
-    VideoFrame decodeVideo(OptionalErrorCode ec,
-                           const Packet &packet,
-                           size_t offset,
-                           size_t *decodedBytes,
-                           bool    autoAllocateFrame);
-
 };
 
 
@@ -628,32 +560,6 @@ public:
     VideoEncoderContext(VideoEncoderContext&& other);
 
     VideoEncoderContext& operator=(VideoEncoderContext&& other);
-
-    /**
-     * @brief encodeVideo - Flush encoder
-     *
-     * Stop flushing when returns empty packets
-     *
-     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
-     *                       av#throws the function will throw on error instead
-     * @return
-     */
-    Packet encode(OptionalErrorCode ec = throws());
-
-    /**
-     * @brief encodeVideo - encode video frame
-     *
-     * @note Some encoders need some amount of frames before beginning encoding, so it is normal,
-     *       that for some amount of frames returns empty packets.
-     *
-     * @param inFrame  frame to encode
-     * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
-     *                       av#throws the function will throw on error instead
-     * @return
-     */
-    Packet encode(const VideoFrame &inFrame, OptionalErrorCode ec = throws());
-
-
 
     template<typename Fn>
         requires detail::invocable_r<int, Fn, Packet>
@@ -777,10 +683,6 @@ public:
 
     AudioDecoderContext& operator=(AudioDecoderContext&& other);
 
-    AudioSamples decode(const Packet &inPacket, OptionalErrorCode ec = throws());
-    AudioSamples decode(const Packet &inPacket, size_t offset, OptionalErrorCode ec = throws());
-
-
     template<typename Fn>
         requires detail::invocable_r<int, Fn, AudioSamples>
     void decode(const Packet &packet, Fn frame_handler, OptionalErrorCode ec = throws())
@@ -811,10 +713,6 @@ public:
     AudioEncoderContext(AudioEncoderContext&& other);
 
     AudioEncoderContext& operator=(AudioEncoderContext&& other);
-
-    Packet encode(OptionalErrorCode ec = throws());
-    Packet encode(const AudioSamples &inSamples, OptionalErrorCode ec = throws());
-
 
     template<typename Fn>
         requires detail::invocable_r<int, Fn, Packet>
