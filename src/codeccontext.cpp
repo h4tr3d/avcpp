@@ -985,7 +985,7 @@ CodecContext2::encodeCommon(Packet &outPacket,
     return st;
 }
 
-error_code CodecContext2::decodeCheckPreconditions() const noexcept
+error_code CodecContext2::checkDecodeEncodePreconditions() const noexcept
 {
     if (!isValid())
         return make_error_code(Errors::CodecInvalid);

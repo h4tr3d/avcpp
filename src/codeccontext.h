@@ -156,7 +156,7 @@ protected:
     encodeCommon(class Packet &outPacket, const AVFrame *inFrame, int &gotPacket,
                          int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*)) noexcept;
 
-    std::error_code decodeCheckPreconditions() const noexcept;
+    std::error_code checkDecodeEncodePreconditions() const noexcept;
 
 public:
     template<typename T>
@@ -178,9 +178,9 @@ public:
     template<typename T, typename Fn>
         requires detail::valid_frame_type<T> &&
                  detail::invocable_r<int, Fn, T>
-    std::error_code decodeCommon(const class Packet &pkt, Fn on_frame) noexcept
+    std::error_code decodeCommon(const class Packet &pkt, Fn frame_handler) noexcept
     {
-        auto ec = decodeCheckPreconditions();
+        auto ec = checkDecodeEncodePreconditions();
         if (ec)
             return ec;
 
@@ -203,6 +203,8 @@ public:
 
             // Wrap frame
             T frm(frame);
+            // now, it safe to dereference frame
+            av_frame_unref(frame);
 
             // Dial with PTS/DTS in packet/stream timebase
 
@@ -246,12 +248,80 @@ public:
 #endif
             }
 
-            auto const sts = on_frame(std::move(frm));
+            auto const sts = frame_handler(std::move(frm));
             if (sts <= 0)
                 break;
         }
 
         return {};
+    }
+
+
+
+    template<typename T, typename Fn>
+        requires detail::valid_frame_type<T> &&
+                 detail::invocable_r<int, Fn, Packet>
+    std::error_code encodeCommon(const T &frame, Fn packet_handler) noexcept
+    {
+        auto ec = checkDecodeEncodePreconditions();
+        if (ec)
+            return ec;
+
+        // avcodec_send_packet() can accept null packet or packet with zero size for flushing
+        // but avcodec_send_frame() allow only null frame for flushing
+        auto ret = avcodec_send_frame(m_raw, frame.isValid() ? frame.raw() : nullptr);
+        if (ret) {
+            return {ret, ffmpeg_category()};
+        }
+
+        AVPacket *packet = av_packet_alloc();
+        if (!packet) {
+            return make_error_code(Errors::CantAllocatePacket);
+        }
+
+        // read all the available output packets (in general there may be any number of them
+        while (ret >= 0) {
+            ret = avcodec_receive_packet(m_raw, packet);
+            if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                return {};
+            else if (ret < 0) {
+                return {ret, ffmpeg_category()};
+            }
+
+            // Wrap packet (reference will be incremented)
+            std::error_code ec;
+            Packet pkt{packet, ec};
+            if (ec) {
+                return ec;
+            }
+
+            // Now it safe to unref packet
+            av_packet_unref(packet);
+
+            if (frame && frame.timeBase() != Rational()) {
+                pkt.setTimeBase(frame.timeBase());
+                pkt.setStreamIndex(frame.streamIndex());
+            } else if (m_stream.isValid()) {
+#if USE_CODECPAR
+                pkt.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
+#else
+                FF_DISABLE_DEPRECATION_WARNINGS
+                    if (m_stream.raw()->codec) {
+                    pkt.setTimeBase(m_stream.raw()->codec->time_base);
+                }
+                FF_ENABLE_DEPRECATION_WARNINGS
+#endif
+                pkt.setStreamIndex(m_stream.index());
+            } else if (timeBase() != Rational()) {
+                pkt.setTimeBase(timeBase());
+            }
+
+            pkt.setComplete(true);
+
+            auto const sts = packet_handler(std::move(pkt));
+            if (sts <= 0)
+                break;
+        }
     }
 
 private:
@@ -583,6 +653,25 @@ public:
      */
     Packet encode(const VideoFrame &inFrame, OptionalErrorCode ec = throws());
 
+
+
+    template<typename Fn>
+        requires detail::invocable_r<int, Fn, Packet>
+    void encode(const VideoFrame &frame, Fn packet_handler, OptionalErrorCode ec = throws())
+    {
+        clear_if(ec);
+        auto sts = encodeCommon<VideoFrame>(frame, std::move(packet_handler));
+        if (sts) {
+            throws_if(ec, sts.value(), sts.category());
+        }
+    }
+
+    template<typename Fn>
+        requires detail::invocable_r<int, Fn, Packet>
+    void encodeFlush(Fn packet_handler, OptionalErrorCode ec = throws())
+    {
+        decode(VideoFrame(nullptr), std::move(packet_handler), ec);
+    }
 };
 
 
@@ -694,13 +783,20 @@ public:
 
     template<typename Fn>
         requires detail::invocable_r<int, Fn, AudioSamples>
-    void decode(const Packet &packet, Fn on_frame, OptionalErrorCode ec = throws())
+    void decode(const Packet &packet, Fn frame_handler, OptionalErrorCode ec = throws())
     {
         clear_if(ec);
-        auto sts = decodeCommon<AudioSamples>(packet, std::move(on_frame));
+        auto sts = decodeCommon<AudioSamples>(packet, std::move(frame_handler));
         if (sts) {
             throws_if(ec, sts.value(), sts.category());
         }
+    }
+
+    template<typename Fn>
+        requires detail::invocable_r<int, Fn, AudioSamples>
+    void decodeFlush(Fn frame_handler, OptionalErrorCode ec = throws())
+    {
+        decode(Packet(), std::move(frame_handler), ec);
     }
 };
 
@@ -718,6 +814,25 @@ public:
 
     Packet encode(OptionalErrorCode ec = throws());
     Packet encode(const AudioSamples &inSamples, OptionalErrorCode ec = throws());
+
+
+    template<typename Fn>
+        requires detail::invocable_r<int, Fn, Packet>
+    void encode(const AudioSamples &samples, Fn packet_handler, OptionalErrorCode ec = throws())
+    {
+        clear_if(ec);
+        auto sts = encodeCommon<AudioSamples>(samples, std::move(packet_handler));
+        if (sts) {
+            throws_if(ec, sts.value(), sts.category());
+        }
+    }
+
+    template<typename Fn>
+        requires detail::invocable_r<int, Fn, Packet>
+    void encodeFlush(Fn packet_handler, OptionalErrorCode ec = throws())
+    {
+        decode(AudioSamples(nullptr), std::move(packet_handler), ec);
+    }
 
 };
 
