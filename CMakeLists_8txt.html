@@ -72,16 +72,18 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac5cd4a8a8e487522ad726d861399e1a9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CMakeLists_8txt.html#ac5cd4a8a8e487522ad726d861399e1a9">include</a> (GNUInstallDirs) file(GLOB_RECURSE AV_SOURCES &quot;*.cpp&quot;) file(GLOB_RECURSE AV_HEADERS &quot;*.h&quot; &quot;*.hpp&quot;) set(AV_NAMESPACE avcpp) <a class="el" href="CMakeLists_8txt.html#a62fee6f1fb0c3f1b30d7ed02b43d6400">set</a>(AV_BASENAME avcpp) if(AV_ENABLE_SHARED) list(APPEND AV_TARGETS $</td></tr>
-<tr class="separator:ac5cd4a8a8e487522ad726d861399e1a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a521d6cfcd436366b7de9192e68301741"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CMakeLists_8txt.html#a521d6cfcd436366b7de9192e68301741">endif</a> () if(AV_ENABLE_STATIC) list(APPEND AV_TARGETS $</td></tr>
-<tr class="separator:a521d6cfcd436366b7de9192e68301741"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62fee6f1fb0c3f1b30d7ed02b43d6400"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CMakeLists_8txt.html#a62fee6f1fb0c3f1b30d7ed02b43d6400">set</a> (TYPE SHARED) if($</td></tr>
-<tr class="separator:a62fee6f1fb0c3f1b30d7ed02b43d6400"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9162b4cef243c17603569ac99223169d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CMakeLists_8txt.html#a9162b4cef243c17603569ac99223169d">include</a> (GNUInstallDirs) file(GLOB_RECURSE AV_SOURCES &quot;*.cpp&quot;) file(GLOB_RECURSE AV_HEADERS &quot;*.h&quot; &quot;*.hpp&quot;) set(AV_NAMESPACE avcpp) set(AV_BASENAME avcpp) list(APPEND AV_TARGETS $</td></tr>
+<tr class="separator:a9162b4cef243c17603569ac99223169d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2557f24652836f68ad9d25500767bad8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CMakeLists_8txt.html#a2557f24652836f68ad9d25500767bad8">if</a> (AV_ENABLE_STATIC AND AV_ENABLE_SHARED) list(APPEND AV_TARGETS $</td></tr>
+<tr class="separator:a2557f24652836f68ad9d25500767bad8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b17faad54f1e02c3bef8d0fa3fe6ce4"><td class="memItemLeft" align="right" valign="top">static&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CMakeLists_8txt.html#a6b17faad54f1e02c3bef8d0fa3fe6ce4">endif</a> () foreach(TARGET $</td></tr>
+<tr class="separator:a6b17faad54f1e02c3bef8d0fa3fe6ce4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad679f2d1acbe0709397b0b8793a504e1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CMakeLists_8txt.html#ad679f2d1acbe0709397b0b8793a504e1">if</a> (${TARGET} MATCHES &quot;-static&quot;) set(TYPE STATIC) else() if(AV_ENABLE_SHARED) set(TYPE SHARED) else() set(TYPE STATIC) <a class="el" href="CMakeLists_8txt.html#a6b17faad54f1e02c3bef8d0fa3fe6ce4">endif</a>() <a class="el" href="CMakeLists_8txt.html#a6b17faad54f1e02c3bef8d0fa3fe6ce4">endif</a>() add_library($</td></tr>
+<tr class="separator:ad679f2d1acbe0709397b0b8793a504e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a521d6cfcd436366b7de9192e68301741"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a521d6cfcd436366b7de9192e68301741">&#9670;&nbsp;</a></span>endif()</h2>
+<a id="a6b17faad54f1e02c3bef8d0fa3fe6ce4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b17faad54f1e02c3bef8d0fa3fe6ce4">&#9670;&nbsp;</a></span>endif()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -97,8 +99,44 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac5cd4a8a8e487522ad726d861399e1a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5cd4a8a8e487522ad726d861399e1a9">&#9670;&nbsp;</a></span>include()</h2>
+<a id="ad679f2d1acbe0709397b0b8793a504e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad679f2d1acbe0709397b0b8793a504e1">&#9670;&nbsp;</a></span>if() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">if </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>${TARGET} MATCHES &quot;-static&quot;</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2557f24652836f68ad9d25500767bad8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2557f24652836f68ad9d25500767bad8">&#9670;&nbsp;</a></span>if() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">if </td>
+          <td>(</td>
+          <td class="paramtype">AV_ENABLE_STATIC AND&#160;</td>
+          <td class="paramname"><em>AV_ENABLE_SHARED</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9162b4cef243c17603569ac99223169d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9162b4cef243c17603569ac99223169d">&#9670;&nbsp;</a></span>include()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -108,24 +146,6 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">GNUInstallDirs&#160;</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a62fee6f1fb0c3f1b30d7ed02b43d6400"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a62fee6f1fb0c3f1b30d7ed02b43d6400">&#9670;&nbsp;</a></span>set()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MATCHES static set </td>
-          <td>(</td>
-          <td class="paramtype">TYPE&#160;</td>
-          <td class="paramname"><em>SHARED</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
