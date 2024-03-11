@@ -43,6 +43,9 @@ extern "C" {
 #    define FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
+// Use concepts if any
+#define USE_CONCEPTS (__cplusplus > 201703L)
+
 //
 // Functions
 //

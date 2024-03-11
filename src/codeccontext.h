@@ -20,10 +20,12 @@ extern "C" {
 namespace av {
 
 namespace detail {
+#if USE_CONCEPTS
 template<typename T>
 concept valid_frame_type = std::is_same_v<T, VideoFrame> || std::is_same_v<T, AudioSamples>;
 template<typename Ret, typename Fn, typename... Args>
 concept invocable_r = std::is_invocable_r_v<Ret, Fn, Args...>;
+#endif
 }
 
 namespace codec_context::audio {
@@ -152,8 +154,10 @@ protected:
 public:
 
     template<typename T, typename Fn>
+#if USE_CONCEPTS
         requires detail::valid_frame_type<T> &&
                  detail::invocable_r<int, Fn, T>
+#endif
     std::error_code decodeCommon(const class Packet &pkt, Fn frame_handler) noexcept
     {
         auto ec = checkDecodeEncodePreconditions();
@@ -235,8 +239,10 @@ public:
 
 
     template<typename T, typename Fn>
+#if USE_CONCEPTS
         requires detail::valid_frame_type<T> &&
                  detail::invocable_r<int, Fn, Packet>
+#endif
     std::error_code encodeCommon(const T &frame, Fn packet_handler) noexcept
     {
         auto ec = checkDecodeEncodePreconditions();
@@ -533,7 +539,9 @@ public:
     VideoDecoderContext& operator=(VideoDecoderContext&& other);
 
     template<typename Fn>
+#if USE_CONCEPTS
         requires detail::invocable_r<int, Fn, VideoFrame>
+#endif
     void decode(const Packet &packet, Fn on_frame, OptionalErrorCode ec = throws())
     {
         clear_if(ec);
@@ -544,7 +552,9 @@ public:
     }
 
     template<typename Fn>
+#if USE_CONCEPTS
         requires detail::invocable_r<int, Fn, VideoFrame>
+#endif
     void decodeFlush(Fn on_frame, OptionalErrorCode ec = throws())
     {
         decode(Packet(), std::move(on_frame), ec);
@@ -564,7 +574,9 @@ public:
     VideoEncoderContext& operator=(VideoEncoderContext&& other);
 
     template<typename Fn>
+#if USE_CONCEPTS
         requires detail::invocable_r<int, Fn, Packet>
+#endif
     void encode(const VideoFrame &frame, Fn packet_handler, OptionalErrorCode ec = throws())
     {
         clear_if(ec);
@@ -575,7 +587,9 @@ public:
     }
 
     template<typename Fn>
+#if USE_CONCEPTS
         requires detail::invocable_r<int, Fn, Packet>
+#endif
     void encodeFlush(Fn packet_handler, OptionalErrorCode ec = throws())
     {
         encode(VideoFrame(nullptr), std::move(packet_handler), ec);
@@ -686,7 +700,9 @@ public:
     AudioDecoderContext& operator=(AudioDecoderContext&& other);
 
     template<typename Fn>
+#if USE_CONCEPTS
         requires detail::invocable_r<int, Fn, AudioSamples>
+#endif
     void decode(const Packet &packet, Fn frame_handler, OptionalErrorCode ec = throws())
     {
         clear_if(ec);
@@ -697,7 +713,9 @@ public:
     }
 
     template<typename Fn>
+#if USE_CONCEPTS
         requires detail::invocable_r<int, Fn, AudioSamples>
+#endif
     void decodeFlush(Fn frame_handler, OptionalErrorCode ec = throws())
     {
         decode(Packet(), std::move(frame_handler), ec);
@@ -717,7 +735,9 @@ public:
     AudioEncoderContext& operator=(AudioEncoderContext&& other);
 
     template<typename Fn>
+#if USE_CONCEPTS
         requires detail::invocable_r<int, Fn, Packet>
+#endif
     void encode(const AudioSamples &samples, Fn packet_handler, OptionalErrorCode ec = throws())
     {
         clear_if(ec);
@@ -728,7 +748,9 @@ public:
     }
 
     template<typename Fn>
+#if USE_CONCEPTS
         requires detail::invocable_r<int, Fn, Packet>
+#endif
     void encodeFlush(Fn packet_handler, OptionalErrorCode ec = throws())
     {
         encode(AudioSamples(nullptr), std::move(packet_handler), ec);
