@@ -45,8 +45,6 @@ int main(int argc, char **argv)
     VideoDecoderContext vdec;
     Stream      vst;
 
-    int count = 0;
-
     ictx.openInput(uri, ec);
     if (ec) {
         cerr << "Can't open input\n";
@@ -141,87 +139,100 @@ int main(int argc, char **argv)
     //
     // PROCESS
     //
-    while (true) {
+    bool eof = false;
+    while (!eof) {
 
         // READING
         Packet pkt = ictx.readPacket(ec);
-        if (ec)
-        {
+        if (ec) {
             clog << "Packet reading error: " << ec << ", " << ec.message() << endl;
             break;
         }
 
         // EOF
-        if (!pkt)
-        {
-            break;
-        }
-
-        if (pkt.streamIndex() != videoStream) {
+        if (!pkt) {
+            eof = true;
+        } else if (pkt.streamIndex() != videoStream) {
             continue;
         }
 
         clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
         // DECODING
-        auto inpFrame = vdec.decode(pkt, ec);
 
-        count++;
-        if (count > 200)
-            break;
+        // --htrd: start
+
+        // share between encoding and flushing
+        auto encode_proc = [&](auto opkt) {
+            assert(opkt);
+
+            // Only one output stream
+            opkt.setStreamIndex(0);
+
+            clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+
+            octx.writePacket(opkt, ec);
+            if (ec) {
+                cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
+                return -1; // TODO: use std::unexpected
+            }
+
+            return 1;
+        };
+
+        vdec.decode(pkt, [&](auto inpFrame) {
+                assert(inpFrame);
+
+                clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts().seconds() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
+
+                // Change timebase
+                inpFrame.setTimeBase(encoder.timeBase());
+                inpFrame.setStreamIndex(0);
+                inpFrame.setPictureType();
+
+                clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts().seconds() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
+
+                // SCALE
+                auto outFrame = rescaler.rescale(inpFrame, ec);
+                if (ec) {
+                    cerr << "Can't rescale frame: " << ec << ", " << ec.message() << endl;
+                    return -1; // TODO: use std::unexpected()
+                }
+
+                clog << "outFrame: pts=" << outFrame.pts()
+                     << " / " << outFrame.pts().seconds()
+                     << " / " << outFrame.timeBase()
+                     << ", " << outFrame.width() << "x" << outFrame.height()
+                     << ", size=" << outFrame.size()
+                     << ", ref=" << outFrame.isReferenced() << ":" << outFrame.refCount()
+                     << " / type: " << outFrame.pictureType()  << endl;
+
+                // ENCODE
+                encoder.encode(outFrame, encode_proc, ec);
+
+                if (ec) {
+                    cerr << "Encoding error: " << ec << endl;
+                    return -1; // TODO: use std::unexpected
+                }
+
+                return 1;
+            }, ec);
 
         if (ec) {
             cerr << "Decoding error: " << ec << endl;
             return 1;
-        } else if (!inpFrame) {
-            cerr << "Empty frame\n";
-            continue;
         }
 
-        clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts().seconds() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
-
-        // Change timebase
-        inpFrame.setTimeBase(encoder.timeBase());
-        inpFrame.setStreamIndex(0);
-        inpFrame.setPictureType();
-
-        clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts().seconds() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
-
-        // SCALE
-        auto outFrame = rescaler.rescale(inpFrame, ec);
-        if (ec) {
-            cerr << "Can't rescale frame: " << ec << ", " << ec.message() << endl;
-            return 1;
+        if (eof) {
+            clog << "Flush encoder:\n";
+            encoder.encodeFlush(encode_proc, ec);
+            if (ec) {
+                cerr << "Encoding error: " << ec << endl;
+                return 1;
+            }
         }
 
-        clog << "outFrame: pts=" << outFrame.pts()
-             << " / " << outFrame.pts().seconds()
-             << " / " << outFrame.timeBase()
-             << ", " << outFrame.width() << "x" << outFrame.height()
-             << ", size=" << outFrame.size()
-             << ", ref=" << outFrame.isReferenced() << ":" << outFrame.refCount()
-             << " / type: " << outFrame.pictureType()  << endl;
-
-        // ENCODE
-        Packet opkt = encoder.encode(outFrame, ec);
-        if (ec) {
-            cerr << "Encoding error: " << ec << endl;
-            return 1;
-        } else if (!opkt) {
-            cerr << "Empty packet\n";
-            continue;
-        }
-
-        // Only one output stream
-        opkt.setStreamIndex(0);
-
-        clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
-
-        octx.writePacket(opkt, ec);
-        if (ec) {
-            cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
-            return 1;
-        }
+        // --htrd: end
     }
 
     octx.writeTrailer();

@@ -298,6 +298,8 @@ public:
             if (sts <= 0)
                 break;
         }
+
+        return {};
     }
 
 private:
