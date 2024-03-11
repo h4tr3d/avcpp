@@ -72,12 +72,6 @@ int main(int argc, char **argv)
 
         if (ast.isValid()) {
             adec = AudioDecoderContext(ast);
-
-            //Codec codec = findDecodingCodec(adec.raw()->codec_id);
-
-            //adec.setCodec(codec);
-            //adec.setRefCountedFrames(true);
-
             adec.open(ec);
 
             if (ec) {
@@ -117,20 +111,17 @@ int main(int argc, char **argv)
 
         clog << "Supported sample layouts:\n";
         for (const auto &lay : layouts) {
-            char buf[128] = {0};
-            // FIXME: Add AVChannelLayout API
 #if API_NEW_CHANNEL_LAYOUT
-            AVChannelLayout layout{};
-            av_channel_layout_from_mask(&layout, lay);
-            av_channel_layout_describe(&layout, buf, sizeof(buf));
+            av::ChannelLayout chlay{std::bitset<64>(lay)};
+            clog << "  " << chlay.describe() << '\n';
 #else
+            char buf[128] = {0};
             av_get_channel_layout_string(buf,
                                          sizeof(buf),
                                          av_get_channel_layout_nb_channels(lay),
                                          lay);
-#endif
-
             clog << "  " << buf << '\n';
+#endif
         }
 
         //return 0;
@@ -182,7 +173,8 @@ int main(int argc, char **argv)
         //
         // PROCESS
         //
-        while (true) {
+        bool pktNotNull = true;
+        while (pktNotNull) {
             Packet pkt = ictx.readPacket(ec);
             if (ec)
             {
@@ -193,6 +185,9 @@ int main(int argc, char **argv)
             if (pkt && pkt.streamIndex() != audioStream) {
                 continue;
             }
+
+            // First null packet will be used to flush decoder pipeline
+            pktNotNull = !!pkt;
 
             clog << "Read packet: isNull=" << (bool)!pkt << ", " << pkt.pts() << "(nopts:" << pkt.pts().isNoPts() << ")" << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 #if 0
@@ -208,93 +203,92 @@ int main(int argc, char **argv)
             }
 #endif
 
-            auto samples = adec.decode(pkt, ec);
-            count++;
-            //if (count > 200)
-            //    break;
+            adec.decode(pkt, [&](auto samples) {
+                    if (!samples) {
+                        cerr << "Empty samples set\n";
+                        return 1;
+                    }
+
+                    count++;
+
+                    clog << "  Samples [in]: " << samples.samplesCount()
+                         << ", ch: " << samples.channelsCount()
+                         << ", freq: " << samples.sampleRate()
+                         << ", name: " << samples.channelsLayoutString()
+                         << ", pts: " << samples.pts().seconds()
+                         << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
+                         << endl;
+
+
+                    // Empty samples set should not be pushed to the resampler, but it is valid case for the
+                    // end of reading: during samples empty, some cached data can be stored at the resampler
+                    // internal buffer, so we should consume it.
+                    resampler.push(samples, ec);
+                    if (ec) {
+                        clog << "Resampler push error: " << ec << ", text: " << ec.message() << endl;
+                        return 1;
+                    }
+
+                    // Pop resampler data
+                    bool getAll = !samples;
+                    while (true) {
+                        AudioSamples ouSamples(enc.sampleFormat(),
+                                               enc.frameSize(),
+                                               enc.channelLayout(),
+                                               enc.sampleRate());
+
+                        // Resample:
+                        bool hasFrame = resampler.pop(ouSamples, getAll, ec);
+                        if (ec) {
+                            clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
+                            break;
+                        } else if (!hasFrame) {
+                            break;
+                        } else
+                            clog << "  Samples [ou]: " << ouSamples.samplesCount()
+                                 << ", ch: " << ouSamples.channelsCount()
+                                 << ", freq: " << ouSamples.sampleRate()
+                                 << ", name: " << ouSamples.channelsLayoutString()
+                                 << ", pts: " << ouSamples.pts().seconds()
+                                 << ", ref=" << ouSamples.isReferenced() << ":" << ouSamples.refCount()
+                                 << endl;
+
+                        // ENCODE
+                        ouSamples.setStreamIndex(0);
+                        ouSamples.setTimeBase(enc.timeBase());
+
+                        enc.encode(ouSamples, [&](auto opkt) {
+                                if (!opkt)
+                                    return 1; // just a next iteration
+
+                                opkt.setStreamIndex(0);
+
+                                clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+
+                                octx.writePacket(opkt, ec);
+                                if (ec) {
+                                    cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
+                                    // --htrd: use std::expected/variant
+                                    return -1;
+                                }
+
+                                return 1;
+                            }, ec);
+
+                        if (ec) {
+                            cerr << "Encoding error: " << ec << ", " << ec.message() << endl;
+                            // --htrd: use std::expected or std::variant
+                            return -1;
+                        }
+                    }
+
+                    return 1;
+                }, ec);
 
             if (ec) {
                 cerr << "Decode error: " << ec << ", " << ec.message() << endl;
                 return 1;
-            } else if (!samples) {
-                cerr << "Empty samples set\n";
-
-                //if (!pkt) // decoder flushed here
-                //   break;
-                //continue;
             }
-
-            clog << "  Samples [in]: " << samples.samplesCount()
-                 << ", ch: " << samples.channelsCount()
-                 << ", freq: " << samples.sampleRate()
-                 << ", name: " << samples.channelsLayoutString()
-                 << ", pts: " << samples.pts().seconds()
-                 << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
-                 << endl;
-
-            // Empty samples set should not be pushed to the resampler, but it is valid case for the
-            // end of reading: during samples empty, some cached data can be stored at the resampler
-            // internal buffer, so we should consume it.
-            if (samples)
-            {
-                resampler.push(samples, ec);
-                if (ec) {
-                    clog << "Resampler push error: " << ec << ", text: " << ec.message() << endl;
-                    continue;
-                }
-            }
-
-            // Pop resampler data
-            bool getAll = !samples;
-            while (true) {
-                AudioSamples ouSamples(enc.sampleFormat(),
-                                       enc.frameSize(),
-                                       enc.channelLayout(),
-                                       enc.sampleRate());
-
-                // Resample:
-                bool hasFrame = resampler.pop(ouSamples, getAll, ec);
-                if (ec) {
-                    clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
-                    break;
-                } else if (!hasFrame) {
-                    break;
-                } else
-                    clog << "  Samples [ou]: " << ouSamples.samplesCount()
-                         << ", ch: " << ouSamples.channelsCount()
-                         << ", freq: " << ouSamples.sampleRate()
-                         << ", name: " << ouSamples.channelsLayoutString()
-                         << ", pts: " << ouSamples.pts().seconds()
-                         << ", ref=" << ouSamples.isReferenced() << ":" << ouSamples.refCount()
-                         << endl;
-
-                // ENCODE
-                ouSamples.setStreamIndex(0);
-                ouSamples.setTimeBase(enc.timeBase());
-
-                Packet opkt = enc.encode(ouSamples, ec);
-                if (ec) {
-                    cerr << "Encoding error: " << ec << ", " << ec.message() << endl;
-                    return 1;
-                } else if (!opkt) {
-                    //cerr << "Empty packet\n";
-                    continue;
-                }
-
-                opkt.setStreamIndex(0);
-
-                clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
-
-                octx.writePacket(opkt, ec);
-                if (ec) {
-                    cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
-                    return 1;
-                }
-            }
-
-            // For the first packets samples can be empty: decoder caching
-            if (!pkt && !samples)
-                break;
         }
 
         //
@@ -306,23 +300,23 @@ int main(int argc, char **argv)
         // Flush encoder queue
         //
         clog << "Flush encoder:\n";
-        while (true) {
-            AudioSamples null(nullptr);
-            Packet        opkt = enc.encode(null, ec);
-            if (ec || !opkt)
-                break;
+        enc.encodeFlush([&](auto opkt) {
+                if (!opkt)
+                    return 1; // just a next iteration
 
-            opkt.setStreamIndex(0);
+                opkt.setStreamIndex(0);
 
-            clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+                clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
-            octx.writePacket(opkt, ec);
-            if (ec) {
-                cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
+                octx.writePacket(opkt, ec);
+                if (ec) {
+                    cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
+                    // --htrd: use std::expected/variant
+                    return -1;
+                }
+
                 return 1;
-            }
-
-        }
+            }, ec);
 
         octx.flush();
         octx.writeTrailer();
