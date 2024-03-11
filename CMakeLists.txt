@@ -12,10 +12,16 @@ set(FFMPEG_PKG_CONFIG_SUFFIX "" CACHE STRING "This suffix uses for FFmpeg compon
 set(AV_ENABLE_STATIC On CACHE BOOL "Enable static library build (On)")
 set(AV_ENABLE_SHARED On CACHE BOOL "Enable shared library build (On)")
 set(AV_BUILD_EXAMPLES On CACHE BOOL "Build example applications (On)")
+set(AV_CXX_LATEST On CACHE BOOL "Use most modern C++ compiler features (On), otherwise use C++17")
 
-# Compiler-specific C++11 activation.
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED no)
+# Compiler-specific Modern C++ activation.
+if (AV_CXX_LATEST)
+    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD_REQUIRED no)
+else()
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED yes)
+endif()
 
 # Warnings
 set (AVCPP_WARNING_OPTIONS
