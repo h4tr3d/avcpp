@@ -729,7 +729,7 @@ public:
         requires detail::invocable_r<int, Fn, Packet>
     void encodeFlush(Fn packet_handler, OptionalErrorCode ec = throws())
     {
-        decode(AudioSamples(nullptr), std::move(packet_handler), ec);
+        encode(AudioSamples(nullptr), std::move(packet_handler), ec);
     }
 
 };

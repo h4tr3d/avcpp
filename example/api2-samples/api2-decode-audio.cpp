@@ -119,29 +119,58 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            AudioSamples samples = adec.decode(pkt, ec);
+            adec.decode(pkt, [&](auto samples) {
+                    if (!samples) {
+                        cerr << "Empty samples\n";
+                        return 1;
+                    }
+
+                    clog << "  Samples: " << samples.samplesCount()
+                         << ", ch: " << samples.channelsCount()
+                         << ", freq: " << samples.sampleRate()
+                         << ", name: " << samples.channelsLayoutString()
+                         << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
+                         << ", ts: " << samples.pts()
+                         << ", tm: " << samples.pts().seconds()
+                         << endl;
+
+                    count++;
+
+                    //return count <= 100 ? 1 : 0;
+                    return 1;
+                }, ec);
 
             if (ec) {
                 cerr << "Error: " << ec << endl;
                 return 1;
-            } else if (!samples) {
-                //cerr << "Empty frame\n";
-                //continue;
             }
 
-            clog << "  Samples: " << samples.samplesCount()
-                 << ", ch: " << samples.channelsCount()
-                 << ", freq: " << samples.sampleRate()
-                 << ", name: " << samples.channelsLayoutString()
-                 << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
-                 << ", ts: " << samples.pts()
-                 << ", tm: " << samples.pts().seconds()
-                 << endl;
+            // if (count > 100)
+            //     break;
+        }
 
-            //return 0;
-            count++;
-            if (count > 100)
-                break;
+        clog << "Flush samples:\n";
+        adec.decodeFlush([&](auto samples) {
+                if (!samples) {
+                    cerr << "Empty samples\n";
+                    return 1;
+                }
+
+                clog << "  Samples: " << samples.samplesCount()
+                     << ", ch: " << samples.channelsCount()
+                     << ", freq: " << samples.sampleRate()
+                     << ", name: " << samples.channelsLayoutString()
+                     << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
+                     << ", ts: " << samples.pts()
+                     << ", tm: " << samples.pts().seconds()
+                     << endl;
+
+                return 1;
+            }, ec);
+
+        if (ec) {
+            cerr << "Error: " << ec << endl;
+            //return 1;
         }
 
         // NOTE: stream decodec must be closed/destroyed before
