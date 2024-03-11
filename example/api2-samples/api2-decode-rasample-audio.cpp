@@ -36,8 +36,6 @@ int main(int argc, char **argv)
     Stream      ast;
     error_code   ec;
 
-    int count = 0;
-
     {
 
         //
@@ -93,7 +91,8 @@ int main(int argc, char **argv)
         //
         // PROCESS
         //
-        while (true) {
+        bool eof = false;
+        while (!eof) {
             Packet pkt = ictx.readPacket(ec);
             if (ec)
             {
@@ -102,83 +101,59 @@ int main(int argc, char **argv)
             }
 
             // EOF
-            if (!pkt)
-            {
-                break;
-            }
-
-            if (pkt.streamIndex() != audioStream) {
+            if (!pkt) {
+                // Flush decoder
+                eof = true;
+            } else if (pkt.streamIndex() != audioStream) {
                 continue;
             }
 
-            clog << "Read packet: " << pkt.pts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
+            clog << "Read packet: isNull: " << pkt.isNull() << ", " << pkt.pts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            AudioSamples samples = adec.decode(pkt, ec);
+            // --htrd: start
 
-            count++;
-            if (count > 100)
-                break;
+            adec.decode(pkt, [&](auto samples) {
+                    assert(samples);
+
+                    clog << "  Samples [in]: " << samples.samplesCount()
+                         << ", ch: " << samples.channelsCount()
+                         << ", freq: " << samples.sampleRate()
+                         << ", name: " << samples.channelsLayoutString()
+                         << ", pts: " << samples.pts().seconds()
+                         << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
+                         << endl;
+
+                    resampler.push(samples, ec);
+                    if (ec) {
+                        clog << "Resampler push error: " << ec << ", text: " << ec.message() << endl;
+                        return 1;
+                    }
+
+                    auto ouSamples = AudioSamples::null();
+                    while ((ouSamples = resampler.pop(samples.samplesCount()/2, ec))) {
+                        clog << "  Samples [ou]: " << ouSamples.samplesCount()
+                             << ", ch: " << ouSamples.channelsCount()
+                             << ", freq: " << ouSamples.sampleRate()
+                             << ", name: " << ouSamples.channelsLayoutString()
+                             << ", pts: " << ouSamples.pts().seconds()
+                             << ", ref=" << ouSamples.isReferenced() << ":" << ouSamples.refCount()
+                             << endl;
+                    }
+
+                    if (ec) {
+                        clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
+                    }
+
+
+                    return 1;
+                }, ec);
 
             if (ec) {
                 cerr << "Error: " << ec << endl;
                 return 1;
-            } else if (!samples) {
-                //cerr << "Empty frame\n";
-                //continue;
             }
 
-            clog << "  Samples [in]: " << samples.samplesCount()
-                 << ", ch: " << samples.channelsCount()
-                 << ", freq: " << samples.sampleRate()
-                 << ", name: " << samples.channelsLayoutString()
-                 << ", pts: " << samples.pts().seconds()
-                 << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
-                 << endl;
-
-            resampler.push(samples, ec);
-            if (ec) {
-                clog << "Resampler push error: " << ec << ", text: " << ec.message() << endl;
-                continue;
-            }
-
-            // Pop resampler data
-#if 0
-            while (true) {
-                AudioSamples ouSamples(adec.sampleFormat(), samples.samplesCount()/2, adec.channelLayout(), 48000);
-
-                // Resample:
-                //st = resampler.resample(ouSamples, samples);
-                bool hasFrame = resampler.pop(ouSamples, false, ec);
-                if (ec) {
-                    clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
-                    break;
-                } else if (!hasFrame) {
-                    break;
-                } else
-                    clog << "  Samples [ou]: " << ouSamples.samplesCount()
-                         << ", ch: " << ouSamples.channelsCount()
-                         << ", freq: " << ouSamples.sampleRate()
-                         << ", name: " << ouSamples.channelsLayoutString()
-                         << ", pts: " << (ouSamples.timeBase().getDouble() * ouSamples.pts())
-                         << ", ref=" << ouSamples.isReferenced() << ":" << ouSamples.refCount()
-                         << endl;
-            }
-#else
-            auto ouSamples = AudioSamples::null();
-            while ((ouSamples = resampler.pop(samples.samplesCount()/2, ec))) {
-                clog << "  Samples [ou]: " << ouSamples.samplesCount()
-                     << ", ch: " << ouSamples.channelsCount()
-                     << ", freq: " << ouSamples.sampleRate()
-                     << ", name: " << ouSamples.channelsLayoutString()
-                     << ", pts: " << ouSamples.pts().seconds()
-                     << ", ref=" << ouSamples.isReferenced() << ":" << ouSamples.refCount()
-                     << endl;
-            }
-
-            if (ec) {
-                clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
-            }
-#endif
+            // --htrd: end
         }
 
         // Flush samples
