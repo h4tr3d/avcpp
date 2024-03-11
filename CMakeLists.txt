@@ -1,10 +1,13 @@
 cmake_minimum_required (VERSION 3.19)
 
+# Declare here
+set (AVCPP_VERSION 2.3.0)
+
 if(NOT DEFINED PROJECT_NAME)
     set(AVCPP_NOT_SUBPROJECT ON)
 endif()
 
-project(AvCpp LANGUAGES CXX VERSION 2.2.0)
+project(AvCpp LANGUAGES CXX VERSION ${AVCPP_VERSION})
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 

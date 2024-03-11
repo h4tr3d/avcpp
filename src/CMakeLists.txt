@@ -82,7 +82,7 @@ if (AVCPP_NOT_SUBPROJECT)
 #        CMAKE_INSTALL_LIBDIR
       )
     write_basic_package_version_file("avcpp-config-version.cmake"
-        VERSION 2.2.0
+        VERSION ${AVCPP_VERSION}
         COMPATIBILITY SameMajorVersion)
     install(
         FILES
