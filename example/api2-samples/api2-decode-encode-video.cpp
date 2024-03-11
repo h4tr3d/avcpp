@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     encoder.setTimeBase(Rational{1, 1000});
     encoder.setBitRate(vdec.bitRate());
 
-    encoder.open(Codec(), ec);
+    encoder.open(ec);
     if (ec) {
         cerr << "Can't opent encodec\n";
         return 1;
@@ -121,7 +121,8 @@ int main(int argc, char **argv)
     //
     // PROCESS
     //
-    while (true) {
+    bool eof = false;
+    while (!eof) {
 
         // READING
         Packet pkt = ictx.readPacket(ec);
@@ -130,42 +131,39 @@ int main(int argc, char **argv)
             break;
         }
 
-        bool flushDecoder = false;
         // !EOF
         if (pkt) {
             if (pkt.streamIndex() != videoStream) {
                 continue;
             }
-
             clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
         } else {
-            flushDecoder = true;
+            eof = true; // Null packet on the EOF, flush decoder and exit
         }
 
-        do {
-            // DECODING
-            auto frame = vdec.decode(pkt, ec);
+        // --htrd: start
 
-            count++;
-            //if (count > 200)
-            //    break;
+        auto encode_proc = [&](auto opkt) {
+            assert(opkt); // assume that packet valid here
 
-            bool flushEncoder = false;
+            opkt.setStreamIndex(0);
 
+            clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+
+            octx.writePacket(opkt, ec);
             if (ec) {
-                cerr << "Decoding error: " << ec << endl;
-                return 1;
-            } else if (!frame) {
-                //cerr << "Empty frame\n";
-                //flushDecoder = false;
-                //continue;
-
-                if (flushDecoder) {
-                    flushEncoder = true;
-                }
+                cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
+                return -1;
             }
 
-            if (frame) {
+            return 1;
+        };
+
+        vdec.decode(pkt, [&](auto frame) {
+                count++;
+
+                assert(frame); // assume it valid here always, fix if fail
+
                 clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
 
                 // Change timebase
@@ -174,41 +172,31 @@ int main(int argc, char **argv)
                 frame.setPictureType();
 
                 clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
+
+                encoder.encode(frame, encode_proc, ec);
+
+                if (ec) {
+                    cerr << "Encoding error: " << ec << endl;
+                    return -1; // --htrd: tbd: std::expected
+                }
+
+                return 1;
+            }, ec);
+
+        if (ec) {
+            cerr << "Decoding error: " << ec << endl;
+            return 1;
+        }
+
+        if (eof) {
+            clog << "Delay: " << encoder.raw()->delay << '\n';
+            clog << "Flush encoder:\n";
+            encoder.encodeFlush(encode_proc, ec);
+            if (ec) {
+                cerr << "Encoder flushing error: " << ec << endl;
+                return 1;
             }
-
-            if (frame || flushEncoder) {
-                do {
-                    // Encode
-                    Packet opkt = frame ? encoder.encode(frame, ec) : encoder.encode(ec);
-                    if (ec) {
-                        cerr << "Encoding error: " << ec << endl;
-                        return 1;
-                    } else if (!opkt) {
-                        //cerr << "Empty packet\n";
-                        //continue;
-                        break;
-                    }
-
-                    // Only one output stream
-                    opkt.setStreamIndex(0);
-
-                    clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
-
-                    octx.writePacket(opkt, ec);
-                    if (ec) {
-                        cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
-                        return 1;
-                    }
-                } while (flushEncoder);
-            }
-
-            if (flushEncoder)
-                break;
-
-        } while (flushDecoder);
-
-        if (flushDecoder)
-            break;
+        }
     }
 
     octx.writeTrailer();
