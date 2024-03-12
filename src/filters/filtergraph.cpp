@@ -199,6 +199,29 @@ void FilterGraph::parse(const string &graphDescription,
     }
 }
 
+void FilterGraph::parse(const string &graphDescription, OptionalErrorCode ec) {
+    clear_if(ec);
+
+    if (!m_raw) {
+        throws_if(ec, Errors::Unallocated);
+        return;
+    }
+
+    AVFilterInOut *inputs;
+    AVFilterInOut *outputs;
+
+    if (graphDescription.empty()) {
+        fflog(AV_LOG_ERROR, "Empty graph description");
+        throws_if(ec, Errors::FilterGraphDescriptionEmpty);
+        return;
+    } else {
+        int sts = avfilter_graph_parse2(m_raw, graphDescription.c_str(), &inputs, &outputs);
+        if (sts < 0) {
+            throws_if(ec, sts, ffmpeg_category());
+            return;
+        }
+    }
+}
 
 void FilterGraph::config(OptionalErrorCode ec)
 {

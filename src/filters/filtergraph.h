@@ -47,6 +47,8 @@ public:
                FilterContext     &sinkFilterCtx,
                OptionalErrorCode  ec = throws());
 
+    void parse(const std::string &graphDescription, OptionalErrorCode  ec = throws());
+
     void config(OptionalErrorCode ec = throws());
 
     std::string dump(bool doPrint = true, const std::string& options = std::string());
