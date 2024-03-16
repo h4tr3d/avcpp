@@ -312,6 +312,32 @@ template<typename T, typename E>
 using expected = std::expected<T, E>;
 #else
 
+namespace details {
+
+#if __cplusplus < 202002L
+template<typename _Tp, typename... _Args>
+constexpr auto
+construct_at(_Tp* __location, _Args&&... __args)
+    noexcept(noexcept(::new((void*)0) _Tp(std::declval<_Args>()...)))
+    -> decltype(::new((void*)0) _Tp(std::declval<_Args>()...))
+{
+    return ::new((void*)__location) _Tp(std::forward<_Args>(__args)...);
+}
+#else
+// >= C++20
+template<typename T, typename... Args>
+using construct_at = std::construct_at<T, Args...>;
+#endif // C++20
+} // ::details
+
+#if __cplusplus < 202002L
+#define constexpr_dtor
+#define explicit_bool(v)
+#else
+#define constexpr_dtor constexpr
+#define explicit_bool(v) explicit(v)
+#endif
+
 namespace __expected
 {
 
@@ -324,10 +350,10 @@ struct _Guard
         : _M_guarded(__builtin_addressof(__x)), _M_tmp(std::move(__x)) // nothrow
     { std::destroy_at(_M_guarded); }
 
-    constexpr ~_Guard()
+    constexpr_dtor ~_Guard()
     {
         if (_M_guarded) [[unlikely]]
-            std::construct_at(_M_guarded, std::move(_M_tmp));
+            details::construct_at(_M_guarded, std::move(_M_tmp));
     }
 
     _Guard(const _Guard&) = delete;
@@ -353,18 +379,18 @@ constexpr void __reinit(_Tp* __newval, _Up* __oldval, _Vp&& __arg)
     if constexpr (std::is_nothrow_constructible_v<_Tp, _Vp>)
     {
         std::destroy_at(__oldval);
-        std::construct_at(__newval, std::forward<_Vp>(__arg));
+        details::construct_at(__newval, std::forward<_Vp>(__arg));
     }
     else if constexpr (std::is_nothrow_move_constructible_v<_Tp>)
     {
         _Tp __tmp(std::forward<_Vp>(__arg)); // might throw
         std::destroy_at(__oldval);
-        std::construct_at(__newval, std::move(__tmp));
+        details::construct_at(__newval, std::move(__tmp));
     }
     else
     {
         _Guard<_Up> __guard(*__oldval);
-        std::construct_at(__newval, std::forward<_Vp>(__arg)); // might throw
+        details::construct_at(__newval, std::forward<_Vp>(__arg)); // might throw
         __guard.release();
     }
 }
@@ -445,9 +471,9 @@ public:
         : m_has_value(other.m_has_value)
     {
         if (m_has_value)
-            std::construct_at(__builtin_addressof(m_value), other.m_value);
+            details::construct_at(__builtin_addressof(m_value), other.m_value);
         else
-            std::construct_at(__builtin_addressof(m_error), other.m_error);
+            details::construct_at(__builtin_addressof(m_error), other.m_error);
     }
 #endif
 
@@ -460,37 +486,37 @@ public:
         : m_has_value(other.m_has_value)
     {
         if (m_has_value)
-            std::construct_at(__builtin_addressof(m_value), std::move(other).m_value);
+            details::construct_at(__builtin_addressof(m_value), std::move(other).m_value);
         else
-            std::construct_at(__builtin_addressof(m_error), std::move(other).m_error);
+            details::construct_at(__builtin_addressof(m_error), std::move(other).m_error);
     }
 #endif
 
     template<typename _Up = T>
-    constexpr explicit(!std::is_convertible_v<_Up, T>)
+    constexpr explicit_bool((!std::is_convertible_v<_Up, T>))
         expected(_Up&& __v)
         noexcept(std::is_nothrow_constructible_v<T, _Up>)
         : m_value(std::forward<_Up>(__v)), m_has_value(true)
     { }
 
     template<typename _Gr = E>
-    constexpr explicit(!std::is_convertible_v<const _Gr&, E>)
+    constexpr explicit_bool((!std::is_convertible_v<const _Gr&, E>))
         expected(const unexpected<_Gr>& __u)
         noexcept(std::is_nothrow_constructible_v<E, const _Gr&>)
         : m_error(__u.error()), m_has_value(false)
     {}
 
     template<typename _Gr = E>
-    constexpr explicit(!std::is_convertible_v<_Gr, E>)
+    constexpr explicit_bool((!std::is_convertible_v<_Gr, E>))
         expected(unexpected<_Gr>&& __u)
         noexcept(std::is_nothrow_constructible_v<E, _Gr>)
         : m_error(std::move(__u).error()), m_has_value(false)
     {}
 
 #if 1
-    constexpr ~expected() = default;
+    constexpr_dtor ~expected() = default;
 #else
-    constexpr ~expected()
+    constexpr_dtor ~expected()
     {
         if (m_has_value)
             std::destroy_at(__builtin_addressof(m_value));
@@ -752,22 +778,22 @@ private:
         if constexpr (std::is_nothrow_move_constructible_v<E>)
         {
             __expected::_Guard<E> __guard(__rhs.m_error);
-            std::construct_at(__builtin_addressof(__rhs.m_value),
+            details::construct_at(__builtin_addressof(__rhs.m_value),
                               std::move(m_value)); // might throw
             __rhs.m_has_value = true;
             std::destroy_at(__builtin_addressof(m_value));
-            std::construct_at(__builtin_addressof(m_error),
+            details::construct_at(__builtin_addressof(m_error),
                               __guard.release());
             m_has_value = false;
         }
         else
         {
             __expected::_Guard<T> __guard(m_value);
-            std::construct_at(__builtin_addressof(m_error),
+            details::construct_at(__builtin_addressof(m_error),
                               std::move(__rhs.m_error)); // might throw
             m_has_value = false;
             std::destroy_at(__builtin_addressof(__rhs.m_error));
-            std::construct_at(__builtin_addressof(__rhs.m_value),
+            details::construct_at(__builtin_addressof(__rhs.m_value),
                               __guard.release());
             __rhs.m_has_value = true;
         }
