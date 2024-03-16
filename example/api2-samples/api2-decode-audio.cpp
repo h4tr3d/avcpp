@@ -119,11 +119,8 @@ int main(int argc, char **argv)
 
             clog << "Read packet: " << pkt.pts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-            adec.decode(pkt, [&](auto samples) {
-                    if (!samples) {
-                        cerr << "Empty samples\n";
-                        return 1;
-                    }
+            adec.decode(pkt, [&](auto samples) -> av::dec_enc_handler_result_t {
+                    assert(samples);
 
                     clog << "  Samples: " << samples.samplesCount()
                          << ", ch: " << samples.channelsCount()
@@ -136,8 +133,8 @@ int main(int argc, char **argv)
 
                     count++;
 
-                    //return count <= 100 ? 1 : 0;
-                    return 1;
+                    //return count <= 100;
+                    return true;
                 }, ec);
 
             if (ec) {
@@ -150,23 +147,20 @@ int main(int argc, char **argv)
         }
 
         clog << "Flush samples:\n";
-        adec.decodeFlush([&](auto samples) {
-                if (!samples) {
-                    cerr << "Empty samples\n";
-                    return 1;
-                }
+        adec.decodeFlush([&](auto samples) -> av::dec_enc_handler_result_t {
+            assert(samples);
 
-                clog << "  Samples: " << samples.samplesCount()
-                     << ", ch: " << samples.channelsCount()
-                     << ", freq: " << samples.sampleRate()
-                     << ", name: " << samples.channelsLayoutString()
-                     << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
-                     << ", ts: " << samples.pts()
-                     << ", tm: " << samples.pts().seconds()
-                     << endl;
+            clog << "  Samples: " << samples.samplesCount()
+                 << ", ch: " << samples.channelsCount()
+                 << ", freq: " << samples.sampleRate()
+                 << ", name: " << samples.channelsLayoutString()
+                 << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
+                 << ", ts: " << samples.pts()
+                 << ", tm: " << samples.pts().seconds()
+                 << endl;
 
-                return 1;
-            }, ec);
+            return true;
+        }, ec);
 
         if (ec) {
             cerr << "Error: " << ec << endl;

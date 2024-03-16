@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 
             // --htrd: start
 
-            adec.decode(pkt, [&](auto samples) {
+            adec.decode(pkt, [&](auto samples) -> av::dec_enc_handler_result_t {
                     assert(samples);
 
                     clog << "  Samples [in]: " << samples.samplesCount()
@@ -123,10 +123,11 @@ int main(int argc, char **argv)
                          << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
                          << endl;
 
+                    error_code ec;
                     resampler.push(samples, ec);
                     if (ec) {
                         clog << "Resampler push error: " << ec << ", text: " << ec.message() << endl;
-                        return 1;
+                        return av::unexpected(std::move(ec));
                     }
 
                     auto ouSamples = AudioSamples::null();
@@ -142,10 +143,10 @@ int main(int argc, char **argv)
 
                     if (ec) {
                         clog << "Resampling status: " << ec << ", text: " << ec.message() << endl;
+                        return av::unexpected(std::move(ec));
                     }
 
-
-                    return 1;
+                    return true;
                 }, ec);
 
             if (ec) {

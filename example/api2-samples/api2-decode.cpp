@@ -104,21 +104,17 @@ int main(int argc, char **argv)
             clog << "Read packet: " << ts << " / " << ts.seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
 #if 1
-            vdec.decode(pkt, [&](VideoFrame frame) {
+            vdec.decode(pkt, [&](VideoFrame frame) -> av::dec_enc_handler_result_t {
                     count++;
                     //if (count > 100)
-                    //    return 0;
-
-                    if (!frame) {
-                        cerr << "Empty frame\n";
-                        //return 1;
-                    }
+                    //    return false;
+                    assert(frame);
 
                     ts = frame.pts();
 
                     clog << "  Frame: " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ts=" << ts << ", tm: " << ts.seconds() << ", tb: " << frame.timeBase() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << endl;
 
-                    return 1; // continue
+                    return true; // continue
                 }, ec);
 
             if (ec) {
@@ -148,7 +144,7 @@ int main(int argc, char **argv)
 
         clog << "Flush frames:\n";
 #if 1
-        vdec.decodeFlush([&](auto frame) {
+        vdec.decodeFlush([&](auto frame) -> av::dec_enc_handler_result_t {
                 // Handle such case
                 // if (!frame)
                 //     return 0; // stop frame extracting

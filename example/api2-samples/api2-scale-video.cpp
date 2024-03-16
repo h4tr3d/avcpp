@@ -163,7 +163,7 @@ int main(int argc, char **argv)
         // --htrd: start
 
         // share between encoding and flushing
-        auto encode_proc = [&](auto opkt) {
+        auto encode_proc = [&](auto opkt) -> av::dec_enc_handler_result_t {
             assert(opkt);
 
             // Only one output stream
@@ -171,16 +171,17 @@ int main(int argc, char **argv)
 
             clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
+            error_code ec;
             octx.writePacket(opkt, ec);
             if (ec) {
                 cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
-                return -1; // TODO: use std::unexpected
+                return av::unexpected(std::move(ec));
             }
 
-            return 1;
+            return true; // continue
         };
 
-        vdec.decode(pkt, [&](auto inpFrame) {
+        vdec.decode(pkt, [&](auto inpFrame) -> av::dec_enc_handler_result_t {
                 assert(inpFrame);
 
                 clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts().seconds() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
@@ -193,10 +194,11 @@ int main(int argc, char **argv)
                 clog << "inpFrame: pts=" << inpFrame.pts() << " / " << inpFrame.pts().seconds() << " / " << inpFrame.timeBase() << ", " << inpFrame.width() << "x" << inpFrame.height() << ", size=" << inpFrame.size() << ", ref=" << inpFrame.isReferenced() << ":" << inpFrame.refCount() << " / type: " << inpFrame.pictureType()  << endl;
 
                 // SCALE
+                error_code ec;
                 auto outFrame = rescaler.rescale(inpFrame, ec);
                 if (ec) {
                     cerr << "Can't rescale frame: " << ec << ", " << ec.message() << endl;
-                    return -1; // TODO: use std::unexpected()
+                    return av::unexpected(std::move(ec));
                 }
 
                 clog << "outFrame: pts=" << outFrame.pts()
@@ -212,10 +214,10 @@ int main(int argc, char **argv)
 
                 if (ec) {
                     cerr << "Encoding error: " << ec << endl;
-                    return -1; // TODO: use std::unexpected
+                    return av::unexpected(std::move(ec));
                 }
 
-                return 1;
+                return true;
             }, ec);
 
         if (ec) {

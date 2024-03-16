@@ -203,11 +203,8 @@ int main(int argc, char **argv)
             }
 #endif
 
-            adec.decode(pkt, [&](auto samples) {
-                    if (!samples) {
-                        cerr << "Empty samples set\n";
-                        return 1;
-                    }
+            adec.decode(pkt, [&](auto samples) -> av::dec_enc_handler_result_t {
+                    assert(samples);
 
                     count++;
 
@@ -223,10 +220,11 @@ int main(int argc, char **argv)
                     // Empty samples set should not be pushed to the resampler, but it is valid case for the
                     // end of reading: during samples empty, some cached data can be stored at the resampler
                     // internal buffer, so we should consume it.
+                    error_code ec;
                     resampler.push(samples, ec);
                     if (ec) {
                         clog << "Resampler push error: " << ec << ", text: " << ec.message() << endl;
-                        return 1;
+                        return av::unexpected(std::move(ec));
                     }
 
                     // Pop resampler data
@@ -257,32 +255,31 @@ int main(int argc, char **argv)
                         ouSamples.setStreamIndex(0);
                         ouSamples.setTimeBase(enc.timeBase());
 
-                        enc.encode(ouSamples, [&](auto opkt) {
+                        enc.encode(ouSamples, [&](auto opkt) -> av::dec_enc_handler_result_t {
                                 if (!opkt)
-                                    return 1; // just a next iteration
+                                    return true; // just a next iteration
 
                                 opkt.setStreamIndex(0);
 
                                 clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
+                                error_code ec;
                                 octx.writePacket(opkt, ec);
                                 if (ec) {
                                     cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
-                                    // --htrd: use std::expected/variant
-                                    return -1;
+                                    return av::unexpected(std::move(ec));
                                 }
 
-                                return 1;
+                                return true;
                             }, ec);
 
                         if (ec) {
                             cerr << "Encoding error: " << ec << ", " << ec.message() << endl;
-                            // --htrd: use std::expected or std::variant
-                            return -1;
+                            return av::unexpected(std::move(ec));
                         }
                     }
 
-                    return 1;
+                    return true;
                 }, ec);
 
             if (ec) {
@@ -300,23 +297,22 @@ int main(int argc, char **argv)
         // Flush encoder queue
         //
         clog << "Flush encoder:\n";
-        enc.encodeFlush([&](auto opkt) {
-                if (!opkt)
-                    return 1; // just a next iteration
+        enc.encodeFlush([&](auto opkt) -> av::dec_enc_handler_result_t {
+            assert(opkt);
 
-                opkt.setStreamIndex(0);
+            opkt.setStreamIndex(0);
 
-                clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+            clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
-                octx.writePacket(opkt, ec);
-                if (ec) {
-                    cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
-                    // --htrd: use std::expected/variant
-                    return -1;
-                }
+            std::error_code ec;
+            octx.writePacket(opkt, ec);
+            if (ec) {
+                cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
+                return av::unexpected(std::move(ec));
+            }
 
-                return 1;
-            }, ec);
+            return true;
+        }, ec);
 
         octx.flush();
         octx.writeTrailer();

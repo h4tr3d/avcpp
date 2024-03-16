@@ -143,23 +143,24 @@ int main(int argc, char **argv)
 
         // --htrd: start
 
-        auto encode_proc = [&](auto opkt) {
+        auto encode_proc = [&](auto opkt) -> av::dec_enc_handler_result_t {
             assert(opkt); // assume that packet valid here
 
             opkt.setStreamIndex(0);
 
             clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
 
+            error_code ec;
             octx.writePacket(opkt, ec);
             if (ec) {
                 cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
-                return -1;
+                return av::unexpected(std::move(ec));
             }
 
-            return 1;
+            return true;
         };
 
-        vdec.decode(pkt, [&](auto frame) {
+        vdec.decode(pkt, [&](auto frame) -> av::dec_enc_handler_result_t {
                 count++;
 
                 assert(frame); // assume it valid here always, fix if fail
@@ -173,14 +174,14 @@ int main(int argc, char **argv)
 
                 clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType()  << endl;
 
+                error_code ec;
                 encoder.encode(frame, encode_proc, ec);
-
                 if (ec) {
                     cerr << "Encoding error: " << ec << endl;
-                    return -1; // --htrd: tbd: std::expected
+                    return av::unexpected(std::move(ec));
                 }
 
-                return 1;
+                return true;
             }, ec);
 
         if (ec) {

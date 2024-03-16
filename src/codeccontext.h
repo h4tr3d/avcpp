@@ -28,6 +28,11 @@ concept invocable_r = std::is_invocable_r_v<Ret, Fn, Args...>;
 #endif
 }
 
+/**
+ * Return type for the Encoding/Deconding callbacks (result handlers)
+ */
+using dec_enc_handler_result_t = av::expected<bool, std::error_code>;
+
 namespace codec_context::audio {
 void set_channels(AVCodecContext *obj, int channels);
 void set_channel_layout_mask(AVCodecContext *obj, uint64_t mask);
@@ -156,7 +161,7 @@ public:
     template<typename T, typename Fn>
 #if USE_CONCEPTS
         requires detail::valid_frame_type<T> &&
-                 detail::invocable_r<int, Fn, T>
+                 detail::invocable_r<dec_enc_handler_result_t, Fn, T>
 #endif
     std::error_code decodeCommon(const class Packet &pkt, Fn frame_handler) noexcept
     {
@@ -228,9 +233,12 @@ public:
 #endif
             }
 
-            auto const sts = frame_handler(std::move(frm));
-            if (sts <= 0)
-                break;
+            if (auto const sts = frame_handler(std::move(frm)); sts.has_value()) {
+                if (*sts == false)
+                    break;
+            } else {
+                return sts.error();
+            }
         }
 
         return {};
@@ -241,7 +249,7 @@ public:
     template<typename T, typename Fn>
 #if USE_CONCEPTS
         requires detail::valid_frame_type<T> &&
-                 detail::invocable_r<int, Fn, Packet>
+                 detail::invocable_r<dec_enc_handler_result_t, Fn, Packet>
 #endif
     std::error_code encodeCommon(const T &frame, Fn packet_handler) noexcept
     {
@@ -300,9 +308,12 @@ public:
 
             pkt.setComplete(true);
 
-            auto const sts = packet_handler(std::move(pkt));
-            if (sts <= 0)
-                break;
+            if (auto const sts = packet_handler(std::move(pkt)); sts.has_value()) {
+                if (*sts == false)
+                    break;
+            } else {
+                return sts.error();
+            }
         }
 
         return {};
@@ -540,7 +551,7 @@ public:
 
     template<typename Fn>
 #if USE_CONCEPTS
-        requires detail::invocable_r<int, Fn, VideoFrame>
+        requires detail::invocable_r<dec_enc_handler_result_t, Fn, VideoFrame>
 #endif
     void decode(const Packet &packet, Fn on_frame, OptionalErrorCode ec = throws())
     {
@@ -553,7 +564,7 @@ public:
 
     template<typename Fn>
 #if USE_CONCEPTS
-        requires detail::invocable_r<int, Fn, VideoFrame>
+        requires detail::invocable_r<dec_enc_handler_result_t, Fn, VideoFrame>
 #endif
     void decodeFlush(Fn on_frame, OptionalErrorCode ec = throws())
     {
@@ -575,7 +586,7 @@ public:
 
     template<typename Fn>
 #if USE_CONCEPTS
-        requires detail::invocable_r<int, Fn, Packet>
+        requires detail::invocable_r<dec_enc_handler_result_t, Fn, Packet>
 #endif
     void encode(const VideoFrame &frame, Fn packet_handler, OptionalErrorCode ec = throws())
     {
@@ -588,7 +599,7 @@ public:
 
     template<typename Fn>
 #if USE_CONCEPTS
-        requires detail::invocable_r<int, Fn, Packet>
+        requires detail::invocable_r<dec_enc_handler_result_t, Fn, Packet>
 #endif
     void encodeFlush(Fn packet_handler, OptionalErrorCode ec = throws())
     {
@@ -701,7 +712,7 @@ public:
 
     template<typename Fn>
 #if USE_CONCEPTS
-        requires detail::invocable_r<int, Fn, AudioSamples>
+        requires detail::invocable_r<dec_enc_handler_result_t, Fn, AudioSamples>
 #endif
     void decode(const Packet &packet, Fn frame_handler, OptionalErrorCode ec = throws())
     {
@@ -714,7 +725,7 @@ public:
 
     template<typename Fn>
 #if USE_CONCEPTS
-        requires detail::invocable_r<int, Fn, AudioSamples>
+        requires detail::invocable_r<dec_enc_handler_result_t, Fn, AudioSamples>
 #endif
     void decodeFlush(Fn frame_handler, OptionalErrorCode ec = throws())
     {
@@ -736,7 +747,7 @@ public:
 
     template<typename Fn>
 #if USE_CONCEPTS
-        requires detail::invocable_r<int, Fn, Packet>
+        requires detail::invocable_r<dec_enc_handler_result_t, Fn, Packet>
 #endif
     void encode(const AudioSamples &samples, Fn packet_handler, OptionalErrorCode ec = throws())
     {
@@ -749,7 +760,7 @@ public:
 
     template<typename Fn>
 #if USE_CONCEPTS
-        requires detail::invocable_r<int, Fn, Packet>
+        requires detail::invocable_r<dec_enc_handler_result_t, Fn, Packet>
 #endif
     void encodeFlush(Fn packet_handler, OptionalErrorCode ec = throws())
     {
