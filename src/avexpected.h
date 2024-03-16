@@ -9,7 +9,9 @@
  *
  */
 
+#include <cassert>
 #include <memory>
+#include <exception>
 #include <type_traits>
 
 #if __has_include(<expected>)
@@ -24,6 +26,10 @@ using unexpected = std::unexpected<E>;
 
 template<typename T, typename E>
 using expected = std::expected<T, E>;
+
+template<typename E>
+using bad_expected_access = std::bad_expected_access<E>;
+
 #else
 
 namespace details {
@@ -52,6 +58,68 @@ using construct_at = std::construct_at<T, Args...>;
 #define explicit_bool(v) explicit(v)
 #endif
 
+#ifndef AV_THROW_OR_ABORT
+# if __cpp_exceptions
+#  define AV_THROW_OR_ABORT(e) (throw (e))
+# else
+#  define AV_THROW_OR_ABORT(e) (std::abort())
+# endif
+#endif
+
+template<typename _Er>
+class bad_expected_access;
+
+template<>
+class bad_expected_access<void> : public std::exception
+{
+protected:
+    bad_expected_access() noexcept { }
+    bad_expected_access(const bad_expected_access&) = default;
+    bad_expected_access(bad_expected_access&&) = default;
+    bad_expected_access& operator=(const bad_expected_access&) = default;
+    bad_expected_access& operator=(bad_expected_access&&) = default;
+    ~bad_expected_access() = default;
+
+public:
+
+    [[nodiscard]]
+    const char*
+    what() const noexcept override
+    { return "bad access to av::expected without expected value"; }
+};
+
+template<typename _Er>
+class bad_expected_access : public bad_expected_access<void> {
+public:
+    explicit
+        bad_expected_access(_Er __e) : _M_unex(std::move(__e)) { }
+
+    // XXX const char* what() const noexcept override;
+
+    [[nodiscard]]
+    _Er&
+    error() & noexcept
+    { return _M_unex; }
+
+    [[nodiscard]]
+    const _Er&
+    error() const & noexcept
+    { return _M_unex; }
+
+    [[nodiscard]]
+    _Er&&
+    error() && noexcept
+    { return std::move(_M_unex); }
+
+    [[nodiscard]]
+    const _Er&&
+    error() const && noexcept
+    { return std::move(_M_unex); }
+
+private:
+    _Er _M_unex;
+};
+
 namespace __expected
 {
 
@@ -61,7 +129,7 @@ struct _Guard
     static_assert( std::is_nothrow_move_constructible_v<_Tp> );
 
     constexpr explicit _Guard(_Tp& __x)
-        : _M_guarded(__builtin_addressof(__x)), _M_tmp(std::move(__x)) // nothrow
+        : _M_guarded(std::addressof(__x)), _M_tmp(std::move(__x)) // nothrow
     { std::destroy_at(_M_guarded); }
 
     constexpr_dtor ~_Guard()
@@ -185,9 +253,9 @@ public:
         : m_has_value(other.m_has_value)
     {
         if (m_has_value)
-            details::construct_at(__builtin_addressof(m_value), other.m_value);
+            details::construct_at(std::addressof(m_value), other.m_value);
         else
-            details::construct_at(__builtin_addressof(m_error), other.m_error);
+            details::construct_at(std::addressof(m_error), other.m_error);
     }
 #endif
 
@@ -200,9 +268,9 @@ public:
         : m_has_value(other.m_has_value)
     {
         if (m_has_value)
-            details::construct_at(__builtin_addressof(m_value), std::move(other).m_value);
+            details::construct_at(std::addressof(m_value), std::move(other).m_value);
         else
-            details::construct_at(__builtin_addressof(m_error), std::move(other).m_error);
+            details::construct_at(std::addressof(m_error), std::move(other).m_error);
     }
 #endif
 
@@ -233,9 +301,9 @@ public:
     constexpr_dtor ~expected()
     {
         if (m_has_value)
-            std::destroy_at(__builtin_addressof(m_value));
+            std::destroy_at(std::addressof(m_value));
         else
-            std::destroy_at(__builtin_addressof(m_error));
+            std::destroy_at(std::addressof(m_error));
     }
 #endif
 
@@ -252,9 +320,9 @@ public:
                                     std::is_nothrow_copy_assignable<E>>)
     {
         if (__x.m_has_value)
-            this->_M_assign_val(__x._M_val);
+            this->assing_value(__x._M_val);
         else
-            this->_M_assign_unex(__x._M_unex);
+            this->assign_error(__x._M_unex);
         return *this;
     }
 #endif
@@ -267,9 +335,9 @@ public:
                                     std::is_nothrow_move_assignable<E>>)
     {
         if (__x.m_has_value)
-            _M_assign_val(std::move(__x.m_value));
+            assing_value(std::move(__x.m_value));
         else
-            _M_assign_unex(std::move(__x.m_error));
+            assign_error(std::move(__x.m_error));
         return *this;
     }
 
@@ -277,7 +345,7 @@ public:
     constexpr expected&
     operator=(_Up&& __v)
     {
-        _M_assign_val(std::forward<_Up>(__v));
+        assing_value(std::forward<_Up>(__v));
         return *this;
     }
 
@@ -285,7 +353,7 @@ public:
     constexpr expected&
     operator=(const unexpected<_Gr>& __e)
     {
-        _M_assign_unex(__e.error());
+        assign_error(__e.error());
         return *this;
     }
 
@@ -293,7 +361,7 @@ public:
     constexpr expected&
     operator=(unexpected<_Gr>&& __e)
     {
-        _M_assign_unex(std::move(__e).error());
+        assign_error(std::move(__e).error());
         return *this;
     }
 
@@ -334,23 +402,23 @@ public:
     constexpr const T*
     operator->() const noexcept
     {
-        __glibcxx_assert(m_has_value);
-        return __builtin_addressof(m_value);
+        assert(m_has_value);
+        return std::addressof(m_value);
     }
 
     [[nodiscard]]
     constexpr T*
     operator->() noexcept
     {
-        __glibcxx_assert(m_has_value);
-        return __builtin_addressof(m_value);
+        assert(m_has_value);
+        return std::addressof(m_value);
     }
 
     [[nodiscard]]
     constexpr const T&
     operator*() const & noexcept
     {
-        __glibcxx_assert(m_has_value);
+        assert(m_has_value);
         return m_value;
     }
 
@@ -358,7 +426,7 @@ public:
     constexpr T&
     operator*() & noexcept
     {
-        __glibcxx_assert(m_has_value);
+        assert(m_has_value);
         return m_value;
     }
 
@@ -366,7 +434,7 @@ public:
     constexpr const T&&
     operator*() const && noexcept
     {
-        __glibcxx_assert(m_has_value);
+        assert(m_has_value);
         return std::move(m_value);
     }
 
@@ -374,7 +442,7 @@ public:
     constexpr T&&
     operator*() && noexcept
     {
-        __glibcxx_assert(m_has_value);
+        assert(m_has_value);
         return std::move(m_value);
     }
 
@@ -390,8 +458,7 @@ public:
     {
         if (m_has_value) [[likely]]
             return m_value;
-        // --htrd: implement me
-        // _GLIBCXX_THROW_OR_ABORT(std::bad_expected_access<E>(_M_unex));
+        AV_THROW_OR_ABORT(bad_expected_access<E>(m_error));
     }
 
     constexpr T&
@@ -399,9 +466,8 @@ public:
     {
         if (m_has_value) [[likely]]
             return m_value;
-        // --htrd: implement me
-        // const auto& __unex = m_error;
-        // _GLIBCXX_THROW_OR_ABORT(bad_expected_access<_Er>(__unex));
+        const auto& __unex = m_error;
+        AV_THROW_OR_ABORT(bad_expected_access<E>(__unex));
     }
 
     constexpr const T&&
@@ -409,8 +475,7 @@ public:
     {
         if (m_has_value) [[likely]]
             return std::move(m_value);
-        // --htrd: implement me
-        //_GLIBCXX_THROW_OR_ABORT(bad_expected_access<_Er>(std::move(_M_unex)));
+        AV_THROW_OR_ABORT(bad_expected_access<E>(std::move(m_error)));
     }
 
     constexpr T&&
@@ -418,35 +483,34 @@ public:
     {
         if (m_has_value) [[likely]]
             return std::move(m_value);
-        // --htrd: implement me
-        //_GLIBCXX_THROW_OR_ABORT(bad_expected_access<_Er>(std::move(_M_unex)));
+        AV_THROW_OR_ABORT(bad_expected_access<E>(std::move(m_error)));
     }
 
     constexpr const E&
     error() const & noexcept
     {
-        __glibcxx_assert(!m_has_value);
+        assert(!m_has_value);
         return m_error;
     }
 
     constexpr E&
     error() & noexcept
     {
-        __glibcxx_assert(!m_has_value);
+        assert(!m_has_value);
         return m_error;
     }
 
     constexpr const E&&
     error() const && noexcept
     {
-        __glibcxx_assert(!m_has_value);
+        assert(!m_has_value);
         return std::move(m_error);
     }
 
     constexpr E&&
     error() && noexcept
     {
-        __glibcxx_assert(!m_has_value);
+        assert(!m_has_value);
         return std::move(m_error);
     }
 
@@ -454,14 +518,14 @@ public:
 private:
     template<typename _Vp>
     constexpr void
-    _M_assign_val(_Vp&& __v)
+    assing_value(_Vp&& __v)
     {
         if (m_has_value)
             m_value = std::forward<_Vp>(__v);
         else
         {
-            __expected::__reinit(__builtin_addressof(m_value),
-                                 __builtin_addressof(m_error),
+            __expected::__reinit(std::addressof(m_value),
+                                 std::addressof(m_error),
                                  std::forward<_Vp>(__v));
             m_has_value = true;
         }
@@ -469,12 +533,12 @@ private:
 
     template<typename _Vp>
     constexpr void
-    _M_assign_unex(_Vp&& __v)
+    assign_error(_Vp&& __v)
     {
         if (m_has_value)
         {
-            __expected::__reinit(__builtin_addressof(m_error),
-                                 __builtin_addressof(m_value),
+            __expected::__reinit(std::addressof(m_error),
+                                 std::addressof(m_value),
                                  std::forward<_Vp>(__v));
             m_has_value = false;
         }
@@ -492,22 +556,22 @@ private:
         if constexpr (std::is_nothrow_move_constructible_v<E>)
         {
             __expected::_Guard<E> __guard(__rhs.m_error);
-            details::construct_at(__builtin_addressof(__rhs.m_value),
+            details::construct_at(std::addressof(__rhs.m_value),
                                   std::move(m_value)); // might throw
             __rhs.m_has_value = true;
-            std::destroy_at(__builtin_addressof(m_value));
-            details::construct_at(__builtin_addressof(m_error),
+            std::destroy_at(std::addressof(m_value));
+            details::construct_at(std::addressof(m_error),
                                   __guard.release());
             m_has_value = false;
         }
         else
         {
             __expected::_Guard<T> __guard(m_value);
-            details::construct_at(__builtin_addressof(m_error),
+            details::construct_at(std::addressof(m_error),
                                   std::move(__rhs.m_error)); // might throw
             m_has_value = false;
-            std::destroy_at(__builtin_addressof(__rhs.m_error));
-            details::construct_at(__builtin_addressof(__rhs.m_value),
+            std::destroy_at(std::addressof(__rhs.m_error));
+            details::construct_at(std::addressof(__rhs.m_value),
                                   __guard.release());
             __rhs.m_has_value = true;
         }
