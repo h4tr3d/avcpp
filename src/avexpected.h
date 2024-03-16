@@ -21,16 +21,12 @@
 namespace av {
 
 #if __cplusplus > 202002L && __cpp_concepts >= 202002L
-template<typename E>
-using unexpected = std::unexpected<E>;
 
-template<typename T, typename E>
-using expected = std::expected<T, E>;
+using std::unexpected;
+using std::expected;
+using std::bad_expected_access;
 
-template<typename E>
-using bad_expected_access = std::bad_expected_access<E>;
-
-#else
+#else // __cplusplus > 202002L && __cpp_concepts >= 202002L
 
 namespace details {
 
@@ -45,8 +41,7 @@ construct_at(_Tp* __location, _Args&&... __args)
 }
 #else
 // >= C++20
-template<typename T, typename... Args>
-using construct_at = std::construct_at<T, Args...>;
+using std::construct_at;
 #endif // C++20
 } // ::details
 
