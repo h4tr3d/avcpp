@@ -38,6 +38,7 @@ public:
     struct wrap_data_static {};
 
     Packet();
+    Packet(std::nullptr_t);
     Packet(const Packet &packet, OptionalErrorCode ec);
     Packet(const Packet &packet);
     Packet(Packet &&packet);
@@ -99,7 +100,7 @@ public:
     int      refCount() const;
 
 #if DEPRECATED_INIT_PACKET
-    AVPacket* makeRef(OptionalErrorCode ec) const;
+    AVPacket* makeRef(OptionalErrorCode ec = throws()) const;
 #else
     AVPacket makeRef(OptionalErrorCode ec = throws()) const;
 #endif

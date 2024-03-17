@@ -20,6 +20,12 @@ Packet::Packet()
 
 }
 
+Packet::Packet(std::nullptr_t)
+    : m_completeFlag(false),
+    m_timeBase()
+{
+}
+
 Packet::Packet(const Packet &packet)
     : Packet(packet, throws())
 {
@@ -120,11 +126,13 @@ void Packet::initFromAVPacket(const AVPacket *src, bool deepCopy, OptionalErrorC
     if (raw())
         avpacket_unref(raw());
 
+#if DEPRECATED_INIT_PACKET
+    if (!m_raw)
+        m_raw = av_packet_alloc();
+#endif
+
     if (deepCopy) {
 #if DEPRECATED_INIT_PACKET
-        if (!m_raw)
-            m_raw = av_packet_alloc();
-
         // Copy properties first
         av_packet_copy_props(m_raw, src);
 
@@ -278,12 +286,12 @@ int Packet::duration() const
 
 bool Packet::isComplete() const
 {
-    return m_completeFlag && raw()->data && raw()->size;
+    return m_completeFlag && raw() && raw()->data && raw()->size;
 }
 
 bool Packet::isNull() const
 {
-    return raw()->data == nullptr || raw()->size == 0;
+    return !raw() || raw()->data == nullptr || raw()->size == 0;
 }
 
 void Packet::setStreamIndex(int idx)

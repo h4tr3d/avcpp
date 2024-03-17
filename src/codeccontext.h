@@ -156,7 +156,13 @@ protected:
 
     std::error_code checkDecodeEncodePreconditions() const noexcept;
 
-public:
+    template<typename T>
+    void finalizeFrame(const class Packet &pkt, T &frame) const noexcept;
+
+    template<typename T>
+    void finalizePacket(Packet &pkt, const T& frame) const noexcept;
+
+    // Common routines for encode / decode
 
     template<typename T, typename Fn>
 #if USE_CONCEPTS
@@ -191,47 +197,7 @@ public:
             // now, it safe to dereference frame
             av_frame_unref(frame);
 
-            // Dial with PTS/DTS in packet/stream timebase
-
-            if (pkt.timeBase() != Rational())
-                frm.setTimeBase(pkt.timeBase());
-            else
-                frm.setTimeBase(m_stream.timeBase());
-
-            AVFrame *frm_raw = frm.raw();
-
-            if (frm_raw->pts == av::NoPts)
-                frm_raw->pts = av::frame::get_best_effort_timestamp(frm_raw);
-
-#if LIBAVCODEC_VERSION_MAJOR < 57
-            if (frame->pts == av::NoPts)
-                frame->pts = frame->pkt_pts;
-#endif
-
-            if (frm_raw->pts == av::NoPts)
-                frm_raw->pts = frm_raw->pkt_dts;
-
-            // Convert to decoder/frame time base. Seems not nessesary.
-            frm.setTimeBase(timeBase());
-
-            if (pkt)
-                frm.setStreamIndex(pkt.streamIndex());
-            else
-                frm.setStreamIndex(m_stream.index());
-
-            frm.setComplete(true);
-
-            if constexpr (std::is_same_v<T, VideoFrame>) {
-                frm.setPictureType(AV_PICTURE_TYPE_I);
-            }
-
-            if constexpr (std::is_same_v<T, AudioSamples>) {
-                // Fix channels layout, only for legacy Channel Layout, new API assumes both parameters more sync
-#if !API_NEW_CHANNEL_LAYOUT
-                if (frm.channelsCount() && !frm.channelsLayout())
-                    av::frame::set_channel_layout(frm.raw(), av_get_default_channel_layout(frm.channelsCount()));
-#endif
-            }
+            finalizeFrame(pkt, frm);
 
             if (auto const sts = frame_handler(std::move(frm)); sts.has_value()) {
                 if (*sts == false)
@@ -288,25 +254,7 @@ public:
             // Now it safe to unref packet
             av_packet_unref(packet);
 
-            if (frame && frame.timeBase() != Rational()) {
-                pkt.setTimeBase(frame.timeBase());
-                pkt.setStreamIndex(frame.streamIndex());
-            } else if (m_stream.isValid()) {
-#if USE_CODECPAR
-                pkt.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
-#else
-                FF_DISABLE_DEPRECATION_WARNINGS
-                    if (m_stream.raw()->codec) {
-                    pkt.setTimeBase(m_stream.raw()->codec->time_base);
-                }
-                FF_ENABLE_DEPRECATION_WARNINGS
-#endif
-                pkt.setStreamIndex(m_stream.index());
-            } else if (timeBase() != Rational()) {
-                pkt.setTimeBase(timeBase());
-            }
-
-            pkt.setComplete(true);
+            finalizePacket(pkt, frame);
 
             if (auto const sts = packet_handler(std::move(pkt)); sts.has_value()) {
                 if (*sts == false)
@@ -315,6 +263,67 @@ public:
                 return sts.error();
             }
         }
+
+        return {};
+    }
+
+
+    [[nodiscard]] std::error_code sendPacket(const Packet &pkt) const noexcept
+    {
+        auto ec = checkDecodeEncodePreconditions();
+        if (ec)
+            return ec;
+
+        auto ret = avcodec_send_packet(m_raw, pkt.raw());
+        if (ret)
+            return {ret, ffmpeg_category()};
+
+        return {};
+    }
+
+
+    // Can be applied to encoder to receive reconstructed frame
+    template<typename T>
+    [[nodiscard]] std::error_code receiveFrame(T &frm) const noexcept
+    {
+        auto ec = checkDecodeEncodePreconditions();
+        if (ec)
+            return ec;
+
+        auto ret = avcodec_receive_frame(m_raw, frm.raw());
+        if (ret)
+            return {ret, ffmpeg_category()};
+
+        // Use stream-related timeBase and other parameters
+        finalizeFrame(Packet(nullptr), frm);
+    }
+
+
+    template<typename T>
+    [[nodiscard]] std::error_code sendFrame(const T& frm) const noexcept
+    {
+        auto ec = checkDecodeEncodePreconditions();
+        if (ec)
+            return ec;
+
+        auto ret = avcodec_send_frame(m_raw, frm.raw());
+        if (ret)
+            return {ret, ffmpeg_category()};
+
+        return {};
+    }
+
+    [[nodiscard]] std::error_code receivePacket(Packet &pkt) const noexcept
+    {
+        auto ec = checkDecodeEncodePreconditions();
+        if (ec)
+            return ec;
+
+        auto ret = avcodec_receive_packet(m_raw, pkt.raw());
+        if (ret)
+            return {ret, ffmpeg_category()};
+
+        finalizePacket(pkt, VideoFrame(nullptr));
 
         return {};
     }

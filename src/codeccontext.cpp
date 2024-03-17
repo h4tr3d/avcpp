@@ -41,6 +41,82 @@ AVMediaType GenericCodecContext::codecType() const noexcept
     return codecType(stream().mediaType());
 }
 
+template void CodecContext2::finalizeFrame<VideoFrame>(const Packet &pkt, VideoFrame&) const noexcept;
+template void CodecContext2::finalizeFrame<AudioSamples>(const Packet &pkt, AudioSamples&) const noexcept;
+
+template<typename T>
+void CodecContext2::finalizeFrame(const Packet &pkt, T &frm) const noexcept
+{
+    // Dial with PTS/DTS in packet/stream timebase
+
+    if (pkt && pkt.timeBase() != Rational())
+        frm.setTimeBase(pkt.timeBase());
+    else
+        frm.setTimeBase(m_stream.timeBase());
+
+    AVFrame *frm_raw = frm.raw();
+
+    if (frm_raw->pts == av::NoPts)
+        frm_raw->pts = av::frame::get_best_effort_timestamp(frm_raw);
+
+#if LIBAVCODEC_VERSION_MAJOR < 57
+    if (frame->pts == av::NoPts)
+        frame->pts = frame->pkt_pts;
+#endif
+
+    if (frm_raw->pts == av::NoPts)
+        frm_raw->pts = frm_raw->pkt_dts;
+
+    // Convert to decoder/frame time base. Seems not nessesary.
+    frm.setTimeBase(timeBase());
+
+    if (pkt)
+        frm.setStreamIndex(pkt.streamIndex());
+    else
+        frm.setStreamIndex(m_stream.index());
+
+    frm.setComplete(true);
+
+    if constexpr (std::is_same_v<T, VideoFrame>) {
+        frm.setPictureType(AV_PICTURE_TYPE_I);
+    }
+
+    if constexpr (std::is_same_v<T, AudioSamples>) {
+        // Fix channels layout, only for legacy Channel Layout, new API assumes both parameters more sync
+#if !API_NEW_CHANNEL_LAYOUT
+        if (frm.channelsCount() && !frm.channelsLayout())
+            av::frame::set_channel_layout(frm.raw(), av_get_default_channel_layout(frm.channelsCount()));
+#endif
+    }
+}
+
+template void CodecContext2::finalizePacket<VideoFrame>(Packet&, const VideoFrame&) const noexcept;
+template void CodecContext2::finalizePacket<AudioSamples>(Packet&, const AudioSamples&) const noexcept;
+
+template<typename T>
+void CodecContext2::finalizePacket(Packet &pkt, const T &frame) const noexcept
+{
+    if (frame && frame.timeBase() != Rational()) {
+        pkt.setTimeBase(frame.timeBase());
+        pkt.setStreamIndex(frame.streamIndex());
+    } else if (m_stream.isValid()) {
+#if USE_CODECPAR
+        pkt.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
+#else
+        FF_DISABLE_DEPRECATION_WARNINGS
+            if (m_stream.raw()->codec) {
+            pkt.setTimeBase(m_stream.raw()->codec->time_base);
+        }
+        FF_ENABLE_DEPRECATION_WARNINGS
+#endif
+        pkt.setStreamIndex(m_stream.index());
+    } else if (timeBase() != Rational()) {
+        pkt.setTimeBase(timeBase());
+    }
+
+    pkt.setComplete(true);
+}
+
 // ::anonymous
 } // ::av
 
