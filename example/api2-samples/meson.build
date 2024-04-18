@@ -1,7 +1,7 @@
 #project(
 #    'libavcpp_samples',
 #    'cpp',
-#    version: '2.3.1'
+#    version: '2.3.2'
 #)
 
 #libavcpp = subproject('avcpp')
