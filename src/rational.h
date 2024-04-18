@@ -3,6 +3,7 @@
 #include <utility>
 #include <iostream>
 #include <memory>
+#include <type_traits>
 
 #if __cplusplus > 201703L
 #include <compare>
@@ -99,6 +100,20 @@ private:
     AVRational m_value;
 };
 
+
+template<typename T>
+auto operator/ (T num, Rational value) ->
+    std::enable_if_t<std::is_floating_point_v<T> || std::is_integral_v<T>, Rational>
+{
+    return Rational{num, 1} / value;
+}
+
+template<typename T>
+auto operator/ (Rational value, T num) ->
+    std::enable_if_t<std::is_floating_point_v<T> || std::is_integral_v<T>, Rational>
+{
+    return value / Rational{num, 1};
+}
 
 inline std::ostream& operator<< (std::ostream &stream, const Rational &value)
 {
