@@ -23,6 +23,7 @@ set(TARGETS
   api2-timestamp
   api2-demux-seek
   api2-remux
+  api2-hw-encode
 )
 
 foreach(target ${TARGETS})
