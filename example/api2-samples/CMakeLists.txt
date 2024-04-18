@@ -6,7 +6,7 @@ if(NOT DEFINED PROJECT_NAME)
     set(AVCPP_SAMPLES_NOT_SUBPROJECT ON)
 endif()
 
-project(AvCppSamples LANGUAGES CXX VERSION 2.3.0)
+project(AvCppSamples LANGUAGES CXX VERSION 2.3.1)
 
 if(AVCPP_SAMPLES_NOT_SUBPROJECT)
     find_package(avcpp REQUIRED)
