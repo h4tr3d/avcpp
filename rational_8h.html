@@ -80,16 +80,18 @@ $(function() {
 <div class="textblock"><code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
 <code>#include &quot;<a class="el" href="ffmpeg_8h_source.html">ffmpeg.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for rational.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="rational_8h__incl.png" border="0" usemap="#src_2rational_8h" alt=""/></div>
 <map name="src_2rational_8h" id="src_2rational_8h">
-<area shape="rect" title=" " alt="" coords="432,5,539,32"/>
-<area shape="rect" title=" " alt="" coords="350,80,410,107"/>
+<area shape="rect" title=" " alt="" coords="412,5,519,32"/>
+<area shape="rect" title=" " alt="" coords="291,80,351,107"/>
 <area shape="rect" title=" " alt="" coords="5,155,85,181"/>
-<area shape="rect" title=" " alt="" coords="485,80,563,107"/>
+<area shape="rect" title=" " alt="" coords="427,80,504,107"/>
+<area shape="rect" title=" " alt="" coords="529,80,621,107"/>
 <area shape="rect" href="ffmpeg_8h.html" title=" " alt="" coords="991,80,1071,107"/>
 <area shape="rect" title=" " alt="" coords="109,155,237,181"/>
 <area shape="rect" title=" " alt="" coords="261,155,416,181"/>
@@ -169,6 +171,12 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:af2e740f3a15d0f74298e77c1f6bfc409"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af2e740f3a15d0f74298e77c1f6bfc409"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#af2e740f3a15d0f74298e77c1f6bfc409">av::operator/</a> (T num, Rational value) -&gt; std::enable_if_t&lt; std::is_floating_point_v&lt; T &gt;||std::is_integral_v&lt; T &gt;, Rational &gt;</td></tr>
+<tr class="separator:af2e740f3a15d0f74298e77c1f6bfc409"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe4535c2095a3cd53c959e25e89cffa4"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:abe4535c2095a3cd53c959e25e89cffa4"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#abe4535c2095a3cd53c959e25e89cffa4">av::operator/</a> (Rational value, T num) -&gt; std::enable_if_t&lt; std::is_floating_point_v&lt; T &gt;||std::is_integral_v&lt; T &gt;, Rational &gt;</td></tr>
+<tr class="separator:abe4535c2095a3cd53c959e25e89cffa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03c82096dc7be22f4a55a7ca04a28530"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a03c82096dc7be22f4a55a7ca04a28530">av::operator&lt;&lt;</a> (std::ostream &amp;stream, const Rational &amp;value)</td></tr>
 <tr class="separator:a03c82096dc7be22f4a55a7ca04a28530"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44b4c1405580a90ab4b0ace6ddf058ca"><td class="memItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a44b4c1405580a90ab4b0ace6ddf058ca">av::operator&gt;&gt;</a> (std::istream &amp;stream, Rational &amp;value)</td></tr>

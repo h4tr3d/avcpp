@@ -1,8 +1,8 @@
 <map id="src/timestamp.h" name="src/timestamp.h">
-<area shape="rect" id="node1" title=" " alt="" coords="635,5,763,32"/>
-<area shape="rect" id="node2" title=" " alt="" coords="565,80,632,107"/>
+<area shape="rect" id="node1" title=" " alt="" coords="568,5,696,32"/>
+<area shape="rect" id="node2" title=" " alt="" coords="499,80,565,107"/>
 <area shape="rect" id="node3" href="$avutils_8h.html" title=" " alt="" coords="1163,80,1242,107"/>
-<area shape="rect" id="node29" href="$rational_8h.html" title=" " alt="" coords="657,80,741,107"/>
+<area shape="rect" id="node29" href="$rational_8h.html" title=" " alt="" coords="590,80,674,107"/>
 <area shape="rect" id="node4" title=" " alt="" coords="855,155,913,181"/>
 <area shape="rect" id="node5" title=" " alt="" coords="938,155,1001,181"/>
 <area shape="rect" id="node6" title=" " alt="" coords="1025,155,1087,181"/>
@@ -28,5 +28,6 @@
 <area shape="rect" id="node24" title=" " alt="" coords="1747,304,1912,331"/>
 <area shape="rect" id="node25" title=" " alt="" coords="1936,304,2093,331"/>
 <area shape="rect" id="node26" title=" " alt="" coords="2117,304,2288,331"/>
-<area shape="rect" id="node30" title=" " alt="" coords="669,155,729,181"/>
+<area shape="rect" id="node30" title=" " alt="" coords="553,155,613,181"/>
+<area shape="rect" id="node31" title=" " alt="" coords="637,155,729,181"/>
 </map>
