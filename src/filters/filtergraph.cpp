@@ -70,7 +70,7 @@ FilterContext FilterGraph::filter(unsigned idx, OptionalErrorCode ec)
         return FilterContext();
     }
 
-    if (idx < m_raw->nb_filters) {
+    if (idx >= m_raw->nb_filters) {
         throws_if(ec, Errors::OutOfRange);
         return FilterContext();
     }
