@@ -7,7 +7,7 @@ if meson.project_name() == ''
             'c_std=c11', 
             'cpp_std=c++17'
         ],
-        version: '2.3.2',
+        version: '2.4.0',
     )
 endif
 
