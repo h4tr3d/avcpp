@@ -265,7 +265,10 @@ public:
     bool isComplete() const { return m_isComplete; }
 
     bool isValid() const {
-         return (!isNull() && (m_raw->data[0] && m_raw->linesize[0]) || ((m_raw->format == AV_PIX_FMT_VAAPI)));
+         return (!isNull() &&
+             ((m_raw->data[0] && m_raw->linesize[0]) ||
+             ((m_raw->format == AV_PIX_FMT_VAAPI) && ((intptr_t)m_raw->data[3] > 0)))
+         );
     }
 
     operator bool() const { return isValid() && isComplete(); }
