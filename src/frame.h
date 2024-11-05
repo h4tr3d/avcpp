@@ -264,7 +264,9 @@ public:
 
     bool isComplete() const { return m_isComplete; }
 
-    bool isValid() const { return (!isNull() && m_raw->data[0] && m_raw->linesize[0]); }
+    bool isValid() const {
+         return (!isNull() && (m_raw->data[0] && m_raw->linesize[0]) || ((m_raw->format == AV_PIX_FMT_VAAPI)));
+    }
 
     operator bool() const { return isValid() && isComplete(); }
 
