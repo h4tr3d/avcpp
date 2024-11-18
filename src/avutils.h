@@ -28,6 +28,8 @@ extern "C" {
 #define API_AVFORMAT_URL       ((LIBAVFORMAT_VERSION_MAJOR > 58) || (LIBAVFORMAT_VERSION_MAJOR == 58 && LIBAVFORMAT_VERSION_MINOR >= 7))
 // net key frame flags: AV_FRAME_FLAG_KEY (FFmpeg 6.1)
 #define API_FRAME_KEY          ((LIBAVUTIL_VERSION_MAJOR > 58) || (LIBAVUTIL_VERSION_MAJOR == 58 && LIBAVUTIL_VERSION_MINOR >= 29))
+// avcodec_close() support
+#define API_AVCODEC_CLOSE      (LIBAVCODEC_VERSION_MAJOR < 61)
 
 #if defined(__ICL) || defined (__INTEL_COMPILER)
 #    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))

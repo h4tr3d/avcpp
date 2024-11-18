@@ -448,12 +448,71 @@ void CodecContext2::open(Dictionary &options, const Codec &codec, OptionalErrorC
     options.assign(prt);
 }
 
+namespace {
+// Close code in new way: recreate context with parameters coping
+// Use legacy avcodec_close() for old ffmpeg versions.
+int codec_close(AVCodecContext*& ctx)
+{
+#if API_AVCODEC_CLOSE
+    return avcodec_close(ctx);
+#else
+    AVCodecContext *ctxNew = nullptr;
+    AVCodecParameters *parTmp = nullptr;
+
+    int ret;
+
+    ctxNew = avcodec_alloc_context3(ctx->codec);
+    if (!ctxNew) {
+        ret = AVERROR(ENOMEM);
+        goto fail;
+    }
+
+    parTmp = avcodec_parameters_alloc();
+    if (!parTmp) {
+        ret = AVERROR(ENOMEM);
+        goto fail;
+    }
+
+    ret = avcodec_parameters_from_context(parTmp, ctx);
+    if (ret < 0)
+        goto fail;
+
+    ret = avcodec_parameters_to_context(ctxNew, parTmp);
+    if (ret < 0)
+        goto fail;
+
+    ctxNew->pkt_timebase = ctx->pkt_timebase;
+
+
+#if (LIBAVCODEC_VERSION_MAJOR < 61) || (defined(FF_API_TICKS_PER_FRAME) && FF_API_TICKS_PER_FRAME)
+FF_DISABLE_DEPRECATION_WARNINGS
+    ctxNew->ticks_per_frame = ctx->ticks_per_frame;
+FF_ENABLE_DEPRECATION_WARNINGS
+#endif
+
+    avcodec_free_context(&ctx);
+    ctx = ctxNew;
+
+    ctxNew = nullptr;
+    ret      = 0;
+
+fail:
+    avcodec_free_context(&ctxNew);
+    avcodec_parameters_free(&parTmp);
+
+    return ret;
+#endif
+}
+}
+
 void CodecContext2::close(OptionalErrorCode ec)
 {
     clear_if(ec);
     if (isOpened())
     {
-        avcodec_close(m_raw);
+        if (auto sts = codec_close(m_raw); sts) {
+            throws_if(ec, sts, ffmpeg_category());
+        }
         return;
     }
     throws_if(ec, Errors::CodecNotOpened);
