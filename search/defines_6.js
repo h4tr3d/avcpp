@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['logged_5fname_1383',['LOGGED_NAME',['../avlog_8h.html#aea36973a15a7f7f18834571f1d6465ce',1,'avlog.h']]]
+  ['logged_5fname_1385',['LOGGED_NAME',['../avlog_8h.html#aea36973a15a7f7f18834571f1d6465ce',1,'avlog.h']]]
 ];
