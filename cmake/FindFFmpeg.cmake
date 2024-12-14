@@ -228,16 +228,15 @@ if (NOT TARGET FFmpeg::FFmpeg)
   add_library(FFmpeg::FFmpeg ALIAS FFmpeg)
 endif()
 
-# Now set the noncached _FOUND vars for the components.
-foreach (_component AVCODEC AVDEVICE AVFORMAT AVUTIL POSTPROCESS SWSCALE)
-  set_component_found(${_component})
-endforeach ()
-
-# Compile the list of required vars
-set(_FFmpeg_REQUIRED_VARS FFMPEG_LIBRARIES FFMPEG_INCLUDE_DIRS)
+set(_FFmpeg_REQUIRED_VARS)
 foreach (_component ${FFmpeg_FIND_COMPONENTS})
-  list(APPEND _FFmpeg_REQUIRED_VARS ${_component}_LIBRARIES ${_component}_INCLUDE_DIRS)
+  set_component_found(${_component})
+  # Compile the list of required vars
+  if (FFmpeg_FIND_REQUIRED_${_component})
+    list(APPEND _FFmpeg_REQUIRED_VARS ${_component}_LIBRARIES ${_component}_INCLUDE_DIRS)
+  endif()
 endforeach ()
 
 # Give a nice error message if some of the required vars are missing.
-find_package_handle_standard_args(FFmpeg DEFAULT_MSG ${_FFmpeg_REQUIRED_VARS})
+find_package_handle_standard_args(FFmpeg 
+  REQUIRED_VARS FFMPEG_INCLUDE_DIRS FFMPEG_LIBRARIES ${_FFmpeg_REQUIRED_VARS})

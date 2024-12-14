@@ -9,7 +9,7 @@ extern "C"
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
 #include <libavutil/pixdesc.h>
-#include <libavdevice/avdevice.h>
+#include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
 #include <libavformat/version.h>
@@ -29,6 +29,12 @@ extern "C" {
 #include <libavfilter/avcodec.h>
 #endif
 }
+
+extern "C" {
+#ifdef AVCPP_HAS_LIBAVDEVICE
+#include <libavdevice/avdevice.h>
+#endif
+} 
 
 // Compat level
 
