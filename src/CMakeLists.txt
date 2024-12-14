@@ -29,6 +29,7 @@ foreach(TARGET ${AV_TARGETS})
 
     target_compile_options(${TARGET} PRIVATE ${AVCPP_WARNING_OPTIONS})
     target_compile_definitions(${TARGET} PUBLIC __STDC_CONSTANT_MACROS)
+    target_compile_definitions(${TARGET} PUBLIC AVCPP_HAS_LIBAVDEVICE=${AVDEVICE_FOUND})
     target_link_libraries(${TARGET} PRIVATE Threads::Threads PUBLIC FFmpeg::FFmpeg)
     target_include_directories(${TARGET}
         PUBLIC
