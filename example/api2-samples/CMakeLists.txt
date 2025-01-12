@@ -26,19 +26,31 @@ set(TARGETS
   api2-hw-encode
 )
 
+# helper for the sample target
+function(api2_sample_target target)
+  add_executable(${target} ${target}.cpp)
+
+  target_link_libraries(${target}
+      avcpp::avcpp
+  )
+
+  if (AVCPP_WARNING_OPTIONS)
+      target_compile_options(${target} PRIVATE ${AVCPP_WARNING_OPTIONS})
+  endif()
+
+  if(WIN32)
+      target_link_libraries(${target} ws2_32)
+  endif()
+endfunction()
+
+# Common targets
 foreach(target ${TARGETS})
-    add_executable(${target} ${target}.cpp)
-
-    target_link_libraries(${target}
-        avcpp::avcpp
-    )
-
-    if (AVCPP_WARNING_OPTIONS)
-        target_compile_options(${target} PRIVATE ${AVCPP_WARNING_OPTIONS})
-    endif()
-
-    if(WIN32)
-        target_link_libraries(${target} ws2_32)
-    endif()
-
+  api2_sample_target(${target})
 endforeach()
+
+# Custom targets
+if ("cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+  api2_sample_target(api2-decode-raw-h264)
+  set_property(TARGET api2-decode-raw-h264 PROPERTY CXX_STANDARD 20)
+endif()
+
