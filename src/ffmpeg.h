@@ -66,6 +66,7 @@ inline AVMediaType avfilter_pad_get_type(AVFilterPad *pads, int pad_idx)
 #define DEPRECATED_INIT_PACKET (LIBAVCODEC_VERSION_MAJOR >= 58)
 
 #define USE_AVCODEC_GET_SUPPORTED_CONFIG (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(61, 13, 100))
+#define USE_AV_STREAM_GET_CODEC_TIMEBASE (LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(61, 5, 101))
 
 template<typename T>
 struct FFWrapperPtr

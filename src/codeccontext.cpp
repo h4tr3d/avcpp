@@ -1049,7 +1049,14 @@ CodecContext2::encodeCommon(Packet &outPacket,
         outPacket.setStreamIndex(inFrame.streamIndex());
     } else if (m_stream.isValid()) {
 #if USE_CODECPAR
+#if USE_AV_STREAM_GET_CODEC_TIMEBASE
         outPacket.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
+#else
+        // TBD: additional checking are needed
+        if (timeBase() != Rational{}) {
+            outPacket.setTimeBase(timeBase());
+        }
+#endif
 #else
         FF_DISABLE_DEPRECATION_WARNINGS
         if (m_stream.raw()->codec) {
