@@ -14,7 +14,8 @@ add_executable(test_executor
     AvDeleter.cpp
     Packet.cpp
     Format.cpp
-    Rational.cpp)
+    Rational.cpp
+    Timestamp.cpp)
 target_link_libraries(test_executor PUBLIC Catch2::Catch2 test_main avcpp::avcpp)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../catch2/contrib")

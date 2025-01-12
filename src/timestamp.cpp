@@ -89,14 +89,12 @@ Timestamp::operator bool() const noexcept
 
 Timestamp operator+(const Timestamp &left, const Timestamp &right) noexcept
 {
-    // Use more good precision
-    if (left.timebase() < right.timebase()) {
-        auto ts = av_add_stable(left.timebase(), left.timestamp(),
-                                right.timebase(), right.timestamp());
+    // av_add_stable() required that rhs value less than lhs
+    if (left >= right) {
+        auto const ts = av_add_stable(left.timebase(), left.timestamp(), right.timebase(), right.timestamp());
         return {ts, left.timebase()};
     } else {
-        auto ts = av_add_stable(right.timebase(), right.timestamp(),
-                                left.timebase(), left.timestamp());
+        auto ts = av_add_stable(right.timebase(), right.timestamp(), left.timebase(), left.timestamp());
         return {ts, right.timebase()};
     }
 }
