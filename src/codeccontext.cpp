@@ -168,6 +168,23 @@ int avcodec_encode_audio_legacy(AVCodecContext *avctx, AVPacket *avpkt,
 
 namespace av {
 
+namespace codec_context::internal {
+const int *get_supported_samplerates(const struct AVCodec *codec)
+{
+    const int *sampleRates = nullptr;
+
+#if USE_AVCODEC_GET_SUPPORTED_CONFIG
+    avcodec_get_supported_config(nullptr, codec,
+                                 AV_CODEC_CONFIG_SAMPLE_RATE, 0,
+                                 reinterpret_cast<const void**>(&sampleRates), nullptr);
+#else
+    sampleRates = codec->supported_samplerates;
+#endif
+
+    return sampleRates;
+}
+
+} // codec_context::internal
 
 VideoDecoderContext::VideoDecoderContext(VideoDecoderContext &&other)
     : Parent(std::move(other))
@@ -383,10 +400,24 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
         m_raw->codec      = codec.raw();
 
         if (!codec.isNull()) {
-            if (codec.raw()->pix_fmts != 0)
-                m_raw->pix_fmt = *(codec.raw()->pix_fmts); // assign default value
-            if (codec.raw()->sample_fmts != 0)
-                m_raw->sample_fmt = *(codec.raw()->sample_fmts);
+            const enum AVPixelFormat *pixFmts = nullptr;
+            const enum AVSampleFormat *sampleFmts = nullptr;
+
+#if USE_AVCODEC_GET_SUPPORTED_CONFIG
+            avcodec_get_supported_config(nullptr, codec.raw(),
+                                         AV_CODEC_CONFIG_PIX_FORMAT, 0,
+                                         reinterpret_cast<const void**>(&pixFmts), nullptr);
+            avcodec_get_supported_config(nullptr, codec.raw(),
+                                         AV_CODEC_CONFIG_SAMPLE_FORMAT, 0,
+                                         reinterpret_cast<const void**>(&sampleFmts), nullptr);
+#else
+            pixFmts = codec.raw()->pix_fmts;
+            sampleFmts = codec.raw()->sample_fmts;
+#endif
+            if (pixFmts)
+                m_raw->pix_fmt = *(pixFmts); // assign default value
+            if (sampleFmts)
+                m_raw->sample_fmt = *(sampleFmts);
         }
     }
 

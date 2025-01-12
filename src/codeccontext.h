@@ -25,6 +25,10 @@ int get_channels(const AVCodecContext *obj);
 uint64_t get_channel_layout_mask(const AVCodecContext *obj);
 }
 
+namespace codec_context::internal {
+const int *get_supported_samplerates(const struct AVCodec *codec);
+}
+
 class CodecContext2 : public FFWrapperPtr<AVCodecContext>, public noncopyable
 {
 protected:
@@ -524,7 +528,7 @@ public:
     {
         if (!isValid())
             return;
-        int sr = guessValue(sampleRate, m_raw->codec->supported_samplerates, EqualComparator<int>(0));
+        int sr = guessValue(sampleRate, codec_context::internal::get_supported_samplerates(m_raw->codec), EqualComparator<int>(0));
         if (sr != sampleRate)
         {
             fflog(AV_LOG_INFO, "Guess sample rate %d instead unsupported %d\n", sr, sampleRate);

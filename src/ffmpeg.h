@@ -13,6 +13,7 @@ extern "C"
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
 #include <libavformat/version.h>
+#include <libavcodec/version.h>
 }
 
 extern "C" {
@@ -63,6 +64,8 @@ inline AVMediaType avfilter_pad_get_type(AVFilterPad *pads, int pad_idx)
 
 #define NO_INIT_PACKET (LIBAVCODEC_VERSION_MAJOR >= 60)
 #define DEPRECATED_INIT_PACKET (LIBAVCODEC_VERSION_MAJOR >= 58)
+
+#define USE_AVCODEC_GET_SUPPORTED_CONFIG (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(61, 13, 100))
 
 template<typename T>
 struct FFWrapperPtr
