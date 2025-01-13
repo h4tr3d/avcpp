@@ -68,7 +68,7 @@ std::deque<Rational> Codec::supportedFramerates() const
         return {};
     deque<Rational> frameRates;
     const AVRational *frameRatesRaw = nullptr;
-#if USE_AVCODEC_GET_SUPPORTED_CONFIG
+#if API_AVCODEC_GET_SUPPORTED_CONFIG
     avcodec_get_supported_config(nullptr, m_raw, AV_CODEC_CONFIG_FRAME_RATE, 0, reinterpret_cast<const void**>(&frameRatesRaw), nullptr);
 #else
     frameRatesRaw = m_raw->supported_framerates;
@@ -91,7 +91,7 @@ std::deque<PixelFormat> Codec::supportedPixelFormats() const
     deque<PixelFormat> pixFmts;
     const enum AVPixelFormat *pixFmtsRaw = nullptr;
 
-#if USE_AVCODEC_GET_SUPPORTED_CONFIG
+#if API_AVCODEC_GET_SUPPORTED_CONFIG
     avcodec_get_supported_config(nullptr, m_raw, AV_CODEC_CONFIG_PIX_FORMAT, 0, reinterpret_cast<const void**>(&pixFmtsRaw), nullptr);
 #else
     pixFmtsRaw = m_raw->pix_fmts;
@@ -115,7 +115,7 @@ std::deque<int> Codec::supportedSamplerates() const
     deque<int> sampleRates;
     const int *sampleRatesRaw = nullptr;
 
-#if USE_AVCODEC_GET_SUPPORTED_CONFIG
+#if API_AVCODEC_GET_SUPPORTED_CONFIG
     avcodec_get_supported_config(nullptr, m_raw, AV_CODEC_CONFIG_SAMPLE_RATE, 0, reinterpret_cast<const void**>(&sampleRatesRaw), nullptr);
 #else
     sampleRatesRaw = m_raw->supported_samplerates;
@@ -139,7 +139,7 @@ std::deque<SampleFormat> Codec::supportedSampleFormats() const
     deque<SampleFormat> sampleFmts;
     const enum AVSampleFormat *sampleFmtsRaw = nullptr;
 
-#if USE_AVCODEC_GET_SUPPORTED_CONFIG
+#if API_AVCODEC_GET_SUPPORTED_CONFIG
     avcodec_get_supported_config(nullptr, m_raw, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, reinterpret_cast<const void**>(&sampleFmtsRaw), nullptr);
 #else
     sampleFmtsRaw = m_raw->sample_fmts;
@@ -165,7 +165,7 @@ std::deque<uint64_t> Codec::supportedChannelLayouts() const
 #if API_NEW_CHANNEL_LAYOUT
     const AVChannelLayout *channelLayoutsRaw = nullptr;
 
-#if USE_AVCODEC_GET_SUPPORTED_CONFIG
+#if API_AVCODEC_GET_SUPPORTED_CONFIG
     avcodec_get_supported_config(nullptr, m_raw, AV_CODEC_CONFIG_CHANNEL_LAYOUT, 0, reinterpret_cast<const void**>(&channelLayoutsRaw), nullptr);
 #else
     channelLayoutsRaw = m_raw->ch_layouts;
@@ -198,7 +198,7 @@ std::deque<ChannelLayoutView> Codec::supportedChannelLayouts2() const
     deque<ChannelLayoutView> channelLayouts;
     const AVChannelLayout *channelLayoutsRaw = nullptr;
 
-#if USE_AVCODEC_GET_SUPPORTED_CONFIG
+#if API_AVCODEC_GET_SUPPORTED_CONFIG
     avcodec_get_supported_config(nullptr, m_raw, AV_CODEC_CONFIG_CHANNEL_LAYOUT, 0, reinterpret_cast<const void**>(&channelLayoutsRaw), nullptr);
 #else
     channelLayoutsRaw = m_raw->ch_layouts;

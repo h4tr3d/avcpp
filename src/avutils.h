@@ -45,13 +45,20 @@ extern "C" {
 #    define FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
+// sizeof(AVPacket) is no part of the public ABI, packet must be allocated in heap
+#define API_AVCODEC_NEW_INIT_PACKET (LIBAVCODEC_VERSION_MAJOR >= 58)
+// some fields in the AVCodec structure deprecard and replaced by the call of avcodec_get_supported_config()
+#define API_AVCODEC_GET_SUPPORTED_CONFIG (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(61, 13, 100))
+// av_stream_get_codec_timebase() deprecard now without replacement
+#define API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE (LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(61, 5, 101))
+
+// Allow to use spece-ship operator, whem possible
 #if __has_include(<compare>)
 #  include <compare>
 #  if defined(__cpp_lib_three_way_comparison) && __cpp_lib_three_way_comparison >= 201907
 #    define AVCPP_USE_SPACESHIP_OPERATOR 1
 #  endif
 #endif
-
 
 //
 // Functions

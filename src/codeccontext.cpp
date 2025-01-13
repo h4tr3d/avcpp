@@ -173,7 +173,7 @@ const int *get_supported_samplerates(const struct AVCodec *codec)
 {
     const int *sampleRates = nullptr;
 
-#if USE_AVCODEC_GET_SUPPORTED_CONFIG
+#if API_AVCODEC_GET_SUPPORTED_CONFIG
     avcodec_get_supported_config(nullptr, codec,
                                  AV_CODEC_CONFIG_SAMPLE_RATE, 0,
                                  reinterpret_cast<const void**>(&sampleRates), nullptr);
@@ -403,7 +403,7 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
             const enum AVPixelFormat *pixFmts = nullptr;
             const enum AVSampleFormat *sampleFmts = nullptr;
 
-#if USE_AVCODEC_GET_SUPPORTED_CONFIG
+#if API_AVCODEC_GET_SUPPORTED_CONFIG
             avcodec_get_supported_config(nullptr, codec.raw(),
                                          AV_CODEC_CONFIG_PIX_FORMAT, 0,
                                          reinterpret_cast<const void**>(&pixFmts), nullptr);
@@ -1049,7 +1049,7 @@ CodecContext2::encodeCommon(Packet &outPacket,
         outPacket.setStreamIndex(inFrame.streamIndex());
     } else if (m_stream.isValid()) {
 #if USE_CODECPAR
-#if USE_AV_STREAM_GET_CODEC_TIMEBASE
+#if API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE
         outPacket.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
 #else
         // TBD: additional checking are needed

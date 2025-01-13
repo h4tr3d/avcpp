@@ -1,5 +1,4 @@
 #include "packet.h"
-#include "avutils.h"
 
 using namespace std;
 
@@ -7,7 +6,7 @@ namespace av {
 
 Packet::Packet()
 {
-#if DEPRECATED_INIT_PACKET
+#if API_AVCODEC_NEW_INIT_PACKET
     m_raw = av_packet_alloc();
 #else
     av_init_packet(raw());
@@ -100,7 +99,7 @@ Packet::Packet(uint8_t *data, size_t size, Packet::wrap_data_static, OptionalErr
 
 Packet::~Packet()
 {
-#if DEPRECATED_INIT_PACKET
+#if API_AVCODEC_NEW_INIT_PACKET
     av_packet_free(&m_raw);
 #else
     avpacket_unref(&m_raw);
@@ -121,7 +120,7 @@ void Packet::initFromAVPacket(const AVPacket *src, bool deepCopy, OptionalErrorC
         avpacket_unref(raw());
 
     if (deepCopy) {
-#if DEPRECATED_INIT_PACKET
+#if API_AVCODEC_NEW_INIT_PACKET
         if (!m_raw)
             m_raw = av_packet_alloc();
 
@@ -349,7 +348,7 @@ int Packet::refCount() const
         return 0;
 }
 
-#if DEPRECATED_INIT_PACKET
+#if API_AVCODEC_NEW_INIT_PACKET
 AVPacket *Packet::makeRef(OptionalErrorCode ec) const
 {
     clear_if(ec);
@@ -416,7 +415,7 @@ Packet &Packet::operator=(Packet &&rhs)
     return *this;
 }
 
-#if DEPRECATED_INIT_PACKET
+#if API_AVCODEC_NEW_INIT_PACKET
 Packet &Packet::operator=(const AVPacket *rhs)
 {
     if (rhs == raw())

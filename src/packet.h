@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
 
 #include "ffmpeg.h"
+#include "avutils.h"
 #include "rational.h"
 #include "stream.h"
 #include "averror.h"
@@ -16,7 +16,7 @@ extern "C" {
 namespace av {
 
 class Packet :
-#if DEPRECATED_INIT_PACKET
+#if API_AVCODEC_NEW_INIT_PACKET
     public FFWrapperPtr<AVPacket>
 #else
     public FFWrapperRef<AVPacket>
@@ -98,7 +98,7 @@ public:
     bool     isReferenced() const;
     int      refCount() const;
 
-#if DEPRECATED_INIT_PACKET
+#if API_AVCODEC_NEW_INIT_PACKET
     AVPacket* makeRef(OptionalErrorCode ec) const;
 #else
     AVPacket makeRef(OptionalErrorCode ec = throws()) const;
@@ -109,7 +109,7 @@ public:
     Packet &operator=(const Packet &rhs);
     Packet &operator=(Packet &&rhs);
 
-#if DEPRECATED_INIT_PACKET
+#if API_AVCODEC_NEW_INIT_PACKET
     Packet &operator=(const AVPacket *rhs);
 #else
     Packet &operator=(const AVPacket &rhs);

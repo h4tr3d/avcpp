@@ -62,12 +62,6 @@ inline AVMediaType avfilter_pad_get_type(AVFilterPad *pads, int pad_idx)
 #define avpacket_unref(p) av_packet_unref(p)
 #endif
 
-#define NO_INIT_PACKET (LIBAVCODEC_VERSION_MAJOR >= 60)
-#define DEPRECATED_INIT_PACKET (LIBAVCODEC_VERSION_MAJOR >= 58)
-
-#define USE_AVCODEC_GET_SUPPORTED_CONFIG (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(61, 13, 100))
-#define USE_AV_STREAM_GET_CODEC_TIMEBASE (LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(61, 5, 101))
-
 template<typename T>
 struct FFWrapperPtr
 {
@@ -183,13 +177,3 @@ struct PixSampleFmtWrapper
 protected:
     T m_fmt = NoneValue;
 };
-
-// Extended attributes
-#if AV_GCC_VERSION_AT_LEAST(3,1)
-#    define attribute_deprecated2(x) __attribute__((deprecated(x)))
-#elif defined(_MSC_VER)
-#    define attribute_deprecated2(x) __declspec(deprecated(x))
-#else
-#    define attribute_deprecated2(x)
-#endif
-
