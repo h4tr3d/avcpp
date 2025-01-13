@@ -5,11 +5,12 @@
 #include <memory>
 #include <type_traits>
 
-#if __cplusplus > 201703L
-#include <compare>
-#endif
-
 #include "ffmpeg.h"
+#include "avutils.h"
+
+#ifdef AVCPP_USE_SPACESHIP_OPERATOR
+#  include <compare>
+#endif
 
 namespace av
 {
@@ -50,7 +51,7 @@ public:
     Rational& operator=  (double value) noexcept;
 
     bool      operator== (const Rational   &other) const noexcept;
-#if __cplusplus > 201703L
+#ifdef AVCPP_USE_SPACESHIP_OPERATOR
     std::strong_ordering operator<=>(const Rational &other) const noexcept
     {
         switch (threewaycmp(other)) {

@@ -45,6 +45,14 @@ extern "C" {
 #    define FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
+#if __has_include(<compare>)
+#  include <compare>
+#  if defined(__cpp_lib_three_way_comparison) && __cpp_lib_three_way_comparison >= 201907
+#    define AVCPP_USE_SPACESHIP_OPERATOR 1
+#  endif
+#endif
+
+
 //
 // Functions
 //
