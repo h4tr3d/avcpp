@@ -1,13 +1,6 @@
-#include <iostream>
-#include <set>
-#include <map>
-#include <memory>
-#include <functional>
-#include <utility>
 #include <cstdio>
-#include <span>
+#include <iostream>
 #include <filesystem>
-#include <cstring>
 
 #include "av.h"
 #include "ffmpeg.h"
