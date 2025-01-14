@@ -245,11 +245,16 @@ string FilterGraph::dump(bool doPrint, const string &options)
 {
     string result;
 
-    if (m_raw)
-    {
-        result = avfilter_graph_dump(m_raw, options.c_str());
+    if (m_raw) {
+        // avoid memory leak here
+        std::unique_ptr<char, decltype(&av_free)> ret {avfilter_graph_dump(m_raw, options.c_str()), av_free};
+
+        if (ret)
+            result = ret.get();
+
         if (doPrint)
-            clog << result;
+            av::print(stderr, "{}\n", result);
+
     }
 
     return result;

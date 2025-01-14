@@ -14,35 +14,32 @@ int main()
         Timestamp b = {2, {1, 3}};
 
         auto c = a + b;
-        cout << c << " = " << c.seconds() << endl;
+        av::print("{} = {}\n", c, c.seconds());
 
         auto d = c - b;
-        cout << d << " = " << d.seconds() << endl;
+        av::print("{} = {}\n", d, d.seconds());
 
         auto e = a * b;
-        cout << e << " = " << e.seconds() << endl;
+        av::print("{} = {}\n", e, e.seconds());
 
         auto f = a / b;
-        cout << f << " = " << f.seconds() << endl;
+        av::print("{} = {}\n", f, f.seconds());
 
         auto g = Timestamp{300, {1, 2}} / Timestamp{150, {1, 3}};
-        cout << g << " = " << g.seconds() << endl;
+        av::print("{} = {}\n", g, g.seconds());
     }
 
     {
         Timestamp ts = std::chrono::microseconds(500);
-        cout << ts << " = " << ts.seconds() << endl;
+        av::print("{} = {}\n", ts, ts.seconds());
 
         auto ts2 = ts + std::chrono::seconds(5);
-        cout << ts2 << " = " << ts2.seconds() << endl;
+        av::print("{} = {}\n", ts2, ts2.seconds());
 
         auto dur1 = ts2.toDuration<std::chrono::milliseconds>();
-        cout << dur1.count() << endl;
+        av::print("{}\n", dur1.count());
 
         auto ts3 = std::chrono::seconds(5) + ts;
-        cout << ts3 << " = " << ts3.seconds() << endl;
-
-
-
+        av::print("{} = {}\n", ts3, ts3.seconds());
     }
 }

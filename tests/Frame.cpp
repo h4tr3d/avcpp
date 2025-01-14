@@ -144,10 +144,10 @@ TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")
 
         //frame.dump();
 
-        std::cout << frame.raw()->linesize[0]
-                << ", " << frame.raw()->linesize[1]
-                << ", " << frame.raw()->linesize[2]
-                << endl;
+        av::print("{}, {}, {}\n",
+                  frame.raw()->linesize[1],
+                  frame.raw()->linesize[1],
+                  frame.raw()->linesize[2]);
 
         // Cases below can fail and can pass on different platforms:
         //REQUIRE(std::equal(begin(i420_raw_data), end(i420_raw_data), frame.raw()->data[0]));
@@ -226,10 +226,7 @@ TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")
 
         //frame.dump();
 
-        std::cout << frame.raw()->linesize[0]
-                << ", " << frame.raw()->linesize[1]
-                << ", " << frame.raw()->linesize[2]
-                << endl;
+        av::print("{}, {}, {}", frame.raw()->linesize[0], frame.raw()->linesize[1], frame.raw()->linesize[2]);
 
         // Cases below can fail and can pass on different platforms:
         //CHECK(frame.raw()->data[1] - frame.raw()->data[0] == width*height);
@@ -303,10 +300,7 @@ TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")
 
         //frame.dump();
 
-        std::cout << frame.raw()->linesize[0]
-                << ", " << frame.raw()->linesize[1]
-                << ", " << frame.raw()->linesize[2]
-                << endl;
+        av::print("{}, {}, {}", frame.raw()->linesize[0], frame.raw()->linesize[1], frame.raw()->linesize[2]);
 
         // Cases below can fail and can pass on different platforms:
         //CHECK(frame.raw()->data[1] - frame.raw()->data[0] == width*height);

@@ -40,7 +40,7 @@ int64_t Rational::rescale(int64_t srcValue, const Rational &dstBase) const noexc
 
 void Rational::dump() const noexcept
 {
-    cout << m_value.num << "/" << m_value.den << endl;
+    av::print("{}/{}\n", m_value.num, m_value.den);
 }
 
 Rational &Rational::operator =(const AVRational &value) noexcept

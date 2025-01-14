@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 
         clog << "Supported sample formats:\n";
         for (const auto &fmt : sampleFmts) {
-            clog << "  " << av_get_sample_fmt_name(fmt) << '\n';
+            av::print(stderr, "  {}\n", fmt);
         }
 
         clog << "Supported sample rates:\n";

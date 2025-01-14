@@ -177,3 +177,30 @@ struct PixSampleFmtWrapper
 protected:
     T m_fmt = NoneValue;
 };
+
+#ifdef __cpp_lib_format
+#    include <format>
+
+template <typename B>
+concept has_name_method = requires(const B& t, std::error_code ec) {
+    { t.name(ec) } -> std::convertible_to<std::string_view>;
+};
+
+// std::format
+template <class T>
+    requires has_name_method<T>
+struct std::formatter<T>
+{
+    constexpr auto parse(std::format_parse_context& ctx)
+    {
+        return ctx.begin();
+    }
+
+    auto format(const T& value, std::format_context& ctx) const
+    {
+        std::error_code dummy;
+        return std::format_to(ctx.out(), "{}", value.name(dummy));
+    }
+};
+#endif
+

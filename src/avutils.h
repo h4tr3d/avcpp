@@ -1,13 +1,18 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <algorithm>
 #include <deque>
+#include <functional>
+#include <iterator>
 #include <memory>
 #include <mutex>
 #include <sstream>
-#include <algorithm>
-#include <functional>
+#include <string>
+#include <vector>
+
+#ifdef __cpp_lib_print
+#  include <print>
+#endif
 
 #include "ffmpeg.h"
 #include "avtime.h"
@@ -430,6 +435,77 @@ void array_to_container(const T* array, Container &container, Compare isEnd, Cal
     while (!isEnd(value = *array++))
         container.push_back(convert(value));
 }
+
+
+// printing
+#ifdef __cpp_lib_print
+using std::print;
+#else
+
+namespace internal {
+struct fp_output_iterator
+{
+    /// One of the @link iterator_tags tag types@endlink.
+    typedef std::output_iterator_tag iterator_category;
+    /// The type "pointed to" by the iterator.
+    typedef void value_type;
+    /// Distance between iterators is represented as this type.
+    typedef ptrdiff_t difference_type;
+    /// This type represents a pointer-to-value_type.
+    typedef void pointer;
+    /// This type represents a reference-to-value_type.
+    typedef void reference;
+
+private:
+    std::FILE *m_fp{nullptr};
+
+public:
+    fp_output_iterator(std::FILE *out) noexcept
+        : m_fp(out)
+    {}
+
+    fp_output_iterator(const fp_output_iterator& obj) noexcept
+        : m_fp(obj.m_fp)
+    {}
+    fp_output_iterator& operator=(const fp_output_iterator&) = default;
+
+    fp_output_iterator& operator=(char ch) {
+        fputc(ch, m_fp);
+        return *this;
+    }
+
+    fp_output_iterator& operator=(const char *str) {
+        fputs(str, m_fp);
+        return *this;
+    }
+
+    [[nodiscard]] fp_output_iterator& operator*() noexcept { return *this; }
+    fp_output_iterator& operator++() noexcept { return *this; }
+    fp_output_iterator& operator++(int) noexcept { return *this; }
+};
+} // ::internal
+
+template<class... Args>
+void print(std::FILE* stream, std::format_string<Args...> fmt, Args&&... args)
+{
+    internal::fp_output_iterator out{stream};
+    std::format_to(out, std::move(fmt), std::forward<Args>(args)...);
+}
+
+template<class... Args>
+void print(std::format_string<Args...> fmt, Args&&... args)
+{
+    av::print(stdout, std::move(fmt), std::forward<Args>(args)...);
+}
+
+template<class... Args>
+std::ostream& print(std::ostream &stream, std::format_string<Args...> fmt, Args&&... args)
+{
+    std::ostream_iterator<char> out{stream};
+    std::format_to(out, std::move(fmt), std::forward<Args>(args)...);
+    return stream;
+}
+#endif
 
 } // ::av
 

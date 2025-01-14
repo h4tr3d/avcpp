@@ -30,10 +30,11 @@ using namespace av;
 
 void usage(int /*argc*/, char **argv, ostream &ost)
 {
-    ost << "Usage: " << argv[0] << " [arguments] input_stream output_stream\n"
-           "  -f format     force input format\n"
-           "  -o format     force output format\n"
-           "  -d duration   duration for transmuxing (double, seconds)";
+    av::print(ost, "Usage: {} [arguments] input_stream output_stream\n"
+                   "  -f format     force input format\n"
+                   "  -o format     force output format\n"
+                   "  -d duration   duration for transmuxing (double, seconds)",
+              argv[0]);
 }
 
 const static char opts[] = "f:o:d:h";

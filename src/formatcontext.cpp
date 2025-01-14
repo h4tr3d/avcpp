@@ -58,7 +58,7 @@ void set_uri(AVFormatContext *ctx, string_view uri)
 #if API_AVFORMAT_URL
         if (ctx->url)
             av_free(ctx->url);
-        ctx->url = av_strdup(uri.data());
+        ctx->url = av_strndup(uri.data(), uri.size());
 #else
         av_strlcpy(ctx->filename, uri.data(), std::min<size_t>(sizeof(m_raw->filename), uri.size() + 1));
         ctx->filename[uri.size()] = '\0';
@@ -100,7 +100,7 @@ void FormatContext::setFormat(const InputFormat &format)
 {
     if (isOpened())
     {
-        cerr << "Can't set format for opened container\n";
+        av::print(stderr, "Can't set format for opened container\n");
         return;
     }
 
@@ -112,7 +112,7 @@ void FormatContext::setFormat(const OutputFormat &format)
 {
     if (isOpened())
     {
-        cerr << "Can't set format for opened container\n";
+        av::print(stderr, "Can't set format for opened container\n");
         return;
     }
 
@@ -959,7 +959,7 @@ int FormatContext::avioInterruptCb()
     std::chrono::duration<double> elapsedTime = currentTime - m_lastSocketAccess;
     if (elapsedTime.count() > m_socketTimeout && m_socketTimeout > -1)
     {
-        std::cerr << "Socket timeout" << std::endl;
+        print(stderr, "Socket timeout\n");
         return 1;
     }
 
@@ -998,7 +998,7 @@ void FormatContext::findStreamInfo(AVDictionary **options, size_t optionsCount, 
         av_dump_format(m_raw, 0, get_uri(m_raw).data(), 0);
         return;
     }
-    cerr << "Could not found streams in input container\n";
+    av::print(stderr, "Could not found streams in input container\n");
     throws_if(ec, sts, ffmpeg_category());
 }
 
