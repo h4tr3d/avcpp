@@ -43,6 +43,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: 'true'
 
     - name: Dump environment variables
       run: echo "OS_NAME=$OS_NAME, BUILD_TYPE=$BUILD_TYPE, SKIP_MESON=$SKIP_MESON"
