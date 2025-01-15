@@ -137,7 +137,7 @@ if (AVCPP_NOT_SUBPROJECT)
             )
 
         install(FILES   "${CMAKE_CURRENT_BINARY_DIR}/libavcpp.pc"
-            DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig")
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
     endif()
 endif()
