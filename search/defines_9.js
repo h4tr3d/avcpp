@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['raw_5fget_1390',['RAW_GET',['../ffmpeg_8h.html#a83fba7eae42c601ef5b085a2a4a591e6',1,'ffmpeg.h']]],
-  ['raw_5fget2_1391',['RAW_GET2',['../ffmpeg_8h.html#ac6e88ff9b5c3d1f6bdddef3e86d3c3fa',1,'ffmpeg.h']]],
-  ['raw_5fset_1392',['RAW_SET',['../ffmpeg_8h.html#ac52f2553590f4bc63719a73a6258379b',1,'ffmpeg.h']]],
-  ['raw_5fset2_1393',['RAW_SET2',['../ffmpeg_8h.html#adf62678a43dc07314fd6aa8e53b405aa',1,'ffmpeg.h']]],
-  ['ref_5flog_1394',['ref_log',['../avlog_8h.html#a5b5d934964997f98e8074ae694e73a0c',1,'avlog.h']]]
+  ['setffmpeglogginglevel_1397',['setFFmpegLoggingLevel',['../avutils_8h.html#a550827399faa74401588e4277698b5e3',1,'avutils.h']]],
+  ['swap_1398',['SWAP',['../audioresampler_8cpp.html#a9913231a3a57676d858f8f5d699bff09',1,'audioresampler.cpp']]]
 ];

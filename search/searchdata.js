@@ -10,7 +10,7 @@ var indexSectionsWithContent =
   7: "adefs",
   8: "acdefgimnorsuv",
   9: "dfo",
-  10: "_acdfilnprsu",
+  10: "_acfilnprsu",
   11: "ac"
 };
 

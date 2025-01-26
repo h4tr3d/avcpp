@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['logged_5fname_1385',['LOGGED_NAME',['../avlog_8h.html#aea36973a15a7f7f18834571f1d6465ce',1,'avlog.h']]]
+  ['new_5fcodec_5fapi_1389',['NEW_CODEC_API',['../codeccontext_8cpp.html#a2d5b004bdf8beaddecca1a89379c3553',1,'codeccontext.cpp']]],
+  ['null_5flog_1390',['null_log',['../avlog_8h.html#a65b0cd16e32c6d2d6ee30965cf3611b3',1,'avlog.h']]]
 ];

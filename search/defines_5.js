@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['if_5fget_1381',['IF_GET',['../ffmpeg_8h.html#ac0aee24cb358c5e3eb8af25e96e5d127',1,'ffmpeg.h']]],
-  ['if_5fget2_1382',['IF_GET2',['../ffmpeg_8h.html#a3883b56ff7a384bc17474d4650eda23f',1,'ffmpeg.h']]],
-  ['if_5fset_1383',['IF_SET',['../ffmpeg_8h.html#a17c76cc950c8a5a6c775475ee4689784',1,'ffmpeg.h']]],
-  ['if_5fset2_1384',['IF_SET2',['../ffmpeg_8h.html#a8326971202f5d4ace01edc31a070db9c',1,'ffmpeg.h']]]
+  ['logged_5fname_1388',['LOGGED_NAME',['../avlog_8h.html#aea36973a15a7f7f18834571f1d6465ce',1,'avlog.h']]]
 ];
