@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.19)
 
 # Declare here
-set (AVCPP_VERSION 2.5.0)
+set (AVCPP_VERSION 2.6.0)
 
 if(NOT DEFINED PROJECT_NAME)
     set(AVCPP_NOT_SUBPROJECT ON)
