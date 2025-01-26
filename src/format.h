@@ -109,4 +109,3 @@ OutputFormat guessOutputFormat(const std::string& name,
                                const std::string& mime = std::string());
 
 } // namespace av
-

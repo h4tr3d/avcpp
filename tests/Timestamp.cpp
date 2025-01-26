@@ -2,6 +2,10 @@
 
 #include <vector>
 
+#ifdef __cpp_lib_print
+#  include <format>
+#endif
+
 #include "rational.h"
 #include "timestamp.h"
 
@@ -12,7 +16,7 @@
 
 using namespace std;
 
-TEST_CASE("Core", "[Overflow]")
+TEST_CASE("Core::Timestamp", "Timestamp")
 {
     SECTION("Overflow operator+(a,b)")
     {
@@ -54,4 +58,15 @@ TEST_CASE("Core", "[Overflow]")
         }
 #endif
     }
+
+
+#ifdef __cpp_lib_print
+    SECTION("std::format formatter")
+    {
+        av::Timestamp ts(48000, av::Rational {1, 48000}); // 1s
+        auto str = std::format("{}", ts);
+        CHECK(str == "48000*1/48000");
+    }
+#endif
+
 }

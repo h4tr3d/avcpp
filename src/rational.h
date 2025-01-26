@@ -145,3 +145,23 @@ inline std::istream& operator>> (std::istream &stream, Rational &value)
 
 
 } // ::av
+
+
+#ifdef __cpp_lib_format
+#include <format>
+// std::format
+template <typename CharT>
+struct std::formatter<av::Rational, CharT>
+{
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx)
+    {
+        return ctx.begin();
+    }
+    template<typename ParseContext>
+    auto format(const av::Rational& value, ParseContext& ctx) const
+    {
+        return std::format_to(ctx.out(), "{}/{}", value.getNumerator(), value.getDenominator());
+    }
+};
+#endif

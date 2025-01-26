@@ -142,3 +142,27 @@ std::ostream& operator<<(std::ostream &ost, const Timestamp &ts)
 }
 
 } // ::av
+
+#ifdef __cpp_lib_format
+#include <format>
+
+// std::format
+template <typename CharT>
+struct std::formatter<av::Timestamp, CharT>
+{
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx)
+    {
+        return ctx.begin();
+    }
+
+    template<typename ParseContext>
+    auto format(const av::Timestamp& ts, ParseContext& ctx) const
+    {
+        if (ts.isNoPts()) {
+            return std::format_to(ctx.out(), "NO_PTS");
+        }
+        return std::format_to(ctx.out(), "{}*{}", ts.timestamp(), ts.timebase());
+    }
+};
+#endif

@@ -2,6 +2,10 @@
 
 #include <vector>
 
+#ifdef __cpp_lib_print
+#  include <format>
+#endif
+
 #include "rational.h"
 
 #ifdef _MSC_VER
@@ -75,4 +79,14 @@ TEST_CASE("Rational Define", "[Rational][Construct]")
             CHECK(r0 != r1);
         }
     }
+
+#ifdef __cpp_lib_print
+    SECTION("std::format formatter")
+    {
+        av::Rational ratio(1, 48000); // 1/48000
+        auto str = std::format("{}", ratio);
+        CHECK(str == "1/48000");
+    }
+#endif
+
 }
