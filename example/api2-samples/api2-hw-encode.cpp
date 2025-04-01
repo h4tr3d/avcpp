@@ -155,8 +155,8 @@ int main(int argc, char **argv) {
 
     // MKV format wants global header, so
     // this fixes the issue with MKV container
-    if (ofrmt.raw()->flags & AVFMT_GLOBALHEADER)
-        encoder.raw()->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+    if (ofrmt.flags() & AVFMT_GLOBALHEADER)
+        encoder.addFlags(AV_CODEC_FLAG_GLOBAL_HEADER);
 
     encoder.open(Codec(), ec);
     if (ec) {
