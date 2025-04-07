@@ -24,6 +24,9 @@
 using namespace std;
 using namespace av;
 
+// Example that uses a complex filter to produce a good
+// animated GIF from a video
+
 int main(int argc, char **argv)
 {
     if (argc < 2)
@@ -33,6 +36,7 @@ int main(int argc, char **argv)
     av::setFFmpegLoggingLevel(AV_LOG_DEBUG);
 
     string uri{argv[1]};
+    string out{argv[2]};
 
     ssize_t videoStream = -1;
     VideoDecoderContext vdec;
@@ -98,6 +102,45 @@ int main(int argc, char **argv)
             }
         }
 
+        //
+        // OUTPUT
+        //
+        OutputFormat ofrmt;
+        FormatContext octx;
+
+        ofrmt.setFormat(string(), out);
+        octx.setFormat(ofrmt);
+
+        Codec ocodec = findEncodingCodec(ofrmt);
+        cout << "Codec: " << ocodec.name() << endl;
+        VideoEncoderContext encoder {ocodec};
+
+        // Settings
+        encoder.setWidth(320);
+        encoder.setHeight(200);
+        encoder.setPixelFormat(AV_PIX_FMT_PAL8);
+        encoder.setTimeBase(Rational {1, 1000});
+        encoder.setBitRate(vdec.bitRate());
+
+        encoder.open(Codec(), ec);
+        if (ec) {
+            cerr << "Can't opent encodec\n";
+            return 1;
+        }
+
+        Stream ost = octx.addStream(encoder);
+        ost.setFrameRate(vst.frameRate());
+
+        octx.openOutput(out, ec);
+        if (ec) {
+            cerr << "Can't open output\n";
+            return 1;
+        }
+
+        octx.dump();
+        octx.writeHeader();
+        octx.flush();
+
         // Setup filter
         Filter filter_buffer_src{"buffer"};
         Filter filter_buffer_sink{"buffersink"};
@@ -122,9 +165,16 @@ int main(int argc, char **argv)
         }
 
         // Setup the filter chain
-        filter_graph.parse("scale=320x200", src_ctx, sink_ctx, ec);
-        if (ec)
-        {
+        string filterChain;
+        if (argc > 3) {
+            filterChain = argv[3];
+        } else {
+            filterChain = "scale=320x200:-1:flags=lanczos,split [s0][s1]; "
+                "[s0] palettegen [p]; [s1][p] paletteuse[f]; ";
+        }
+        cout << "Filter: " << filterChain << endl;
+        filter_graph.parse(filterChain, src_ctx, sink_ctx, ec);
+        if (ec) {
             clog << "Error parsing filter chain: " << ec << ", " << ec.message() << endl;
             return 1;
         }
@@ -169,7 +219,13 @@ int main(int argc, char **argv)
                 continue;
             }
 
+            frame.setTimeBase(encoder.timeBase());
+            frame.setStreamIndex(0);
+            frame.setPictureType();
+
             // Push into the filter
+            cout << "Pushing frame into filter: " << frame.width() << "x" << frame.height() << ", size=" << frame.size()
+                 << ", ts=" << frame.pts() << ", tb: " << frame.timeBase() << endl;
             buffer_src.addVideoFrame(frame, AV_BUFFERSRC_FLAG_KEEP_REF, ec);
             if (ec)
             {
@@ -181,55 +237,78 @@ int main(int argc, char **argv)
             VideoFrame filtered;
             while (buffer_sink.getVideoFrame(filtered, ec))
             {
-                filtered.setTimeBase(frame.timeBase());
+                filtered.setTimeBase(encoder.timeBase());
                 auto ts = filtered.pts();
 
                 clog << "  filtered: " << filtered.width() << "x" << filtered.height() << ", size=" << filtered.size()
                      << ", ts=" << ts << ", tm: " << ts.seconds() << ", tb: " << filtered.timeBase()
                      << ", ref=" << filtered.isReferenced() << ":" << filtered.refCount() << endl;
+
+                // Encode
+                Packet opkt = filtered ? encoder.encode(filtered, ec) : encoder.encode(ec);
+                if (ec) {
+                    cerr << "Encoding error: " << ec << endl;
+                    return 1;
+                }
+
+                if (opkt) {
+                    // Only one output stream
+                    opkt.setStreamIndex(0);
+
+                    clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+
+                    octx.writePacket(opkt, ec);
+                    if (ec) {
+                        cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
+                        return 1;
+                    }
+                }
             }
             if (ec && ec.value() != -EAGAIN)
             {
                 clog << "Filter pull error: " << ec << ", " << ec.message() << endl;
                 return 1;
             }
+            cout << "No more frames available in filter" << endl;
         }
 
-        clog << "Flush frames;\n";
-        while (true)
+        clog << "Flush frames\n";
+        // Push a null frame at then end for filters that
+        // need the full input before generating any output
+        // (animated GIF with a palette is one of them)
+        auto null_frame = VideoFrame::null();
+        buffer_src.addVideoFrame(null_frame, 0, ec);
+        // Pull until there are no more incoming frames
+        VideoFrame filtered;
+        while (buffer_sink.getVideoFrame(filtered, ec))
         {
-            VideoFrame frame = vdec.decode(Packet(), ec);
-            if (ec)
-            {
-                cerr << "Error: " << ec << ", " << ec.message() << endl;
-                return 1;
-            }
-            if (!frame)
-                break;
+            filtered.setTimeBase(encoder.timeBase());
+            auto ts = filtered.pts();
+            clog << "  filtered: " << filtered.width() << "x" << filtered.height() << ", size=" << filtered.size()
+                    << ", ts=" << ts << ", tm: " << ts.seconds() << ", tb: " << filtered.timeBase()
+                    << ", ref=" << filtered.isReferenced() << ":" << filtered.refCount() << endl;
 
-            // Push into the filter
-            buffer_src.addVideoFrame(frame, ec);
-            if (ec)
-            {
-                clog << "Filter push error: " << ec << ", " << ec.message() << endl;
+            // Encode
+            Packet opkt = filtered ? encoder.encode(filtered, ec) : encoder.encode(ec);
+            if (ec) {
+                cerr << "Encoding error: " << ec << endl;
                 return 1;
             }
 
-            // Pull until there are no more incoming frames
-            VideoFrame filtered;
-            while (buffer_sink.getVideoFrame(filtered, ec))
-            {
-                filtered.setTimeBase(frame.timeBase());
-                auto ts = filtered.pts();
-                clog << "  filtered: " << filtered.width() << "x" << filtered.height() << ", size=" << filtered.size()
-                     << ", ts=" << ts << ", tm: " << ts.seconds() << ", tb: " << filtered.timeBase()
-                     << ", ref=" << filtered.isReferenced() << ":" << filtered.refCount() << endl;
-            }
-            if (ec && ec.value() != -EAGAIN)
-            {
-                clog << "Filter pull error: " << ec << ", " << ec.message() << endl;
-                return 1;
+            if (opkt) {
+                // Only one output stream
+                opkt.setStreamIndex(0);
+
+                clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
+
+                octx.writePacket(opkt, ec);
+                if (ec) {
+                    cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
+                    return 1;
+                }
             }
         }
+        cout << "Filter flushed, frames: " << count << endl;
+        octx.writeTrailer();
     }
 }
