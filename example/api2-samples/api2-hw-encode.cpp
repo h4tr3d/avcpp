@@ -3,8 +3,6 @@
  *
  * Thanks to https://github.com/mojie126, for more-less complete sample.
  *
- * Known issues: error on the Matroska header writing.
- *
  */
 
 
@@ -154,6 +152,11 @@ int main(int argc, char **argv) {
         encoder.setPixelFormat(vdec.pixelFormat());
     encoder.setTimeBase(Rational{1, 1000});
     encoder.setBitRate(vdec.bitRate());
+
+    // MKV format wants global header, so
+    // this fixes the issue with MKV container
+    if (ofrmt.flags() & AVFMT_GLOBALHEADER)
+        encoder.addFlags(AV_CODEC_FLAG_GLOBAL_HEADER);
 
     encoder.open(Codec(), ec);
     if (ec) {
