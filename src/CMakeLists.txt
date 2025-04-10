@@ -55,6 +55,10 @@ foreach(TARGET ${AV_TARGETS})
       target_link_libraries(${TARGET} PRIVATE ws2_32)
     endif()
 
+    if(MSVC AND TYPE STREQUAL "SHARED")
+        set_target_properties(${TARGET} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+    endif()
+
     add_library(${AV_NAMESPACE}::${TARGET} ALIAS ${TARGET})
 endforeach()
 
@@ -146,7 +150,7 @@ if (AVCPP_NOT_SUBPROJECT)
             )
 
         install(FILES   "${CMAKE_CURRENT_BINARY_DIR}/libavcpp.pc"
-            DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig")
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
     endif()
 endif()
