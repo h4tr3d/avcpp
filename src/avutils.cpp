@@ -177,7 +177,10 @@ void init()
 #if LIBAVFILTER_VERSION_MAJOR < 7 // FFmpeg 4.0
     avfilter_register_all();
 #endif
+
+#ifdef AVCPP_HAS_LIBAVDEVICE
     avdevice_register_all();
+#endif
 
 #if LIBAVCODEC_VERSION_MAJOR < 58 // FFmpeg 4.0
     av_lockmgr_register(avcpp_lockmgr_cb);
