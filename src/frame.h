@@ -4,6 +4,10 @@
 #include <memory>
 #include <stdexcept>
 
+#if __has_include(<span>)
+#include <span>
+#endif
+
 #include "ffmpeg.h"
 #include "rational.h"
 #include "timestamp.h"
