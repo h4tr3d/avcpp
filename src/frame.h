@@ -385,6 +385,56 @@ public:
     size_t                 bufferSize(int align = 1, OptionalErrorCode ec = throws()) const;
     bool                   copyToBuffer(uint8_t *dst, size_t size, int align = 1, OptionalErrorCode ec = throws());
     bool                   copyToBuffer(std::vector<uint8_t>& dst, int align = 1, OptionalErrorCode ec = throws());
+
+
+    /**
+     * Wrap external data into VideoFrame object ready to use with FFmpeg/AvCpp.
+     *
+     * @note Ownershipping does not acquired.
+     *
+     * @param data          data pointer to wrap
+     * @param size          whole data buffer size with alignment and real data
+     * @param pixelFormat   pixel format of the data
+     * @param width         image width
+     * @param height        image height
+     * @param align         image data alignemnt
+     *
+     * @return image data wrapped into VideoFrame object
+     */
+    static VideoFrame wrap(const void *data, size_t size, PixelFormat pixelFormat, int width, int height, int align = 1);
+
+#ifdef __cpp_lib_span
+    /**
+     * Wrap external data into VideoFrame object ready to use with FFmpeg/AvCpp.
+     *
+     * @note Ownershipping does not acquired.
+
+     * @param data           external image data wrapped into std::span
+     * @param pixelFormat    pixel format of the data
+     * @param width          image width
+     * @param height         image height
+     * @param align          image data alignment
+     * @return
+     */
+    static VideoFrame wrap(std::span<const std::byte> data, PixelFormat pixelFormat, int width, int height, int align = 1);
+
+    /**
+     * Wrap external data into VideoFrame object ready to use with FFmpeg/AvCpp.
+     *
+     * @note Ownershipping does not acquired. When data wants to be deleted, passed deleter function will be called.
+
+     * @param data           external image data wrapped into std::span
+     * @param deleter        user defined deleter
+     * @param opaque         opaque data passed to the deleter, maybe nullptr
+     * @param pixelFormat    pixel format of the data
+     * @param width          image width
+     * @param height         image height
+     * @param align          image data alignment
+     * @return
+     */
+    static VideoFrame wrap(std::span<const std::byte> data, void (*deleter)(void *opaque, uint8_t *data),
+                           void *opaque, PixelFormat pixelFormat, int width, int height, int align = 1);
+#endif
 };
 
 

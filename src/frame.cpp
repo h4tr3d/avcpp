@@ -81,10 +81,19 @@ int av_frame_copy(AVFrame *dst, const AVFrame *src)
 
 #endif // LIBAVUTIL_VERSION_INT <= 53.5.0 (ffmpeg 2.2)
 
+void avcpp_null_deleter(void* /*opaque*/, uint8_t */*data*/)
+{
+}
+
 } // anonymous namespace
 
 namespace av
 {
+
+VideoFrame::VideoFrame()
+{
+
+}
 
 VideoFrame::VideoFrame(PixelFormat pixelFormat, int width, int height, int align)
 {
@@ -231,6 +240,49 @@ bool VideoFrame::copyToBuffer(std::vector<uint8_t> &dst, int align, OptionalErro
     return copyToBuffer(dst.data(), dst.size(), align, ec);
 }
 
+namespace {
+VideoFrame _wrap(const void *data, size_t size, PixelFormat pixelFormat, int width, int height, int align,
+                 void (*deleter)(void *opaque, uint8_t *data), void *opaque)
+{
+    VideoFrame out;
+
+    auto frame = out.raw();
+
+    frame->format = pixelFormat;
+    frame->width  = width;
+    frame->height = height;
+
+    // setup buffers
+    frame->buf[0] = av_buffer_create(const_cast<uint8_t*>(static_cast<const uint8_t*>(data)), size, deleter, opaque, AV_BUFFER_FLAG_READONLY);
+
+    av_image_fill_arrays(frame->data,
+                         frame->linesize,
+                         frame->buf[0]->data,
+                         pixelFormat, width, height, align);
+
+    frame->extended_data = frame->data;
+
+    return out;
+}
+}
+
+VideoFrame VideoFrame::wrap(const void *data, size_t size, PixelFormat pixelFormat, int width, int height, int align)
+{
+    return _wrap(data, size, pixelFormat, width, height, align, avcpp_null_deleter, nullptr);
+}
+
+#ifdef __cpp_lib_span
+VideoFrame VideoFrame::wrap(std::span<const std::byte> data, PixelFormat pixelFormat, int width, int height, int align)
+{
+    return wrap(data.data(), data.size(), pixelFormat, width, height, align);
+}
+
+VideoFrame VideoFrame::wrap(std::span<const std::byte> data, void (*deleter)(void *opaque, uint8_t *data),
+    void *opaque, PixelFormat pixelFormat, int width, int height, int align)
+{
+    return _wrap(data.data(), data.size(), pixelFormat, width, height, align, deleter, opaque);
+}
+#endif
 
 AudioSamples::AudioSamples(SampleFormat sampleFormat, int samplesCount, uint64_t channelLayout, int sampleRate, int align)
 {
