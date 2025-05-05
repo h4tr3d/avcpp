@@ -17,14 +17,15 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        #os: [ubuntu-latest, macos-latest]
+        os: [macos-latest]
         build_type: [Release, Debug]
         skip_meson: [false]
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             build_type: Release
             skip_meson: true
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             build_type: Debug
             skip_meson: true
 

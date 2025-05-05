@@ -90,11 +90,6 @@ void avcpp_null_deleter(void* /*opaque*/, uint8_t */*data*/)
 namespace av
 {
 
-VideoFrame::VideoFrame()
-{
-
-}
-
 VideoFrame::VideoFrame(PixelFormat pixelFormat, int width, int height, int align)
 {
     m_raw->format = pixelFormat;
