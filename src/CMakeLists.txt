@@ -88,7 +88,7 @@ if (AVCPP_NOT_SUBPROJECT)
     install(EXPORT avcpp-targets
         FILE avcpp-targets.cmake
         NAMESPACE avcpp::
-        DESTINATION lib/cmake/avcpp)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/avcpp)
 
     include(CMakePackageConfigHelpers)
     configure_package_config_file(
