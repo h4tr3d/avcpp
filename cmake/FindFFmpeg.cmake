@@ -68,7 +68,7 @@
 #          Sample usage in the Toolchain file:
 #             find_program(PKG_CONFIG_EXECUTABLE NAMES ${COMPILER_PREFIX}-pkg-config)
 #
-#          It also can be pointed via ENV: 
+#          It also can be pointed via ENV:
 #             export PKG_CONFIG=...
 #
 #   Env variables of the pkg-config:
@@ -98,7 +98,7 @@ endif ()
 #
 # Marks the given component as found if both *_LIBRARIES AND *_INCLUDE_DIRS is present.
 #
-macro(set_component_found _component )
+macro(set_component_found _component)
   if (${_component}_LIBRARIES AND ${_component}_INCLUDE_DIRS)
     # message(STATUS "  - ${_component} found.")
     set(${_component}_FOUND TRUE)
@@ -123,39 +123,56 @@ macro(find_component _component _pkgconfig _library _header)
   endif ()
 
   find_path(${_component}_INCLUDE_DIRS ${_header}
-    HINTS
-      ${PC_${_component}_INCLUDEDIR}
-      ${PC_${_component}_INCLUDE_DIRS}
-      ${PC_FFMPEG_INCLUDE_DIRS}
-    PATH_SUFFIXES
-      ffmpeg
+          HINTS
+          ${PC_${_component}_INCLUDEDIR}
+          ${PC_${_component}_INCLUDE_DIRS}
+          ${PC_FFMPEG_INCLUDE_DIRS}
+          PATH_SUFFIXES
+          ffmpeg
   )
 
-  find_library(${_component}_LIBRARY NAMES ${PC_${_component}_LIBRARIES} ${_library}
-      HINTS
-      ${PC_${_component}_LIBDIR}
-      ${PC_${_component}_LIBRARY_DIRS}
-      ${PC_FFMPEG_LIBRARY_DIRS}
+  find_path(${_component}_INCLUDE_DIRS ${_header}
+          PATHS
+          ${PC_FFMPEG_INCLUDE_DIRS}
+          NO_DEFAULT_PATH
+          REQUIRED # perhaps?
   )
 
-  #message(STATUS "L0: ${${_component}_LIBRARIES}")
-  #message(STATUS "L1: ${PC_${_component}_LIBRARIES}")
-  #message(STATUS "L2: ${_library}")
+  if (NOT ("${PC_FFMPEG_LIBRARY_DIRS}" STREQUAL ""))
+    find_library(${_component}_LIBRARY NAMES ${_library}
+            HINTS
+            ${PC_FFMPEG_LIBRARY_DIRS}
+            NO_DEFAULT_PATH # not sure whether this is needed or not
+    )
+    set(${_component}_LIBRARY_DIRS ${PC_FFMPEG_LIBRARY_DIRS} CACHE STRING "The ${_component} library dirs.")
+    set(${_component}_LIBRARIES ${_library} CACHE STRING "The ${_component} libraries.")
+  else ()
+    find_library(${_component}_LIBRARY NAMES ${PC_${_component}_LIBRARIES} ${_library}
+            HINTS
+            ${PC_${_component}_LIBDIR}
+            ${PC_${_component}_LIBRARY_DIRS}
+            ${PC_FFMPEG_LIBRARY_DIRS}
+    )
 
-  set(${_component}_DEFINITIONS  ${PC_${_component}_CFLAGS_OTHER} CACHE STRING "The ${_component} CFLAGS.")
-  set(${_component}_VERSION      ${PC_${_component}_VERSION}      CACHE STRING "The ${_component} version number.")
-  set(${_component}_LIBRARY_DIRS ${PC_${_component}_LIBRARY_DIRS} CACHE STRING "The ${_component} library dirs.")
-  set(${_component}_LIBRARIES    ${PC_${_component}_LIBRARIES}    CACHE STRING "The ${_component} libraries.")
+    #message(STATUS "L0: ${${_component}_LIBRARIES}")
+    #message(STATUS "L1: ${PC_${_component}_LIBRARIES}")
+    #message(STATUS "L2: ${_library}")
+
+    set(${_component}_DEFINITIONS ${PC_${_component}_CFLAGS_OTHER} CACHE STRING "The ${_component} CFLAGS.")
+    set(${_component}_VERSION ${PC_${_component}_VERSION} CACHE STRING "The ${_component} version number.")
+    set(${_component}_LIBRARY_DIRS ${PC_${_component}_LIBRARY_DIRS} CACHE STRING "The ${_component} library dirs.")
+    set(${_component}_LIBRARIES ${PC_${_component}_LIBRARIES} CACHE STRING "The ${_component} libraries.")
+  endif ()
 
   set_component_found(${_component})
 
   mark_as_advanced(
-    ${_component}_LIBRARY
-    ${_component}_INCLUDE_DIRS
-    ${_component}_LIBRARY_DIRS
-    ${_component}_LIBRARIES
-    ${_component}_DEFINITIONS
-    ${_component}_VERSION)
+          ${_component}_LIBRARY
+          ${_component}_INCLUDE_DIRS
+          ${_component}_LIBRARY_DIRS
+          ${_component}_LIBRARIES
+          ${_component}_DEFINITIONS
+          ${_component}_VERSION)
 
 endmacro()
 
@@ -163,14 +180,22 @@ endmacro()
 # Check for cached results. If there are skip the costly part.
 if (NOT FFMPEG_LIBRARIES)
 
+  if (DEFINED PC_FFMPEG_LIBRARY_DIRS AND NOT "${PC_FFMPEG_LIBRARY_DIRS}" STREQUAL "")
+    set(FFMPEG_LIBRARY_DIRS "${PC_FFMPEG_LIBRARY_DIRS}")
+  endif()
+
+  if (DEFINED PC_FFMPEG_INCLUDE_DIRS AND NOT "${PC_FFMPEG_INCLUDE_DIRS}" STREQUAL "")
+    set(FFMPEG_INCLUDE_DIRS "${PC_FFMPEG_INCLUDE_DIRS}")
+  endif()
+
   # Check for all possible component.
-  find_component(AVCODEC    libavcodec    avcodec  libavcodec/avcodec.h)
-  find_component(AVFORMAT   libavformat   avformat libavformat/avformat.h)
-  find_component(AVDEVICE   libavdevice   avdevice libavdevice/avdevice.h)
-  find_component(AVUTIL     libavutil     avutil   libavutil/avutil.h)
-  find_component(AVFILTER   libavfilter   avfilter libavfilter/avfilter.h)
-  find_component(SWSCALE    libswscale    swscale  libswscale/swscale.h)
-  find_component(POSTPROC   libpostproc   postproc libpostproc/postprocess.h)
+  find_component(AVCODEC libavcodec avcodec libavcodec/avcodec.h)
+  find_component(AVFORMAT libavformat avformat libavformat/avformat.h)
+  find_component(AVDEVICE libavdevice avdevice libavdevice/avdevice.h)
+  find_component(AVUTIL libavutil avutil libavutil/avutil.h)
+  find_component(AVFILTER libavfilter avfilter libavfilter/avfilter.h)
+  find_component(SWSCALE libswscale swscale libswscale/swscale.h)
+  find_component(POSTPROC libpostproc postproc libpostproc/postprocess.h)
   find_component(SWRESAMPLE libswresample swresample libswresample/swresample.h)
 
   # Check if the required components were found and add their stuff to the FFMPEG_* vars.
@@ -179,25 +204,30 @@ if (NOT FFMPEG_LIBRARIES)
       message(STATUS "Libs: ${${_component}_LIBRARIES} | ${PC_${_component}_LIBRARIES}")
 
       # message(STATUS "Required component ${_component} present.")
-      set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    ${${_component}_LIBRARY} ${${_component}_LIBRARIES})
-      set(FFMPEG_DEFINITIONS  ${FFMPEG_DEFINITIONS}  ${${_component}_DEFINITIONS})
+      set(FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${${_component}_LIBRARY} ${${_component}_LIBRARIES})
+      set(FFMPEG_DEFINITIONS ${FFMPEG_DEFINITIONS} ${${_component}_DEFINITIONS})
 
-      list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
-      list(APPEND FFMPEG_LIBRARY_DIRS ${${_component}_LIBRARY_DIRS})
+      if (NOT DEFINED PC_FFMPEG_LIBRARY_DIRS OR "${PC_FFMPEG_LIBRARY_DIRS}" STREQUAL "")
+        list(APPEND FFMPEG_LIBRARY_DIRS ${${_component}_LIBRARY_DIRS})
+      endif ()
+
+      if (NOT DEFINED PC_FFMPEG_INCLUDE_DIRS OR "${PC_FFMPEG_INCLUDE_DIRS}" STREQUAL "")
+        list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
+      endif ()
 
       string(TOLOWER ${_component} _lowerComponent)
       if (NOT TARGET FFmpeg::${_lowerComponent})
         add_library(FFmpeg::${_lowerComponent} INTERFACE IMPORTED)
         set_target_properties(FFmpeg::${_lowerComponent} PROPERTIES
-            INTERFACE_COMPILE_OPTIONS "${${_component}_DEFINITIONS}"
-            INTERFACE_INCLUDE_DIRECTORIES ${${_component}_INCLUDE_DIRS}
-            INTERFACE_LINK_LIBRARIES "${${_component}_LIBRARY} ${${_component}_LIBRARIES} ${PC_${_component}_LIBRARIES}"
-            INTERFACE_LINK_DIRECTORIES "${PC_${_component}_LIBDIR} ${PC_${_component}_LIBRARY_DIRS} ${PC_FFMPEG_LIBRARY_DIRS}"
-            IMPORTED_LINK_INTERFACE_MULTIPLICITY 3)
-      endif()
-    else()
+                INTERFACE_COMPILE_OPTIONS "${${_component}_DEFINITIONS}"
+                INTERFACE_INCLUDE_DIRECTORIES ${${_component}_INCLUDE_DIRS}
+                INTERFACE_LINK_LIBRARIES "${${_component}_LIBRARY} ${${_component}_LIBRARIES} ${PC_${_component}_LIBRARIES}"
+                INTERFACE_LINK_DIRECTORIES "${PC_${_component}_LIBDIR} ${PC_${_component}_LIBRARY_DIRS} ${PC_FFMPEG_LIBRARY_DIRS}"
+                IMPORTED_LINK_INTERFACE_MULTIPLICITY 3)
+      endif ()
+    else ()
       # message(STATUS "Required component ${_component} missing.")
-    endif()
+    endif ()
   endforeach ()
 
   # Build the include path with duplicates removed.
@@ -207,26 +237,26 @@ if (NOT FFMPEG_LIBRARIES)
 
   # cache the vars.
   set(FFMPEG_INCLUDE_DIRS ${FFMPEG_INCLUDE_DIRS} CACHE STRING "The FFmpeg include directories." FORCE)
-  set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    CACHE STRING "The FFmpeg libraries." FORCE)
-  set(FFMPEG_DEFINITIONS  ${FFMPEG_DEFINITIONS}  CACHE STRING "The FFmpeg cflags." FORCE)
+  set(FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} CACHE STRING "The FFmpeg libraries." FORCE)
+  set(FFMPEG_DEFINITIONS ${FFMPEG_DEFINITIONS} CACHE STRING "The FFmpeg cflags." FORCE)
   set(FFMPEG_LIBRARY_DIRS ${FFMPEG_LIBRARY_DIRS} CACHE STRING "The FFmpeg library dirs." FORCE)
 
   mark_as_advanced(FFMPEG_INCLUDE_DIRS
-                   FFMPEG_LIBRARIES
-                   FFMPEG_DEFINITIONS
-                   FFMPEG_LIBRARY_DIRS)
+          FFMPEG_LIBRARIES
+          FFMPEG_DEFINITIONS
+          FFMPEG_LIBRARY_DIRS)
 
 endif ()
 
 if (NOT TARGET FFmpeg::FFmpeg)
   add_library(FFmpeg INTERFACE)
   set_target_properties(FFmpeg PROPERTIES
-      INTERFACE_COMPILE_OPTIONS "${FFMPEG_DEFINITIONS}"
-      INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_INCLUDE_DIRS}
-      INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}"
-      INTERFACE_LINK_DIRECTORIES "${FFMPEG_LIBRARY_DIRS}")
+          INTERFACE_COMPILE_OPTIONS "${FFMPEG_DEFINITIONS}"
+          INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_INCLUDE_DIRS}
+          INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}"
+          INTERFACE_LINK_DIRECTORIES "${FFMPEG_LIBRARY_DIRS}")
   add_library(FFmpeg::FFmpeg ALIAS FFmpeg)
-endif()
+endif ()
 
 # Now set the noncached _FOUND vars for the components.
 foreach (_component AVCODEC AVDEVICE AVFORMAT AVUTIL POSTPROCESS SWSCALE)
