@@ -122,23 +122,24 @@ macro(find_component _component _pkgconfig _library _header)
     pkg_check_modules(PC_${_component} ${_pkgconfig})
   endif ()
 
-  find_path(${_component}_INCLUDE_DIRS ${_header}
-          HINTS
-          ${PC_${_component}_INCLUDEDIR}
-          ${PC_${_component}_INCLUDE_DIRS}
-          ${PC_FFMPEG_INCLUDE_DIRS}
-          PATH_SUFFIXES
-          ffmpeg
-  )
+  if(DEFINED PC_FFMPEG_INCLUDE_DIRS AND NOT ("${PC_FFMPEG_INCLUDE_DIRS}" STREQUAL ""))
+    find_path(${_component}_INCLUDE_DIRS ${_header}
+            PATHS ${PC_FFMPEG_INCLUDE_DIRS}
+            NO_DEFAULT_PATH
+            REQUIRED
+    )
+  else ()
+    find_path(${_component}_INCLUDE_DIRS ${_header}
+            HINTS
+            ${PC_${_component}_INCLUDEDIR}
+            ${PC_${_component}_INCLUDE_DIRS}
+            ${PC_FFMPEG_INCLUDE_DIRS}
+            PATH_SUFFIXES
+            ffmpeg
+    )
+  endif ()
 
-  find_path(${_component}_INCLUDE_DIRS ${_header}
-          PATHS
-          ${PC_FFMPEG_INCLUDE_DIRS}
-          NO_DEFAULT_PATH
-          REQUIRED # perhaps?
-  )
-
-  if (NOT ("${PC_FFMPEG_LIBRARY_DIRS}" STREQUAL ""))
+  if (DEFINED PC_FFMPEG_LIBRARY_DIRS AND NOT ("${PC_FFMPEG_LIBRARY_DIRS}" STREQUAL ""))
     find_library(${_component}_LIBRARY NAMES ${_library}
             HINTS
             ${PC_FFMPEG_LIBRARY_DIRS}
