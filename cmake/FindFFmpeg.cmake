@@ -126,7 +126,6 @@ macro(find_component _component _pkgconfig _library _header)
     find_path(${_component}_INCLUDE_DIRS ${_header}
             PATHS ${PC_FFMPEG_INCLUDE_DIRS}
             NO_DEFAULT_PATH
-            REQUIRED
     )
   else ()
     find_path(${_component}_INCLUDE_DIRS ${_header}
