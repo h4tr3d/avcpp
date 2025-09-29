@@ -7,7 +7,7 @@ enable_testing()
 #(Catch2 REQUIRED)
 
 add_library(test_main STATIC test-main.cpp)
-target_link_libraries(test_main PUBLIC Catch2::Catch2)
+target_link_libraries(test_main PUBLIC Catch2::Catch2 avcpp::avcpp)
 
 add_executable(test_executor
     Frame.cpp
