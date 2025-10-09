@@ -9,6 +9,13 @@
 #include "codeccontext.h"
 #include "codecparameters.h"
 
+#if !API_AVFORMAT_URL
+extern "C"
+{
+  #include <libavutil/avstring.h>
+}
+#endif
+
 using namespace std;
 
 namespace {
@@ -60,7 +67,7 @@ void set_uri(AVFormatContext *ctx, string_view uri)
             av_free(ctx->url);
         ctx->url = av_strdup(uri.data());
 #else
-        av_strlcpy(ctx->filename, uri.data(), std::min<size_t>(sizeof(m_raw->filename), uri.size() + 1));
+        av_strlcpy(ctx->filename, uri.data(), std::min<size_t>(sizeof(ctx->filename), uri.size() + 1));
         ctx->filename[uri.size()] = '\0';
 #endif
     }
