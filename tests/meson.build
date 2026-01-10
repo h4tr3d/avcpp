@@ -5,7 +5,7 @@ catch2 = dependency('catch2', required: true, fallback:['catch2','catch2_dep'])
 main_test = static_library(
     'main_test', 
     'test-main.cpp', 
-    dependencies: catch2
+    dependencies: [catch2, avcpp_dep]
 )
 
 main_test_dep = declare_dependency(
