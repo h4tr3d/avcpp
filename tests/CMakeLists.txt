@@ -4,11 +4,6 @@ project(avcpp_tests LANGUAGES CXX VERSION 0.0.1)
 
 enable_testing()
 
-#(Catch2 REQUIRED)
-
-add_library(test_main STATIC test-main.cpp)
-target_link_libraries(test_main PUBLIC Catch2::Catch2)
-
 add_executable(test_executor
     Frame.cpp
     AvDeleter.cpp
@@ -19,7 +14,7 @@ add_executable(test_executor
     Codec.cpp
     PixelSampleFormat.cpp
     Common.cpp)
-target_link_libraries(test_executor PUBLIC Catch2::Catch2 test_main avcpp::avcpp)
+target_link_libraries(test_executor PUBLIC Catch2::Catch2WithMain avcpp::avcpp)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../catch2/contrib")
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}/../catch2/contrib")
