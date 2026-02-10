@@ -366,6 +366,56 @@ void Packet::setTimeBase(const Rational &tb)
     m_timeBase = tb;
 }
 
+#if AVCPP_CXX_STANDARD >= 20
+std::span<const uint8_t> Packet::sideData(AVPacketSideDataType type) const
+{
+    std::size_t size;
+    auto const data = av_packet_get_side_data(raw(), type, &size);
+    return data ? std::span<const uint8_t>{} : std::span<const uint8_t>{data, size};
+}
+
+std::span<uint8_t> Packet::sideData(AVPacketSideDataType type)
+{
+    std::size_t size;
+    auto const data = av_packet_get_side_data(raw(), type, &size);
+    return data ? std::span<uint8_t>{} : std::span<uint8_t>{data, size};
+}
+
+void Packet::addSideData(AVPacketSideDataType type, std::span<const uint8_t> data, OptionalErrorCode ec)
+{
+    clear_if(ec);
+    auto newdata = av::memdup<uint8_t>(data.data(), data.size());
+    if (!newdata) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return;
+    }
+    if (auto ret = av_packet_add_side_data(raw(), type, newdata.get(), data.size()); ret < 0) {
+        throws_if(ec, ret, ffmpeg_category());
+    }
+    newdata.release();
+}
+
+void Packet::addSideData(AVPacketSideDataType type, std::span<uint8_t> data, wrap_data, OptionalErrorCode ec)
+{
+    clear_if(ec);
+    if (auto ret = av_packet_add_side_data(raw(), type, data.data(), data.size()); ret < 0) {
+        throws_if(ec, ret, ffmpeg_category());
+    }
+}
+
+std::span<uint8_t> Packet::allocateSideData(AVPacketSideDataType type, std::size_t size, OptionalErrorCode ec)
+{
+    clear_if(ec);
+    auto data = av_packet_new_side_data(raw(), type, size);
+    if (!data) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return {};
+    }
+    // data owned by the packet itself
+    return {data, size};
+}
+#endif
+
 bool Packet::isReferenced() const
 {
     return raw()->buf;

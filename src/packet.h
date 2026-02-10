@@ -115,6 +115,44 @@ public:
     const Rational& timeBase() const { return m_timeBase; }
     void setTimeBase(const Rational &value);
 
+#if AVCPP_CXX_STANDARD >= 20
+    /**
+     * Get packet side data of the given type. Empty buffer means no data.
+     *
+     * @param type
+     * @return
+     */
+    std::span<const uint8_t> sideData(AVPacketSideDataType type) const;
+    std::span<uint8_t>       sideData(AVPacketSideDataType type);
+
+    /**
+     * Add side data of the given type into packet. Data will be cloned.
+     * @param type
+     * @param data
+     * @param ec
+     */
+    void addSideData(AVPacketSideDataType type, std::span<const uint8_t> data, OptionalErrorCode ec = throws());
+
+    /**
+     * Add side data of the given type into packet. Data will be wrapped and owner-shipping taken. Data must be allocated
+     * via av_malloc()/av::malloc() family functions.
+     *
+     * @param type
+     * @param data
+     * @param ec
+     */
+    void addSideData(AVPacketSideDataType type, std::span<uint8_t> data, wrap_data, OptionalErrorCode ec = throws());
+
+    /**
+     * Allocate storage for the packet side data of the given type and return reference to it. Data owned by the packet.
+     * @param type
+     * @param size
+     * @param ec
+     * @return
+     */
+    std::span<uint8_t> allocateSideData(AVPacketSideDataType type, std::size_t size, OptionalErrorCode ec = throws());
+#endif
+
     bool     isReferenced() const;
     int      refCount() const;
 
@@ -138,12 +176,6 @@ public:
     void swap(Packet &other);
 
     operator bool() const { return isComplete(); }
-
-private:
-#if 0
-    int allocatePayload(int32_t   size);
-    int reallocatePayload(int32_t newSize);
-#endif
 
 private:
     bool     m_completeFlag;
