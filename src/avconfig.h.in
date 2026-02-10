@@ -1,0 +1,3 @@
+#pragma once
+
+#cmakedefine AVCPP_CXX_STANDARD @AVCPP_CXX_STANDARD@

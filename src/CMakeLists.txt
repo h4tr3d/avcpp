@@ -33,22 +33,29 @@ foreach(TARGET ${AV_TARGETS})
     target_include_directories(${TARGET}
         PUBLIC
           $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/avcpp>
         PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR})
-    set_target_properties(${TARGET} PROPERTIES PUBLIC_HEADER "${AV_HEADERS}")
+    set_target_properties(${TARGET} PROPERTIES PUBLIC_HEADER "${AV_HEADERS};${CMAKE_CURRENT_BINARY_DIR}/avconfig.h")
 
     # If not CMAKE_CXX_STANARD provided globally (subproject), use latest supported one
     if (NOT CMAKE_CXX_STANDARD)
         if ("cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
             target_compile_features(${TARGET} PUBLIC cxx_std_26)
+            set(AVCPP_CXX_STANDARD 26)
         elseif ("cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
             target_compile_features(${TARGET} PUBLIC cxx_std_23)
+            set(AVCPP_CXX_STANDARD 23)
         elseif("cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
             target_compile_features(${TARGET} PUBLIC cxx_std_20)
+            set(AVCPP_CXX_STANDARD 20)
         else()
             target_compile_features(${TARGET} PUBLIC cxx_std_17)
+            set(AVCPP_CXX_STANDARD 17)
         endif()
+    else()
+        set(AVCPP_CXX_STANDARD ${CMAKE_CXX_STANDARD})
     endif()
 
     if(WIN32)
@@ -65,6 +72,9 @@ endforeach()
 if (TARGET ${AV_BASENAME}-static)
     set_target_properties(${AV_BASENAME}-static PROPERTIES OUTPUT_NAME ${AV_BASENAME})
 endif()
+
+# prepare configuration file
+configure_file(avconfig.h.in avconfig.h @ONLY)
 
 ########################### Installation ######################################
 
