@@ -1,6 +1,11 @@
 #pragma once
 
+#include "avconfig.h"
+
 #include <vector>
+#if AVCPP_CXX_STANDARD >= 20
+#include <span>
+#endif
 
 #include "ffmpeg.h"
 #include "avutils.h"
@@ -43,10 +48,19 @@ public:
     Packet(Packet &&packet);
     explicit Packet(const AVPacket *packet, OptionalErrorCode ec = throws());
     explicit Packet(const std::vector<uint8_t> &data);
+
     Packet(const uint8_t *data, size_t size, bool doAllign = true);
     // data must be allocated with av_malloc() family
     Packet(uint8_t *data, size_t size, wrap_data, OptionalErrorCode ec = throws());
     Packet(uint8_t *data, size_t size, wrap_data_static, OptionalErrorCode ec = throws());
+
+#if AVCPP_CXX_STANDARD >= 20
+    explicit Packet(std::span<const uint8_t> data, bool doAllign = true);
+    // data must be allocated with av_malloc() family
+    Packet(std::span<uint8_t> data, wrap_data, OptionalErrorCode ec = throws());
+    Packet(std::span<uint8_t> data, wrap_data_static, OptionalErrorCode ec = throws());
+#endif
+
     ~Packet();
 
     bool setData(const std::vector<uint8_t> &newData, OptionalErrorCode ec = throws());
@@ -54,6 +68,12 @@ public:
 
     const uint8_t* data() const;
     uint8_t*       data();
+
+#if AVCPP_CXX_STANDARD >= 20
+    bool setData(std::span<const uint8_t> newData, OptionalErrorCode ec = throws());
+    std::span<const uint8_t> span() const;
+    std::span<uint8_t> span();
+#endif
 
     Timestamp pts() const;
     Timestamp dts() const;

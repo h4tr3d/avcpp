@@ -34,6 +34,17 @@ TEST_CASE("Packet define", "[Packet][Construct]")
         CHECK(memcmp(pkt.data(), pkt_data, pkt.size()) == 0);
     }
 
+#if AVCPP_CXX_STANDARD >= 20
+    SECTION("Construct from data: span") {
+        std::span s = pkt_data;
+        av::Packet pkt{s};
+        CHECK(pkt.refCount() == 1);
+        CHECK(pkt.data() != pkt_data);
+        CHECK(pkt.size() == sizeof(pkt_data));
+        CHECK(memcmp(pkt.data(), pkt_data, pkt.size()) == 0);
+    }
+#endif
+
     SECTION("initFromAVPacket") {
         av::Packet in_pkt{pkt_data, sizeof(pkt_data)};
 

@@ -97,6 +97,20 @@ Packet::Packet(uint8_t *data, size_t size, Packet::wrap_data_static, OptionalErr
     m_completeFlag = true;
 }
 
+#if AVCPP_CXX_STANDARD >= 20
+Packet::Packet(std::span<const uint8_t> data, bool doAllign)
+    : Packet(data.data(), data.size(), doAllign)
+{}
+
+Packet::Packet(std::span<uint8_t> data, wrap_data, OptionalErrorCode ec)
+    : Packet(data.data(), data.size(), wrap_data{}, ec)
+{}
+
+Packet::Packet(std::span<uint8_t> data, wrap_data_static, OptionalErrorCode ec)
+    : Packet(data.data(), data.size(), wrap_data_static{}, ec)
+{}
+#endif
+
 Packet::~Packet()
 {
 #if API_AVCODEC_NEW_INIT_PACKET
@@ -204,6 +218,23 @@ uint8_t *Packet::data()
 {
     return raw()->data;
 }
+
+#if AVCPP_CXX_STANDARD >= 20
+bool Packet::setData(std::span<const uint8_t> newData, OptionalErrorCode ec)
+{
+    return setData(newData.data(), newData.size(), ec);
+}
+
+std::span<uint8_t> Packet::span()
+{
+    return {raw()->data, size_t(raw()->size)};
+}
+
+std::span<const uint8_t> Packet::span() const
+{
+    return {raw()->data, size_t(raw()->size)};
+}
+#endif
 
 Timestamp Packet::pts() const
 {
