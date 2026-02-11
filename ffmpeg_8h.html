@@ -85,6 +85,7 @@ $(function() {
 <code>#include &lt;libswresample/swresample.h&gt;</code><br />
 <code>#include &lt;libavformat/version.h&gt;</code><br />
 <code>#include &lt;libavcodec/version.h&gt;</code><br />
+<code>#include &lt;libavutil/bswap.h&gt;</code><br />
 <code>#include &lt;libavfilter/avfilter.h&gt;</code><br />
 <code>#include &lt;libavfilter/buffersink.h&gt;</code><br />
 <code>#include &lt;libavfilter/buffersrc.h&gt;</code><br />
@@ -94,7 +95,7 @@ Include dependency graph for ffmpeg.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="ffmpeg_8h__incl.png" border="0" usemap="#asrc_2ffmpeg_8h" alt=""/></div>
 <map name="asrc_2ffmpeg_8h" id="asrc_2ffmpeg_8h">
-<area shape="rect" title=" " alt="" coords="1169,5,1271,32"/>
+<area shape="rect" title=" " alt="" coords="1273,5,1375,32"/>
 <area shape="rect" title=" " alt="" coords="5,80,85,107"/>
 <area shape="rect" title=" " alt="" coords="109,80,237,107"/>
 <area shape="rect" title=" " alt="" coords="261,80,416,107"/>
@@ -106,10 +107,11 @@ Include dependency graph for ffmpeg.h:</div>
 <area shape="rect" title=" " alt="" coords="1323,80,1535,107"/>
 <area shape="rect" title=" " alt="" coords="1560,80,1723,107"/>
 <area shape="rect" title=" " alt="" coords="1747,80,1903,107"/>
-<area shape="rect" title=" " alt="" coords="1927,80,2073,107"/>
-<area shape="rect" title=" " alt="" coords="2097,80,2263,107"/>
-<area shape="rect" title=" " alt="" coords="2287,80,2444,107"/>
-<area shape="rect" title=" " alt="" coords="2468,80,2639,107"/>
+<area shape="rect" title=" " alt="" coords="1928,80,2061,107"/>
+<area shape="rect" title=" " alt="" coords="2086,80,2231,107"/>
+<area shape="rect" title=" " alt="" coords="2256,80,2421,107"/>
+<area shape="rect" title=" " alt="" coords="2445,80,2603,107"/>
+<area shape="rect" title=" " alt="" coords="2627,80,2797,107"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -187,19 +189,19 @@ Macros</h2></td></tr>
 <tr class="separator:a1d284cd1d98085b420f9cd0992f8a6c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83fba7eae42c601ef5b085a2a4a591e6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a83fba7eae42c601ef5b085a2a4a591e6">RAW_GET</a>(field,  def)&#160;&#160;&#160;(m_raw ? m_raw-&gt;field : (def))</td></tr>
 <tr class="separator:a83fba7eae42c601ef5b085a2a4a591e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac52f2553590f4bc63719a73a6258379b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#ac52f2553590f4bc63719a73a6258379b">RAW_SET</a>(field,  val)&#160;&#160;&#160;<a class="el" href="CMakeLists_8txt.html#ad679f2d1acbe0709397b0b8793a504e1">if</a>(m_raw) m_raw-&gt;field = (val)</td></tr>
+<tr class="memitem:ac52f2553590f4bc63719a73a6258379b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#ac52f2553590f4bc63719a73a6258379b">RAW_SET</a>(field,  val)&#160;&#160;&#160;if(m_raw) m_raw-&gt;field = (val)</td></tr>
 <tr class="separator:ac52f2553590f4bc63719a73a6258379b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6e88ff9b5c3d1f6bdddef3e86d3c3fa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#ac6e88ff9b5c3d1f6bdddef3e86d3c3fa">RAW_GET2</a>(cond,  field,  def)&#160;&#160;&#160;(m_raw &amp;&amp; (cond) ? m_raw-&gt;field : def)</td></tr>
 <tr class="separator:ac6e88ff9b5c3d1f6bdddef3e86d3c3fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf62678a43dc07314fd6aa8e53b405aa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#adf62678a43dc07314fd6aa8e53b405aa">RAW_SET2</a>(cond,  field,  val)&#160;&#160;&#160;<a class="el" href="CMakeLists_8txt.html#ad679f2d1acbe0709397b0b8793a504e1">if</a>(m_raw &amp;&amp; (cond)) m_raw-&gt;field = (val)</td></tr>
+<tr class="memitem:adf62678a43dc07314fd6aa8e53b405aa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#adf62678a43dc07314fd6aa8e53b405aa">RAW_SET2</a>(cond,  field,  val)&#160;&#160;&#160;if(m_raw &amp;&amp; (cond)) m_raw-&gt;field = (val)</td></tr>
 <tr class="separator:adf62678a43dc07314fd6aa8e53b405aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0aee24cb358c5e3eb8af25e96e5d127"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#ac0aee24cb358c5e3eb8af25e96e5d127">IF_GET</a>(ptr,  field,  def)&#160;&#160;&#160;((ptr) ? ptr-&gt;field : def)</td></tr>
 <tr class="separator:ac0aee24cb358c5e3eb8af25e96e5d127"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17c76cc950c8a5a6c775475ee4689784"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a17c76cc950c8a5a6c775475ee4689784">IF_SET</a>(ptr,  field,  val)&#160;&#160;&#160;(<a class="el" href="CMakeLists_8txt.html#ad679f2d1acbe0709397b0b8793a504e1">if</a>(ptr) ptr-&gt;field = (val))</td></tr>
+<tr class="memitem:a17c76cc950c8a5a6c775475ee4689784"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a17c76cc950c8a5a6c775475ee4689784">IF_SET</a>(ptr,  field,  val)&#160;&#160;&#160;(if(ptr) ptr-&gt;field = (val))</td></tr>
 <tr class="separator:a17c76cc950c8a5a6c775475ee4689784"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3883b56ff7a384bc17474d4650eda23f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a3883b56ff7a384bc17474d4650eda23f">IF_GET2</a>(cond,  ptr,  field,  def)&#160;&#160;&#160;(ptr &amp;&amp; (cond) ? ptr-&gt;field : def)</td></tr>
 <tr class="separator:a3883b56ff7a384bc17474d4650eda23f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8326971202f5d4ace01edc31a070db9c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a8326971202f5d4ace01edc31a070db9c">IF_SET2</a>(cond,  ptr,  field,  val)&#160;&#160;&#160;(<a class="el" href="CMakeLists_8txt.html#ad679f2d1acbe0709397b0b8793a504e1">if</a>(ptr &amp;&amp; (cond)) ptr-&gt;field = (val))</td></tr>
+<tr class="memitem:a8326971202f5d4ace01edc31a070db9c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a8326971202f5d4ace01edc31a070db9c">IF_SET2</a>(cond,  ptr,  field,  val)&#160;&#160;&#160;(if(ptr &amp;&amp; (cond)) ptr-&gt;field = (val))</td></tr>
 <tr class="separator:a8326971202f5d4ace01edc31a070db9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -322,7 +324,7 @@ Macros</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;(<a class="el" href="CMakeLists_8txt.html#ad679f2d1acbe0709397b0b8793a504e1">if</a>(ptr) ptr-&gt;field = (val))</td>
+          <td></td><td>&#160;&#160;&#160;(if(ptr) ptr-&gt;field = (val))</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -362,7 +364,7 @@ Macros</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;(<a class="el" href="CMakeLists_8txt.html#ad679f2d1acbe0709397b0b8793a504e1">if</a>(ptr &amp;&amp; (cond)) ptr-&gt;field = (val))</td>
+          <td></td><td>&#160;&#160;&#160;(if(ptr &amp;&amp; (cond)) ptr-&gt;field = (val))</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -452,7 +454,7 @@ Macros</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;<a class="el" href="CMakeLists_8txt.html#ad679f2d1acbe0709397b0b8793a504e1">if</a>(m_raw) m_raw-&gt;field = (val)</td>
+          <td></td><td>&#160;&#160;&#160;if(m_raw) m_raw-&gt;field = (val)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -486,7 +488,7 @@ Macros</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;<a class="el" href="CMakeLists_8txt.html#ad679f2d1acbe0709397b0b8793a504e1">if</a>(m_raw &amp;&amp; (cond)) m_raw-&gt;field = (val)</td>
+          <td></td><td>&#160;&#160;&#160;if(m_raw &amp;&amp; (cond)) m_raw-&gt;field = (val)</td>
         </tr>
       </table>
 </div><div class="memdoc">
