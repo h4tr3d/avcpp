@@ -1050,7 +1050,7 @@ CodecContext2::encodeCommon(Packet &outPacket,
         outPacket.setStreamIndex(inFrame.streamIndex());
     } else if (m_stream.isValid()) {
 #if AVCPP_USE_CODECPAR
-#if API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE
+#if AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE
         outPacket.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
 #else
         // TBD: additional checking are needed
