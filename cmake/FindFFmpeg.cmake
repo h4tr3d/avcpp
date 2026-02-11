@@ -142,10 +142,10 @@ macro(find_component _component _pkgconfig _library _header)
   #message(STATUS "L1: ${PC_${_component}_LIBRARIES}")
   #message(STATUS "L2: ${_library}")
 
-  set(${_component}_DEFINITIONS  ${PC_${_component}_CFLAGS_OTHER} CACHE STRING "The ${_component} CFLAGS.")
-  set(${_component}_VERSION      ${PC_${_component}_VERSION}      CACHE STRING "The ${_component} version number.")
-  set(${_component}_LIBRARY_DIRS ${PC_${_component}_LIBRARY_DIRS} CACHE STRING "The ${_component} library dirs.")
-  set(${_component}_LIBRARIES    ${PC_${_component}_LIBRARIES}    CACHE STRING "The ${_component} libraries.")
+  set(${_component}_DEFINITIONS  ${PC_${_component}_CFLAGS_OTHER})
+  set(${_component}_VERSION      ${PC_${_component}_VERSION})
+  set(${_component}_LIBRARY_DIRS ${PC_${_component}_LIBRARY_DIRS})
+  set(${_component}_LIBRARIES    ${PC_${_component}_LIBRARIES})
 
   set_component_found(${_component})
 
@@ -161,7 +161,7 @@ endmacro()
 
 
 # Check for cached results. If there are skip the costly part.
-if (NOT FFMPEG_LIBRARIES)
+if (TRUE)
 
   # Check for all possible component.
   find_component(AVCODEC    libavcodec    avcodec  libavcodec/avcodec.h)
@@ -204,12 +204,6 @@ if (NOT FFMPEG_LIBRARIES)
   if (FFMPEG_INCLUDE_DIRS)
     list(REMOVE_DUPLICATES FFMPEG_INCLUDE_DIRS)
   endif ()
-
-  # cache the vars.
-  set(FFMPEG_INCLUDE_DIRS ${FFMPEG_INCLUDE_DIRS} CACHE STRING "The FFmpeg include directories." FORCE)
-  set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    CACHE STRING "The FFmpeg libraries." FORCE)
-  set(FFMPEG_DEFINITIONS  ${FFMPEG_DEFINITIONS}  CACHE STRING "The FFmpeg cflags." FORCE)
-  set(FFMPEG_LIBRARY_DIRS ${FFMPEG_LIBRARY_DIRS} CACHE STRING "The FFmpeg library dirs." FORCE)
 
   mark_as_advanced(FFMPEG_INCLUDE_DIRS
                    FFMPEG_LIBRARIES
