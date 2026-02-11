@@ -366,7 +366,7 @@ void Packet::setTimeBase(const Rational &tb)
     m_timeBase = tb;
 }
 
-#if AVCPP_CXX_STANDARD >= 20
+#ifdef AVCPP_HAS_PKT_SIDE_DATA
 std::span<const uint8_t> Packet::sideData(AVPacketSideDataType type) const
 {
     std::size_t size;
@@ -379,6 +379,30 @@ std::span<uint8_t> Packet::sideData(AVPacketSideDataType type)
     std::size_t size;
     auto const data = av_packet_get_side_data(raw(), type, &size);
     return data ? std::span<uint8_t>{} : std::span<uint8_t>{data, size};
+}
+
+PacketSideData Packet::sideData(std::size_t index) noexcept
+{
+    if (!m_raw)
+        return {};
+    if (index >= sideDataElements())
+        return {};
+    return PacketSideData{m_raw->side_data[index]};
+}
+
+ArrayView<AVPacketSideData, PacketSideData, std::size_t> Packet::sideData() noexcept
+{
+    return make_array_view_size<PacketSideData>(m_raw->side_data, m_raw->side_data_elems);
+}
+
+ArrayView<const AVPacketSideData, PacketSideData, std::size_t> Packet::sideData() const noexcept
+{
+    return make_array_view_size<PacketSideData>((const AVPacketSideData*)m_raw->side_data, m_raw->side_data_elems);
+}
+
+size_t Packet::sideDataElements() const noexcept
+{
+    return m_raw ? m_raw->side_data_elems : 0;
 }
 
 void Packet::addSideData(AVPacketSideDataType type, std::span<const uint8_t> data, OptionalErrorCode ec)
@@ -533,5 +557,43 @@ void Packet::setDuration(int duration, const Rational &durationTimeBase)
     else
         raw()->duration = durationTimeBase.rescale(duration, m_timeBase);
 }
+
+#ifdef AVCPP_HAS_PKT_SIDE_DATA
+string_view PacketSideData::name() const noexcept
+{
+    return name(m_raw.type);
+}
+
+AVPacketSideDataType PacketSideData::type() const noexcept
+{
+    return m_raw.type;
+}
+
+std::span<const uint8_t> PacketSideData::data() const noexcept
+{
+    return {m_raw.data, m_raw.size};
+}
+
+std::span<uint8_t> PacketSideData::data() noexcept
+{
+    return {m_raw.data, m_raw.size};
+}
+
+bool PacketSideData::empty() const noexcept
+{
+    return !m_raw.data || !m_raw.size;
+}
+
+PacketSideData::operator bool() const noexcept
+{
+    return !empty();
+}
+
+string_view PacketSideData::name(AVPacketSideDataType type)
+{
+    auto nm = av_packet_side_data_name(type);
+    return nm ? std::string_view{nm} : std::string_view{};
+}
+#endif
 
 } // ::av

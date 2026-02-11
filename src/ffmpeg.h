@@ -14,6 +14,7 @@ extern "C"
 #include <libswresample/swresample.h>
 #include <libavformat/version.h>
 #include <libavcodec/version.h>
+#include <libavutil/bswap.h>
 }
 
 extern "C" {

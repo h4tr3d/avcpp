@@ -1,3 +1,7 @@
 #pragma once
 
 #cmakedefine AVCPP_CXX_STANDARD @AVCPP_CXX_STANDARD@
+
+#if AVCPP_CXX_STANDARD >= 20
+#define AVCPP_HAS_PKT_SIDE_DATA 1
+#endif
