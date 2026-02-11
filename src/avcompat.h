@@ -12,7 +12,7 @@ extern "C" {
 } // extern "C"
 
 // Codec parameters interface
-#define USE_CODECPAR ((AVCPP_AVCODEC_VERSION_MAJOR) >= 59) // FFmpeg 5.0
+#define AVCPP_USE_CODECPAR ((AVCPP_AVCODEC_VERSION_MAJOR) >= 59) // FFmpeg 5.0
 
 // New Audio Channel Layout API
 #define API_NEW_CHANNEL_LAYOUT ((AVCPP_AVUTIL_VERSION_MAJOR > 57) || (AVCPP_AVUTIL_VERSION_MAJOR == 57 && (AVCPP_AVUTIL_VERSION_MINOR >= 24)))

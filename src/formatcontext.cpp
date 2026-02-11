@@ -254,7 +254,7 @@ Stream FormatContext::addStream(const Codec &/*codec*/, OptionalErrorCode ec)
 
     auto stream = Stream(m_monitor, st, Direction::Encoding);
 
-#if !USE_CODECPAR
+#if !AVCPP_USE_CODECPAR
     FF_DISABLE_DEPRECATION_WARNINGS
     if (st->codec) {
         if (outputFormat().isFlags(AVFMT_GLOBALHEADER)) {
@@ -652,7 +652,7 @@ void FormatContext::openOutput(const string &uri, OutputFormat format, AVDiction
     }
 
     // Fix stream flags
-#if !USE_CODECPAR
+#if !AVCPP_USE_CODECPAR
     FF_DISABLE_DEPRECATION_WARNINGS
     for (size_t i = 0; i < streamsCount(); ++i) {
         auto st = stream(i);
@@ -1012,7 +1012,7 @@ void FormatContext::findStreamInfo(AVDictionary **options, size_t optionsCount, 
 void FormatContext::closeCodecContexts()
 {
     // HACK: This is hack to correct cleanup codec contexts in independ way
-#if !USE_CODECPAR
+#if !AVCPP_USE_CODECPAR
     FF_DISABLE_DEPRECATION_WARNINGS
     auto nb = m_raw->nb_streams;
     for (size_t i = 0; i < nb; ++i) {

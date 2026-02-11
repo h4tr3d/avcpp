@@ -68,7 +68,7 @@ Timestamp Stream::currentDts() const
 
 AVMediaType Stream::mediaType() const
 {
-#if !USE_CODECPAR
+#if !AVCPP_USE_CODECPAR
     FF_DISABLE_DEPRECATION_WARNINGS
     return RAW_GET2(isValid() && m_raw->codec, codec->codec_type, AVMEDIA_TYPE_UNKNOWN);
     FF_ENABLE_DEPRECATION_WARNINGS

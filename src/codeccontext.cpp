@@ -303,7 +303,7 @@ CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction dir
     if (st.mediaType() != type)
         throw av::Exception(make_avcpp_error(Errors::CodecInvalidMediaType));
 
-#if !USE_CODECPAR
+#if !AVCPP_USE_CODECPAR
     FF_DISABLE_DEPRECATION_WARNINGS
     auto const codecId = st.raw()->codec->codec_id;
     FF_ENABLE_DEPRECATION_WARNINGS
@@ -320,7 +320,7 @@ CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction dir
             c = findEncodingCodec(codecId);
     }
 
-#if !USE_CODECPAR
+#if !AVCPP_USE_CODECPAR
     FF_DISABLE_DEPRECATION_WARNINGS
     m_raw = st.raw()->codec;
     if (!c.isNull())
@@ -353,7 +353,7 @@ CodecContext2::~CodecContext2()
     // So only stream-independ CodecContext's must be tracked and closed in ctor.
     // Note: new FFmpeg API declares, that AVStream not owned by codec and deals only with codecpar
     //
-#if !USE_CODECPAR
+#if !AVCPP_USE_CODECPAR
     if (!m_stream.isNull())
         return;
 #endif
@@ -421,7 +421,7 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
         }
     }
 
-#if !USE_CODECPAR // AVFORMAT < 57.5.0
+#if !AVCPP_USE_CODECPAR // AVFORMAT < 57.5.0
     FF_DISABLE_DEPRECATION_WARNINGS
     if (m_stream.isValid()) {
         m_stream.raw()->codec = m_raw;
@@ -592,7 +592,7 @@ void CodecContext2::copyContextFrom(const CodecContext2 &other, OptionalErrorCod
         return;
     }
 
-#if !USE_CODECPAR
+#if !AVCPP_USE_CODECPAR
     FF_DISABLE_DEPRECATION_WARNINGS
     int stat = avcodec_copy_context(m_raw, other.m_raw);
     if (stat < 0)
@@ -1048,7 +1048,7 @@ CodecContext2::encodeCommon(Packet &outPacket,
         outPacket.setTimeBase(inFrame.timeBase());
         outPacket.setStreamIndex(inFrame.streamIndex());
     } else if (m_stream.isValid()) {
-#if USE_CODECPAR
+#if AVCPP_USE_CODECPAR
 #if API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE
         outPacket.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
 #else
