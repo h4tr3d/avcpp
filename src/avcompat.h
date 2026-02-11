@@ -47,9 +47,11 @@ extern "C" {
 #endif
 
 // Allow to use spece-ship operator, whem possible
+#define AVCPP_USE_SPACESHIP_OPERATOR 0
 #if __has_include(<compare>)
 #  include <compare>
 #  if defined(__cpp_lib_three_way_comparison) && __cpp_lib_three_way_comparison >= 201907
+#    undef  AVCPP_USE_SPACESHIP_OPERATOR
 #    define AVCPP_USE_SPACESHIP_OPERATOR 1
 #  endif
 #endif
