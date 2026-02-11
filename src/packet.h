@@ -45,7 +45,7 @@ public:
 #endif // AVCPP_HAS_PKT_SIDE_DATA
 
 class Packet :
-#if API_AVCODEC_NEW_INIT_PACKET
+#if AVCPP_API_AVCODEC_NEW_INIT_PACKET
     public FFWrapperPtr<AVPacket>
 #else
     public FFWrapperRef<AVPacket>
@@ -203,7 +203,7 @@ public:
     bool     isReferenced() const;
     int      refCount() const;
 
-#if API_AVCODEC_NEW_INIT_PACKET
+#if AVCPP_API_AVCODEC_NEW_INIT_PACKET
     AVPacket* makeRef(OptionalErrorCode ec) const;
 #else
     AVPacket makeRef(OptionalErrorCode ec = throws()) const;
@@ -214,7 +214,7 @@ public:
     Packet &operator=(const Packet &rhs);
     Packet &operator=(Packet &&rhs);
 
-#if API_AVCODEC_NEW_INIT_PACKET
+#if AVCPP_API_AVCODEC_NEW_INIT_PACKET
     Packet &operator=(const AVPacket *rhs);
 #else
     Packet &operator=(const AVPacket &rhs);

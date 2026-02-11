@@ -6,7 +6,7 @@ namespace av {
 
 Packet::Packet()
 {
-#if API_AVCODEC_NEW_INIT_PACKET
+#if AVCPP_API_AVCODEC_NEW_INIT_PACKET
     m_raw = av_packet_alloc();
 #else
     av_init_packet(raw());
@@ -113,7 +113,7 @@ Packet::Packet(std::span<uint8_t> data, wrap_data_static, OptionalErrorCode ec)
 
 Packet::~Packet()
 {
-#if API_AVCODEC_NEW_INIT_PACKET
+#if AVCPP_API_AVCODEC_NEW_INIT_PACKET
     av_packet_free(&m_raw);
 #else
     avpacket_unref(&m_raw);
@@ -134,7 +134,7 @@ void Packet::initFromAVPacket(const AVPacket *src, bool deepCopy, OptionalErrorC
         avpacket_unref(raw());
 
     if (deepCopy) {
-#if API_AVCODEC_NEW_INIT_PACKET
+#if AVCPP_API_AVCODEC_NEW_INIT_PACKET
         if (!m_raw)
             m_raw = av_packet_alloc();
 
@@ -453,7 +453,7 @@ int Packet::refCount() const
         return 0;
 }
 
-#if API_AVCODEC_NEW_INIT_PACKET
+#if AVCPP_API_AVCODEC_NEW_INIT_PACKET
 AVPacket *Packet::makeRef(OptionalErrorCode ec) const
 {
     clear_if(ec);
@@ -520,7 +520,7 @@ Packet &Packet::operator=(Packet &&rhs)
     return *this;
 }
 
-#if API_AVCODEC_NEW_INIT_PACKET
+#if AVCPP_API_AVCODEC_NEW_INIT_PACKET
 Packet &Packet::operator=(const AVPacket *rhs)
 {
     if (rhs == raw())

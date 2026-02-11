@@ -26,7 +26,7 @@ extern "C" {
 #define AVCPP_API_AVCODEC_CLOSE      (AVCPP_AVCODEC_VERSION_MAJOR < 61)
 
 // sizeof(AVPacket) is no part of the public ABI, packet must be allocated in heap
-#define API_AVCODEC_NEW_INIT_PACKET (AVCPP_AVCODEC_VERSION_MAJOR >= 58)
+#define AVCPP_API_AVCODEC_NEW_INIT_PACKET (AVCPP_AVCODEC_VERSION_MAJOR >= 58)
 // some fields in the AVCodec structure deprecard and replaced by the call of avcodec_get_supported_config()
 #define API_AVCODEC_GET_SUPPORTED_CONFIG (AVCPP_AVCODEC_VERSION_INT >= AV_VERSION_INT(61, 13, 100))
 // av_stream_get_codec_timebase() deprecard now without replacement
