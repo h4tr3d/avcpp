@@ -63,7 +63,7 @@ AVMediaType GenericCodecContext::codecType() const noexcept
 
 namespace {
 
-#define NEW_CODEC_API (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57,37,100))
+#define NEW_CODEC_API (AVCPP_AVCODEC_VERSION_INT >= AV_VERSION_INT(57,37,100))
 
 #if NEW_CODEC_API
 // Use avcodec_send_packet() and avcodec_receive_frame()
@@ -274,7 +274,7 @@ Packet VideoEncoderContext::encode(const VideoFrame &inFrame, OptionalErrorCode 
         return packet;
     }
 
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(56, 60, 100)
+#if AVCPP_AVCODEC_VERSION_INT < AV_VERSION_INT(56, 60, 100)
     packet.setKeyPacket(!!m_raw->coded_frame->key_frame);
 #endif
 
@@ -358,7 +358,7 @@ CodecContext2::~CodecContext2()
         return;
 #endif
 
-#if LIBAVCODEC_VERSION_MAJOR < 58 // FFmpeg 4.0
+#if AVCPP_AVCODEC_VERSION_MAJOR < 58 // FFmpeg 4.0
     std::error_code ec;
     close(ec);
 #endif
@@ -515,7 +515,7 @@ int codec_close(AVCodecContext*& ctx)
     ctxNew->pkt_timebase = ctx->pkt_timebase;
 
 
-#if (LIBAVCODEC_VERSION_MAJOR < 61) || (defined(FF_API_TICKS_PER_FRAME) && FF_API_TICKS_PER_FRAME)
+#if (AVCPP_AVCODEC_VERSION_MAJOR < 61) || (defined(FF_API_TICKS_PER_FRAME) && FF_API_TICKS_PER_FRAME)
 FF_DISABLE_DEPRECATION_WARNINGS
     ctxNew->ticks_per_frame = ctx->ticks_per_frame;
 FF_ENABLE_DEPRECATION_WARNINGS
@@ -1010,7 +1010,7 @@ CodecContext2::decodeCommon(T &outFrame,
     if (frame->pts == av::NoPts)
         frame->pts = av::frame::get_best_effort_timestamp(frame);
 
-#if LIBAVCODEC_VERSION_MAJOR < 57
+#if AVCPP_AVCODEC_VERSION_MAJOR < 57
     if (frame->pts == av::NoPts)
         frame->pts = frame->pkt_pts;
 #endif

@@ -1,9 +1,11 @@
 #pragma once
 
 #include "avconfig.h"
+#include "avcompat.h"
 
 #include <vector>
 #include <type_traits>
+
 #if AVCPP_CXX_STANDARD >= 20
 #include <span>
 #endif

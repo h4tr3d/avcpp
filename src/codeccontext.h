@@ -1,6 +1,7 @@
 #pragma once
 
 #include "avconfig.h"
+#include "avcompat.h"
 
 #include "ffmpeg.h"
 #include "stream.h"

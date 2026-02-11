@@ -1,6 +1,6 @@
 #include "avtime.h"
 
-#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(51,73,101) // FFMPEG 1.0
+#if AVCPP_AVUTIL_VERSION_INT >= AV_VERSION_INT(51,73,101) // FFMPEG 1.0
 extern "C"
 {
   #include <libavutil/time.h>
@@ -25,7 +25,7 @@ int64_t gettime()
 // Sleep given amount of us
 int usleep(unsigned usec)
 {
-#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(51,73,101) // FFMPEG 1.0
+#if AVCPP_AVUTIL_VERSION_INT >= AV_VERSION_INT(51,73,101) // FFMPEG 1.0
     return av_usleep(usec);
 #else
     // Code taken from FFMPEG 1.0

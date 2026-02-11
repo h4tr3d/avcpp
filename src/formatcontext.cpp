@@ -28,7 +28,7 @@ int custom_io_read(void *opaque, uint8_t *buf, int buf_size)
     return io->read(buf, buf_size);
 }
 
-#if (LIBAVFORMAT_VERSION_MAJOR < 61)
+#if (AVCPP_AVFORMAT_VERSION_MAJOR < 61)
 int custom_io_write(void *opaque, uint8_t *buf, int buf_size)
 #else
 int custom_io_write(void *opaque, const uint8_t *buf, int buf_size)

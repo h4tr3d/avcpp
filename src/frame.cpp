@@ -11,7 +11,7 @@ extern "C" {
 
 namespace {
 
-#if LIBAVUTIL_VERSION_INT <= AV_VERSION_INT(52,48,101)
+#if AVCPP_AVUTIL_VERSION_INT <= AV_VERSION_INT(52,48,101)
 
 #define CHECK_CHANNELS_CONSISTENCY(frame) \
     av_assert2(!(frame)->channel_layout || \
@@ -79,7 +79,7 @@ int av_frame_copy(AVFrame *dst, const AVFrame *src)
 
 #undef CHECK_CHANNELS_CONSISTENCY
 
-#endif // LIBAVUTIL_VERSION_INT <= 53.5.0 (ffmpeg 2.2)
+#endif // AVCPP_AVUTIL_VERSION_INT <= 53.5.0 (ffmpeg 2.2)
 
 void avcpp_null_deleter(void* /*opaque*/, uint8_t */*data*/)
 {

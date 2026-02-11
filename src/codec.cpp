@@ -1,3 +1,5 @@
+#include "avcompat.h"
+
 #include "codec.h"
 #include "avutils.h"
 
@@ -18,13 +20,13 @@ const char *Codec::longName() const
 
 bool Codec::canEncode() const
 {
-#if LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(54,23,100) // 0.11.1
+#if AVCPP_AVCODEC_VERSION_INT <= AV_VERSION_INT(54,23,100) // 0.11.1
     if (m_raw)
         return (m_raw->encode || m_raw->encode2);
-#elif LIBAVCODEC_VERSION_INT < AV_VERSION_INT(57,37,100) // 7fc329e
+#elif AVCPP_AVCODEC_VERSION_INT < AV_VERSION_INT(57,37,100) // 7fc329e
     if (m_raw)
         return m_raw->encode2;
-#elif LIBAVCODEC_VERSION_INT < AV_VERSION_INT(59,37,100) // <5.1
+#elif AVCPP_AVCODEC_VERSION_INT < AV_VERSION_INT(59,37,100) // <5.1
     if (m_raw)
         return (m_raw->receive_packet || m_raw->encode2);
 #else
@@ -35,10 +37,10 @@ bool Codec::canEncode() const
 
 bool Codec::canDecode() const
 {
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(57,37,100) // 7fc329e
+#if AVCPP_AVCODEC_VERSION_INT < AV_VERSION_INT(57,37,100) // 7fc329e
     if (m_raw)
         return m_raw->decode;
-#elif LIBAVCODEC_VERSION_INT < AV_VERSION_INT(59,37,100) // <5.1
+#elif AVCPP_AVCODEC_VERSION_INT < AV_VERSION_INT(59,37,100) // <5.1
     if (m_raw)
         return (m_raw->receive_frame || m_raw->decode);
 #else

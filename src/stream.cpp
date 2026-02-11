@@ -59,7 +59,7 @@ Timestamp Stream::duration() const
 
 Timestamp Stream::currentDts() const
 {
-#if (LIBAVFORMAT_VERSION_MAJOR) >= 59
+#if (AVCPP_AVFORMAT_VERSION_MAJOR) >= 59
     return {av::NoPts, timeBase()};
 #else
     return {RAW_GET2(isValid(), cur_dts, av::NoPts), timeBase()};

@@ -4,6 +4,7 @@
 #include <string_view>
 #include <bitset>
 
+#include "avcompat.h"
 #include "avutils.h"
 
 #if API_NEW_CHANNEL_LAYOUT

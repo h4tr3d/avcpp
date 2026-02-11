@@ -74,7 +74,7 @@ bool BufferSinkFilterContext::getAudioSamples(AudioSamples &samples, size_t samp
 void BufferSinkFilterContext::setFrameSize(unsigned size, OptionalErrorCode ec)
 {
     clear_if(ec);
-    static_assert(LIBAVFILTER_VERSION_INT >= AV_VERSION_INT(3,17,100),
+    static_assert(AVCPP_AVFILTER_VERSION_INT >= AV_VERSION_INT(3,17,100),
                   "BufferSink set frame size functionality does not present on FFmpeg prior 1.0");
     if (!m_sink) {
         throws_if(ec, Errors::Unallocated);
@@ -92,7 +92,7 @@ void BufferSinkFilterContext::setFrameSize(unsigned size, OptionalErrorCode ec)
 Rational BufferSinkFilterContext::frameRate(OptionalErrorCode ec)
 {
     clear_if(ec);
-    static_assert(LIBAVFILTER_VERSION_INT >= AV_VERSION_INT(3,17,100),
+    static_assert(AVCPP_AVFILTER_VERSION_INT >= AV_VERSION_INT(3,17,100),
                   "BufferSink get frame rate functionality does not present on FFmpeg prior 1.0");
 
     if (!m_sink) {

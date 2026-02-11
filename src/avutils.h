@@ -16,54 +16,6 @@
 #include "ffmpeg.h"
 #include "avtime.h"
 
-extern "C" {
-#include <libavfilter/avfilter.h>
-#include <libavcodec/avcodec.h>
-}
-
-// WA: codecpar usage need more investigation. Temporary disable it.
-#define USE_CODECPAR ((LIBAVCODEC_VERSION_MAJOR) >= 59) // FFmpeg 5.0
-
-// New Audio Channel Layout API
-#define API_NEW_CHANNEL_LAYOUT ((LIBAVUTIL_VERSION_MAJOR > 57) || (LIBAVUTIL_VERSION_MAJOR == 57 && (LIBAVUTIL_VERSION_MINOR >= 24)))
-// `int64_t frame_num` has been added in the 60.2, in the 61.0 it should be removed
-#define API_FRAME_NUM          ((LIBAVCODEC_VERSION_MAJOR > 60) || (LIBAVCODEC_VERSION_MAJOR == 60 && LIBAVCODEC_VERSION_MINOR >= 2))
-// use AVFormatContext::url
-#define API_AVFORMAT_URL       ((LIBAVFORMAT_VERSION_MAJOR > 58) || (LIBAVFORMAT_VERSION_MAJOR == 58 && LIBAVFORMAT_VERSION_MINOR >= 7))
-// net key frame flags: AV_FRAME_FLAG_KEY (FFmpeg 6.1)
-#define API_FRAME_KEY          ((LIBAVUTIL_VERSION_MAJOR > 58) || (LIBAVUTIL_VERSION_MAJOR == 58 && LIBAVUTIL_VERSION_MINOR >= 29))
-// avcodec_close() support
-#define API_AVCODEC_CLOSE      (LIBAVCODEC_VERSION_MAJOR < 61)
-
-#if defined(__ICL) || defined (__INTEL_COMPILER)
-#    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))
-#    define FF_ENABLE_DEPRECATION_WARNINGS  __pragma(warning(pop))
-#elif defined(_MSC_VER)
-#    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:4996))
-#    define FF_ENABLE_DEPRECATION_WARNINGS  __pragma(warning(pop))
-#elif defined(__GNUC__) || defined(__clang__)
-#    define FF_DISABLE_DEPRECATION_WARNINGS _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-#    define FF_ENABLE_DEPRECATION_WARNINGS  _Pragma("GCC diagnostic warning \"-Wdeprecated-declarations\"")
-#else
-#    define FF_DISABLE_DEPRECATION_WARNINGS
-#    define FF_ENABLE_DEPRECATION_WARNINGS
-#endif
-
-// sizeof(AVPacket) is no part of the public ABI, packet must be allocated in heap
-#define API_AVCODEC_NEW_INIT_PACKET (LIBAVCODEC_VERSION_MAJOR >= 58)
-// some fields in the AVCodec structure deprecard and replaced by the call of avcodec_get_supported_config()
-#define API_AVCODEC_GET_SUPPORTED_CONFIG (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(61, 13, 100))
-// av_stream_get_codec_timebase() deprecard now without replacement
-#define API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE (LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(61, 5, 101))
-
-// Allow to use spece-ship operator, whem possible
-#if __has_include(<compare>)
-#  include <compare>
-#  if defined(__cpp_lib_three_way_comparison) && __cpp_lib_three_way_comparison >= 201907
-#    define AVCPP_USE_SPACESHIP_OPERATOR 1
-#  endif
-#endif
-
 //
 // Functions
 //

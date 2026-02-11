@@ -6,7 +6,7 @@ namespace av {
 
 static size_t get_pad_count(const AVFilter *filter, bool output)
 {
-#if LIBAVFILTER_VERSION_MAJOR >= 8 // FFmpeg 5.0
+#if AVCPP_AVFILTER_VERSION_MAJOR >= 8 // FFmpeg 5.0
     return avfilter_filter_pad_count(filter, output);
 #else
     return avfilter_pad_count(output ? filter->outputs : filter->inputs);
