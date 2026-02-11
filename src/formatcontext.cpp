@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "avcompat.h"
 #include "avutils.h"
 #include "avtime.h"
 #include "frame.h"
@@ -9,7 +10,7 @@
 #include "codeccontext.h"
 #include "codecparameters.h"
 
-#if !API_AVFORMAT_URL
+#if !AVCPP_API_AVFORMAT_URL
 extern "C"
 {
   #include <libavutil/avstring.h>
@@ -50,7 +51,7 @@ int64_t custom_io_seek(void *opaque, int64_t offset, int whence)
 
 string_view get_uri(const AVFormatContext *ctx)
 {
-#if API_AVFORMAT_URL
+#if AVCPP_API_AVFORMAT_URL
     if (ctx->url == nullptr)
         return {};
     return ctx->url;
@@ -62,7 +63,7 @@ string_view get_uri(const AVFormatContext *ctx)
 void set_uri(AVFormatContext *ctx, string_view uri)
 {
     if (!uri.empty()) {
-#if API_AVFORMAT_URL
+#if AVCPP_API_AVFORMAT_URL
         if (ctx->url)
             av_free(ctx->url);
         ctx->url = av_strdup(uri.data());

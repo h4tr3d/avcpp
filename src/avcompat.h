@@ -19,7 +19,7 @@ extern "C" {
 // `int64_t frame_num` has been added in the 60.2, in the 61.0 it should be removed
 #define AVCPP_API_FRAME_NUM          ((AVCPP_AVCODEC_VERSION_MAJOR > 60) || (AVCPP_AVCODEC_VERSION_MAJOR == 60 && AVCPP_AVCODEC_VERSION_MINOR >= 2))
 // use AVFormatContext::url
-#define API_AVFORMAT_URL       ((AVCPP_AVFORMAT_VERSION_MAJOR > 58) || (AVCPP_AVFORMAT_VERSION_MAJOR == 58 && AVCPP_AVFORMAT_VERSION_MINOR >= 7))
+#define AVCPP_API_AVFORMAT_URL       ((AVCPP_AVFORMAT_VERSION_MAJOR > 58) || (AVCPP_AVFORMAT_VERSION_MAJOR == 58 && AVCPP_AVFORMAT_VERSION_MINOR >= 7))
 // net key frame flags: AV_FRAME_FLAG_KEY (FFmpeg 6.1)
 #define API_FRAME_KEY          ((AVCPP_AVUTIL_VERSION_MAJOR > 58) || (AVCPP_AVUTIL_VERSION_MAJOR == 58 && AVCPP_AVUTIL_VERSION_MINOR >= 29))
 // avcodec_close() support
