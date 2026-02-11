@@ -657,7 +657,7 @@ int CodecContext2::frameSize() const noexcept
 
 int64_t CodecContext2::frameNumber() const noexcept
 {
-#if API_FRAME_NUM
+#if AVCPP_API_FRAME_NUM
     return RAW_GET2(isValid(), frame_num, 0);
 #else
     return RAW_GET2(isValid(), frame_number, 0);
