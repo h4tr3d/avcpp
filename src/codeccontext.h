@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avconfig.h"
+
 #include "ffmpeg.h"
 #include "stream.h"
 #include "avutils.h"
@@ -528,7 +530,11 @@ public:
     {
         if (!isValid())
             return;
+#if AVCPP_CXX_STANDARD >= 20
+        int sr = guessValue(sampleRate, make_array_view_until<const int>(codec_context::internal::get_supported_samplerates(m_raw->codec), 0));
+#else
         int sr = guessValue(sampleRate, codec_context::internal::get_supported_samplerates(m_raw->codec), EqualComparator<int>(0));
+#endif
         if (sr != sampleRate)
         {
             fflog(AV_LOG_INFO, "Guess sample rate %d instead unsupported %d\n", sr, sampleRate);

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "avconfig.h"
+
+#include <ranges>
 #include <string>
 #include <vector>
 #include <deque>
@@ -8,6 +11,7 @@
 #include <sstream>
 #include <algorithm>
 #include <functional>
+#include <type_traits>
 
 #include "ffmpeg.h"
 #include "avtime.h"
@@ -314,6 +318,246 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if AVCPP_CXX_STANDARD >= 20
+
+/**
+ * Sentinel policy that defines well-known range end pointer
+ */
+template<class T>
+struct SentinelEndPolicy
+{
+    using value_type = std::remove_reference_t<T>;
+    value_type* end{};
+    constexpr bool isEnd(T* it) const noexcept {
+        return it == end;
+    }
+};
+
+/**
+ * Sentinel policy that defines well-known sequence end marker, like '\0' at the C-string end or special value like NULL
+ */
+template<class T>
+struct SentinelUntilPolicy
+{
+    using value_type = std::remove_cvref_t<T>;
+    value_type value{};
+    constexpr bool isEnd(T* it) const noexcept {
+        return it == nullptr || *it == value;
+    }
+};
+
+
+/**
+ * Policy based sentinel marker
+ */
+template<class T, class Policy>
+struct ArraySentinel
+{
+    Policy policy;
+    friend constexpr bool operator==(T* it, const ArraySentinel& s) noexcept {
+        return s.policy.isEnd(it);
+    }
+};
+
+template<class T, class U, bool UseProxy>
+struct ReferenceSelector;
+
+template<class T, class U>
+struct ReferenceSelector<T, U, true>
+{
+    using Type = T&;
+};
+
+template<class T, class U>
+struct ReferenceSelector<T, U, false>
+{
+    using Type = U;
+};
+
+/**
+ * Wrapped array iterator.
+ *
+ * Represents any element of the T* array as light-weight wrapper U
+ *
+ */
+template<typename T, typename U>
+struct ArrayIterator
+{
+    static constexpr bool UseProxy = !std::is_same_v<std::remove_cvref_t<T>, std::remove_cvref_t<U>>;
+
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = std::remove_reference_t<U>;
+    using pointer           = std::remove_reference_t<T>*;  // or also value_type*
+
+    using reference         = typename ReferenceSelector<T, U, !UseProxy>::Type;
+    using iterator_category =
+        std::conditional_t<
+            UseProxy,
+            std::random_access_iterator_tag,
+            std::contiguous_iterator_tag>;
+
+    ArrayIterator() noexcept = default; // semiregular
+    ArrayIterator(pointer ptr) noexcept : m_ptr(ptr) {}
+
+    reference operator*() const noexcept {
+        if constexpr (UseProxy)
+            return reference{*m_ptr};
+        else
+            return *m_ptr;
+    }
+
+    ArrayIterator& operator++()      noexcept { m_ptr++; return *this; }
+    ArrayIterator  operator++(int)   noexcept { ArrayIterator tmp = *this; ++(*this); return tmp; }
+
+    ArrayIterator& operator--()      noexcept { m_ptr--; return *this; }
+    ArrayIterator  operator--(int)   noexcept { ArrayIterator tmp = *this; --(*this); return tmp; }
+
+    ArrayIterator& operator+=(int n) noexcept { m_ptr+=n; return *this; }
+    ArrayIterator& operator-=(int n) noexcept { m_ptr-=n; return *this; }
+
+    // i[n]
+    reference operator[](int n) noexcept {
+        if constexpr (UseProxy)
+            return reference{m_ptr[n]};
+        else
+            return m_ptr[n];
+    }
+    const reference operator[](int n) const noexcept {
+        if constexpr (UseProxy)
+            return reference{m_ptr[n]};
+        else
+            return m_ptr[n];
+    }
+    //reference operator&() noexcept { return }
+    // a + n
+    // n + a
+    friend ArrayIterator operator+(const ArrayIterator& a, int n) noexcept { return {a.m_ptr + n}; }
+    friend ArrayIterator operator+(int n, const ArrayIterator& a) noexcept { return {a.m_ptr + n}; }
+    // i - n
+    friend ArrayIterator operator-(const ArrayIterator& a, int n) noexcept { return {a.m_ptr - n}; }
+    // b - a
+    friend difference_type operator-(const ArrayIterator& b, const ArrayIterator& a) noexcept { return b.m_ptr - a.m_ptr; }
+
+    // a<=>b
+    friend std::strong_ordering operator<=>(const ArrayIterator& a, const ArrayIterator& b) noexcept {
+        return a.m_ptr == b.m_ptr ? std::strong_ordering::equal
+               : a.m_ptr < b.m_ptr  ? std::strong_ordering::less
+                                   : std::strong_ordering::greater;
+    }
+    friend bool operator== (const ArrayIterator& a, const ArrayIterator& b) { return a.m_ptr == b.m_ptr; };
+    friend bool operator!= (const ArrayIterator& a, const ArrayIterator& b) { return !(a == b); };
+
+    //
+    // Sentinels
+    //
+    friend bool operator==(ArrayIterator it, std::default_sentinel_t) = delete;
+
+    friend bool operator==(ArrayIterator it, auto sentinel) { return it.m_ptr == sentinel; }
+    friend bool operator!=(ArrayIterator it, auto sentinel) { return it.m_ptr != sentinel; }
+    friend bool operator==(auto sentinel, ArrayIterator it) { return it.m_ptr == sentinel; }
+    friend bool operator!=(auto sentinel, ArrayIterator it) { return it.m_ptr != sentinel; }
+
+private:
+    pointer m_ptr{};
+};
+
+/**
+ * C-array (FFmpeg) wrapper witch can iterate over collection and represents any element via light-weight view U
+ *
+ * Policy maybe std::size_t that just defines input array size
+ */
+template<typename T, typename U, class Policy>
+class ArrayView : public std::ranges::view_interface<ArrayView<T, U, Policy>>
+{
+public:
+    constexpr ArrayView(T *ptr, Policy policy)
+        : m_ptr(ptr), m_policy(std::move(policy))
+    {}
+
+    auto constexpr begin() const noexcept
+    {
+        return ArrayIterator<T, U>{m_ptr};
+    }
+
+    auto constexpr end() const noexcept
+    {
+        // special case to allow back()/size()/etc method for well-defined sizes
+        if constexpr (std::is_same_v<Policy, std::size_t>) {
+            return ArrayIterator<T, U>{m_ptr + m_policy};
+        } else {
+            return ArraySentinel<T, Policy>{m_policy};
+        }
+    }
+
+private:
+    T *m_ptr{};
+    Policy m_policy{};
+};
+
+/**
+ * Helper to create array view with well-known size
+ * @param ptr
+ * @param size
+ */
+template<class U>
+auto make_array_view_size(auto* ptr, std::size_t size)
+{
+    using T = std::remove_reference_t<decltype(*ptr)>;
+    return ArrayView<T, U, std::size_t>(ptr, size);
+}
+
+/**
+ * Helper to create array view with end marker
+ * @param ptr
+ * @param value
+ */
+template<class U>
+auto make_array_view_until(auto* ptr, auto value)
+{
+    using T = std::remove_reference_t<decltype(*ptr)>;
+    return ArrayView<T, U, SentinelUntilPolicy<T>>(ptr, SentinelUntilPolicy<T>{value});
+}
+
+/**
+ * Select more approptiate value from given value list. Useful for AVCodec::supported_framerates,
+ * AVCodec::pix_fmts and so on.
+ *
+ * T - type of value and (by default) list elements
+ * L - type of list elements, range compatible
+ *
+ * If T and elements of L has different types, T must be have ctor from L-element.
+ *
+ * @param value           value to set
+ * @param list            list of allowed values
+ * @param endOfListValue  end of list value, like
+ * @return value if list null or if it present in list, or more appropriate value from list
+ */
+template<typename T, typename L>
+    requires std::ranges::range<L> &&
+    requires(L& r) {
+        std::ranges::empty(r);
+    }
+T guessValue(const T& value, L list)
+{
+    if (list.empty())
+        return value;
+
+    T best = value;
+    T bestDistance = std::numeric_limits<T>::max();
+
+    for (auto&& cur : list) {
+        auto const distance = std::max(cur, value) - std::min(cur, value);
+        if (distance < bestDistance) {
+            bestDistance = distance;
+            best = cur;
+        }
+    }
+
+    return best;
+}
+
+#endif // AVCPP_CXX_STANDARD
+
 template<typename T>
 struct EqualComparator
 {
@@ -353,41 +597,19 @@ T guessValue(const T& value, const L * list, C endListComparator)
     if (!list)
         return value;
 
-    // move values to array
-    std::deque<T> values;
-    for (const L * ptr = list; !endListComparator(*ptr); ++ptr)
-    {
-        T v = *ptr;
-        values.push_back(v);
-    }
+    T best = value;
+    T bestDistance = std::numeric_limits<T>::max();
 
-    // sort list
-    std::sort(values.begin(), values.end());
-
-    // Search more appropriate range
-    int begin = 0;
-    int end   = values.size() - 1;
-    while ((end - begin) > 1)
-    {
-        int mid = begin + (end - begin) / 2;
-
-        if (value <= values[mid])
-        {
-            end = mid;
-        }
-        else
-        {
-            begin = mid;
+    for (const L * ptr = list; !endListComparator(*ptr); ++ptr) {
+        auto const cur = *ptr;
+        auto const distance = std::max(cur, value) - std::min(cur, value);
+        if (distance < bestDistance) {
+            bestDistance = distance;
+            best = cur;
         }
     }
 
-    // distance from VALUE to BEGIN more short or VALUE less then BEGIN
-    if (value <= values[begin] || (value - values[begin]) < (values[end] - value))
-    {
-        return values[begin];
-    }
-
-    return values[end];
+    return best;
 }
 
 
