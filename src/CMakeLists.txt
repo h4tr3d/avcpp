@@ -6,6 +6,20 @@ file(GLOB_RECURSE AV_HEADERS "*.h" "*.hpp")
 set(AV_NAMESPACE avcpp)
 set(AV_BASENAME avcpp)
 
+# setup versions for avconfig.h
+macro (setup_package_version_avcpp _pkg)
+    foreach(TYPE MAJOR MINOR PATCH TWEAK)
+        if (DEFINED ${_pkg}_VERSION_${TYPE})
+            set(AVCPP_${_pkg}_VERSION_${TYPE} ${${_pkg}_VERSION_${TYPE}})
+        endif()
+    endforeach()
+endmacro()
+foreach(PKG AVCODEC AVFORMAT AVUTIL AVDEVICE AVFILTER SWSCALE SWRESAMPLE)
+    message(STATUS "Setup version defines for: ${PKG}")
+    setup_package_version(${PKG})
+    setup_package_version_avcpp(${PKG})
+endforeach()
+
 # This is a little gross as it compiles everything twice, but it's good enough for my needs.
 list (APPEND AV_TARGETS ${AV_BASENAME})
 

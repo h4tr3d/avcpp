@@ -34,6 +34,9 @@ find_package(Threads)
 find_package(FFmpeg
     COMPONENTS AVCODEC AVFORMAT AVUTIL AVDEVICE AVFILTER SWSCALE SWRESAMPLE REQUIRED)
 
+# define useful version macroses for propagate into avconfig.h
+include(SetupPackageVersion)
+
 add_subdirectory(src)
 
 if (${AV_BUILD_EXAMPLES})
