@@ -3,7 +3,7 @@
 
 #include "channellayout.h"
 
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
 namespace av {
 
 static constexpr size_t BufferSize = 128;

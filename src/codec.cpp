@@ -164,7 +164,7 @@ std::deque<uint64_t> Codec::supportedChannelLayouts() const
 
     deque<uint64_t> channelLayouts;
 
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
     const AVChannelLayout *channelLayoutsRaw = nullptr;
 
 #if API_AVCODEC_GET_SUPPORTED_CONFIG
@@ -191,7 +191,7 @@ std::deque<uint64_t> Codec::supportedChannelLayouts() const
     return channelLayouts;
 }
 
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
 std::deque<ChannelLayoutView> Codec::supportedChannelLayouts2() const
 {
     if (!m_raw)

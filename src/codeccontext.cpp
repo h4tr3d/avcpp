@@ -937,7 +937,7 @@ AudioSamples AudioDecoderContext::decode(const Packet &inPacket, size_t offset, 
     }
 
     // Fix channels layout, only for legacy Channel Layout, new API assumes both parameters more sync
-#if !API_NEW_CHANNEL_LAYOUT
+#if !AVCPP_API_NEW_CHANNEL_LAYOUT
     if (outSamples.channelsCount() && !outSamples.channelsLayout())
         av::frame::set_channel_layout(outSamples.raw(), av_get_default_channel_layout(outSamples.channelsCount()));
 #endif
@@ -1085,7 +1085,7 @@ namespace codec_context::audio {
 //
 void set_channels(AVCodecContext *obj, int channels)
 {
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
     if (!av_channel_layout_check(&obj->ch_layout) || (obj->ch_layout.nb_channels != channels)) {
         av_channel_layout_uninit(&obj->ch_layout);
         av_channel_layout_default(&obj->ch_layout, channels);
@@ -1100,7 +1100,7 @@ void set_channels(AVCodecContext *obj, int channels)
 
 void set_channel_layout_mask(AVCodecContext *obj, uint64_t mask)
 {
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
     if (!av_channel_layout_check(&obj->ch_layout) ||
         (obj->ch_layout.order != AV_CHANNEL_ORDER_NATIVE) ||
         ((obj->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) && (obj->ch_layout.u.mask != mask))) {
@@ -1121,7 +1121,7 @@ void set_channel_layout_mask(AVCodecContext *obj, uint64_t mask)
 
 int get_channels(const AVCodecContext *obj)
 {
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
     return obj->ch_layout.nb_channels;
 #else
     if (obj->channels)
@@ -1137,7 +1137,7 @@ int get_channels(const AVCodecContext *obj)
 
 uint64_t get_channel_layout_mask(const AVCodecContext *obj)
 {
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
     return obj->ch_layout.order == AV_CHANNEL_ORDER_NATIVE ? obj->ch_layout.u.mask : 0;
 #else
     if (obj->channel_layout)

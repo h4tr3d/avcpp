@@ -119,7 +119,7 @@ int main(int argc, char **argv)
         for (const auto &lay : layouts) {
             char buf[128] = {0};
             // FIXME: Add AVChannelLayout API
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
             AVChannelLayout layout{};
             av_channel_layout_from_mask(&layout, lay);
             av_channel_layout_describe(&layout, buf, sizeof(buf));

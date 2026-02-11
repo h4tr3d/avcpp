@@ -7,7 +7,7 @@
 #include "avcompat.h"
 #include "avutils.h"
 
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
 extern "C" {
 #include <libavutil/channel_layout.h>
 }

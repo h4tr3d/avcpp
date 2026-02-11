@@ -309,7 +309,7 @@ AudioSamples::AudioSamples(const uint8_t *data, size_t size, SampleFormat sample
     : AudioSamples(sampleFormat, samplesCount, channelLayout, sampleRate, align)
 {
     auto const channels = [](uint64_t mask) -> int {
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
         AVChannelLayout layout{};
         av_channel_layout_from_mask(&layout, mask);
         return layout.nb_channels;
@@ -395,7 +395,7 @@ string AudioSamples::channelsLayoutString() const
     if (!m_raw)
         return "";
     char buf[128] = {0};
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
     av_channel_layout_describe(&m_raw->ch_layout, buf, sizeof(buf));
 #else
     av_get_channel_layout_string(buf,
@@ -408,7 +408,7 @@ string AudioSamples::channelsLayoutString() const
 
 void frame::priv::channel_layout_copy(AVFrame &dst, const AVFrame &src)
 {
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
     av_channel_layout_copy(&dst.ch_layout, &src.ch_layout);
 #else
     dst.channel_layout = src.channel_layout;

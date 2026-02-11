@@ -33,7 +33,7 @@ public:
     std::deque<SampleFormat>   supportedSampleFormats() const;
     std::deque<uint64_t>       supportedChannelLayouts() const;
 
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
     std::deque<ChannelLayoutView> supportedChannelLayouts2() const;
 #endif
 

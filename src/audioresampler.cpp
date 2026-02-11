@@ -85,7 +85,7 @@ uint64_t AudioResampler::dstChannelLayout() const
 namespace {
 int get_nb_channels(uint64_t mask)
 {
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
     AVChannelLayout layout{};
     av_channel_layout_from_mask(&layout, mask);
     return layout.nb_channels;
@@ -96,7 +96,7 @@ int get_nb_channels(uint64_t mask)
 
 int opt_set_channel_layout(void *obj, bool in, uint64_t mask)
 {
-#if API_NEW_CHANNEL_LAYOUT
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
     AVChannelLayout layout{};
     av_channel_layout_from_mask(&layout, mask);
     return av_opt_set_chlayout(obj, in ? "in_chlayout" : "out_chlayout", &layout, 0);
