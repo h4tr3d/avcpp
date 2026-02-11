@@ -23,7 +23,7 @@ extern "C" {
 // net key frame flags: AV_FRAME_FLAG_KEY (FFmpeg 6.1)
 #define AVCPP_API_FRAME_KEY          ((AVCPP_AVUTIL_VERSION_MAJOR > 58) || (AVCPP_AVUTIL_VERSION_MAJOR == 58 && AVCPP_AVUTIL_VERSION_MINOR >= 29))
 // avcodec_close() support
-#define API_AVCODEC_CLOSE      (AVCPP_AVCODEC_VERSION_MAJOR < 61)
+#define AVCPP_API_AVCODEC_CLOSE      (AVCPP_AVCODEC_VERSION_MAJOR < 61)
 
 // sizeof(AVPacket) is no part of the public ABI, packet must be allocated in heap
 #define API_AVCODEC_NEW_INIT_PACKET (AVCPP_AVCODEC_VERSION_MAJOR >= 58)

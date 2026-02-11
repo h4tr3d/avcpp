@@ -1,5 +1,6 @@
 #include <stdexcept>
 
+#include "avcompat.h"
 #include "avlog.h"
 #include "avutils.h"
 #include "averror.h"
@@ -484,7 +485,7 @@ namespace {
 // Use legacy avcodec_close() for old ffmpeg versions.
 int codec_close(AVCodecContext*& ctx)
 {
-#if API_AVCODEC_CLOSE
+#if AVCPP_API_AVCODEC_CLOSE
     return avcodec_close(ctx);
 #else
     AVCodecContext *ctxNew = nullptr;
