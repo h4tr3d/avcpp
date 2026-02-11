@@ -174,7 +174,7 @@ const int *get_supported_samplerates(const struct AVCodec *codec)
 {
     const int *sampleRates = nullptr;
 
-#if API_AVCODEC_GET_SUPPORTED_CONFIG
+#if AVCPP_API_AVCODEC_GET_SUPPORTED_CONFIG
     avcodec_get_supported_config(nullptr, codec,
                                  AV_CODEC_CONFIG_SAMPLE_RATE, 0,
                                  reinterpret_cast<const void**>(&sampleRates), nullptr);
@@ -404,7 +404,7 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
             const enum AVPixelFormat *pixFmts = nullptr;
             const enum AVSampleFormat *sampleFmts = nullptr;
 
-#if API_AVCODEC_GET_SUPPORTED_CONFIG
+#if AVCPP_API_AVCODEC_GET_SUPPORTED_CONFIG
             avcodec_get_supported_config(nullptr, codec.raw(),
                                          AV_CODEC_CONFIG_PIX_FORMAT, 0,
                                          reinterpret_cast<const void**>(&pixFmts), nullptr);
