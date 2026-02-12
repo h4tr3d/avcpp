@@ -27,7 +27,6 @@ You can read the full documentation [here](https://h4tr3d.github.io/avcpp/).
 - GCC >= 9.0 (C++17 is required. [See](https://gcc.gnu.org/projects/cxx-status.html#cxx17), GCC from 6.0 may built code, but unchecked)
 - CMake (> 3.19)
 
->
 > [!NOTE]
 > Oldest versions of the FFmpeg (at least >=2.0) may be successfully built and work but is it not checked for now. Same notes valid for the GCC version from 6.0.
 
@@ -118,6 +117,7 @@ Refer to CMake documentation for more details that can cover some special cases.
 - `AV_ENABLE_STATIC` - Bool, enable static library build, On by default.
 - `AV_ENABLE_SHARED` - Bool, enable shared library build, On by default.
 - `AV_BUILD_EXAMPLES` - Bool, enable examples build, On by default.
+- `AV_BUILD_TESTS` - Bool, enable tests build, On by default.
 - C++ related
   - `CMAKE_CXX_STANDARD` - Can be defined globally to override default C++ version. C++17 required at least.
 - FFmpeg related:
