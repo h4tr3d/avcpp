@@ -34,6 +34,7 @@
 #   AVUTIL
 #   POSTPROC
 #   SWSCALE
+#   SWRESAMPLE
 #
 # the following variables will be defined
 #
