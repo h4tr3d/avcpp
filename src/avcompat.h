@@ -9,7 +9,20 @@ extern "C" {
 #ifdef AVCPP_AVCODEC_VERSION_MAJOR
 #  include <libavcodec/avcodec.h>
 #endif
+#include <libavfilter/avfilter.h>
+#if AVCPP_AVFILTER_VERSION_INT < AV_VERSION_INT(7,0,0)
+#  include <libavfilter/avfiltergraph.h>
+#endif
+#include <libavfilter/buffersink.h>
+#include <libavfilter/buffersrc.h>
+#if AVCPP_AVFILTER_VERSION_INT <= AV_VERSION_INT(2,77,100) // 0.11.1
+#  include <libavfilter/vsrc_buffer.h>
+#endif
+#if AVCPP_AVFILTER_VERSION_INT < AV_VERSION_INT(6,31,100) // 3.0
+#include <libavfilter/avcodec.h>
+#endif
 } // extern "C"
+
 
 // Codec parameters interface
 #define AVCPP_USE_CODECPAR ((AVCPP_AVCODEC_VERSION_MAJOR) >= 59) // FFmpeg 5.0
@@ -56,3 +69,32 @@ extern "C" {
 #  endif
 #endif
 
+
+// avcodec
+#if AVCPP_AVCODEC_VERSION_INT < AV_VERSION_INT(54,59,100) // 1.0
+inline void avcodec_free_frame(AVFrame **frame)
+{
+    av_freep(frame);
+}
+#endif
+
+// avfilter
+#if AVCPP_AVFILTER_VERSION_INT < AV_VERSION_INT(3,17,100) // 1.0
+inline const char *avfilter_pad_get_name(AVFilterPad *pads, int pad_idx)
+{
+    return pads[pad_idx].name;
+}
+
+inline AVMediaType avfilter_pad_get_type(AVFilterPad *pads, int pad_idx)
+{
+    return pads[pad_idx].type;
+}
+#endif
+
+
+// Wrapper around av_free_packet()/av_packet_unref()
+#if AVCPP_AVFORMAT_VERSION_INT < AV_VERSION_INT(6,31,100) // < 3.0
+#define avpacket_unref(p) av_free_packet(p)
+#else
+#define avpacket_unref(p) av_packet_unref(p)
+#endif

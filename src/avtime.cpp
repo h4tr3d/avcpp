@@ -1,5 +1,7 @@
 #include "avtime.h"
 
+#include "avcompat.h"
+
 #if AVCPP_AVUTIL_VERSION_INT >= AV_VERSION_INT(51,73,101) // FFMPEG 1.0
 extern "C"
 {
