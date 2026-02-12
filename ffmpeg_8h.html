@@ -75,6 +75,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;iostream&gt;</code><br />
+<code>#include &quot;<a class="el" href="avcompat_8h_source.html">avcompat.h</a>&quot;</code><br />
 <code>#include &lt;libavutil/avutil.h&gt;</code><br />
 <code>#include &lt;libavutil/parseutils.h&gt;</code><br />
 <code>#include &lt;libavutil/mathematics.h&gt;</code><br />
@@ -86,32 +87,30 @@ $(function() {
 <code>#include &lt;libavformat/version.h&gt;</code><br />
 <code>#include &lt;libavcodec/version.h&gt;</code><br />
 <code>#include &lt;libavutil/bswap.h&gt;</code><br />
-<code>#include &lt;libavfilter/avfilter.h&gt;</code><br />
-<code>#include &lt;libavfilter/buffersink.h&gt;</code><br />
-<code>#include &lt;libavfilter/buffersrc.h&gt;</code><br />
-<code>#include &lt;libavfilter/vsrc_buffer.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for ffmpeg.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="ffmpeg_8h__incl.png" border="0" usemap="#asrc_2ffmpeg_8h" alt=""/></div>
 <map name="asrc_2ffmpeg_8h" id="asrc_2ffmpeg_8h">
-<area shape="rect" title=" " alt="" coords="1273,5,1375,32"/>
-<area shape="rect" title=" " alt="" coords="5,80,85,107"/>
-<area shape="rect" title=" " alt="" coords="109,80,237,107"/>
-<area shape="rect" title=" " alt="" coords="261,80,416,107"/>
-<area shape="rect" title=" " alt="" coords="441,80,618,107"/>
-<area shape="rect" title=" " alt="" coords="643,80,755,107"/>
-<area shape="rect" title=" " alt="" coords="779,80,920,107"/>
-<area shape="rect" title=" " alt="" coords="945,80,1117,107"/>
-<area shape="rect" title=" " alt="" coords="1141,80,1299,107"/>
-<area shape="rect" title=" " alt="" coords="1323,80,1535,107"/>
-<area shape="rect" title=" " alt="" coords="1560,80,1723,107"/>
-<area shape="rect" title=" " alt="" coords="1747,80,1903,107"/>
-<area shape="rect" title=" " alt="" coords="1928,80,2061,107"/>
-<area shape="rect" title=" " alt="" coords="2086,80,2231,107"/>
-<area shape="rect" title=" " alt="" coords="2256,80,2421,107"/>
-<area shape="rect" title=" " alt="" coords="2445,80,2603,107"/>
-<area shape="rect" title=" " alt="" coords="2627,80,2797,107"/>
+<area shape="rect" title=" " alt="" coords="1133,5,1236,32"/>
+<area shape="rect" title=" " alt="" coords="218,80,298,107"/>
+<area shape="rect" href="avcompat_8h.html" title=" " alt="" coords="322,80,421,107"/>
+<area shape="rect" title=" " alt="" coords="445,80,573,107"/>
+<area shape="rect" title=" " alt="" coords="597,80,751,107"/>
+<area shape="rect" title=" " alt="" coords="776,80,953,107"/>
+<area shape="rect" title=" " alt="" coords="978,80,1090,107"/>
+<area shape="rect" title=" " alt="" coords="1114,80,1255,107"/>
+<area shape="rect" title=" " alt="" coords="1280,80,1452,107"/>
+<area shape="rect" title=" " alt="" coords="1476,80,1635,107"/>
+<area shape="rect" title=" " alt="" coords="1659,80,1871,107"/>
+<area shape="rect" title=" " alt="" coords="1895,80,2058,107"/>
+<area shape="rect" title=" " alt="" coords="2083,80,2239,107"/>
+<area shape="rect" title=" " alt="" coords="2263,80,2397,107"/>
+<area shape="rect" title=" " alt="" coords="5,155,95,181"/>
+<area shape="rect" title=" " alt="" coords="119,155,264,181"/>
+<area shape="rect" title=" " alt="" coords="289,155,454,181"/>
+<area shape="rect" title=" " alt="" coords="478,155,635,181"/>
+<area shape="rect" title=" " alt="" coords="659,155,830,181"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -185,8 +184,6 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a1d284cd1d98085b420f9cd0992f8a6c0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a1d284cd1d98085b420f9cd0992f8a6c0">avpacket_unref</a>(p)&#160;&#160;&#160;av_packet_unref(p)</td></tr>
-<tr class="separator:a1d284cd1d98085b420f9cd0992f8a6c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83fba7eae42c601ef5b085a2a4a591e6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#a83fba7eae42c601ef5b085a2a4a591e6">RAW_GET</a>(field,  def)&#160;&#160;&#160;(m_raw ? m_raw-&gt;field : (def))</td></tr>
 <tr class="separator:a83fba7eae42c601ef5b085a2a4a591e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac52f2553590f4bc63719a73a6258379b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ffmpeg_8h.html#ac52f2553590f4bc63719a73a6258379b">RAW_SET</a>(field,  val)&#160;&#160;&#160;if(m_raw) m_raw-&gt;field = (val)</td></tr>
@@ -205,24 +202,6 @@ Macros</h2></td></tr>
 <tr class="separator:a8326971202f5d4ace01edc31a070db9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a1d284cd1d98085b420f9cd0992f8a6c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d284cd1d98085b420f9cd0992f8a6c0">&#9670;&nbsp;</a></span>avpacket_unref</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define avpacket_unref</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">p</td><td>)</td>
-          <td>&#160;&#160;&#160;av_packet_unref(p)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="ac0aee24cb358c5e3eb8af25e96e5d127"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac0aee24cb358c5e3eb8af25e96e5d127">&#9670;&nbsp;</a></span>IF_GET</h2>
 
