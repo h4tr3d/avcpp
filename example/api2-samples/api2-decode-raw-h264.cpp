@@ -11,8 +11,6 @@
 #include "avutils.h"
 
 // API2
-#include "format.h"
-#include "formatcontext.h"
 #include "codec.h"
 #include "codeccontext.h"
 
@@ -96,7 +94,6 @@ int main(int argc, char **argv)
     string uri {argv[1]};
 
     VideoDecoderContext vdec;
-    Stream vst;
     error_code ec;
 
     {

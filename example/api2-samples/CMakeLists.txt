@@ -35,7 +35,6 @@ if (AV_DISABLE_AVFORMAT)
     api2-decode-encode-audio
     api2-decode-filter-encode
     api2-hw-encode
-    api2-decode-raw-h264
     api2-decode-audio
     api2-remux
     api2-scale-video
