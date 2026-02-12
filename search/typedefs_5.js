@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['fmtcodec_1292',['FmtCodec',['../namespaceav.html#a009ddf632b891495420361e0aa71bb9a',1,'av']]]
+  ['next_5felement_5ftype_1067',['next_element_type',['../classav_1_1LinkedListWrapper.html#a7f141a1d6313ea1167577ed05939f9b2',1,'av::LinkedListWrapper']]]
 ];

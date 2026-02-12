@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['next_5felement_5ftype_1296',['next_element_type',['../classav_1_1LinkedListWrapper.html#a7f141a1d6313ea1167577ed05939f9b2',1,'av::LinkedListWrapper']]]
+  ['reference_1070',['reference',['../classav_1_1Dictionary_1_1DictionaryIterator.html#ad3e7264a16b93922ae39232d4edeb2ab',1,'av::Dictionary::DictionaryIterator::reference()'],['../classav_1_1LinkedListWrapper_1_1base__iterator.html#adc32f3ee811ea043e53942849195bada',1,'av::LinkedListWrapper::base_iterator::reference()']]]
 ];

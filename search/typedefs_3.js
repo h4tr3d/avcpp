@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['deleter_5ftype_1288',['deleter_type',['../classav_1_1LinkedListWrapper.html#a5f418f48f0a41c4ad4fca366fa2c2850',1,'av::LinkedListWrapper']]],
-  ['difference_5ftype_1289',['difference_type',['../classav_1_1Dictionary_1_1DictionaryIterator.html#a2ea852e0e6513cc94cb86aa5db82d556',1,'av::Dictionary::DictionaryIterator::difference_type()'],['../classav_1_1LinkedListWrapper_1_1base__iterator.html#a4d505a88a8fc79b81586348bdc474504',1,'av::LinkedListWrapper::base_iterator::difference_type()']]]
+  ['element_5ftype_1062',['element_type',['../classav_1_1LinkedListWrapper.html#af79aa2759833579af486f4928c9feade',1,'av::LinkedListWrapper']]],
+  ['element_5fwrapper_5ftype_1063',['element_wrapper_type',['../classav_1_1LinkedListWrapper.html#a098b556625901e46f5c670bfb14bf638',1,'av::LinkedListWrapper']]]
 ];

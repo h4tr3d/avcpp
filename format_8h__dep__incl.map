@@ -1,17 +1,16 @@
 <map id="src/format.h" name="src/format.h">
-<area shape="rect" id="node1" title=" " alt="" coords="767,5,869,32"/>
-<area shape="rect" id="node2" href="$codec_8h.html" title=" " alt="" coords="547,80,641,107"/>
-<area shape="rect" id="node11" href="$formatcontext_8h.html" title=" " alt="" coords="831,379,981,405"/>
-<area shape="rect" id="node15" href="$format_8cpp.html" title=" " alt="" coords="760,155,876,181"/>
-<area shape="rect" id="node3" href="$codec_8cpp.html" title=" " alt="" coords="20,155,131,181"/>
-<area shape="rect" id="node4" href="$codeccontext_8cpp.html" title=" " alt="" coords="368,379,527,405"/>
-<area shape="rect" id="node5" href="$codeccontext_8h.html" title=" " alt="" coords="177,304,321,331"/>
-<area shape="rect" id="node9" href="$codecparameters_8h.html" title=" " alt="" coords="369,155,539,181"/>
-<area shape="rect" id="node6" href="$codecparameters_8cpp.html" title=" " alt="" coords="5,379,191,405"/>
-<area shape="rect" id="node7" href="$formatcontext_8cpp.html" title=" " alt="" coords="823,453,989,480"/>
-<area shape="rect" id="node8" href="$stream_8cpp.html" title=" " alt="" coords="220,453,339,480"/>
-<area shape="rect" id="node10" href="$stream_8h.html" title=" " alt="" coords="403,229,505,256"/>
-<area shape="rect" id="node12" href="$packet_8h.html" title=" " alt="" coords="559,304,659,331"/>
-<area shape="rect" id="node13" href="$avutils_8cpp.html" title=" " alt="" coords="691,379,807,405"/>
-<area shape="rect" id="node14" href="$packet_8cpp.html" title=" " alt="" coords="551,379,666,405"/>
+<area shape="rect" id="node1" title=" " alt="" coords="325,5,426,32"/>
+<area shape="rect" id="node2" href="$codec_8h.html" title=" " alt="" coords="328,80,423,107"/>
+<area shape="rect" id="node10" href="$formatcontext_8h.html" title=" " alt="" coords="5,379,156,405"/>
+<area shape="rect" id="node14" href="$format_8cpp.html" title=" " alt="" coords="743,155,859,181"/>
+<area shape="rect" id="node3" href="$codec_8cpp.html" title=" " alt="" coords="144,155,255,181"/>
+<area shape="rect" id="node4" href="$codeccontext_8cpp.html" title=" " alt="" coords="180,379,339,405"/>
+<area shape="rect" id="node5" href="$codeccontext_8h.html" title=" " alt="" coords="633,304,777,331"/>
+<area shape="rect" id="node8" href="$codecparameters_8h.html" title=" " alt="" coords="353,155,523,181"/>
+<area shape="rect" id="node6" href="$codecparameters_8cpp.html" title=" " alt="" coords="745,379,931,405"/>
+<area shape="rect" id="node7" href="$stream_8cpp.html" title=" " alt="" coords="597,453,716,480"/>
+<area shape="rect" id="node9" href="$stream_8h.html" title=" " alt="" coords="409,229,512,256"/>
+<area shape="rect" id="node11" href="$packet_8h.html" title=" " alt="" coords="452,304,552,331"/>
+<area shape="rect" id="node12" href="$avutils_8cpp.html" title=" " alt="" coords="503,379,619,405"/>
+<area shape="rect" id="node13" href="$packet_8cpp.html" title=" " alt="" coords="363,379,478,405"/>
 </map>

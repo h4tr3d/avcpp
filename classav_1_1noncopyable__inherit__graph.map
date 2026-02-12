@@ -1,10 +1,9 @@
 <map id="av::noncopyable" name="av::noncopyable">
-<area shape="rect" id="node1" title=" " alt="" coords="5,221,133,247"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,195,133,222"/>
 <area shape="rect" id="node2" href="$classav_1_1AudioResampler.html" title=" " alt="" coords="185,119,337,146"/>
 <area shape="rect" id="node3" href="$classav_1_1CodecContext2.html" title=" " alt="" coords="189,170,333,197"/>
 <area shape="rect" id="node18" href="$classav_1_1CodecParameters.html" title=" " alt="" coords="181,221,340,247"/>
-<area shape="rect" id="node19" href="$classav_1_1FormatContext.html" title=" " alt="" coords="189,271,332,298"/>
-<area shape="rect" id="node20" href="$classav_1_1VideoRescaler.html" title=" " alt="" coords="191,322,330,349"/>
+<area shape="rect" id="node19" href="$classav_1_1VideoRescaler.html" title=" " alt="" coords="191,271,330,298"/>
 <area shape="rect" id="node4" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="389,6,577,62"/>
 <area shape="rect" id="node6" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="388,101,579,157"/>
 <area shape="rect" id="node8" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="399,210,567,266"/>

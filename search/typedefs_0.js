@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['avcpp_5fformat_5fconst_1282',['avcpp_format_const',['../namespaceav.html#a1f53cdb548da1e76e614c1c1c96e1d1e',1,'av']]],
-  ['aviointerruptcb_1283',['AvioInterruptCb',['../namespaceav.html#aa5ef1f07385738af31cce671a2c2dbe2',1,'av']]]
+  ['base_5fclass_1056',['base_class',['../structav_1_1Dictionary_1_1AvStringPtr.html#a993b4bba8ee57cbd609c0455020e6719',1,'av::Dictionary::AvStringPtr']]],
+  ['basewrapper_1057',['BaseWrapper',['../classav_1_1CodecContext2.html#a6a9d8f845f7a00ffc4b549d86b596c29',1,'av::CodecContext2']]]
 ];
