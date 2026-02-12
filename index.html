@@ -70,10 +70,10 @@ $(function() {
 <div class="textblock"><p><a class="anchor" id="md_README"></a> Wrapper for the FFmpeg that simplify usage it from C++ projects.</p>
 <p>Currently covered next functionality:</p>
 <ul>
-<li>Core helper &amp; utility classes (AVFrame -&gt; av::AudioSample &amp; <a class="el" href="classav_1_1VideoFrame.html">av::VideoFrame</a>, AVRational -&gt; <a class="el" href="classav_1_1Rational.html">av::Rational</a> and so on)</li>
+<li>Core helper &amp; utility classes (<code>AVFrame</code> → <code>av::AudioSample</code> &amp; <code><a class="el" href="classav_1_1VideoFrame.html">av::VideoFrame</a></code>, <code>AVRational</code> → <code><a class="el" href="classav_1_1Rational.html">av::Rational</a></code> and so on)</li>
 <li>Container formats &amp; contexts muxing and demuxing</li>
 <li>Codecs &amp; codecs contexts: encoding and decoding</li>
-<li>Streams (AVStream -&gt; <a class="el" href="classav_1_1Stream.html">av::Stream</a>)</li>
+<li>Streams (<code>AVStream</code> → <code><a class="el" href="classav_1_1Stream.html">av::Stream</a></code>)</li>
 <li>Filters (audio &amp; video): parsing from string, manual adding filters to the graph &amp; other</li>
 <li>SW Video &amp; Audio resamplers</li>
 </ul>
@@ -81,21 +81,29 @@ $(function() {
 <h1><a class="anchor" id="autotoc_md1"></a>
 Requirements</h1>
 <ul>
-<li>FFmpeg &gt;= 2.0<ul>
-<li>libavformat &gt;= 54.x.x</li>
-<li>libavcodec &gt;= 54.x.x</li>
-<li>libavfilter &gt;= 3.x.x</li>
-<li>libavutil &gt;= 51.x.x</li>
-<li>libswscale &gt;= 2.x.x</li>
-<li>libswresample &gt;= 0.x.x</li>
-<li>libpostproc &gt;= 52.x.x</li>
+<li>FFmpeg &gt;= 4.0<ul>
+<li>libavformat &gt;= 58.x.x</li>
+<li>libavcodec &gt;= 58.x.x</li>
+<li>libavdevice &gt;= 58.x.x</li>
+<li>libavfilter &gt;= 7.x.x</li>
+<li>libavutil &gt;= 56.x.x</li>
+<li>libswscale &gt;= 5.x.x</li>
+<li>libswresample &gt;= 3.x.x</li>
+<li>libpostproc &gt;= 55.x.x</li>
 </ul>
 </li>
-<li>GCC &gt;= 5.0 (C++11 is required)</li>
-<li>CMake (&gt; 3.19) or Meson(&gt; 50.0)</li>
+<li>GCC &gt;= 9.0 (C++17 is required. <a href="https://gcc.gnu.org/projects/cxx-status.html#cxx17">See</a>, GCC from 6.0 may built code, but unchecked)</li>
+<li>CMake (&gt; 3.19)</li>
 </ul>
+<blockquote class="doxtable">
+<p>[!NOTE] Oldest versions of the FFmpeg (at least &gt;=2.0) may be successfully built and work but is it not checked for now. Same notes valid for the GCC version from 6.0. </p>
+</blockquote>
 <h2><a class="anchor" id="autotoc_md2"></a>
-Debian, Ubuntu 19.10 and Linux Mint 20.x or newer</h2>
+Debian, Ubuntu 19.10+ and Linux Mint 20.x or newer</h2>
+<blockquote class="doxtable">
+<p>[!NOTE]</p>
+<p>Build verification done only for oldest Ubuntu version provided by the GitHub Flow. You can look it <a href="https://github.com/h4tr3d/avcpp/blob/master/.github/workflows/cmake-ci.yml#L25">here</a>. For now, it is 22.04. </p>
+</blockquote>
 <p>You should install FFmpeg packages from the deb-multimedia.org site:</p>
 <div class="fragment"><div class="line">sudo apt-get install libavformat-dev \</div>
 <div class="line">                     libavcodec-dev \</div>
@@ -105,8 +113,14 @@ Debian, Ubuntu 19.10 and Linux Mint 20.x or newer</h2>
 <div class="line">                     libswresample-dev \</div>
 <div class="line">                     libpostproc-dev \</div>
 <div class="line">                     libavdevice-dev</div>
-</div><!-- fragment --><p>Note 1: I did not test building on Debian.</p>
-<p>Note 2: Debian Wheezy repo contains only FFmpeg 1.0.8. I tested building only with 2.x. So it is strongly recoment use Wheezy back-ports repo.</p>
+</div><!-- fragment --><blockquote class="doxtable">
+<p>[!NOTE]</p>
+<p><b>Note 1</b>: I did not test building on Debian. </p>
+</blockquote>
+<blockquote class="doxtable">
+<p>[!NOTE]</p>
+<p><b>Note 2</b>: Debian Wheezy repo contains only FFmpeg 1.0.8. I tested building only with ~2.x~ 4.0. So it is strongly recommended use Wheezy back-ports repo. </p>
+</blockquote>
 <h2><a class="anchor" id="autotoc_md3"></a>
 Ubuntu 18.04 and Linux Mint 19.x</h2>
 <p>If you are on Ubuntu bionic or Linux Mint 19.x you should add <a href="https://launchpad.net/~jonathonf/+archive/ubuntu/ffmpeg-4">ffmpeg-4</a> PPA:</p>
@@ -115,8 +129,7 @@ Ubuntu 18.04 and Linux Mint 19.x</h2>
 </div><!-- fragment --><p>After that just install the same packages as above.</p>
 <hr  />
 <h1><a class="anchor" id="autotoc_md5"></a>
-Build</h1>
-<p>There are two ways to compile either with CMake or with meson. By default meson is faster, but if your project uses CMake, those instructions might be better for integration.</p>
+Build &amp; Usage</h1>
 <h2><a class="anchor" id="autotoc_md6"></a>
 Building with CMake</h2>
 <div class="fragment"><div class="line">git clone --recurse-submodules https://github.com/h4tr3d/avcpp.git avcpp-git</div>
@@ -135,8 +148,89 @@ Building with CMake</h2>
 </div><!-- fragment --><p>or (for packaging)</p>
 <div class="fragment"><div class="line">sudo make DESTDIR=&lt;some_prefix&gt; install</div>
 </div><!-- fragment --><p>Refer to CMake documentation for more details that can cover some special cases.</p>
-<h2><a class="anchor" id="autotoc_md7"></a>
-Building with meson</h2>
+<h3><a class="anchor" id="autotoc_md7"></a>
+Useful configure directives</h3>
+<ul>
+<li><code>AV_ENABLE_STATIC</code> - Bool, enable static library build, On by default.</li>
+<li><code>AV_ENABLE_SHARED</code> - Bool, enable shared library build, On by default.</li>
+<li><code>AV_BUILD_EXAMPLES</code> - Bool, enable examples build, On by default.</li>
+<li>C++ related<ul>
+<li><code>CMAKE_CXX_STANDARD</code> - Can be defined globally to override default C++ version. C++17 required at least.</li>
+</ul>
+</li>
+<li>FFmpeg related:<ul>
+<li><code>FFMPEG_PKG_CONFIG_SUFFIX</code> - String, TBD</li>
+<li><code>PC_&lt;component&gt;_LIBRARY_DIRS</code> - Path, hint where FFmpeg component library looking</li>
+<li><code>PC_FFMPEG_LIBRARY_DIRS</code> - Path, hint where a whole FFmpeg libraries looking</li>
+<li><code>PC_&lt;component&gt;_INCLUDE_DIRS</code> - Path, hint where a FFmpeg component includes looking</li>
+<li><code>PC_FFMPEG_INCLUDE_DIRS</code> - Path, hint where a whole FFmpeg includes looking</li>
+<li><code>&lt;component&gt;</code> are:<ul>
+<li><code>AVCODEC</code></li>
+<li><code>AVDEVICE</code></li>
+<li><code>AVFORMAT</code></li>
+<li><code>AVFILTER</code></li>
+<li><code>AVUTIL</code></li>
+<li><code>POSTPROC</code></li>
+<li><code>SWSCALE</code></li>
+<li><code>SWRESAMPLE</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md8"></a>
+Integrate to the CMake project as Git Submodule</h2>
+<p>AvCpp can be simple integrated into CMake-based project as Git submodule.</p>
+<p>Just do something like:</p>
+<div class="fragment"><div class="line">git submodule add https://github.com/h4tr3d/avcpp.git 3rdparty/avcpp</div>
+</div><!-- fragment --><p>And in the your <a class="el" href="CMakeLists_8txt.html">CMakeLists.txt</a>:</p>
+<div class="fragment"><div class="line">add_subdirectory(3rdparty/avcpp)</div>
+</div><!-- fragment --><p>AvCpp detects that it included as non-root projects and skips some steps, like installation.</p>
+<p>CMake parameters pointed above may be sets before <code>add_subdirectory()</code>.</p>
+<p>Than use via <code>target_link_libraries</code>:</p>
+<div class="fragment"><div class="line">target_link_libraries(prog PRIVATE avcpp::avcpp)</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md9"></a>
+Integrate to the CMake project via FetchContent</h2>
+<p>Just do in your <a class="el" href="CMakeLists_8txt.html">CMakeLists.txt</a>:</p>
+<div class="fragment"><div class="line">include(FetchContent)</div>
+<div class="line">FetchContent_Declare(</div>
+<div class="line">    avcpp</div>
+<div class="line">    GIT_REPOSITORY https://github.com/h4tr3d/avcpp.git</div>
+<div class="line">    GIT_TAG        v2.8.0</div>
+<div class="line">)</div>
+<div class="line">FetchContent_MakeAvailable(avcpp)</div>
+</div><!-- fragment --><p>Than use via <code>target_link_libraries</code>:</p>
+<div class="fragment"><div class="line">target_link_libraries(prog PRIVATE avcpp::avcpp)</div>
+</div><!-- fragment --><p>CMake arguments can be set before <code>FetchContent_MakeAvailable</code> call:</p>
+<div class="fragment"><div class="line">FetchContent_Declare(</div>
+<div class="line">    avcpp</div>
+<div class="line">    ...</div>
+<div class="line">)</div>
+<div class="line">set(AV_ENABLE_STATIC On)</div>
+<div class="line">set(AV_ENABLE_SHARED Off)</div>
+<div class="line">FetchContent_MakeAvailable(avcpp)</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md10"></a>
+Use via Vcpkg</h2>
+<p>Just put into vcpkg.json:</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">    &quot;$schema&quot;: &quot;https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json&quot;,</div>
+<div class="line">    &quot;dependencies&quot;: [</div>
+<div class="line">        ...</div>
+<div class="line">        &quot;avcpp&quot;,</div>
+<div class="line">        ...</div>
+<div class="line">    ],</div>
+<div class="line">    &quot;name&quot;: &quot;your-app-name&quot;,</div>
+<div class="line">    &quot;version-string&quot;: &quot;0.0.1&quot;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Than in the your <a class="el" href="CMakeLists_8txt.html">CMakeLists.txt</a>:</p>
+<div class="fragment"><div class="line">find_package(avcpp CONFIG REQUIRED)</div>
+<div class="line">target_link_libraries(prog PRIVATE avcpp::avcpp)</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md11"></a>
+Building with Meson</h2>
+<blockquote class="doxtable">
+<p>[!CAUTION]</p>
+<p>CMake usage strongly recommended. Meson build has no maintainer and broken for the last code. It is excluded from the CI builds. </p>
+</blockquote>
 <p>Before you can begin with the building you have to clone the repository like this:</p>
 <div class="fragment"><div class="line">git clone https://github.com/h4tr3d/avcpp.git avcpp-git</div>
 <div class="line">cd avcpp-git</div>
