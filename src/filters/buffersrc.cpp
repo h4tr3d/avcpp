@@ -2,6 +2,8 @@
 
 #include "buffersrc.h"
 
+#if AVCPP_HAS_AVFILTER
+
 using namespace std;
 
 namespace av {
@@ -114,3 +116,5 @@ void BufferSrcFilterContext::writeFrame(const AVFrame *frame, OptionalErrorCode 
 }
 
 } // namespace av
+
+#endif // if AVCPP_HAS_AVFILTER

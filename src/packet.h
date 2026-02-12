@@ -134,7 +134,9 @@ public:
     void        addFlags(int flags);
     void        clearFlags(int flags);
 
+#if AVCPP_HAS_AVFORMAT
     void        dump(const Stream & st, bool dumpPayload = false) const;
+#endif // if AVCPP_HAS_AVFORMAT
 
     const Rational& timeBase() const { return m_timeBase; }
     void setTimeBase(const Rational &value);

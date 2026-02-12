@@ -239,6 +239,7 @@ Codec findDecodingCodec(const string &name)
     return Codec { avcodec_find_decoder_by_name(name.c_str()) };
 }
 
+#if AVCPP_HAS_AVFORMAT
 Codec guessEncodingCodec(OutputFormat format, const char *name, const char *url, const char *mime, AVMediaType mediaType)
 {
     auto id = av_guess_codec(format.raw(), name, url, mime, mediaType);
@@ -252,5 +253,6 @@ Codec findEncodingCodec(const OutputFormat &format, bool isVideo)
     else
         return Codec { avcodec_find_encoder(format.defaultAudioCodecId()) };
 }
+#endif // if AVCPP_HAS_AVFORMAT
 
 } // ::av

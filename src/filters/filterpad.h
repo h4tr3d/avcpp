@@ -1,5 +1,4 @@
-#ifndef AV_FILTERPAD_H
-#define AV_FILTERPAD_H
+#pragma once
 
 #include <iterator>
 #include <memory>
@@ -7,6 +6,8 @@
 
 #include "ffmpeg.h"
 #include "avutils.h"
+
+#if AVCPP_HAS_AVFILTER
 
 namespace av {
 
@@ -28,7 +29,6 @@ private:
     size_t m_count = 0;
 };
 
-
 } // namespace av
 
-#endif // AV_FILTERPAD_H
+#endif // if AVCPP_HAS_AVFILTER

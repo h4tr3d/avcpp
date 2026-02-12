@@ -3,6 +3,8 @@
 
 #include "filtercontext.h"
 
+#if AVCPP_HAS_AVFILTER
+
 namespace av {
 
 using namespace std;
@@ -99,3 +101,5 @@ size_t FilterContext::outputsCount() const
 }
 
 } // namespace av
+
+#endif // if AVCPP_HAS_AVFILTER

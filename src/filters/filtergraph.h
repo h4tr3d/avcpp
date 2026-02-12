@@ -1,5 +1,4 @@
-#ifndef AV_FILTERGRAPH_H
-#define AV_FILTERGRAPH_H
+#pragma once
 
 #include <map>
 #include <memory>
@@ -10,6 +9,8 @@
 #include "buffersrc.h"
 
 #include "averror.h"
+
+#if AVCPP_HAS_AVFILTER
 
 namespace av {
 
@@ -69,7 +70,6 @@ private:
     bool m_configured = false;
 };
 
-
 } // namespace av
 
-#endif // AV_FILTERGRAPH_H
+#endif // if AVCPP_HAS_AVFILTER

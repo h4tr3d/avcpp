@@ -344,6 +344,7 @@ void Packet::clearFlags(int flags)
     raw()->flags &= ~flags;
 }
 
+#if AVCPP_HAS_AVFORMAT
 void Packet::dump(const Stream &st, bool dumpPayload) const
 {
     if (!st.isNull())
@@ -352,6 +353,7 @@ void Packet::dump(const Stream &st, bool dumpPayload) const
         av_pkt_dump2(stdout, raw(), dumpPayload ? 1 : 0, stream);
     }
 }
+#endif // if AVCPP_HAS_AVFORMAT
 
 void Packet::setTimeBase(const Rational &tb)
 {

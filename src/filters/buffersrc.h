@@ -1,5 +1,8 @@
-#ifndef AV_BUFFERSRC_H
-#define AV_BUFFERSRC_H
+#pragma once
+
+#include "avconfig.h"
+
+#if AVCPP_HAS_AVFILTER
 
 #include "ffmpeg.h"
 #include "filtercontext.h"
@@ -42,4 +45,4 @@ private:
 
 } // namespace av
 
-#endif // AV_BUFFERSRC_H
+#endif // if AVCPP_HAS_AVFILTER

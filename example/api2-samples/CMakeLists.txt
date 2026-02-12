@@ -25,7 +25,34 @@ set(TARGETS
   api2-demux-seek
   api2-remux
   api2-hw-encode
+  api2-decode-raw-h264
 )
+
+if (AV_DISABLE_AVFORMAT)
+  list(REMOVE_ITEM TARGETS
+    api2-decode
+    api2-decode-encode-video
+    api2-decode-encode-audio
+    api2-decode-filter-encode
+    api2-hw-encode
+    api2-decode-raw-h264
+    api2-decode-audio
+    api2-remux
+    api2-scale-video
+    api2-decode-rasample-audio
+    api2-demux-seek
+  )
+endif()
+
+if (AV_DISABLE_AVFILTER)
+  list(REMOVE_ITEM TARGETS
+    api2-decode-filter-encode
+  )
+endif()
+
+if (NOT "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+  list(REMOVE_ITEM TARGETS api2-decode-raw-h264)
+endif()
 
 # helper for the sample target
 function(api2_sample_target target)
@@ -49,9 +76,8 @@ foreach(target ${TARGETS})
   api2_sample_target(${target})
 endforeach()
 
-# Custom targets
-if ("cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-  api2_sample_target(api2-decode-raw-h264)
+# Additional options
+if ("api2-decode-raw-h264" IN_LIST TARRGETS)
   set_property(TARGET api2-decode-raw-h264 PROPERTY CXX_STANDARD 20)
 endif()
 

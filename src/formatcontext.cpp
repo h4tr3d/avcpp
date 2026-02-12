@@ -1,6 +1,9 @@
 #include <iostream>
 
 #include "avcompat.h"
+
+#if AVCPP_HAS_AVFORMAT
+
 #include "avutils.h"
 #include "avtime.h"
 #include "frame.h"
@@ -1111,3 +1114,5 @@ void FormatContext::openCustomIOOutput(CustomIO *io, size_t internalBufferSize, 
 }
 
 } // namespace av
+
+#endif // if AVCPP_HAS_AVFORMAT

@@ -1,10 +1,11 @@
-#ifndef AV_FILTER_H
-#define AV_FILTER_H
+#pragma once
 
 #include <memory>
 
 #include "ffmpeg.h"
 #include "filterpad.h"
+
+#if AVCPP_HAS_AVFILTER
 
 extern "C" {
 #include <libavfilter/avfilter.h>
@@ -47,4 +48,4 @@ public:
 
 } // namespace av
 
-#endif // AV_FILTER_H
+#endif // if AVCPP_HAS_AVFILTER

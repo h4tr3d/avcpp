@@ -1,5 +1,7 @@
 #include "filter.h"
 
+#if AVCPP_HAS_AVFILTER
+
 using namespace std;
 
 namespace av {
@@ -70,3 +72,5 @@ av::Filter::operator bool() const
 }
 
 } // namespace av
+
+#endif // if AVCPP_HAS_AVFILTER

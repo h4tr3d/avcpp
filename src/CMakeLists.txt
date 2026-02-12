@@ -14,7 +14,7 @@ macro (setup_package_version_avcpp _pkg)
         endif()
     endforeach()
 endmacro()
-foreach(PKG AVCODEC AVFORMAT AVUTIL AVDEVICE AVFILTER SWSCALE SWRESAMPLE)
+foreach(PKG ${CORE_FFMPEG_COMPONENTS} ${OPTIONAL_FFMPEG_COMPONENTS})
     message(STATUS "Setup version defines for: ${PKG}")
     setup_package_version(${PKG})
     setup_package_version_avcpp(${PKG})
@@ -165,7 +165,16 @@ if (AVCPP_NOT_SUBPROJECT)
             set(PRIVATE_LIBS "")
         endif()
 
+        # compose pkg-config Requires line based on the selected FFmpeg components
+        set(AVCPP_PC_REQUIRES )
+        foreach (FFCOMP ${CORE_FFMPEG_COMPONENTS} ${OPTIONAL_FFMPEG_COMPONENTS})
+            string(TOLOWER ${FFCOMP} _ffcomp)
+            list(APPEND AVCPP_PC_REQUIRES "lib${_ffcomp} >= ${${FFCOMP}_VERSION}")
+        endforeach()
+        string(REPLACE ";" ", " AVCPP_PC_REQUIRES "${AVCPP_PC_REQUIRES}")
+
         message(STATUS "LIBS: ${PLIBLIST} / ${PRIVATE_LIBS}")
+        message(STATUS "PC REQ: ${AVCPP_PC_REQUIRES}")
 
         configure_file(
             "${CMAKE_CURRENT_SOURCE_DIR}/libavcpp.pc.in"

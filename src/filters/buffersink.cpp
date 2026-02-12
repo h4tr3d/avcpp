@@ -2,6 +2,8 @@
 
 #include "buffersink.h"
 
+#if AVCPP_HAS_AVFILTER
+
 using namespace std;
 
 namespace av {
@@ -178,3 +180,5 @@ bool BufferSinkFilterContext::getSamples(AVFrame *frame, int nbSamples, Optional
 }
 
 } // namespace av
+
+#endif

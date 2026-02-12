@@ -16,7 +16,6 @@
 
 extern "C" {
 #include <libavcodec/avcodec.h>
-#include <libavformat/version.h>
 }
 
 namespace av {
@@ -47,10 +46,12 @@ protected:
     CodecContext2();
 
     // Stream decoding/encoding
+#if AVCPP_HAS_AVFORMAT
     CodecContext2(const class Stream &st,
                   const class Codec& codec,
                   Direction direction,
                   AVMediaType type);
+#endif // if AVCPP_HAS_AVFORMAT
 
     // Stream independ decoding/encoding
     CodecContext2(const class Codec &codec, Direction direction, AVMediaType type);
@@ -96,7 +97,9 @@ public:
     Rational timeBase() const noexcept;
     void setTimeBase(const Rational &value) noexcept;
 
+#if AVCPP_HAS_AVFORMAT
     const Stream& stream() const noexcept;
+#endif // if AVCPP_HAS_AVFORMAT
     Codec codec() const noexcept;
 
     void setOption(const std::string &key, const std::string &val, OptionalErrorCode ec = throws());
@@ -172,7 +175,9 @@ public:
                  int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *));
 
 private:
+#if AVCPP_HAS_AVFORMAT
     Stream m_stream;
+#endif // if AVCPP_HAS_AVFORMAT
 };
 
 
@@ -191,7 +196,9 @@ protected:
 public:
     GenericCodecContext() = default;
 
+#if AVCPP_HAS_AVFORMAT
     GenericCodecContext(Stream st);
+#endif // if AVCPP_HAS_AVFORMAT
 
     GenericCodecContext(GenericCodecContext&& other);
 
@@ -225,10 +232,12 @@ public:
     }
 
     // Stream decoding/encoding
+#if AVCPP_HAS_AVFORMAT
     explicit CodecContextBase(const class Stream &st, const class Codec& codec = Codec())
         : CodecContext2(st, codec, _direction, _type)
     {
     }
+#endif // if AVCPP_HAS_AVFORMAT
 
     // Stream independ decoding/encoding
     explicit CodecContextBase(const Codec &codec)

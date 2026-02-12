@@ -41,13 +41,16 @@ public:
 };
 
 
-Codec findEncodingCodec(const OutputFormat &format, bool isVideo = true);
+
 Codec findEncodingCodec(AVCodecID id);
 Codec findEncodingCodec(const std::string& name);
 
 Codec findDecodingCodec(AVCodecID id);
 Codec findDecodingCodec(const std::string& name);
 
+#if AVCPP_HAS_AVFORMAT
+Codec findEncodingCodec(const OutputFormat &format, bool isVideo = true);
 Codec guessEncodingCodec(OutputFormat format, const char *name, const char *url, const char* mime, AVMediaType mediaType);
+#endif // if AVCPP_HAS_AVFORMAT
 
 } // ::fmpeg
