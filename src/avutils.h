@@ -13,6 +13,10 @@
 #include <functional>
 #include <type_traits>
 
+#if AVCPP_CXX_STANDARD >= 20
+#  include <span>
+#endif
+
 #include "ffmpeg.h"
 #include "avtime.h"
 
