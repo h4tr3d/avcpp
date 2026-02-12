@@ -13,8 +13,18 @@
 #include <functional>
 #include <type_traits>
 
+#if AVCPP_CXX_STANDARD >= 20
+#  include <span>
+#endif
+
 #include "ffmpeg.h"
 #include "avtime.h"
+
+#if AVCPP_HAS_AVFORMAT
+extern "C" {
+#include <libavformat/avformat.h>
+}
+#endif
 
 //
 // Functions
@@ -76,6 +86,7 @@ void set_logging_level(const std::string& level);
  * @param buffer_size   buffer size
  * @param width         output width in hex values (real text screen with is: sw = width * 3 - 1)
  */
+[[deprecated("Use av::hex_dump()")]]
 void dumpBinaryBuffer(uint8_t *buffer, int buffer_size, int width = 16);
 
 
@@ -111,12 +122,16 @@ struct AvDeleter
 {
     bool operator() (struct SwsContext* &swsContext);
     bool operator() (struct AVCodecContext* &codecContext);
+#if AVCPP_HAS_AVFORMAT
     bool operator() (struct AVOutputFormat* &format);
     bool operator() (struct AVFormatContext* &formatContext);
+#endif // if AVCPP_HAS_AVFORMAT
     bool operator() (struct AVFrame* &frame);
     bool operator() (struct AVPacket* &packet);
     bool operator() (struct AVDictionary* &dictionary);
+#if AVCPP_HAS_AVFILTER
     bool operator ()(struct AVFilterInOut* &filterInOut);
+#endif // if AVCPP_HAS_AVFILTER
 };
 } // ::v1
 
@@ -604,6 +619,19 @@ void array_to_container(const T* array, Container &container, Compare isEnd, Cal
     while (!isEnd(value = *array++))
         container.push_back(convert(value));
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//
+// Allow to use without AVFORMAT library
+//
+void hex_dump(FILE *f, const uint8_t *buf, std::size_t size);
+void hex_dump_log(void *avcl, int level, const uint8_t *buf, std::size_t size);
+
+#if AVCPP_CXX_STANDARD >= 20
+void hex_dump(FILE *f, std::span<const uint8_t> buf);
+void hex_dump_log(void *avcl, int level, std::span<const uint8_t> buf);
+#endif // if AVCPP_CXX_STANDARD >= 20
 
 } // ::av
 

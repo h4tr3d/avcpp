@@ -8,17 +8,10 @@
 #include "timestamp.h"
 #include "codecparameters.h"
 
+#if AVCPP_HAS_AVFORMAT
+
 namespace av
 {
-
-enum class Direction
-{
-    Invalid = -1,
-    Encoding,
-    Decoding
-};
-
-
 class Stream : public FFWrapperPtr<AVStream>
 {
 private:
@@ -79,3 +72,4 @@ private:
 
 } // ::av
 
+#endif // if AVCPP_HAS_AVFORMAT

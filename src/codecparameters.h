@@ -12,6 +12,13 @@ extern "C" {
 
 namespace av {
 
+enum class Direction
+{
+    Invalid = -1,
+    Encoding,
+    Decoding
+};
+
 /**
  * @brief The CodecParametersView class
  *

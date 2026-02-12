@@ -1,5 +1,7 @@
 #include "filterpad.h"
 
+#if AVCPP_HAS_AVFILTER
+
 using namespace std;
 
 namespace av {
@@ -31,3 +33,5 @@ AVMediaType FilterPadList::type(size_t index) const noexcept
 }
 
 } // namespace av
+
+#endif // if AVCPP_HAS_AVFILTER

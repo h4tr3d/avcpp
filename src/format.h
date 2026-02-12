@@ -5,6 +5,12 @@
 
 #include "ffmpeg.h"
 
+#if AVCPP_HAS_AVFORMAT
+
+extern "C" {
+#include "libavformat/avformat.h"
+}
+
 namespace av {
 
 // AVFormat 59 will introduce `const` for all muxer/demuxer description operations
@@ -109,3 +115,5 @@ OutputFormat guessOutputFormat(const std::string& name,
                                const std::string& mime = std::string());
 
 } // namespace av
+
+#endif // if AVCPP_HAS_AVFORMAT

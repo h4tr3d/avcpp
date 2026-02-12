@@ -82,7 +82,7 @@
 # Copyright (c) 2006, Matthias Kretz, <kretz@kde.org>
 # Copyright (c) 2008, Alexander Neundorf, <neundorf@kde.org>
 # Copyright (c) 2011, Michael Jansen, <kde@michael-jansen.biz>
-# Copyright (c) 2017, Alexander Drozdov, <adrozdoff@gmail.com>
+# Copyright (c) 2017-2026, Alexander Drozdov, <adrozdoff@gmail.com>
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
@@ -160,22 +160,28 @@ macro(find_component _component _pkgconfig _library _header)
 
 endmacro()
 
+macro(setup_component _component _pkgconfig _library _header)
+  set(_${_component}_PKGCONFIG_NAME ${_pkgconfig})
+  set(_${_component}_LIBRARY_NAME   ${_library})
+  set(_${_component}_HEADER_NAME    ${_header})
+endmacro()
 
 # Check for cached results. If there are skip the costly part.
 if (TRUE)
-
-  # Check for all possible component.
-  find_component(AVCODEC    libavcodec    avcodec  libavcodec/avcodec.h)
-  find_component(AVFORMAT   libavformat   avformat libavformat/avformat.h)
-  find_component(AVDEVICE   libavdevice   avdevice libavdevice/avdevice.h)
-  find_component(AVUTIL     libavutil     avutil   libavutil/avutil.h)
-  find_component(AVFILTER   libavfilter   avfilter libavfilter/avfilter.h)
-  find_component(SWSCALE    libswscale    swscale  libswscale/swscale.h)
-  find_component(POSTPROC   libpostproc   postproc libpostproc/postprocess.h)
-  find_component(SWRESAMPLE libswresample swresample libswresample/swresample.h)
+  # setup internal vars for all possible components
+  setup_component(AVCODEC    libavcodec    avcodec  libavcodec/avcodec.h)
+  setup_component(AVFORMAT   libavformat   avformat libavformat/avformat.h)
+  setup_component(AVDEVICE   libavdevice   avdevice libavdevice/avdevice.h)
+  setup_component(AVUTIL     libavutil     avutil   libavutil/avutil.h)
+  setup_component(AVFILTER   libavfilter   avfilter libavfilter/avfilter.h)
+  setup_component(SWSCALE    libswscale    swscale  libswscale/swscale.h)
+  setup_component(POSTPROC   libpostproc   postproc libpostproc/postprocess.h)
+  setup_component(SWRESAMPLE libswresample swresample libswresample/swresample.h)
 
   # Check if the required components were found and add their stuff to the FFMPEG_* vars.
   foreach (_component ${FFmpeg_FIND_COMPONENTS})
+    # find only requested componsnts
+    find_component(${_component} ${_${_component}_PKGCONFIG_NAME} ${_${_component}_LIBRARY_NAME} ${_${_component}_HEADER_NAME})
     if (${_component}_FOUND)
       message(STATUS "Libs: ${${_component}_LIBRARIES} | ${PC_${_component}_LIBRARIES}")
 

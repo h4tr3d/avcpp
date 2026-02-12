@@ -9,6 +9,8 @@
 //#include "filterinout.h"
 #include "avlog.h"
 
+#if AVCPP_HAS_AVFILTER
+
 using namespace std;
 
 namespace av {
@@ -288,3 +290,5 @@ BufferSinkFilterContext FilterGraph::bufferSinkFilter(OptionalErrorCode ec)
 }
 
 } // namespace av
+
+#endif // AVCPP_HAS_AVFILTER

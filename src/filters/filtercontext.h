@@ -1,5 +1,4 @@
-#ifndef AV_FILTERCONTEXT_H
-#define AV_FILTERCONTEXT_H
+#pragma once
 
 #include <memory>
 
@@ -8,6 +7,8 @@
 #include "averror.h"
 //#include "filteropaque.h"
 //#include "filtercontext_helper.h"
+
+#if AVCPP_HAS_AVFILTER
 
 namespace av {
 
@@ -38,7 +39,6 @@ protected:
 
 };
 
-
 } // namespace av
 
-#endif // AV_FILTERCONTEXT_H
+#endif // if AVCPP_HAS_AVFILTER

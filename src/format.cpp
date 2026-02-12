@@ -1,6 +1,8 @@
 #include "codec.h"
 #include "format.h"
 
+#if AVCPP_HAS_AVFORMAT
+
 namespace av {
 
 namespace internal {
@@ -72,3 +74,5 @@ OutputFormat guessOutputFormat(const std::string &name, const std::string &url, 
 }
 
 } // namespace av
+
+#endif // if AVCPP_HAS_AVFORMAT

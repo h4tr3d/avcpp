@@ -2,6 +2,8 @@
 #include "codeccontext.h"
 #include "stream.h"
 
+#if AVCPP_HAS_AVFORMAT
+
 namespace av
 {
 
@@ -170,3 +172,4 @@ void Stream::setupEncodingParameters(const VideoEncoderContext &ctx, OptionalErr
 
 } // ::av
 
+#endif // if AVCPP_HAS_AVFORMAT

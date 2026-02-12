@@ -14,9 +14,10 @@
 #include "dictionary.h"
 #include "averror.h"
 
+#if AVCPP_HAS_AVFORMAT
+
 extern "C" {
 #include <libavformat/avformat.h>
-//#include <libavformat/avio.h>
 }
 
 namespace av {
@@ -236,3 +237,4 @@ private:
 
 } // namespace av
 
+#endif // if AVCPP_HAS_AVFORMAT

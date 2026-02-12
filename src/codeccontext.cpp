@@ -35,10 +35,12 @@ make_error_pair(int status)
 
 }
 
+#if AVCPP_HAS_AVFORMAT
 GenericCodecContext::GenericCodecContext(Stream st)
     : CodecContext2(st, Codec(), st.direction(), st.mediaType())
 {
 }
+#endif // if AVCPP_HAS_AVFORMAT
 
 GenericCodecContext::GenericCodecContext(GenericCodecContext &&other)
     : GenericCodecContext()
@@ -56,7 +58,11 @@ GenericCodecContext &GenericCodecContext::operator=(GenericCodecContext &&rhs)
 
 AVMediaType GenericCodecContext::codecType() const noexcept
 {
+#if AVCPP_HAS_AVFORMAT
     return codecType(stream().mediaType());
+#else
+    return codecType(AVMEDIA_TYPE_UNKNOWN);
+#endif // if AVCPP_HAS_AVFORMAT
 }
 
 // ::anonymous
@@ -286,7 +292,9 @@ Packet VideoEncoderContext::encode(const VideoFrame &inFrame, OptionalErrorCode 
 void CodecContext2::swap(CodecContext2 &other)
 {
     using std::swap;
+#if AVCPP_HAS_AVFORMAT
     swap(m_stream, other.m_stream);
+#endif // if AVCPP_HAS_AVFORMAT
     swap(m_raw, other.m_raw);
 }
 
@@ -295,6 +303,7 @@ CodecContext2::CodecContext2()
     m_raw = avcodec_alloc_context3(nullptr);
 }
 
+#if AVCPP_HAS_AVFORMAT
 CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction direction, AVMediaType type)
     : m_stream(st)
 {
@@ -336,6 +345,7 @@ CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction dir
 
     setTimeBase(st.timeBase());
 }
+#endif // if AVCPP_HAS_AVFORMAT
 
 CodecContext2::CodecContext2(const Codec &codec, Direction direction, AVMediaType type)
 {
@@ -377,12 +387,14 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
         return;
     }
 
+#if AVCPP_HAS_AVFORMAT
     if (!m_raw || (!m_stream.isValid() && !m_stream.isNull()))
     {
         fflog(AV_LOG_WARNING, "Parent stream is not valid. Probably it or FormatContext destroyed\n");
         throws_if(ec, Errors::CodecStreamInvalid);
         return;
     }
+#endif // if AVCPP_HAS_AVFORMAT
 
     if (codec.isNull())
     {
@@ -422,6 +434,7 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
         }
     }
 
+#if AVCPP_HAS_AVFORMAT
 #if !AVCPP_USE_CODECPAR // AVFORMAT < 57.5.0
     FF_DISABLE_DEPRECATION_WARNINGS
     if (m_stream.isValid()) {
@@ -434,6 +447,7 @@ void CodecContext2::setCodec(const Codec &codec, bool resetDefaults, Direction d
         m_stream.codecParameters().copyFrom(*this);
     }
 #endif
+#endif // if AVCPP_HAS_AVFORMAT
 }
 
 AVMediaType CodecContext2::codecType(AVMediaType contextType) const noexcept
@@ -558,7 +572,11 @@ bool CodecContext2::isOpened() const noexcept
 bool CodecContext2::isValid() const noexcept
 {
     // Check parent stream first
+#if AVCPP_HAS_AVFORMAT
     return ((m_stream.isValid() || m_stream.isNull()) && m_raw && m_raw->codec);
+#else
+    return (m_raw && m_raw->codec);
+#endif // if AVCPP_HAS_AVFORMAT
 }
 
 void CodecContext2::copyContextFrom(const CodecContext2 &other, OptionalErrorCode ec)
@@ -617,10 +635,12 @@ void CodecContext2::setTimeBase(const Rational &value) noexcept
     RAW_SET2(isValid() && !isOpened(), time_base, value.getValue());
 }
 
+#if AVCPP_HAS_AVFORMAT
 const Stream &CodecContext2::stream() const noexcept
 {
     return m_stream;
 }
+#endif // if AVCPP_HAS_AVFORMAT
 
 Codec CodecContext2::codec() const noexcept
 {
@@ -785,12 +805,19 @@ bool CodecContext2::isValidForEncode(Direction direction, AVMediaType /*type*/) 
 {
     if (!isValid())
     {
+#if AVCPP_HAS_AVFORMAT
         fflog(AV_LOG_WARNING,
               "Not valid context: codec_context=%p, stream_valid=%d, stream_isnull=%d, codec=%p\n",
               m_raw,
               m_stream.isValid(),
               m_stream.isNull(),
               codec().raw());
+#else
+        fflog(AV_LOG_WARNING,
+              "Not valid context: codec_context=%p, codec=%p\n",
+              m_raw,
+              codec().raw());
+#endif // if AVCPP_HAS_AVFORMAT
         return false;
     }
 
@@ -1003,8 +1030,10 @@ CodecContext2::decodeCommon(T &outFrame,
 
     if (inPacket.timeBase() != Rational())
         outFrame.setTimeBase(inPacket.timeBase());
+#if AVCPP_HAS_AVFORMAT
     else
         outFrame.setTimeBase(m_stream.timeBase());
+#endif // if AVCPP_HAS_AVFORMAT
 
     AVFrame *frame = outFrame.raw();
 
@@ -1024,8 +1053,10 @@ CodecContext2::decodeCommon(T &outFrame,
 
     if (inPacket)
         outFrame.setStreamIndex(inPacket.streamIndex());
+#if AVCPP_HAS_AVFORMAT
     else
         outFrame.setStreamIndex(m_stream.index());
+#endif // if AVCPP_HAS_AVFORMAT
 
     outFrame.setComplete(true);
 
@@ -1048,9 +1079,11 @@ CodecContext2::encodeCommon(Packet &outPacket,
     if (inFrame && inFrame.timeBase() != Rational()) {
         outPacket.setTimeBase(inFrame.timeBase());
         outPacket.setStreamIndex(inFrame.streamIndex());
-    } else if (m_stream.isValid()) {
+    }
+#if AVCPP_HAS_AVFORMAT
+    else if (m_stream.isValid()) {
 #if AVCPP_USE_CODECPAR
-#if AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE
+#if defined(AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE) && (AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE)
         outPacket.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
 #else
         // TBD: additional checking are needed
@@ -1066,7 +1099,9 @@ CodecContext2::encodeCommon(Packet &outPacket,
         FF_ENABLE_DEPRECATION_WARNINGS
 #endif
         outPacket.setStreamIndex(m_stream.index());
-    } else if (timeBase() != Rational()) {
+    }
+#endif // if AVCPP_HAS_AVFORMAT
+    else if (timeBase() != Rational()) {
         outPacket.setTimeBase(timeBase());
     }
 

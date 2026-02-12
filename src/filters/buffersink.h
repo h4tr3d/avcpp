@@ -1,5 +1,8 @@
-#ifndef AV_BUFFERSINK_H
-#define AV_BUFFERSINK_H
+#pragma once
+
+#include "avconfig.h"
+
+#if AVCPP_HAS_AVFILTER
 
 #include <stdint.h>
 #include <memory>
@@ -57,4 +60,4 @@ private:
 
 } // namespace av
 
-#endif // AV_BUFFERSINK_H
+#endif

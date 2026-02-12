@@ -14,6 +14,8 @@
 # pragma warning (disable : 4702) // Disable warning: unreachable code
 #endif
 
+#if AVCPP_HAS_AVFORMAT
+
 TEST_CASE("Format Core functionality", "[Format]")
 {
     SECTION("guessEncodingCodec()") {
@@ -56,5 +58,6 @@ TEST_CASE("Format Core functionality", "[Format]")
         }
     }
 #endif
-
 }
+
+#endif // if AVCPP_HAS_AVFORMAT

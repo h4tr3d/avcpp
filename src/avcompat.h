@@ -3,13 +3,11 @@
 #include "avconfig.h"
 
 extern "C" {
-#ifdef AVCPP_AVFILTER_VERSION_MAJOR
-#  include <libavfilter/avfilter.h>
-#endif
 #ifdef AVCPP_AVCODEC_VERSION_MAJOR
 #  include <libavcodec/avcodec.h>
 #endif
-#include <libavfilter/avfilter.h>
+#if AVCPP_HAS_AVFILTER
+#  include <libavfilter/avfilter.h>
 #if AVCPP_AVFILTER_VERSION_INT < AV_VERSION_INT(7,0,0)
 #  include <libavfilter/avfiltergraph.h>
 #endif
@@ -21,6 +19,7 @@ extern "C" {
 #if AVCPP_AVFILTER_VERSION_INT < AV_VERSION_INT(6,31,100) // 3.0
 #include <libavfilter/avcodec.h>
 #endif
+#endif // if AVCPP_HAS_AVFILTER
 } // extern "C"
 
 
@@ -32,7 +31,9 @@ extern "C" {
 // `int64_t frame_num` has been added in the 60.2, in the 61.0 it should be removed
 #define AVCPP_API_FRAME_NUM          ((AVCPP_AVCODEC_VERSION_MAJOR > 60) || (AVCPP_AVCODEC_VERSION_MAJOR == 60 && AVCPP_AVCODEC_VERSION_MINOR >= 2))
 // use AVFormatContext::url
-#define AVCPP_API_AVFORMAT_URL       ((AVCPP_AVFORMAT_VERSION_MAJOR > 58) || (AVCPP_AVFORMAT_VERSION_MAJOR == 58 && AVCPP_AVFORMAT_VERSION_MINOR >= 7))
+#if AVCPP_HAS_AVFORMAT
+#  define AVCPP_API_AVFORMAT_URL       ((AVCPP_AVFORMAT_VERSION_MAJOR > 58) || (AVCPP_AVFORMAT_VERSION_MAJOR == 58 && AVCPP_AVFORMAT_VERSION_MINOR >= 7))
+#endif // if AVCPP_HAS_AVFORMAT
 // net key frame flags: AV_FRAME_FLAG_KEY (FFmpeg 6.1)
 #define AVCPP_API_FRAME_KEY          ((AVCPP_AVUTIL_VERSION_MAJOR > 58) || (AVCPP_AVUTIL_VERSION_MAJOR == 58 && AVCPP_AVUTIL_VERSION_MINOR >= 29))
 // avcodec_close() support
@@ -42,8 +43,10 @@ extern "C" {
 #define AVCPP_API_AVCODEC_NEW_INIT_PACKET (AVCPP_AVCODEC_VERSION_MAJOR >= 58)
 // some fields in the AVCodec structure deprecard and replaced by the call of avcodec_get_supported_config()
 #define AVCPP_API_AVCODEC_GET_SUPPORTED_CONFIG (AVCPP_AVCODEC_VERSION_INT >= AV_VERSION_INT(61, 13, 100))
+#if AVCPP_HAS_AVFORMAT
 // av_stream_get_codec_timebase() deprecard now without replacement
-#define AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE (AVCPP_AVFORMAT_VERSION_INT < AV_VERSION_INT(61, 5, 101))
+#  define AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE (AVCPP_AVFORMAT_VERSION_INT < AV_VERSION_INT(61, 5, 101))
+#endif // if AVCPP_HAS_AVFORMAT
 // AVBuffer API switch to size_t
 #define AVCPP_API_AVBUFFER_SIZE_T (AVCPP_AVUTIL_VERSION_MAJOR >= 57)
 
@@ -81,6 +84,7 @@ inline void avcodec_free_frame(AVFrame **frame)
 #endif
 
 // avfilter
+#if AVCPP_HAS_AVFILTER
 #if AVCPP_AVFILTER_VERSION_INT < AV_VERSION_INT(3,17,100) // 1.0
 inline const char *avfilter_pad_get_name(AVFilterPad *pads, int pad_idx)
 {
@@ -92,10 +96,10 @@ inline AVMediaType avfilter_pad_get_type(AVFilterPad *pads, int pad_idx)
     return pads[pad_idx].type;
 }
 #endif
-
+#endif // if AVCPP_HAS_AVFILTER
 
 // Wrapper around av_free_packet()/av_packet_unref()
-#if AVCPP_AVFORMAT_VERSION_INT < AV_VERSION_INT(6,31,100) // < 3.0
+#if AVCPP_AVCODEC_VERSION_INT < AV_VERSION_INT(58,8,100) // < 3.0
 #define avpacket_unref(p) av_free_packet(p)
 #else
 #define avpacket_unref(p) av_packet_unref(p)

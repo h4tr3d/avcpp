@@ -10,6 +10,12 @@
 #include "packet.h"
 #include "frame.h"
 
+extern "C" {
+#if AVCPP_HAS_AVDEVICE
+#include <libavdevice/avdevice.h>
+#endif
+}
+
 using namespace std;
 
 //
@@ -168,17 +174,26 @@ static int avcpp_lockmgr_cb(void **ctx, enum AVLockOp op)
 
 void init()
 {
+#if AVCPP_HAS_AVFORMAT
 #if AVCPP_AVFORMAT_VERSION_MAJOR < 58 // FFmpeg 4.0
     av_register_all();
 #endif
     avformat_network_init();
+#endif // if AVCPP_HAS_AVFORMAT
+
 #if AVCPP_AVCODEC_VERSION_MAJOR < 58 // FFmpeg 4.0
     avcodec_register_all();
 #endif
+
+#if AVCPP_HAS_AVFILTER
 #if AVCPP_AVFILTER_VERSION_MAJOR < 7 // FFmpeg 4.0
     avfilter_register_all();
 #endif
+#endif // if AVCPP_HAS_AVFILTER
+
+#if AVCPP_HAS_AVDEVICE
     avdevice_register_all();
+#endif
 
 #if AVCPP_AVCODEC_VERSION_MAJOR < 58 // FFmpeg 4.0
     av_lockmgr_register(avcpp_lockmgr_cb);
@@ -220,6 +235,7 @@ bool AvDeleter::operator()(AVCodecContext *&codecContext)
     return true;
 }
 
+#if AVCPP_HAS_AVFORMAT
 bool AvDeleter::operator()(AVOutputFormat *&format)
 {
     // Only set format to zero, it can'be freed by user
@@ -233,6 +249,7 @@ bool AvDeleter::operator()(AVFormatContext *&formatContext)
     formatContext = nullptr;
     return true;
 }
+#endif // if AVCPP_HAS_AVFORMAT
 
 bool AvDeleter::operator()(AVFrame *&frame)
 {
@@ -253,12 +270,84 @@ bool AvDeleter::operator()(AVDictionary *&dictionary)
     return true;
 }
 
+#if AVCPP_HAS_AVFILTER
 bool AvDeleter::operator ()(AVFilterInOut *&filterInOut)
 {
     avfilter_inout_free(&filterInOut);
     return true;
 }
+#endif // if AVCPP_HAS_AVFILTER
+
 } // ::v1
+
+#if !AVCPP_HAS_AVFORMAT
+// From FFmpeg libavformat/dump.c
+#define HEXDUMP_PRINT(...)                                                    \
+    do {                                                                      \
+        if (!f)                                                               \
+            av_log(avcl, level, __VA_ARGS__);                                 \
+        else                                                                  \
+            fprintf(f, __VA_ARGS__);                                          \
+    } while (0)
+
+static void hex_dump_internal(void *avcl, FILE *f, int level, const uint8_t *buf, int size)
+{
+    int len, i, j, c;
+
+    for (i = 0; i < size; i += 16) {
+        len = size - i;
+        if (len > 16)
+            len = 16;
+        HEXDUMP_PRINT("%08x ", i);
+        for (j = 0; j < 16; j++) {
+            if (j < len)
+                HEXDUMP_PRINT(" %02x", buf[i + j]);
+            else
+                HEXDUMP_PRINT("   ");
+        }
+        HEXDUMP_PRINT(" ");
+        for (j = 0; j < len; j++) {
+            c = buf[i + j];
+            if (c < ' ' || c > '~')
+                c = '.';
+            HEXDUMP_PRINT("%c", c);
+        }
+        HEXDUMP_PRINT("\n");
+    }
+}
+
+void hex_dump(FILE *f, const uint8_t *buf, std::size_t size)
+{
+    hex_dump_internal(nullptr, f, 0, buf, size);
+}
+
+void hex_dump_log(void *avcl, int level, const uint8_t *buf, std::size_t size)
+{
+    hex_dump_internal(avcl, nullptr, level, buf, size);
+}
+#else
+void hex_dump(FILE *f, const uint8_t *buf, std::size_t size)
+{
+    av_hex_dump(f, buf, int(size));
+}
+
+void hex_dump_log(void *avcl, int level, const uint8_t *buf, std::size_t size)
+{
+    av_hex_dump_log(avcl, level, buf, int(size));
+}
+#endif
+
+#if AVCPP_CXX_STANDARD >= 20
+void hex_dump(FILE *f, std::span<const uint8_t> buf)
+{
+    hex_dump(f, buf.data(), buf.size());
+}
+
+void hex_dump_log(void *avcl, int level, std::span<const uint8_t> buf)
+{
+    hex_dump_log(avcl, level, buf.data(), buf.size());
+}
+#endif // if AVCPP_CXX_STANDARD >= 20
 
 } // ::av
 
