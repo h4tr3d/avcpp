@@ -44,6 +44,8 @@ extern "C" {
 #define AVCPP_API_AVCODEC_GET_SUPPORTED_CONFIG (AVCPP_AVCODEC_VERSION_INT >= AV_VERSION_INT(61, 13, 100))
 // av_stream_get_codec_timebase() deprecard now without replacement
 #define AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE (AVCPP_AVFORMAT_VERSION_INT < AV_VERSION_INT(61, 5, 101))
+// AVBuffer API switch to size_t
+#define AVCPP_API_AVBUFFER_SIZE_T (AVCPP_AVUTIL_VERSION_MAJOR >= 57)
 
 #if defined(__ICL) || defined (__INTEL_COMPILER)
 #    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))

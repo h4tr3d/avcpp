@@ -367,18 +367,20 @@ void Packet::setTimeBase(const Rational &tb)
 }
 
 #if AVCPP_HAS_PKT_SIDE_DATA
+using SideDataSize_t = std::conditional_t<AVCPP_API_AVBUFFER_SIZE_T, std::size_t, int>;
+
 std::span<const uint8_t> Packet::sideData(AVPacketSideDataType type) const
 {
-    std::size_t size;
+    SideDataSize_t size;
     auto const data = av_packet_get_side_data(raw(), type, &size);
-    return data ? std::span<const uint8_t>{} : std::span<const uint8_t>{data, size};
+    return data ? std::span<const uint8_t>{} : std::span<const uint8_t>{data, std::size_t(size)};
 }
 
 std::span<uint8_t> Packet::sideData(AVPacketSideDataType type)
 {
-    std::size_t size;
+    SideDataSize_t size;
     auto const data = av_packet_get_side_data(raw(), type, &size);
-    return data ? std::span<uint8_t>{} : std::span<uint8_t>{data, size};
+    return data ? std::span<uint8_t>{} : std::span<uint8_t>{data, std::size_t(size)};
 }
 
 PacketSideData Packet::sideData(std::size_t index) noexcept
@@ -571,12 +573,12 @@ AVPacketSideDataType PacketSideData::type() const noexcept
 
 std::span<const uint8_t> PacketSideData::data() const noexcept
 {
-    return {m_raw.data, m_raw.size};
+    return {m_raw.data, std::size_t(m_raw.size)};
 }
 
 std::span<uint8_t> PacketSideData::data() noexcept
 {
-    return {m_raw.data, m_raw.size};
+    return {m_raw.data, std::size_t(m_raw.size)};
 }
 
 bool PacketSideData::empty() const noexcept
