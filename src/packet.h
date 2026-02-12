@@ -23,7 +23,7 @@ extern "C" {
 
 namespace av {
 
-#ifdef AVCPP_HAS_PKT_SIDE_DATA
+#if AVCPP_HAS_PKT_SIDE_DATA
 /**
  * Simple view for the AVPacketSideData elements
  */
@@ -139,7 +139,7 @@ public:
     const Rational& timeBase() const { return m_timeBase; }
     void setTimeBase(const Rational &value);
 
-#ifdef AVCPP_HAS_PKT_SIDE_DATA
+#if AVCPP_HAS_PKT_SIDE_DATA
     /**
      * Get packet side data of the given type. Empty buffer means no data.
      *

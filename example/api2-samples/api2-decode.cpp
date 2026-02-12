@@ -105,7 +105,7 @@ int main(int argc, char **argv)
             auto ts = pkt.ts();
             clog << "Read packet: " << ts << " / " << ts.seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
 
-#ifdef AVCPP_HAS_PKT_SIDE_DATA
+#if AVCPP_HAS_PKT_SIDE_DATA
             for (auto side : pkt.sideData()) {
                 clog << "  found packet side data: " << side.name() << endl;
                 if (side.type() == AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL) {

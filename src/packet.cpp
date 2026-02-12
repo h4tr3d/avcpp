@@ -366,7 +366,7 @@ void Packet::setTimeBase(const Rational &tb)
     m_timeBase = tb;
 }
 
-#ifdef AVCPP_HAS_PKT_SIDE_DATA
+#if AVCPP_HAS_PKT_SIDE_DATA
 std::span<const uint8_t> Packet::sideData(AVPacketSideDataType type) const
 {
     std::size_t size;
@@ -558,7 +558,7 @@ void Packet::setDuration(int duration, const Rational &durationTimeBase)
         raw()->duration = durationTimeBase.rescale(duration, m_timeBase);
 }
 
-#ifdef AVCPP_HAS_PKT_SIDE_DATA
+#if AVCPP_HAS_PKT_SIDE_DATA
 string_view PacketSideData::name() const noexcept
 {
     return name(m_raw.type);
