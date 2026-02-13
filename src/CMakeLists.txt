@@ -41,6 +41,12 @@ foreach(TARGET ${AV_TARGETS})
 
     add_library(${TARGET} ${TYPE} ${AV_SOURCES} ${AV_HEADERS})
 
+    # allow use static library to build shared one
+    if (AV_ENABLE_STATIC_PIC AND ${TYPE} MATCHES "STATIC")
+        message(STATUS "Enable POSITION_INDEPENDENT_CODE (-fPIC) build for static library")
+        set_target_properties(${TARGET} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+
     target_compile_options(${TARGET} PRIVATE ${AVCPP_WARNING_OPTIONS})
     target_compile_definitions(${TARGET} PUBLIC __STDC_CONSTANT_MACROS)
     target_link_libraries(${TARGET} PRIVATE Threads::Threads PUBLIC FFmpeg::FFmpeg)
