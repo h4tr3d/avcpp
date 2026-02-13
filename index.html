@@ -155,6 +155,9 @@ Useful configure directives</h3>
 <li><code>AV_ENABLE_SHARED</code> - Bool, enable shared library build, On by default.</li>
 <li><code>AV_BUILD_EXAMPLES</code> - Bool, enable examples build, On by default.</li>
 <li><code>AV_BUILD_TESTS</code> - Bool, enable tests build, On by default.</li>
+<li><code>AV_DISABLE_AVFORMAT</code> - Bool, disable livavformat usage. libavformat enabled by default. As dependency disables libavfilter and libavdevice.</li>
+<li><code>AV_DISABLE_AVFILTER</code> - Bool, disable libavfilter usage. libavfilter enabled by default. As dependency disables libavdevice.</li>
+<li><code>AV_DISABLE_AVDEVICE</code> - Bool, disable libavdevice usage. libavdevice enabled by default.</li>
 <li>C++ related<ul>
 <li><code>CMAKE_CXX_STANDARD</code> - Can be defined globally to override default C++ version. C++17 required at least.</li>
 </ul>
@@ -197,7 +200,7 @@ Integrate to the CMake project via FetchContent</h2>
 <div class="line">FetchContent_Declare(</div>
 <div class="line">    avcpp</div>
 <div class="line">    GIT_REPOSITORY https://github.com/h4tr3d/avcpp.git</div>
-<div class="line">    GIT_TAG        v2.8.0</div>
+<div class="line">    GIT_TAG        v2.90.2</div>
 <div class="line">)</div>
 <div class="line">FetchContent_MakeAvailable(avcpp)</div>
 </div><!-- fragment --><p>Than use via <code>target_link_libraries</code>:</p>
