@@ -58,11 +58,10 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        for (size_t i = 0; i < ictx.streamsCount(); ++i) {
-            auto st = ictx.stream(i);
+        for (auto&& st : ictx.streams()) {
             if (st.mediaType() == AVMEDIA_TYPE_VIDEO) {
-                videoStream = i;
                 vst = st;
+                videoStream = st.index();
                 break;
             }
         }
