@@ -118,6 +118,9 @@ Refer to CMake documentation for more details that can cover some special cases.
 - `AV_ENABLE_SHARED` - Bool, enable shared library build, On by default.
 - `AV_BUILD_EXAMPLES` - Bool, enable examples build, On by default.
 - `AV_BUILD_TESTS` - Bool, enable tests build, On by default.
+- `AV_DISABLE_AVFORMAT` - Bool, disable livavformat usage. libavformat enabled by default. As dependency disables libavfilter and libavdevice.
+- `AV_DISABLE_AVFILTER` - Bool, disable libavfilter usage. libavfilter enabled by default. As dependency disables libavdevice.
+- `AV_DISABLE_AVDEVICE` - Bool, disable libavdevice usage. libavdevice enabled by default.
 - C++ related
   - `CMAKE_CXX_STANDARD` - Can be defined globally to override default C++ version. C++17 required at least.
 - FFmpeg related:
