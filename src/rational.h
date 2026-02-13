@@ -8,7 +8,7 @@
 #include "ffmpeg.h"
 #include "avutils.h"
 
-#ifdef AVCPP_USE_SPACESHIP_OPERATOR
+#if AVCPP_USE_SPACESHIP_OPERATOR
 #  include <compare>
 #endif
 
@@ -51,18 +51,16 @@ public:
     Rational& operator=  (double value) noexcept;
 
     bool      operator== (const Rational   &other) const noexcept;
-#ifdef AVCPP_USE_SPACESHIP_OPERATOR
+#if AVCPP_USE_SPACESHIP_OPERATOR
     std::strong_ordering operator<=>(const Rational &other) const noexcept
     {
-        switch (threewaycmp(other)) {
-        case -1:
-            return std::strong_ordering::less;
-        case 0:
+        if (auto const cmp = threewaycmp(other); cmp == 0) {
             return std::strong_ordering::equal;
-        case 1:
+        } else if (cmp < 0) {
+            return std::strong_ordering::less;
+        } else {
             return std::strong_ordering::greater;
         }
-        return std::strong_ordering::equal; // make a compiler happy
     }
 #else
     bool operator!= (const Rational &other) const noexcept {
