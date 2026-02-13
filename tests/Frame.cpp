@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "frame.h"
+#include "avcpp/frame.h"
 
 #ifdef _MSC_VER
 # pragma warning (disable : 4702) // Disable warning: unreachable code

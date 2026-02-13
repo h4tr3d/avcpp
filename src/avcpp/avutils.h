@@ -1,6 +1,6 @@
 #pragma once
 
-#include "avconfig.h"
+#include "avcpp/avconfig.h"
 
 #include <ranges>
 #include <string>

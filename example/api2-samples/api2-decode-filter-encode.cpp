@@ -4,22 +4,23 @@
 #include <memory>
 #include <set>
 
-#include "audioresampler.h"
-#include "av.h"
-#include "avutils.h"
-#include "codec.h"
-#include "ffmpeg.h"
-#include "packet.h"
-#include "videorescaler.h"
+#include "avcpp/audioresampler.h"
+#include "avcpp/av.h"
+#include "avcpp/avutils.h"
+#include "avcpp/codec.h"
+#include "avcpp/ffmpeg.h"
+#include "avcpp/packet.h"
+#include "avcpp/videorescaler.h"
 
 // API2
-#include "codec.h"
-#include "codeccontext.h"
-#include "filters/buffersink.h"
-#include "filters/buffersrc.h"
-#include "filters/filtergraph.h"
-#include "format.h"
-#include "formatcontext.h"
+#include "avcpp/codec.h"
+#include "avcpp/codeccontext.h"
+#include "avcpp/format.h"
+#include "avcpp/formatcontext.h"
+#include "avcpp/filters/buffersink.h"
+#include "avcpp/filters/buffersrc.h"
+#include "avcpp/filters/filtergraph.h"
+
 
 using namespace std;
 using namespace av;

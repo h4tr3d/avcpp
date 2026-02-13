@@ -3,12 +3,12 @@
 #include <map>
 #include <memory>
 
-#include "ffmpeg.h"
+#include "avcpp/ffmpeg.h"
+#include "avcpp/averror.h"
+
 #include "filtercontext.h"
 #include "buffersink.h"
 #include "buffersrc.h"
-
-#include "averror.h"
 
 #if AVCPP_HAS_AVFILTER
 

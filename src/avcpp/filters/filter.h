@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "ffmpeg.h"
+#include "avcpp/ffmpeg.h"
 #include "filterpad.h"
 
 #if AVCPP_HAS_AVFILTER

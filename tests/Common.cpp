@@ -3,8 +3,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "avconfig.h"
-#include "avutils.h"
+#include "avcpp/avconfig.h"
+#include "avcpp/avutils.h"
 
 #include <random>
 #include <vector>
@@ -13,7 +13,7 @@
 #    include <format>
 #endif
 
-#include <rect.h>
+#include "avcpp/rect.h"
 
 #ifdef _MSC_VER
 #    pragma warning(disable : 4702) // Disable warning: unreachable code

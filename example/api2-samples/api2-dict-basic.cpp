@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "av.h"
-#include "dictionary.h"
+#include "avcpp/av.h"
+#include "avcpp/dictionary.h"
 
 using namespace std;
 using namespace av;

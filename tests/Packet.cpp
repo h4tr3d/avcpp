@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "packet.h"
+#include "avcpp/packet.h"
 
 #ifdef _MSC_VER
 # pragma warning (disable : 4702) // Disable warning: unreachable code

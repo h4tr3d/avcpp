@@ -1,7 +1,7 @@
 include(GNUInstallDirs)
 
-file(GLOB_RECURSE AV_SOURCES "*.cpp")
-file(GLOB_RECURSE AV_HEADERS "*.h" "*.hpp")
+file(GLOB_RECURSE AV_SOURCES "avcpp/*.cpp")
+file(GLOB_RECURSE AV_HEADERS "avcpp/*.h" "avcpp/*.hpp")
 
 set(AV_NAMESPACE avcpp)
 set(AV_BASENAME avcpp)
@@ -48,10 +48,11 @@ foreach(TARGET ${AV_TARGETS})
         PUBLIC
           $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/avcpp>
-        PRIVATE
-          ${CMAKE_CURRENT_SOURCE_DIR})
-    set_target_properties(${TARGET} PROPERTIES PUBLIC_HEADER "${AV_HEADERS};${CMAKE_CURRENT_BINARY_DIR}/avconfig.h")
+          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        #PRIVATE
+        #  ${CMAKE_CURRENT_SOURCE_DIR}
+      )
+    set_target_properties(${TARGET} PROPERTIES PUBLIC_HEADER "${AV_HEADERS};${CMAKE_CURRENT_BINARY_DIR}/avcpp/avconfig.h")
 
     # If not CMAKE_CXX_STANARD provided globally (subproject), use latest supported one
     if (NOT CMAKE_CXX_STANDARD)
@@ -88,7 +89,7 @@ if (TARGET ${AV_BASENAME}-static)
 endif()
 
 # prepare configuration file
-configure_file(avconfig.h.in avconfig.h @ONLY)
+configure_file(avcpp/avconfig.h.in avcpp/avconfig.h @ONLY)
 
 ########################### Installation ######################################
 
@@ -116,19 +117,19 @@ if (AVCPP_NOT_SUBPROJECT)
 
     include(CMakePackageConfigHelpers)
     configure_package_config_file(
-      "Config.cmake.in"
-      "avcpp-config.cmake"
+      "avcpp/Config.cmake.in"
+      "avcpp/avcpp-config.cmake"
       INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/avcpp
 #      PATH_VARS
 #        CMAKE_INSTALL_LIBDIR
       )
-    write_basic_package_version_file("avcpp-config-version.cmake"
+    write_basic_package_version_file("avcpp/avcpp-config-version.cmake"
         VERSION ${AVCPP_VERSION}
         COMPATIBILITY SameMajorVersion)
     install(
         FILES
-          "${CMAKE_CURRENT_BINARY_DIR}/avcpp-config.cmake"
-          "${CMAKE_CURRENT_BINARY_DIR}/avcpp-config-version.cmake"
+          "${CMAKE_CURRENT_BINARY_DIR}/avcpp/avcpp-config.cmake"
+          "${CMAKE_CURRENT_BINARY_DIR}/avcpp/avcpp-config-version.cmake"
         DESTINATION
           "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/cmake/avcpp"
       )
@@ -177,12 +178,12 @@ if (AVCPP_NOT_SUBPROJECT)
         message(STATUS "PC REQ: ${AVCPP_PC_REQUIRES}")
 
         configure_file(
-            "${CMAKE_CURRENT_SOURCE_DIR}/libavcpp.pc.in"
-            "${CMAKE_CURRENT_BINARY_DIR}/libavcpp.pc"
+            "${CMAKE_CURRENT_SOURCE_DIR}/avcpp/libavcpp.pc.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/avcpp/libavcpp.pc"
             @ONLY
             )
 
-        install(FILES   "${CMAKE_CURRENT_BINARY_DIR}/libavcpp.pc"
+        install(FILES   "${CMAKE_CURRENT_BINARY_DIR}/avcpp/libavcpp.pc"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
     endif()

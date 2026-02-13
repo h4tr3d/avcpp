@@ -1,6 +1,5 @@
 #pragma once
 
-#include "avconfig.h"
 #include "avcompat.h"
 
 #include <vector>

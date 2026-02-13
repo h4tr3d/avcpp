@@ -1,6 +1,6 @@
 #pragma once
 
-#include "avconfig.h"
+#include <avcpp/avconfig.h>
 
 extern "C" {
 #ifdef AVCPP_AVCODEC_VERSION_MAJOR

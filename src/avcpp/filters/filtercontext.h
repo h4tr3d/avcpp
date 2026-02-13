@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "ffmpeg.h"
+#include "avcpp/ffmpeg.h"
+#include "avcpp/averror.h"
 #include "filter.h"
-#include "averror.h"
 //#include "filteropaque.h"
 //#include "filtercontext_helper.h"
 
