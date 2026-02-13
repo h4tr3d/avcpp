@@ -389,7 +389,7 @@ PacketSideData Packet::sideData(std::size_t index) noexcept
 {
     if (!m_raw)
         return {};
-    if (index >= sideDataElements())
+    if (index >= sideDataCount())
         return {};
     return PacketSideData{m_raw->side_data[index]};
 }
@@ -404,7 +404,7 @@ ArrayView<const AVPacketSideData, PacketSideData, std::size_t> Packet::sideData(
     return make_array_view_size<PacketSideData>((const AVPacketSideData*)m_raw->side_data, m_raw->side_data_elems);
 }
 
-size_t Packet::sideDataElements() const noexcept
+size_t Packet::sideDataCount() const noexcept
 {
     return m_raw ? m_raw->side_data_elems : 0;
 }
