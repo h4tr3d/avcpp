@@ -266,7 +266,7 @@ VideoFrame VideoFrame::wrap(const void *data, size_t size, PixelFormat pixelForm
     return _wrap(data, size, pixelFormat, width, height, align, avcpp_null_deleter, nullptr);
 }
 
-#ifdef __cpp_lib_span
+#if AVCPP_CXX_STANDARD >= 20
 VideoFrame VideoFrame::wrap(std::span<const std::byte> data, PixelFormat pixelFormat, int width, int height, int align)
 {
     return wrap(data.data(), data.size(), pixelFormat, width, height, align);

@@ -411,7 +411,7 @@ public:
      */
     static VideoFrame wrap(const void *data, size_t size, PixelFormat pixelFormat, int width, int height, int align = 1);
 
-#ifdef __cpp_lib_span
+#if AVCPP_CXX_STANDARD >= 20
     /**
      * Wrap external data into VideoFrame object ready to use with FFmpeg/AvCpp.
      *
