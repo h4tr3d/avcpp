@@ -378,6 +378,25 @@ public:
     int                    width() const;
     int                    height() const;
 
+    /**
+     * Convert JPEG pixel format to the compatible non-JPEG one
+     *
+     * YUV Pixel formats with J in the naming (AV_PIX_FMT_YUVJxxx) mostly deprecated and some components warn about it.
+     * Allow to adjust internal pixel format into compatible one.
+     *
+     * @return previous pixel format
+     */
+    PixelFormat            adjustFromJpegPixelFormat();
+    /**
+     * Convert non-JPEG pixel format to the compatible JPEG one
+     *
+     * YUV Pixel formats with J in the naming (AV_PIX_FMT_YUVJxxx) mostly deprecated and some components warn about it.
+     * Allow to adjust internal pixel format into compatible one.
+     *
+     * @return previous pixel format
+     */
+    PixelFormat            adjustToJpegPixelFormat();
+
     bool                   isKeyFrame() const;
     void                   setKeyFrame(bool isKey);
 

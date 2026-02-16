@@ -150,6 +150,54 @@ int VideoFrame::height() const
     return RAW_GET(height, 0);
 }
 
+template<typename LookupProc>
+static PixelFormat adjustJpegPixelFormat(AVFrame *frame, LookupProc&& proc)
+{
+    return frame
+               ? static_cast<AVPixelFormat>(std::exchange(frame->format, proc(static_cast<AVPixelFormat>(frame->format))))
+               : AV_PIX_FMT_NONE;
+}
+
+PixelFormat VideoFrame::adjustFromJpegPixelFormat()
+{
+    return adjustJpegPixelFormat(m_raw, [](AVPixelFormat pixfmt) {
+        switch (pixfmt) {
+            case AV_PIX_FMT_YUVJ420P:
+                return AV_PIX_FMT_YUV420P;
+            case AV_PIX_FMT_YUVJ411P:
+                return AV_PIX_FMT_YUV411P;
+            case AV_PIX_FMT_YUVJ422P:
+                return AV_PIX_FMT_YUV422P;
+            case AV_PIX_FMT_YUVJ444P:
+                return AV_PIX_FMT_YUV444P;
+            case AV_PIX_FMT_YUVJ440P:
+                return AV_PIX_FMT_YUV440P;
+            default:
+                return pixfmt;
+        }
+    });
+}
+
+PixelFormat VideoFrame::adjustToJpegPixelFormat()
+{
+    return adjustJpegPixelFormat(m_raw, [](AVPixelFormat pixfmt) {
+        switch (pixfmt) {
+            case AV_PIX_FMT_YUV420P:
+                return AV_PIX_FMT_YUVJ420P;
+            case AV_PIX_FMT_YUV411P:
+                return AV_PIX_FMT_YUVJ411P;
+            case AV_PIX_FMT_YUV422P:
+                return AV_PIX_FMT_YUVJ422P;
+            case AV_PIX_FMT_YUV444P:
+                return AV_PIX_FMT_YUVJ444P;
+            case AV_PIX_FMT_YUV440P:
+                return AV_PIX_FMT_YUVJ440P;
+            default:
+                return pixfmt;
+        }
+    });
+}
+
 bool VideoFrame::isKeyFrame() const
 {
 #if AVCPP_API_FRAME_KEY
