@@ -76,11 +76,9 @@ int main(int argc, char **argv)
         if (vst.isValid()) {
             vdec = VideoDecoderContext(vst);
 
-
-            Codec codec = findDecodingCodec(vdec.raw()->codec_id);
-
-            vdec.setCodec(codec);
-            vdec.setRefCountedFrames(true);
+            //Codec codec = findDecodingCodec(vdec.raw()->codec_id);
+            //vdec.setCodec(codec);
+            //vdec.setRefCountedFrames(true);
 
             vdec.open({{"threads", "1"}}, Codec(), ec);
             //vdec.open(ec);
