@@ -90,6 +90,81 @@ void avcpp_null_deleter(void* /*opaque*/, uint8_t */*data*/)
 namespace av
 {
 
+namespace frame {
+
+namespace priv {
+void channel_layout_copy(AVFrame &dst, const AVFrame &src);
+}
+
+int64_t get_best_effort_timestamp(const AVFrame* frame) {
+#if AVCPP_AVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    return av_frame_get_best_effort_timestamp(frame);
+#else
+    return frame->best_effort_timestamp;
+#endif
+}
+
+// Based on db6efa1815e217ed76f39aee8b15ee5c64698537
+static inline uint64_t get_channel_layout(const AVFrame* frame) {
+#if AVCPP_AVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    return static_cast<uint64_t>(av_frame_get_channel_layout(frame));
+#elif AVCPP_API_NEW_CHANNEL_LAYOUT
+    return frame->ch_layout.order == AV_CHANNEL_ORDER_NATIVE ? frame->ch_layout.u.mask : 0;
+#else
+    return frame->channel_layout;
+#endif
+}
+
+static inline void set_channel_layout(AVFrame* frame, uint64_t layout) {
+#if AVCPP_AVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    av_frame_set_channel_layout(frame, static_cast<int64_t>(layout));
+#elif AVCPP_API_NEW_CHANNEL_LAYOUT
+    av_channel_layout_uninit(&frame->ch_layout);
+    av_channel_layout_from_mask(&frame->ch_layout, layout);
+#else
+    frame->channel_layout = layout;
+#endif
+}
+
+
+static inline int get_channels(const AVFrame* frame) {
+#if AVCPP_AVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    return av_frame_get_channels(frame);
+#elif AVCPP_API_NEW_CHANNEL_LAYOUT
+    return frame->ch_layout.nb_channels;
+#else
+    return frame->channels;
+#endif
+}
+
+static inline bool is_valid_channel_layout(const AVFrame *frame)
+{
+#if AVCPP_API_NEW_CHANNEL_LAYOUT
+    return av_channel_layout_check(&frame->ch_layout);
+#else
+    return frame->channel_layout;
+#endif
+}
+
+static inline int get_sample_rate(const AVFrame* frame) {
+#if AVCPP_AVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    return av_frame_get_sample_rate(frame);
+#else
+    return frame->sample_rate;
+#endif
+}
+
+static inline void set_sample_rate(AVFrame* frame, int sampleRate) {
+#if AVCPP_AVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
+    av_frame_set_sample_rate(frame, sampleRate);
+#else
+    frame->sample_rate = sampleRate;
+#endif
+}
+
+} // ::frame
+
+
 VideoFrame::VideoFrame(PixelFormat pixelFormat, int width, int height, int align)
 {
     m_raw->format = pixelFormat;
@@ -462,6 +537,229 @@ void frame::priv::channel_layout_copy(AVFrame &dst, const AVFrame &src)
     dst.channel_layout = src.channel_layout;
     dst.channels       = src.channels;
 #endif
+}
+
+FrameCommon::FrameCommon() {
+    m_raw = av_frame_alloc();
+    m_raw->opaque = this;
+}
+
+FrameCommon::~FrameCommon() {
+    av_frame_free(&m_raw);
+}
+
+FrameCommon::FrameCommon(const AVFrame *frame) {
+    if (frame) {
+        m_raw = av_frame_alloc();
+        m_raw->opaque = this;
+        av_frame_ref(m_raw, frame);
+    }
+}
+
+FrameCommon::FrameCommon(const FrameCommon &other) : FrameCommon(other.m_raw) {
+    if (m_raw)
+        copyInfoFrom(other);
+}
+
+FrameCommon::FrameCommon(FrameCommon &&other) : FrameCommon(nullptr) {
+    if (other.m_raw) {
+        m_raw = av_frame_alloc();
+        m_raw->opaque = this;
+        av_frame_move_ref(m_raw, other.m_raw);
+        copyInfoFrom(other);
+    }
+}
+
+bool FrameCommon::isReferenced() const {
+    return m_raw && m_raw->buf[0];
+}
+
+int FrameCommon::refCount() const {
+    if (m_raw && m_raw->buf[0])
+        return av_buffer_get_ref_count(m_raw->buf[0]);
+    else
+        return 0;
+}
+
+AVFrame *FrameCommon::makeRef() const {
+    return m_raw ? av_frame_clone(m_raw) : nullptr;
+}
+
+Timestamp FrameCommon::pts() const
+{
+    return {RAW_GET(pts, av::NoPts), m_timeBase};
+}
+
+void FrameCommon::setPts(int64_t pts, Rational ptsTimeBase)
+{
+    RAW_SET(pts, ptsTimeBase.rescale(pts, m_timeBase));
+}
+
+void FrameCommon::setPts(const Timestamp &ts)
+{
+    if (m_timeBase == Rational())
+        m_timeBase = ts.timebase();
+    RAW_SET(pts, ts.timestamp(m_timeBase));
+}
+
+const Rational &FrameCommon::timeBase() const { return m_timeBase; }
+
+void FrameCommon::setTimeBase(const Rational &value) {
+    if (m_timeBase == value)
+        return;
+
+    if (!m_raw)
+        return;
+
+    int64_t rescaledPts          = NoPts;
+    int64_t rescaledBestEffortTs = NoPts;
+
+    if (m_timeBase != Rational() && value != Rational()) {
+        if (m_raw->pts != av::NoPts)
+            rescaledPts = m_timeBase.rescale(m_raw->pts, value);
+
+        if (m_raw->best_effort_timestamp != av::NoPts)
+            rescaledBestEffortTs = m_timeBase.rescale(m_raw->best_effort_timestamp, value);
+    } else {
+        rescaledPts          = m_raw->pts;
+        rescaledBestEffortTs = m_raw->best_effort_timestamp;
+    }
+
+    if (m_timeBase != Rational()) {
+        m_raw->pts                   = rescaledPts;
+        m_raw->best_effort_timestamp = rescaledBestEffortTs;
+    }
+
+    m_timeBase = value;
+}
+
+int FrameCommon::streamIndex() const {
+    return m_streamIndex;
+}
+
+void FrameCommon::setStreamIndex(int streamIndex) {
+    m_streamIndex = streamIndex;
+}
+
+void FrameCommon::setComplete(bool isComplete) {
+    m_isComplete = isComplete;
+}
+
+bool FrameCommon::isComplete() const { return m_isComplete; }
+
+bool FrameCommon::isValid() const {
+    return (!isNull() &&
+            ((m_raw->data[0] && m_raw->linesize[0]) ||
+             ((m_raw->format == AV_PIX_FMT_VAAPI) && ((intptr_t)m_raw->data[3] > 0)))
+            );
+}
+
+FrameCommon::operator bool() const { return isValid() && isComplete(); }
+
+uint8_t *FrameCommon::data(size_t plane) {
+    if (!m_raw || plane >= size_t(AV_NUM_DATA_POINTERS + m_raw->nb_extended_buf))
+        return nullptr;
+    return m_raw->extended_data[plane];
+}
+
+const uint8_t *FrameCommon::data(size_t plane) const {
+    if (!m_raw || plane >= size_t(AV_NUM_DATA_POINTERS + m_raw->nb_extended_buf))
+        return nullptr;
+    return m_raw->extended_data[plane];;
+}
+
+size_t FrameCommon::size(size_t plane) const {
+    if (!m_raw || plane >= size_t(AV_NUM_DATA_POINTERS + m_raw->nb_extended_buf))
+        return 0;
+    AVBufferRef *buf = plane < AV_NUM_DATA_POINTERS ?
+                           m_raw->buf[plane] :
+                           m_raw->extended_buf[plane - AV_NUM_DATA_POINTERS];
+    if (buf == nullptr)
+        return 0;
+    return size_t(buf->size);
+}
+
+size_t FrameCommon::size() const {
+    if (!m_raw)
+        return 0;
+    size_t total = 0;
+    if (m_raw->buf[0]) {
+        for (auto i = 0; i < AV_NUM_DATA_POINTERS && m_raw->buf[i]; i++) {
+            total += m_raw->buf[i]->size;
+        }
+
+        for (auto i = 0; i < m_raw->nb_extended_buf; ++i) {
+            total += m_raw->extended_buf[i]->size;
+        }
+    } else if (m_raw->data[0]) {
+        if (m_raw->width && m_raw->height) {
+            uint8_t data[4] = {0};
+            int     linesizes[4] = {
+                m_raw->linesize[0],
+                m_raw->linesize[1],
+                m_raw->linesize[2],
+                m_raw->linesize[3],
+            };
+            total = av_image_fill_pointers(reinterpret_cast<uint8_t**>(&data),
+                                           static_cast<AVPixelFormat>(m_raw->format),
+                                           m_raw->height,
+                                           nullptr,
+                                           linesizes);
+        } else if (m_raw->nb_samples && frame::is_valid_channel_layout(m_raw)) {
+            for (auto i = 0; i < m_raw->nb_extended_buf + AV_NUM_DATA_POINTERS && m_raw->extended_data[i]; ++i) {
+                // According docs, all planes must have same size
+                total += m_raw->linesize[0];
+            }
+        }
+    }
+    return total;
+}
+
+void FrameCommon::dump() const {
+    if (!m_raw)
+        return;
+    if (m_raw->buf[0]) {
+        for (size_t i = 0; i < AV_NUM_DATA_POINTERS && m_raw->buf[i]; i++) {
+            av::hex_dump(stdout, m_raw->buf[i]->data, m_raw->buf[i]->size);
+        }
+    } else if (m_raw->data[0]) {
+        av_hex_dump(stdout, m_raw->data[0], size());
+    }
+}
+
+void FrameCommon::swap(FrameCommon &other)
+{
+    using std::swap;
+#define FRAME_SWAP(x) swap(x, other.x)
+    FRAME_SWAP(m_raw);
+    FRAME_SWAP(m_timeBase);
+    FRAME_SWAP(m_streamIndex);
+    FRAME_SWAP(m_isComplete);
+#undef FRAME_SWAP
+}
+
+void FrameCommon::copyInfoFrom(const FrameCommon &other)
+{
+    m_timeBase    = other.m_timeBase;
+    m_streamIndex = other.m_streamIndex;
+    m_isComplete  = other.m_isComplete;
+}
+
+void FrameCommon::clone(FrameCommon &dst, size_t align) const
+{
+    // Setup data required for buffer allocation
+    dst.m_raw->format         = m_raw->format;
+    dst.m_raw->width          = m_raw->width;
+    dst.m_raw->height         = m_raw->height;
+    dst.m_raw->nb_samples     = m_raw->nb_samples;
+
+    frame::priv::channel_layout_copy(*dst.m_raw, *m_raw);
+
+    dst.copyInfoFrom(*this);
+
+    av_frame_get_buffer(dst.m_raw, align);
+    av_frame_copy(dst.m_raw, m_raw);
+    av_frame_copy_props(dst.m_raw, m_raw);
 }
 
 } // ::av
