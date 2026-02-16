@@ -371,18 +371,24 @@ void Packet::setTimeBase(const Rational &tb)
 #if AVCPP_HAS_PKT_SIDE_DATA
 using SideDataSize_t = std::conditional_t<AVCPP_API_AVBUFFER_SIZE_T, std::size_t, int>;
 
+static auto sideDataCommon(auto *pkt, AVPacketSideDataType type)
+{
+    using ResultType = std::conditional_t<std::is_const_v<decltype(pkt)>, std::span<const uint8_t>, std::span<uint8_t>>;
+    if (!pkt)
+        return ResultType{};
+    SideDataSize_t size;
+    auto const data = av_packet_get_side_data(pkt, type, &size);
+    return data ? ResultType{data, std::size_t(size)} : ResultType{};
+}
+
 std::span<const uint8_t> Packet::sideData(AVPacketSideDataType type) const
 {
-    SideDataSize_t size;
-    auto const data = av_packet_get_side_data(raw(), type, &size);
-    return data ? std::span<const uint8_t>{} : std::span<const uint8_t>{data, std::size_t(size)};
+    return sideDataCommon(raw(), type);
 }
 
 std::span<uint8_t> Packet::sideData(AVPacketSideDataType type)
 {
-    SideDataSize_t size;
-    auto const data = av_packet_get_side_data(raw(), type, &size);
-    return data ? std::span<uint8_t>{} : std::span<uint8_t>{data, std::size_t(size)};
+    return sideDataCommon(raw(), type);
 }
 
 PacketSideData Packet::sideData(std::size_t index) noexcept
