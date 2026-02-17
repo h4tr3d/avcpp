@@ -106,15 +106,15 @@ int main(int argc, char **argv)
             for (auto side : pkt.sideData()) {
                 clog << "  found packet side data: " << side.name() << endl;
                 if (side.type() == AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL) {
-                    assert(side.data().size() >= sizeof(uint64_t));
+                    assert(side.span().size() >= sizeof(uint64_t));
 
                     // BE
                     uint64_t idType{};
-                    memcpy(&idType, side.data().data(), sizeof(idType));
+                    memcpy(&idType, side.span().data(), sizeof(idType));
                     //idType = std::endian::native == std::endian::little ? std::byteswap(idType) : idType;
                     idType = av_be2ne64(idType);
 
-                    auto payload = side.data().subspan(sizeof(uint64_t));
+                    auto payload = side.span().subspan(sizeof(uint64_t));
                     clog << "    matroska block additions id type = " << idType << endl;
                     if (!payload.empty() && idType == 100 /* vendor specific */) {
                         clog << "      block additions data: " << std::string_view{(const char*)payload.data(), payload.size()} << endl;

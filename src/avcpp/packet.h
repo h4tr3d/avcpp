@@ -33,8 +33,8 @@ public:
 
     std::string_view name() const noexcept;
     AVPacketSideDataType type() const noexcept;
-    std::span<const uint8_t> data() const noexcept;
-    std::span<uint8_t> data() noexcept;
+    std::span<const uint8_t> span() const noexcept;
+    std::span<uint8_t> span() noexcept;
 
     static std::string_view name(AVPacketSideDataType type);
 

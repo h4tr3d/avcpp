@@ -577,12 +577,12 @@ AVPacketSideDataType PacketSideData::type() const noexcept
     return m_raw.type;
 }
 
-std::span<const uint8_t> PacketSideData::data() const noexcept
+std::span<const uint8_t> PacketSideData::span() const noexcept
 {
     return {m_raw.data, std::size_t(m_raw.size)};
 }
 
-std::span<uint8_t> PacketSideData::data() noexcept
+std::span<uint8_t> PacketSideData::span() noexcept
 {
     return {m_raw.data, std::size_t(m_raw.size)};
 }
