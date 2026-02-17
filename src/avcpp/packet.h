@@ -155,10 +155,6 @@ public:
      * @return
      */
     std::size_t sideDataCount() const noexcept;
-    [[deprecated("Use sideDataCount()")]]
-    std::size_t sideDataElements() const noexcept {
-        return sideDataCount();
-    }
 
     /**
      * Get side data element by index
