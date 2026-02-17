@@ -261,6 +261,8 @@ public:
      */
     static BufferRef ref(const AVBufferRef *buf) noexcept;
 
+    using BufferRefView::ref;
+
     /**
      * Release owning of the buffer and return existing raw AVBufferRef. Useful to move owning without referencing
      * into nested low-level code.
