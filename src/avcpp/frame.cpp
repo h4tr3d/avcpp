@@ -893,6 +893,7 @@ Dictionary FrameSideData::metadata() const noexcept
     return m_raw ? Dictionary{m_raw->metadata, false} : Dictionary{};
 }
 
+#if AVCPP_API_HAS_AVSIDEDATADESCRIPTOR
 std::optional<AVSideDataDescriptor> FrameSideData::descriptor() const noexcept
 {
     return m_raw ? descriptor(m_raw->type) : std::nullopt;
@@ -903,6 +904,7 @@ std::optional<AVSideDataDescriptor> FrameSideData::descriptor(AVFrameSideDataTyp
     auto desc = av_frame_side_data_desc(type);
     return desc ? std::optional(*desc) : std::nullopt;
 }
+#endif
 
 bool FrameSideData::empty() const noexcept
 {

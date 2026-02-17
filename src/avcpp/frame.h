@@ -53,10 +53,12 @@ public:
      */
     Dictionary metadata() const noexcept;
 
-    std::optional<AVSideDataDescriptor> descriptor() const noexcept;
-
     static std::string_view name(AVFrameSideDataType type) noexcept;
+
+#if AVCPP_API_HAS_AVSIDEDATADESCRIPTOR
+    std::optional<AVSideDataDescriptor> descriptor() const noexcept;
     static std::optional<AVSideDataDescriptor> descriptor(AVFrameSideDataType type) noexcept;
+#endif // AVCPP_API_HAS_AVSIDEDATADESCRIPTOR
 
     bool empty() const noexcept;
     operator bool() const noexcept;

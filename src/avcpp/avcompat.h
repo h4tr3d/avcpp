@@ -49,6 +49,8 @@ extern "C" {
 #endif // if AVCPP_HAS_AVFORMAT
 // AVBuffer API switch to size_t
 #define AVCPP_API_AVBUFFER_SIZE_T (AVCPP_AVUTIL_VERSION_MAJOR >= 57)
+// AVSideDataDescriptor exisits
+#define AVCPP_API_HAS_AVSIDEDATADESCRIPTOR (AVCPP_AVUTIL_VERSION_INT >= AV_VERSION_INT(59, 10, 100))
 
 #if defined(__ICL) || defined (__INTEL_COMPILER)
 #    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))
