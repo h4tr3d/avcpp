@@ -1,7 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <vector>
-#include <bit>
 
 #include "avcpp/avconfig.h"
 #include "avcpp/packet.h"
@@ -216,7 +215,8 @@ TEST_CASE("Packet define", "[Packet][Construct]")
             std::vector<uint8_t> side_block_adds(meta.size() + sizeof(uint64_t));
             std::span out = side_block_adds;
             uint64_t id = 100;
-            if (std::endian::native == std::endian::little)
+            //if (std::endian::native == std::endian::little)
+            if (AV_HAVE_BIGENDIAN == 0)
                 id = av_bswap64(id);
             memcpy(out.data(), &id, sizeof(id));
             out = out.subspan(sizeof(id));
@@ -235,7 +235,8 @@ TEST_CASE("Packet define", "[Packet][Construct]")
             uint64_t id{};
             memcpy(&id, in.data(), sizeof(uint64_t));
             in = in.subspan(sizeof(uint64_t));
-            if (std::endian::native == std::endian::little)
+            //if (std::endian::native == std::endian::little)
+            if (AV_HAVE_BIGENDIAN == 0)
                 id = av_bswap64(id);
             REQUIRE(id == 100);
 
@@ -253,7 +254,8 @@ TEST_CASE("Packet define", "[Packet][Construct]")
             uint64_t id{};
             memcpy(&id, in.data(), sizeof(uint64_t));
             in = in.subspan(sizeof(uint64_t));
-            if (std::endian::native == std::endian::little)
+            //if (std::endian::native == std::endian::little)
+            if (AV_HAVE_BIGENDIAN == 0)
                 id = av_bswap64(id);
             REQUIRE(id == 100);
 
