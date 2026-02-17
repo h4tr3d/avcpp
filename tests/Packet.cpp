@@ -240,7 +240,7 @@ TEST_CASE("Packet define", "[Packet][Construct]")
                 id = av_bswap64(id);
             REQUIRE(id == 100);
 
-            std::string_view meta_read{reinterpret_cast<const char*>(in.data()), in.size()};
+            std::string meta_read{reinterpret_cast<const char*>(in.data()), in.size()};
             REQUIRE(meta_read == meta);
         }
 
@@ -259,7 +259,7 @@ TEST_CASE("Packet define", "[Packet][Construct]")
                 id = av_bswap64(id);
             REQUIRE(id == 100);
 
-            std::string_view meta_read{reinterpret_cast<const char*>(in.data()), in.size()};
+            std::string meta_read{reinterpret_cast<const char*>(in.data()), in.size()};
             REQUIRE(meta_read == meta);
         }
 
