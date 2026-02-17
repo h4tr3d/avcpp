@@ -117,7 +117,7 @@ TEST_CASE("Core functionality", "[Frame]")
         CHECK(in_frame.timeBase() == tb);
 
         {
-            auto sd = in_frame.sideData(AV_FRAME_DATA_VIEW_ID);
+            auto sd = in_frame.sideData(AV_FRAME_DATA_ICC_PROFILE);
             REQUIRE(sd.empty());
         }
 
@@ -141,13 +141,13 @@ TEST_CASE("Core functionality", "[Frame]")
 
         // Add side data
         {
-            REQUIRE_NOTHROW(in_frame.addSideData(AV_FRAME_DATA_VIEW_ID, std::span{(const uint8_t*)&view_id, sizeof(view_id)}));
+            REQUIRE_NOTHROW(in_frame.addSideData(AV_FRAME_DATA_ICC_PROFILE, std::span{(const uint8_t*)&view_id, sizeof(view_id)}));
             REQUIRE(in_frame.sideDataCount() == 1);
         }
 
         // non-const
         {
-            auto sd = in_frame.sideData(AV_FRAME_DATA_VIEW_ID);
+            auto sd = in_frame.sideData(AV_FRAME_DATA_ICC_PROFILE);
             REQUIRE(!sd.empty());
             REQUIRE(sd.span().size() == sizeof(view_id));
 
@@ -159,7 +159,7 @@ TEST_CASE("Core functionality", "[Frame]")
         // const
         {
             auto const& frame = in_frame;
-            auto sd = frame.sideData(AV_FRAME_DATA_VIEW_ID);
+            auto sd = frame.sideData(AV_FRAME_DATA_ICC_PROFILE);
             REQUIRE(!sd.empty());
             REQUIRE(sd.span().size() == sizeof(view_id));
 
@@ -208,7 +208,7 @@ TEST_CASE("Core functionality", "[Frame]")
                 ++items;
                 if (sd.type() == AV_FRAME_DATA_GOP_TIMECODE)
                     gop_timecode_found = true;
-                if (sd.type() == AV_FRAME_DATA_VIEW_ID)
+                if (sd.type() == AV_FRAME_DATA_ICC_PROFILE)
                     view_id_found = true;
             }
             REQUIRE(items == 2);
