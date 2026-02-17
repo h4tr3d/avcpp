@@ -5,6 +5,99 @@
 
 namespace av {
 
+namespace buffer {
+/**
+ * Buffer deleter that do nothing. To wrap static data.
+ */
+void null_deleter(void* /*opaque*/, uint8_t* /*data*/) {}
+} // ::buffer
+
+
+AVBufferRef *BufferRefView::makeRef(iam_sure_what_i_do_tag) const noexcept {
+    return m_raw ? av_buffer_ref(m_raw) : nullptr;
+}
+
+BufferRef BufferRefView::ref()
+{
+    if (!m_raw) [[unlikely]]
+        return {};
+    return BufferRef::ref(m_raw);
+}
+
+BufferRef BufferRefView::clone(int flags) const noexcept
+{
+    if (!m_raw)
+        return {};
+    return BufferRef(m_raw->data, m_raw->size, flags);
+}
+
+bool BufferRefView::isWritable() const noexcept
+{
+    return m_raw ? av_buffer_is_writable(m_raw) : false;
+}
+
+int BufferRefView::refCount() const noexcept
+{
+    return m_raw ? av_buffer_get_ref_count(m_raw) : 0;
+}
+
+std::size_t BufferRefView::size() const noexcept
+{
+    return m_raw ? m_raw->size : 0;
+}
+
+const uint8_t *BufferRefView::data() const noexcept
+{
+    return m_raw ? m_raw->data : nullptr;
+}
+
+const uint8_t *BufferRefView::constData() const noexcept
+{
+    return data();
+}
+
+uint8_t *BufferRefView::data(OptionalErrorCode ec)
+{
+    if (!m_raw)
+        return nullptr;
+
+    clear_if(ec);
+    if (!isWritable()) {
+        throws_if(ec, Errors::BufferReadonly);
+        return nullptr;
+    }
+    return m_raw->data;
+}
+
+#if AVCPP_CXX_STANDARD >= 20
+std::span<const uint8_t> BufferRefView::span() const noexcept
+{
+    if (!m_raw)
+        return {};
+    return {m_raw->data, m_raw->size};
+}
+
+std::span<const uint8_t> BufferRefView::constSpan() const noexcept
+{
+    return span();
+}
+
+std::span<uint8_t> BufferRefView::span(OptionalErrorCode ec)
+{
+    if (!m_raw)
+        return {};
+    clear_if(ec);
+    if (!isWritable()) {
+        throws_if(ec, Errors::BufferReadonly);
+        return {};
+    }
+    return {m_raw->data, m_raw->size};
+}
+#endif // AVCPP_CXX_STANDARD >= 20
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 BufferRef::BufferRef(std::size_t size, bool keepUninit) noexcept
 {
     if (keepUninit) [[likely]]
@@ -82,10 +175,6 @@ BufferRef BufferRef::ref(const AVBufferRef *buf) noexcept
     return BufferRef{av_buffer_ref(buf)};
 }
 
-AVBufferRef *BufferRef::makeRef(iam_sure_what_i_do_tag) const noexcept {
-    return m_raw ? av_buffer_ref(m_raw) : nullptr;
-}
-
 AVBufferRef *BufferRef::release() noexcept
 {
     return std::exchange(m_raw, nullptr);
@@ -99,12 +188,6 @@ void BufferRef::reset() noexcept
     assert(m_raw == nullptr);
 }
 
-BufferRef BufferRef::clone(int flags) const noexcept
-{
-    if (!m_raw)
-        return {};
-    return BufferRef(m_raw->data, m_raw->size, flags);
-}
 
 void BufferRef::makeWritable(OptionalErrorCode ec) {
     clear_if(ec);
@@ -136,68 +219,6 @@ void BufferRef::swap(BufferRef &other) noexcept
 {
     using std::swap;
     swap(m_raw, other.m_raw);
-}
-
-std::size_t BufferRef::size() const noexcept
-{
-    return m_raw ? m_raw->size : 0;
-}
-
-const uint8_t *BufferRef::data() const noexcept
-{
-    return m_raw ? m_raw->data : nullptr;
-}
-
-const uint8_t *BufferRef::constData() const noexcept
-{
-    return data();
-}
-
-uint8_t *BufferRef::data(OptionalErrorCode ec)
-{
-    if (!m_raw)
-        return nullptr;
-
-    clear_if(ec);
-    if (!isWritable()) {
-        throws_if(ec, Errors::BufferReadonly);
-        return nullptr;
-    }
-    return m_raw->data;
-}
-
-#if AVCPP_CXX_STANDARD >= 20
-std::span<const uint8_t> BufferRef::span() const noexcept
-{
-    if (!m_raw)
-        return {};
-    return {m_raw->data, m_raw->size};
-}
-
-std::span<const uint8_t> BufferRef::constSpan() const noexcept
-{
-    return span();
-}
-
-std::span<uint8_t> BufferRef::span(OptionalErrorCode ec)
-{
-    if (!m_raw)
-        return {};
-    clear_if(ec);
-    if (!isWritable()) {
-        throws_if(ec, Errors::BufferReadonly);
-        return {};
-    }
-    return {m_raw->data, m_raw->size};
-}
-#endif // AVCPP_CXX_STANDARD >= 20
-
-bool BufferRef::isWritable() const noexcept {
-    return m_raw ? av_buffer_is_writable(m_raw) : false;
-}
-
-int BufferRef::refCount() const noexcept {
-    return m_raw ? av_buffer_get_ref_count(m_raw) : 0;
 }
 
 BufferRef &av::BufferRef::operator=(BufferRef &&other) noexcept

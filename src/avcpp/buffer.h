@@ -13,15 +13,109 @@ namespace buffer {
 /**
  * Buffer deleter that do nothing. To wrap static data.
  */
-void null_deleter(void* /*opaque*/, uint8_t* /*data*/) {}
+void null_deleter(void* /*opaque*/, uint8_t* /*data*/);
 } // ::buffer
+
+class BufferRef;
+
+/**
+ * Non-owning view for the nested AVBufferRef
+ */
+class BufferRefView : public FFWrapperPtr<AVBufferRef>
+{
+public:
+    using FFWrapperPtr<AVBufferRef>::FFWrapperPtr;
+
+    /**
+     * Construct null buffer
+     */
+    BufferRefView() = default;
+
+    /**
+     * Tag to confirm usage of the Low Level functionality
+     */
+    struct iam_sure_what_i_do_tag{};
+    /**
+     * Make an reference of the exsting buffer. Useful to pass to the low-level API.
+     * @return new reference on success (data kept uncopied) or nullptr if control block allocation fails.
+     */
+    AVBufferRef* makeRef(iam_sure_what_i_do_tag) const noexcept;
+
+    /**
+     * Create reference to the view data, refCount() will be increased
+     * @return
+     */
+    BufferRef ref();
+
+    /**
+     * Make deep copy of the existing buffer. Data will be copied into new buffer and owning taken.
+     * @param flags AV_BUFFER_FLAG_*
+     * @return
+     */
+    BufferRef clone(int flags = 0) const noexcept;
+
+    /**
+     * Report current reference counter of the buffer. For the refCount() > 1 isWritable() always return false.
+     * @return
+     */
+    int refCount() const noexcept;
+    /**
+     * Report writable flag. Always false if refCount() == 0 or > 1. Otherwise controls by the AV_BUFFER_FLAG_READONLY.
+     * @return
+     */
+    bool isWritable() const noexcept;
+
+    /**
+     * Nested buffer size
+     * @return
+     */
+    std::size_t size() const noexcept;
+    /**
+     * Pointer to the data block start
+     * @return
+     */
+    const uint8_t* data() const noexcept;
+    /**
+     * Force request const data
+     * @return
+     */
+    const uint8_t* constData() const noexcept;
+    /**
+     * Pointer to the data block start. Note, write access possible only to the buffer when isWritable()==true.
+     * If buffer can't be written error code will reported or exception reised.
+     * @param ec
+     * @return
+     */
+    uint8_t* data(OptionalErrorCode ec = throws());
+
+#if AVCPP_CXX_STANDARD >= 20
+    /**
+     * Span interface to obtain nested buffer data.
+     * @return
+     */
+    std::span<const uint8_t> span() const noexcept;
+    /**
+     * Force request const span
+     * @return
+     */
+    std::span<const uint8_t> constSpan() const noexcept;
+    /**
+     * Span interface to obtain nested buffer data. Like data(ec) possible only for writable buffers.
+     * @param ec
+     * @return
+     */
+    std::span<uint8_t> span(OptionalErrorCode ec = throws());
+#endif
+};
+
 
 /**
  * Light weight wrapper for the FFmpeg AVBufferRef functionality
  */
-class BufferRef : public FFWrapperPtr<AVBufferRef>
+class BufferRef : public BufferRefView
 {
-    using FFWrapperPtr<AVBufferRef>::FFWrapperPtr;
+    //using FFWrapperPtr<AVBufferRef>::FFWrapperPtr;
+    using BufferRefView::BufferRefView;
 
 public:
     /**
@@ -165,16 +259,6 @@ public:
     static BufferRef ref(const AVBufferRef *buf) noexcept;
 
     /**
-     * Tag to confirm usage of the Low Level functionality
-     */
-    struct iam_sure_what_i_do_tag{};
-    /**
-     * Make an reference of the exsting buffer. Useful to pass to the low-level API.
-     * @return new reference on success (data kept uncopied) or nullptr if control block allocation fails.
-     */
-    AVBufferRef* makeRef(iam_sure_what_i_do_tag) const noexcept;
-
-    /**
      * Release owning of the buffer and return existing raw AVBufferRef. Useful to move owning without referencing
      * into nested low-level code.
      * @return
@@ -186,23 +270,6 @@ public:
      */
     void reset() noexcept;
 
-    /**
-     * Make deep copy of the existing buffer. Data will be copied into new buffer and owning taken.
-     * @param flags AV_BUFFER_FLAG_*
-     * @return
-     */
-    BufferRef clone(int flags = 0) const noexcept;
-
-    /**
-     * Report current reference counter of the buffer. For the refCount() > 1 isWritable() always return false.
-     * @return
-     */
-    int refCount() const noexcept;
-    /**
-     * Report writable flag. Always false if refCount() == 0 or > 1. Otherwise controls by the AV_BUFFER_FLAG_READONLY.
-     * @return
-     */
-    bool isWritable() const noexcept;
     /**
      * Make buffer writable. Look into notice of the av_buffer_make_writable() for data coping details.
      * @param ec
@@ -220,48 +287,6 @@ public:
      * @param other
      */
     void swap(BufferRef &other) noexcept;
-
-    /**
-     * Nested buffer size
-     * @return
-     */
-    std::size_t size() const noexcept;
-    /**
-     * Pointer to the data block start
-     * @return
-     */
-    const uint8_t* data() const noexcept;
-    /**
-     * Force request const data
-     * @return
-     */
-    const uint8_t* constData() const noexcept;
-    /**
-     * Pointer to the data block start. Note, write access possible only to the buffer when isWritable()==true.
-     * If buffer can't be written error code will reported or exception reised.
-     * @param ec
-     * @return
-     */
-    uint8_t* data(OptionalErrorCode ec = throws());
-
-#if AVCPP_CXX_STANDARD >= 20
-    /**
-     * Span interface to obtain nested buffer data.
-     * @return
-     */
-    std::span<const uint8_t> span() const noexcept;
-    /**
-     * Force request const span
-     * @return
-     */
-    std::span<const uint8_t> constSpan() const noexcept;
-    /**
-     * Span interface to obtain nested buffer data. Like data(ec) possible only for writable buffers.
-     * @param ec
-     * @return
-     */
-    std::span<uint8_t> span(OptionalErrorCode ec = throws());
-#endif
 };
 
 } // ::av
