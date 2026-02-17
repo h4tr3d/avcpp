@@ -13,6 +13,14 @@ void null_deleter(void* /*opaque*/, uint8_t* /*data*/) {}
 } // ::buffer
 
 
+BufferRefView::BufferRefView(BufferRef &ref)
+    : BufferRefView(ref.m_raw)
+{}
+
+BufferRefView::BufferRefView(const BufferRef &ref)
+    : BufferRefView(ref.m_raw)
+{}
+
 AVBufferRef *BufferRefView::makeRef(iam_sure_what_i_do_tag) const noexcept {
     return m_raw ? av_buffer_ref(m_raw) : nullptr;
 }

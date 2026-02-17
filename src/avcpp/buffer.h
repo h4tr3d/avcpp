@@ -31,6 +31,9 @@ public:
      */
     BufferRefView() = default;
 
+    explicit BufferRefView(BufferRef& ref);
+    explicit BufferRefView(const BufferRef& ref);
+
     /**
      * Tag to confirm usage of the Low Level functionality
      */
