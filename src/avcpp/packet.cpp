@@ -389,7 +389,7 @@ std::span<uint8_t> Packet::sideData(AVPacketSideDataType type)
     return sideDataCommon(raw(), type);
 }
 
-PacketSideData Packet::sideData(std::size_t index) noexcept
+PacketSideData Packet::sideDataIndex(std::size_t index) noexcept
 {
     if (!m_raw)
         return {};

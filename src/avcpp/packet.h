@@ -165,7 +165,7 @@ public:
      * @param index
      * @return
      */
-    PacketSideData sideData(std::size_t index) noexcept;
+    PacketSideData sideDataIndex(std::size_t index) noexcept;
 
     /**
      * Observe all packet side data via iterators
