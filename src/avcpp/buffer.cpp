@@ -4,6 +4,7 @@
 #include "avcpp/avutils.h"
 
 #include <cassert>
+#include <utility>
 
 namespace av {
 
