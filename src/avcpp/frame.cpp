@@ -734,6 +734,103 @@ void FrameCommon::swap(FrameCommon &other)
 #undef FRAME_SWAP
 }
 
+#if AVCPP_HAS_FRAME_SIDE_DATA
+
+const FrameSideData FrameCommon::sideData(AVFrameSideDataType type) const
+{
+    return m_raw ? FrameSideData(av_frame_get_side_data(m_raw, type)) : FrameSideData{};
+}
+
+FrameSideData FrameCommon::sideData(AVFrameSideDataType type)
+{
+    return m_raw ? FrameSideData(av_frame_get_side_data(m_raw, type)) : FrameSideData{};
+}
+
+FrameSideData FrameCommon::sideDataIndex(std::size_t index) noexcept
+{
+    if (!m_raw || index > size_t(m_raw->nb_side_data))
+        return {};
+    return FrameSideData(m_raw->side_data[index]);
+}
+
+void FrameCommon::sideDataRemove(AVFrameSideDataType type) noexcept
+{
+    if (m_raw)
+        av_frame_remove_side_data(m_raw, type);
+}
+
+FrameSideData FrameCommon::addSideData(AVFrameSideDataType type, std::span<const uint8_t> data, OptionalErrorCode ec)
+{
+    // copy and wrap data
+    BufferRef ref{data};
+    return addSideData(type, std::move(ref), ec);
+}
+
+FrameSideData FrameCommon::addSideData(AVFrameSideDataType type, std::span<uint8_t> data, wrap_data, OptionalErrorCode ec)
+{
+    // just wrap data without copying and take owning
+    BufferRef ref{data, av_buffer_default_free, nullptr, 0};
+    return addSideData(type, std::move(ref), ec);
+}
+
+FrameSideData FrameCommon::addSideData(AVFrameSideDataType type, std::span<uint8_t> data, wrap_data_static, OptionalErrorCode ec)
+{
+    // just wrap data without copying and take owning
+    BufferRef ref{data, av::buffer::null_deleter, nullptr, 0};
+    return addSideData(type, std::move(ref), ec);
+}
+
+FrameSideData FrameCommon::addSideData(AVFrameSideDataType type, BufferRef buf, OptionalErrorCode ec)
+{
+    clear_if(ec);
+    if (!m_raw) {
+        throws_if(ec, Errors::Unallocated);
+        return {};
+    }
+    auto sd = av_frame_new_side_data_from_buf(m_raw, type, buf.raw());
+    if (!sd) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return {};
+    }
+    buf.release(); // drop owning
+    return FrameSideData{sd};
+}
+
+FrameSideData FrameCommon::allocateSideData(AVFrameSideDataType type, std::size_t size, OptionalErrorCode ec)
+{
+    clear_if(ec);
+    if (!m_raw) {
+        throws_if(ec, av::Errors::Unallocated);
+        return {};
+    }
+
+    auto data = av_frame_new_side_data(m_raw, type, size);
+    if (!data) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return {};
+    }
+
+    // Data owned by the Frame here, just view
+    return FrameSideData(data);
+}
+
+ArrayView<const AVFrameSideData *, FrameSideData, size_t> FrameCommon::sideData() const noexcept
+{
+    return make_array_view_size<FrameSideData>((const AVFrameSideData**)m_raw->side_data, m_raw->nb_side_data);
+}
+
+ArrayView<AVFrameSideData *, FrameSideData, size_t> FrameCommon::sideData() noexcept
+{
+    return make_array_view_size<FrameSideData>(m_raw->side_data, m_raw->nb_side_data);
+}
+
+size_t FrameCommon::sideDataCount() const noexcept
+{
+    return m_raw ? m_raw->nb_side_data : 0;
+}
+
+#endif // AVCPP_HAS_FRAME_SIDE_DATA
+
 void FrameCommon::copyInfoFrom(const FrameCommon &other)
 {
     m_timeBase    = other.m_timeBase;
@@ -757,5 +854,68 @@ void FrameCommon::clone(FrameCommon &dst, size_t align) const
     av_frame_copy(dst.m_raw, m_raw);
     av_frame_copy_props(dst.m_raw, m_raw);
 }
+
+#if AVCPP_HAS_FRAME_SIDE_DATA
+
+string_view FrameSideData::name() const noexcept
+{
+    return m_raw ? name(m_raw->type) : string_view{};
+}
+
+AVFrameSideDataType FrameSideData::type() const noexcept
+{
+    return m_raw ? m_raw->type : AVFrameSideDataType(-1);
+}
+
+std::span<const uint8_t> FrameSideData::span() const noexcept
+{
+    return m_raw ? std::span{m_raw->data, m_raw->size} : std::span<const uint8_t>{};
+}
+
+std::span<uint8_t> FrameSideData::span() noexcept
+{
+    return m_raw ? std::span{m_raw->data, m_raw->size} : std::span<uint8_t>{};
+}
+
+BufferRefView FrameSideData::buffer() const noexcept
+{
+    if (!m_raw) [[unlikely]]
+        return {};
+    return BufferRefView(m_raw->buf);
+}
+
+Dictionary FrameSideData::metadata() const noexcept
+{
+    return m_raw ? Dictionary{m_raw->metadata, false} : Dictionary{};
+}
+
+std::optional<AVSideDataDescriptor> FrameSideData::descriptor() const noexcept
+{
+    return m_raw ? descriptor(m_raw->type) : std::nullopt;
+}
+
+std::optional<AVSideDataDescriptor> FrameSideData::descriptor(AVFrameSideDataType type) noexcept
+{
+    auto desc = av_frame_side_data_desc(type);
+    return desc ? std::optional(*desc) : std::nullopt;
+}
+
+bool FrameSideData::empty() const noexcept
+{
+    return !m_raw || !m_raw->data || !m_raw->size;
+}
+
+FrameSideData::operator bool() const noexcept
+{
+    return !empty();
+}
+
+string_view FrameSideData::name(AVFrameSideDataType type) noexcept
+{
+    auto nm = av_frame_side_data_name(type);
+    return nm ? std::string_view{nm} : std::string_view{};
+}
+
+#endif // AVCPP_HAS_FRAME_SIDE_DATA
 
 } // ::av

@@ -3,6 +3,8 @@
 #include <vector>
 
 #include "avcompat.h"
+#include "avcpp/buffer.h"
+#include "avcpp/dictionary.h"
 
 #if AVCPP_CXX_STANDARD >= 20
 #if __has_include(<span>)
@@ -29,9 +31,51 @@ namespace frame
 int64_t get_best_effort_timestamp(const AVFrame* frame);
 } // ::av::frame
 
+#if AVCPP_HAS_FRAME_SIDE_DATA
+/**
+ * Simple view for the AVFrameSideData elements
+ */
+class FrameSideData : public FFWrapperPtr<AVFrameSideData>
+{
+public:
+    using FFWrapperPtr<AVFrameSideData>::FFWrapperPtr;
+
+    std::string_view name() const noexcept;
+    AVFrameSideDataType type() const noexcept;
+    std::span<const uint8_t> span() const noexcept;
+    std::span<uint8_t> span() noexcept;
+
+    BufferRefView buffer() const noexcept;
+
+    /**
+     * @brief metadata
+     * @return  AVFrameSideData::metadata view. Owning is not taken
+     */
+    Dictionary metadata() const noexcept;
+
+    std::optional<AVSideDataDescriptor> descriptor() const noexcept;
+
+    static std::string_view name(AVFrameSideDataType type) noexcept;
+    static std::optional<AVSideDataDescriptor> descriptor(AVFrameSideDataType type) noexcept;
+
+    bool empty() const noexcept;
+    operator bool() const noexcept;
+};
+#endif // AVCPP_HAS_PKT_SIDE_DATA
+
 class FrameCommon : public FFWrapperPtr<AVFrame>
 {
 public:
+    /**
+     * Wrap data and take owning. Data must be allocated with av_malloc()/av::malloc() family
+     */
+    struct wrap_data {};
+    /**
+     * Wrap static data, do not owning and free.
+     * Buffer size must be: size + AV_INPUT_BUFFER_PADDING_SIZE
+     */
+    struct wrap_data_static {};
+
     FrameCommon();
     FrameCommon(const AVFrame *frame);
 
@@ -74,6 +118,93 @@ public:
     void operator=(const FrameCommon&) = delete;
 
     void swap(FrameCommon &other);
+
+#if AVCPP_HAS_FRAME_SIDE_DATA
+    /**
+     * Get packet side data of the given type. Empty buffer means no data.
+     *
+     * @param type
+     * @return
+     */
+    const FrameSideData sideData(AVFrameSideDataType type) const;
+    FrameSideData       sideData(AVFrameSideDataType type);
+
+    /**
+     * Return count of the side data elements
+     * @return
+     */
+    std::size_t sideDataCount() const noexcept;
+
+    /**
+     * Get side data element by index
+     * @param index
+     * @return
+     */
+    FrameSideData sideDataIndex(std::size_t index) noexcept;
+
+    /**
+     * Observe all packet side data via iterators
+     *
+     * Applicable for range-based for and std::range:xxx algos.
+     *
+     * @return
+     */
+    ArrayView<AVFrameSideData*, FrameSideData, std::size_t> sideData() noexcept;
+    ArrayView<const AVFrameSideData*, FrameSideData, std::size_t> sideData() const noexcept;
+
+
+    /**
+     * Remove and free all side data instances of the given type.
+     * @param type
+     */
+    void sideDataRemove(AVFrameSideDataType type) noexcept;
+
+    /**
+     * Add side data of the given type into packet. Data will be cloned.
+     * @param type
+     * @param data
+     * @param ec
+     */
+    FrameSideData addSideData(AVFrameSideDataType type, std::span<const uint8_t> data, OptionalErrorCode ec = throws());
+
+    /**
+     * Add side data of the given type into packet. Data will be wrapped and owner-shipping taken. Data must be allocated
+     * via av_malloc()/av::malloc() family functions.
+     *
+     * @param type
+     * @param data
+     * @param ec
+     */
+    FrameSideData addSideData(AVFrameSideDataType type, std::span<uint8_t> data, wrap_data, OptionalErrorCode ec = throws());
+
+    /**
+     * Add side data of the given type into packet. Data will be wrapped without copying and null deleter will be provided.
+     * So data maybe any static data.
+     *
+     * @param type
+     * @param data
+     * @param ec
+     */
+    FrameSideData addSideData(AVFrameSideDataType type, std::span<uint8_t> data, wrap_data_static, OptionalErrorCode ec = throws());
+
+    /**
+     * Add side data of the given type into packet. Setup via buffer reference view. Nested API does not reference
+     * buffer so it must be done with the caller code.
+     * @param type
+     * @param buf
+     * @param ec
+     */
+    FrameSideData addSideData(AVFrameSideDataType type, BufferRef buf, OptionalErrorCode ec = throws());
+
+    /**
+     * Allocate storage for the packet side data of the given type and return reference to it. Data owned by the packet.
+     * @param type
+     * @param size
+     * @param ec
+     * @return
+     */
+    FrameSideData allocateSideData(AVFrameSideDataType type, std::size_t size, OptionalErrorCode ec = throws());
+#endif
 
 protected:
     void copyInfoFrom(const FrameCommon& other);

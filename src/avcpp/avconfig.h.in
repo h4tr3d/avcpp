@@ -7,6 +7,7 @@ extern "C" {
 #cmakedefine AVCPP_CXX_STANDARD @AVCPP_CXX_STANDARD@
 
 #define AVCPP_HAS_PKT_SIDE_DATA (AVCPP_CXX_STANDARD >= 20)
+#define AVCPP_HAS_FRAME_SIDE_DATA (AVCPP_CXX_STANDARD >= 20)
 
 // Define versions of the FFmpeg components wich was used for the build
 #cmakedefine AVCPP_AVCODEC_VERSION_MAJOR @AVCPP_AVCODEC_VERSION_MAJOR@
