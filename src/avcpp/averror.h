@@ -30,6 +30,8 @@ enum class Errors
     DictOutOfRage,
     DictNoKey,
 
+    BufferReadonly,
+
     FormatCantAddStream,
     FormatAlreadyOpened,
     FormatNullOutputFormat,

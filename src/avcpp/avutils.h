@@ -132,6 +132,7 @@ struct AvDeleter
 #if AVCPP_HAS_AVFILTER
     bool operator ()(struct AVFilterInOut* &filterInOut);
 #endif // if AVCPP_HAS_AVFILTER
+    bool operator() (struct AVBufferRef* &bufferRef);
 };
 } // ::v1
 
