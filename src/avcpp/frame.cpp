@@ -101,7 +101,7 @@ int64_t get_best_effort_timestamp(const AVFrame* frame) {
 }
 
 // Based on db6efa1815e217ed76f39aee8b15ee5c64698537
-static inline uint64_t get_channel_layout(const AVFrame* frame) {
+uint64_t get_channel_layout(const AVFrame* frame) {
 #if AVCPP_AVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
     return static_cast<uint64_t>(av_frame_get_channel_layout(frame));
 #elif AVCPP_API_NEW_CHANNEL_LAYOUT
@@ -111,7 +111,7 @@ static inline uint64_t get_channel_layout(const AVFrame* frame) {
 #endif
 }
 
-static inline void set_channel_layout(AVFrame* frame, uint64_t layout) {
+void set_channel_layout(AVFrame* frame, uint64_t layout) {
 #if AVCPP_AVUTIL_VERSION_MAJOR < 56 // < FFmpeg 4.0
     av_frame_set_channel_layout(frame, static_cast<int64_t>(layout));
 #elif AVCPP_API_NEW_CHANNEL_LAYOUT

@@ -29,6 +29,8 @@ namespace av
 namespace frame
 {
 int64_t get_best_effort_timestamp(const AVFrame* frame);
+uint64_t get_channel_layout(const AVFrame* frame);
+void set_channel_layout(AVFrame* frame, uint64_t layout);
 } // ::av::frame
 
 #if AVCPP_HAS_FRAME_SIDE_DATA
