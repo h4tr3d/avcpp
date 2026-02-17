@@ -197,7 +197,7 @@ public:
      * @param data   data block reference with size
      * @param flags  AV_BUFFER_FLAG_*
      */
-    BufferRef(std::span<const uint8_t> data, int flags = 0) noexcept;
+    explicit BufferRef(std::span<const uint8_t> data, int flags = 0) noexcept;
 #endif // AVCPP_CXX_STANDARD
 
     /**
