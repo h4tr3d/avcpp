@@ -816,11 +816,15 @@ FrameSideData FrameCommon::allocateSideData(AVFrameSideDataType type, std::size_
 
 ArrayView<const AVFrameSideData *, FrameSideData, size_t> FrameCommon::sideData() const noexcept
 {
+    if (!m_raw) [[unlikely]]
+        return {};
     return make_array_view_size<FrameSideData>((const AVFrameSideData**)m_raw->side_data, m_raw->nb_side_data);
 }
 
 ArrayView<AVFrameSideData *, FrameSideData, size_t> FrameCommon::sideData() noexcept
 {
+    if (!m_raw) [[unlikely]]
+        return {};
     return make_array_view_size<FrameSideData>(m_raw->side_data, m_raw->nb_side_data);
 }
 

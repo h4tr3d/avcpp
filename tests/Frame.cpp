@@ -121,6 +121,21 @@ TEST_CASE("Core functionality", "[Frame]")
             REQUIRE(sd.empty());
         }
 
+        // Iterate on null frame
+        {
+            av::VideoFrame frame;
+            // its a hack to gen null for the nested m_raw
+            //auto ptr = frame.raw();
+            frame.reset();
+            REQUIRE(frame.raw() == nullptr);
+
+            int count{};
+            for (auto&& sd : frame.sideData()) {
+                ++count;
+            }
+            REQUIRE(count == 0);
+        }
+
         const int view_id = 31337;
         const int64_t gop_time = 11223344;
 

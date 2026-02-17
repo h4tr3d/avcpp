@@ -438,6 +438,7 @@ template<typename T, typename U, class Policy>
 class ArrayView : public std::ranges::view_interface<ArrayView<T, U, Policy>>
 {
 public:
+    constexpr ArrayView() = default;
     constexpr ArrayView(T *ptr, Policy policy)
         : m_ptr(ptr), m_policy(std::move(policy))
     {}

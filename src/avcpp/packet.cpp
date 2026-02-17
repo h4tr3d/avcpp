@@ -400,12 +400,23 @@ PacketSideData Packet::sideDataIndex(std::size_t index) noexcept
 
 ArrayView<AVPacketSideData, PacketSideData, std::size_t> Packet::sideData() noexcept
 {
+    if (!m_raw) [[unlikely]]
+        return {};
     return make_array_view_size<PacketSideData>(m_raw->side_data, m_raw->side_data_elems);
 }
 
 ArrayView<const AVPacketSideData, PacketSideData, std::size_t> Packet::sideData() const noexcept
 {
+    if (!m_raw) [[unlikely]]
+        return {};
     return make_array_view_size<PacketSideData>((const AVPacketSideData*)m_raw->side_data, m_raw->side_data_elems);
+}
+
+void Packet::freeSideData() noexcept
+{
+    if (!m_raw) [[unlikely]]
+        return;
+    av_packet_free_side_data(m_raw);
 }
 
 size_t Packet::sideDataCount() const noexcept

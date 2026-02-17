@@ -194,6 +194,21 @@ TEST_CASE("Packet define", "[Packet][Construct]")
             REQUIRE(sd.empty());
         }
 
+        // Iterate on null packet
+        {
+            av::Packet pkt;
+            // its a hack to gen null for the nested m_raw
+            //auto ptr = frame.raw();
+            pkt.reset();
+            REQUIRE(pkt.raw() == nullptr);
+
+            int count{};
+            for (auto&& sd : pkt.sideData()) {
+                ++count;
+            }
+            REQUIRE(count == 0);
+        }
+
         std::string meta = "field=val;field2=val2";
 
         {

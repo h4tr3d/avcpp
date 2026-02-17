@@ -173,6 +173,8 @@ public:
     ArrayView<AVPacketSideData, PacketSideData, std::size_t> sideData() noexcept;
     ArrayView<const AVPacketSideData, PacketSideData, std::size_t> sideData() const noexcept;
 
+    void freeSideData() noexcept;
+
     /**
      * Add side data of the given type into packet. Data will be cloned.
      * @param type
