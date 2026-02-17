@@ -1,4 +1,5 @@
 #include "packet.h"
+#include "avcpp/buffer.h"
 
 using namespace std;
 
@@ -79,13 +80,10 @@ Packet::Packet(uint8_t *data, size_t size, Packet::wrap_data, OptionalErrorCode 
     m_completeFlag = true;
 }
 
-static void dummy_buffer_free(void */*opaque*/, uint8_t */*ptr*/)
-{}
-
 Packet::Packet(uint8_t *data, size_t size, Packet::wrap_data_static, OptionalErrorCode ec)
     : Packet()
 {
-    auto buf = av_buffer_create(data, size, dummy_buffer_free, nullptr, 0);
+    auto buf = av_buffer_create(data, size, av::buffer::null_deleter, nullptr, 0);
     if (!buf) {
         throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
         return;

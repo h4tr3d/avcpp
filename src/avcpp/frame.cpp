@@ -81,10 +81,6 @@ int av_frame_copy(AVFrame *dst, const AVFrame *src)
 
 #endif // AVCPP_AVUTIL_VERSION_INT <= 53.5.0 (ffmpeg 2.2)
 
-void avcpp_null_deleter(void* /*opaque*/, uint8_t */*data*/)
-{
-}
-
 } // anonymous namespace
 
 namespace av
@@ -386,7 +382,7 @@ VideoFrame _wrap(const void *data, size_t size, PixelFormat pixelFormat, int wid
 
 VideoFrame VideoFrame::wrap(const void *data, size_t size, PixelFormat pixelFormat, int width, int height, int align)
 {
-    return _wrap(data, size, pixelFormat, width, height, align, avcpp_null_deleter, nullptr);
+    return _wrap(data, size, pixelFormat, width, height, align, av::buffer::null_deleter, nullptr);
 }
 
 #if AVCPP_CXX_STANDARD >= 20
