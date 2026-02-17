@@ -1,3 +1,5 @@
+#include "avcompat.h"
+
 #include "buffer.h"
 #include "avcpp/avutils.h"
 
@@ -10,6 +12,14 @@ namespace buffer {
  * Buffer deleter that do nothing. To wrap static data.
  */
 void null_deleter(void* /*opaque*/, uint8_t* /*data*/) {}
+
+static AVBufferRef* ref(const AVBufferRef* buf) {
+#if AVCPP_AVUTIL_VERSION_INT >= AV_VERSION_INT(57, 5, 101)
+    return av_buffer_ref(buf);
+#else
+    return av_buffer_ref(const_cast<AVBufferRef*>(buf));
+#endif
+}
 } // ::buffer
 
 
@@ -22,7 +32,7 @@ BufferRefView::BufferRefView(const BufferRef &ref)
 {}
 
 AVBufferRef *BufferRefView::makeRef(iam_sure_what_i_do_tag) const noexcept {
-    return m_raw ? av_buffer_ref(m_raw) : nullptr;
+    return m_raw ? av::buffer::ref(m_raw) : nullptr;
 }
 
 BufferRef BufferRefView::ref()
@@ -82,7 +92,7 @@ std::span<const uint8_t> BufferRefView::span() const noexcept
 {
     if (!m_raw)
         return {};
-    return {m_raw->data, m_raw->size};
+    return {m_raw->data, std::size_t(m_raw->size)};
 }
 
 std::span<const uint8_t> BufferRefView::constSpan() const noexcept
@@ -99,7 +109,7 @@ std::span<uint8_t> BufferRefView::span(OptionalErrorCode ec)
         throws_if(ec, Errors::BufferReadonly);
         return {};
     }
-    return {m_raw->data, m_raw->size};
+    return {m_raw->data, std::size_t(m_raw->size)};
 }
 #endif // AVCPP_CXX_STANDARD >= 20
 
@@ -147,7 +157,7 @@ BufferRef::BufferRef(std::span<const uint8_t> data, int flags) noexcept
 #endif // AVCPP_CXX_STANDARD
 
 BufferRef::BufferRef(const BufferRef &other) noexcept
-    : BufferRef(av_buffer_ref(other.m_raw))
+    : BufferRef(av::buffer::ref(other.m_raw))
 {
 }
 
@@ -170,7 +180,7 @@ BufferRef &av::BufferRef::operator=(const BufferRef &other) noexcept
 
 BufferRef BufferRef::wrap(const AVBufferRef *buf, int flags) noexcept
 {
-    return BufferRef{buf->data, buf->size, flags};
+    return BufferRef{buf->data, std::size_t(buf->size), flags};
 }
 
 BufferRef BufferRef::wrap(AVBufferRef *buf) noexcept
@@ -180,7 +190,7 @@ BufferRef BufferRef::wrap(AVBufferRef *buf) noexcept
 
 BufferRef BufferRef::ref(const AVBufferRef *buf) noexcept
 {
-    return BufferRef{av_buffer_ref(buf)};
+    return BufferRef{av::buffer::ref(buf)};
 }
 
 AVBufferRef *BufferRef::release() noexcept
