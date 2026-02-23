@@ -53,6 +53,17 @@ struct CustomIO
 
 class FormatContext : public FFWrapperPtr<AVFormatContext>, public noncopyable
 {
+#if AVCPP_CXX_STANDARD >= 20
+    struct _StreamTransform {
+        const FormatContext *_parent{};
+        Stream operator()(AVStream *st) const {
+            assert(_parent);
+            return Stream{_parent->m_monitor, st, _parent->isOutput() ? Direction::Encoding : Direction::Decoding};
+        }
+    };
+    using StreamsView = std::ranges::transform_view<std::span<AVStream*>, _StreamTransform>;
+#endif
+
 public:
     FormatContext();
     ~FormatContext();
@@ -84,6 +95,10 @@ public:
     Stream addStream(OptionalErrorCode ec = throws());
     Stream addStream(const class VideoEncoderContext& encCtx, OptionalErrorCode ec = throws());
     Stream addStream(const class AudioEncoderContext& encCtx, OptionalErrorCode ec = throws());
+
+#if AVCPP_CXX_STANDARD >= 20
+    StreamsView streams(OptionalErrorCode ec = throws()) const;
+#endif
 
     //
     // Seeking

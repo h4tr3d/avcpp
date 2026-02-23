@@ -1,6 +1,6 @@
 #pragma once
 
-#include "avconfig.h"
+#include "avcpp/avconfig.h"
 
 #include <ranges>
 #include <string>
@@ -132,6 +132,7 @@ struct AvDeleter
 #if AVCPP_HAS_AVFILTER
     bool operator ()(struct AVFilterInOut* &filterInOut);
 #endif // if AVCPP_HAS_AVFILTER
+    bool operator() (struct AVBufferRef* &bufferRef);
 };
 } // ::v1
 
@@ -437,6 +438,7 @@ template<typename T, typename U, class Policy>
 class ArrayView : public std::ranges::view_interface<ArrayView<T, U, Policy>>
 {
 public:
+    constexpr ArrayView() = default;
     constexpr ArrayView(T *ptr, Policy policy)
         : m_ptr(ptr), m_policy(std::move(policy))
     {}

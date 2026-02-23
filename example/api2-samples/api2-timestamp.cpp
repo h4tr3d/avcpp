@@ -2,7 +2,7 @@
 #include <chrono>
 #include <cassert>
 
-#include "timestamp.h"
+#include "avcpp/timestamp.h"
 
 using namespace std;
 using namespace av;

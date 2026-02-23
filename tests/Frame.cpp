@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "frame.h"
+#include "avcpp/frame.h"
 
 #ifdef _MSC_VER
 # pragma warning (disable : 4702) // Disable warning: unreachable code
@@ -29,6 +29,7 @@ constexpr int alignment = 1;
 
 TEST_CASE("Core functionality", "[Frame]")
 {
+
     SECTION("setPts/Dts") {
         {
             av::VideoFrame frame;
@@ -90,6 +91,132 @@ TEST_CASE("Core functionality", "[Frame]")
             CHECK(frame.timeBase() == tb);
         }
     }
+
+#if AVCPP_HAS_FRAME_SIDE_DATA
+    struct TestNullBufferDeleter {
+        static void free(void *opaque, uint8_t* data) {
+            if (opaque)
+                static_cast<TestNullBufferDeleter*>(opaque)->free(data);
+        }
+
+        void free(uint8_t* data) {
+            deleted = true;
+        }
+
+        bool deleted = false;
+    };
+
+    TestNullBufferDeleter _deleter;
+
+    SECTION("Frame side data")
+    {
+        const av::Rational tb{1000,1};
+        av::VideoFrame in_frame{AV_PIX_FMT_RGB24, 1920, 1080};
+        CHECK(in_frame.timeBase() == av::Rational());
+        in_frame.setTimeBase(tb);
+        CHECK(in_frame.timeBase() == tb);
+
+        {
+            auto sd = in_frame.sideData(AV_FRAME_DATA_ICC_PROFILE);
+            REQUIRE(sd.empty());
+        }
+
+        // Iterate on null frame
+        {
+            av::VideoFrame frame;
+            // its a hack to gen null for the nested m_raw
+            //auto ptr = frame.raw();
+            frame.reset();
+            REQUIRE(frame.raw() == nullptr);
+
+            int count{};
+            for (auto&& sd : frame.sideData()) {
+                ++count;
+            }
+            REQUIRE(count == 0);
+        }
+
+        const int view_id = 31337;
+        const int64_t gop_time = 11223344;
+
+        // Add side data
+        {
+            REQUIRE_NOTHROW(in_frame.addSideData(AV_FRAME_DATA_ICC_PROFILE, std::span{(const uint8_t*)&view_id, sizeof(view_id)}));
+            REQUIRE(in_frame.sideDataCount() == 1);
+        }
+
+        // non-const
+        {
+            auto sd = in_frame.sideData(AV_FRAME_DATA_ICC_PROFILE);
+            REQUIRE(!sd.empty());
+            REQUIRE(sd.span().size() == sizeof(view_id));
+
+            int view_id_read{};
+            memcpy(&view_id_read, sd.span().data(), sizeof(view_id_read));
+            REQUIRE(view_id_read == view_id);
+        }
+
+        // const
+        {
+            auto const& frame = in_frame;
+            auto sd = frame.sideData(AV_FRAME_DATA_ICC_PROFILE);
+            REQUIRE(!sd.empty());
+            REQUIRE(sd.span().size() == sizeof(view_id));
+
+            int view_id_read{};
+            memcpy(&view_id_read, sd.span().data(), sizeof(view_id_read));
+            REQUIRE(view_id_read == view_id);
+        }
+
+        // Add side data again :: BufferRef
+        {
+            av::BufferRef ref{(const uint8_t*)&gop_time, sizeof(gop_time), 0};
+            REQUIRE_NOTHROW(in_frame.addSideData(AV_FRAME_DATA_GOP_TIMECODE, ref));
+            REQUIRE(in_frame.sideDataCount() == 2);
+            in_frame.sideDataRemove(AV_FRAME_DATA_GOP_TIMECODE);
+            REQUIRE(in_frame.sideDataCount() == 1);
+        }
+
+        // Add side data again :: BufferRef
+        {
+            // just wrap existing data without copy and owning
+            _deleter.deleted = false;
+            av::BufferRef ref{(uint8_t*)&gop_time, sizeof(gop_time), TestNullBufferDeleter::free, &_deleter};
+            REQUIRE_NOTHROW(in_frame.addSideData(AV_FRAME_DATA_GOP_TIMECODE, std::move(ref)));
+            REQUIRE(in_frame.sideDataCount() == 2);
+
+            auto sd = in_frame.sideData(AV_FRAME_DATA_GOP_TIMECODE);
+            REQUIRE(!sd.empty());
+            REQUIRE(sd.span().data() == (const uint8_t*)&gop_time);
+
+            in_frame.sideDataRemove(AV_FRAME_DATA_GOP_TIMECODE);
+            REQUIRE(in_frame.sideDataCount() == 1);
+            REQUIRE(_deleter.deleted == true);
+        }
+
+
+        // enum
+        {
+            av::BufferRef ref{(uint8_t*)&gop_time, sizeof(gop_time), TestNullBufferDeleter::free, &_deleter};
+            REQUIRE_NOTHROW(in_frame.addSideData(AV_FRAME_DATA_GOP_TIMECODE, std::move(ref)));
+            REQUIRE(in_frame.sideDataCount() == 2);
+
+            int items = 0;
+            bool gop_timecode_found = false;
+            bool view_id_found = false;
+            for (auto&& sd : in_frame.sideData()) {
+                ++items;
+                if (sd.type() == AV_FRAME_DATA_GOP_TIMECODE)
+                    gop_timecode_found = true;
+                if (sd.type() == AV_FRAME_DATA_ICC_PROFILE)
+                    view_id_found = true;
+            }
+            REQUIRE(items == 2);
+            REQUIRE(gop_timecode_found);
+            REQUIRE(view_id_found);
+        }
+    }
+#endif
 }
 
 TEST_CASE("Copy from raw data storage", "[VideoFrame][VideoFrameContruct]")

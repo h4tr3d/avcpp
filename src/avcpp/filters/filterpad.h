@@ -4,8 +4,8 @@
 #include <memory>
 #include <type_traits>
 
-#include "ffmpeg.h"
-#include "avutils.h"
+#include "avcpp/ffmpeg.h"
+#include "avcpp/avutils.h"
 
 #if AVCPP_HAS_AVFILTER
 

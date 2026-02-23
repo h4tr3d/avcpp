@@ -1,18 +1,18 @@
 #pragma once
 
-#include "avconfig.h"
+#include "avcpp/avconfig.h"
 
 #if AVCPP_HAS_AVFILTER
 
 #include <stdint.h>
 #include <memory>
 
-#include "ffmpeg.h"
-#include "rational.h"
-#include "filtercontext.h"
+#include "avcpp/ffmpeg.h"
+#include "avcpp/rational.h"
+#include "avcpp/averror.h"
+#include "avcpp/frame.h"
 #include "filter.h"
-#include "averror.h"
-#include "frame.h"
+#include "filtercontext.h"
 
 namespace av {
 

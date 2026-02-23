@@ -1,4 +1,5 @@
 #include "packet.h"
+#include "avcpp/buffer.h"
 
 using namespace std;
 
@@ -79,13 +80,10 @@ Packet::Packet(uint8_t *data, size_t size, Packet::wrap_data, OptionalErrorCode 
     m_completeFlag = true;
 }
 
-static void dummy_buffer_free(void */*opaque*/, uint8_t */*ptr*/)
-{}
-
 Packet::Packet(uint8_t *data, size_t size, Packet::wrap_data_static, OptionalErrorCode ec)
     : Packet()
 {
-    auto buf = av_buffer_create(data, size, dummy_buffer_free, nullptr, 0);
+    auto buf = av_buffer_create(data, size, av::buffer::null_deleter, nullptr, 0);
     if (!buf) {
         throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
         return;
@@ -371,40 +369,57 @@ void Packet::setTimeBase(const Rational &tb)
 #if AVCPP_HAS_PKT_SIDE_DATA
 using SideDataSize_t = std::conditional_t<AVCPP_API_AVBUFFER_SIZE_T, std::size_t, int>;
 
+static auto sideDataCommon(auto *pkt, AVPacketSideDataType type)
+{
+    using ResultType = std::conditional_t<std::is_const_v<decltype(pkt)>, std::span<const uint8_t>, std::span<uint8_t>>;
+    if (!pkt)
+        return ResultType{};
+    SideDataSize_t size;
+    auto const data = av_packet_get_side_data(pkt, type, &size);
+    return data ? ResultType{data, std::size_t(size)} : ResultType{};
+}
+
 std::span<const uint8_t> Packet::sideData(AVPacketSideDataType type) const
 {
-    SideDataSize_t size;
-    auto const data = av_packet_get_side_data(raw(), type, &size);
-    return data ? std::span<const uint8_t>{} : std::span<const uint8_t>{data, std::size_t(size)};
+    return sideDataCommon(raw(), type);
 }
 
 std::span<uint8_t> Packet::sideData(AVPacketSideDataType type)
 {
-    SideDataSize_t size;
-    auto const data = av_packet_get_side_data(raw(), type, &size);
-    return data ? std::span<uint8_t>{} : std::span<uint8_t>{data, std::size_t(size)};
+    return sideDataCommon(raw(), type);
 }
 
-PacketSideData Packet::sideData(std::size_t index) noexcept
+PacketSideData Packet::sideDataIndex(std::size_t index) noexcept
 {
     if (!m_raw)
         return {};
-    if (index >= sideDataElements())
+    if (index >= sideDataCount())
         return {};
     return PacketSideData{m_raw->side_data[index]};
 }
 
 ArrayView<AVPacketSideData, PacketSideData, std::size_t> Packet::sideData() noexcept
 {
+    if (!m_raw) [[unlikely]]
+        return {};
     return make_array_view_size<PacketSideData>(m_raw->side_data, m_raw->side_data_elems);
 }
 
 ArrayView<const AVPacketSideData, PacketSideData, std::size_t> Packet::sideData() const noexcept
 {
+    if (!m_raw) [[unlikely]]
+        return {};
     return make_array_view_size<PacketSideData>((const AVPacketSideData*)m_raw->side_data, m_raw->side_data_elems);
 }
 
-size_t Packet::sideDataElements() const noexcept
+void Packet::freeSideData() noexcept
+{
+    if (!m_raw) [[unlikely]]
+        return;
+    av_packet_free_side_data(m_raw);
+}
+
+size_t Packet::sideDataCount() const noexcept
 {
     return m_raw ? m_raw->side_data_elems : 0;
 }
@@ -573,12 +588,12 @@ AVPacketSideDataType PacketSideData::type() const noexcept
     return m_raw.type;
 }
 
-std::span<const uint8_t> PacketSideData::data() const noexcept
+std::span<const uint8_t> PacketSideData::span() const noexcept
 {
     return {m_raw.data, std::size_t(m_raw.size)};
 }
 
-std::span<uint8_t> PacketSideData::data() noexcept
+std::span<uint8_t> PacketSideData::span() noexcept
 {
     return {m_raw.data, std::size_t(m_raw.size)};
 }

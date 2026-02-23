@@ -6,8 +6,8 @@
 #  include <format>
 #endif
 
-#include "rational.h"
-#include "timestamp.h"
+#include "avcpp/rational.h"
+#include "avcpp/timestamp.h"
 
 #ifdef _MSC_VER
 #    pragma warning(disable : 4702) // Disable warning: unreachable code

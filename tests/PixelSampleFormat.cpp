@@ -6,10 +6,10 @@
 #    include <format>
 #endif
 
-#include "ffmpeg.h"
-#include "avutils.h"
-#include "pixelformat.h"
-#include "sampleformat.h"
+#include "avcpp/ffmpeg.h"
+#include "avcpp/avutils.h"
+#include "avcpp/pixelformat.h"
+#include "avcpp/sampleformat.h"
 
 #ifdef _MSC_VER
 #    pragma warning(disable : 4702) // Disable warning: unreachable code

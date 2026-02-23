@@ -1,6 +1,5 @@
 #pragma once
 
-#include "avconfig.h"
 #include "avcompat.h"
 
 #include <vector>
@@ -34,8 +33,8 @@ public:
 
     std::string_view name() const noexcept;
     AVPacketSideDataType type() const noexcept;
-    std::span<const uint8_t> data() const noexcept;
-    std::span<uint8_t> data() noexcept;
+    std::span<const uint8_t> span() const noexcept;
+    std::span<uint8_t> span() noexcept;
 
     static std::string_view name(AVPacketSideDataType type);
 
@@ -155,14 +154,14 @@ public:
      * Return count of the side data elements
      * @return
      */
-    std::size_t sideDataElements() const noexcept;
+    std::size_t sideDataCount() const noexcept;
 
     /**
      * Get side data element by index
      * @param index
      * @return
      */
-    PacketSideData sideData(std::size_t index) noexcept;
+    PacketSideData sideDataIndex(std::size_t index) noexcept;
 
     /**
      * Observe all packet side data via iterators
@@ -173,6 +172,8 @@ public:
      */
     ArrayView<AVPacketSideData, PacketSideData, std::size_t> sideData() noexcept;
     ArrayView<const AVPacketSideData, PacketSideData, std::size_t> sideData() const noexcept;
+
+    void freeSideData() noexcept;
 
     /**
      * Add side data of the given type into packet. Data will be cloned.

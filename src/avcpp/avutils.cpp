@@ -278,6 +278,12 @@ bool AvDeleter::operator ()(AVFilterInOut *&filterInOut)
 }
 #endif // if AVCPP_HAS_AVFILTER
 
+bool AvDeleter::operator() (struct AVBufferRef* &bufferRef)
+{
+    av_buffer_unref(&bufferRef);
+    return true;
+}
+
 } // ::v1
 
 #if !AVCPP_HAS_AVFORMAT

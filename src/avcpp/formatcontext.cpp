@@ -300,6 +300,14 @@ Stream FormatContext::addStream(const AudioEncoderContext &encCtx, OptionalError
     return addStream(static_cast<const CodecContext2&>(encCtx), ec);
 }
 
+FormatContext::StreamsView FormatContext::streams(OptionalErrorCode ec) const {
+    if (!m_raw || !m_raw->streams || !m_raw->nb_streams) {
+        throws_if(ec, Errors::Unallocated);
+        return {};
+    }
+    return std::span(m_raw->streams, m_raw->nb_streams) | std::views::transform(_StreamTransform{this});
+}
+
 bool FormatContext::seekable() const noexcept
 {
     if (m_raw && m_raw->pb) {

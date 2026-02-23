@@ -4,21 +4,21 @@
 #include <memory>
 #include <functional>
 
-#include "avconfig.h"
+#include "avcpp/avconfig.h"
 
-#include "av.h"
-#include "ffmpeg.h"
-#include "codec.h"
-#include "packet.h"
-#include "videorescaler.h"
-#include "audioresampler.h"
-#include "avutils.h"
+#include "avcpp/av.h"
+#include "avcpp/ffmpeg.h"
+#include "avcpp/codec.h"
+#include "avcpp/packet.h"
+#include "avcpp/videorescaler.h"
+#include "avcpp/audioresampler.h"
+#include "avcpp/avutils.h"
 
 // API2
-#include "format.h"
-#include "formatcontext.h"
-#include "codec.h"
-#include "codeccontext.h"
+#include "avcpp/format.h"
+#include "avcpp/formatcontext.h"
+#include "avcpp/codec.h"
+#include "avcpp/codeccontext.h"
 
 using namespace std;
 using namespace av;
@@ -58,11 +58,10 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        for (size_t i = 0; i < ictx.streamsCount(); ++i) {
-            auto st = ictx.stream(i);
+        for (auto&& st : ictx.streams()) {
             if (st.mediaType() == AVMEDIA_TYPE_VIDEO) {
-                videoStream = i;
                 vst = st;
+                videoStream = st.index();
                 break;
             }
         }
@@ -77,11 +76,9 @@ int main(int argc, char **argv)
         if (vst.isValid()) {
             vdec = VideoDecoderContext(vst);
 
-
-            Codec codec = findDecodingCodec(vdec.raw()->codec_id);
-
-            vdec.setCodec(codec);
-            vdec.setRefCountedFrames(true);
+            //Codec codec = findDecodingCodec(vdec.raw()->codec_id);
+            //vdec.setCodec(codec);
+            //vdec.setRefCountedFrames(true);
 
             vdec.open({{"threads", "1"}}, Codec(), ec);
             //vdec.open(ec);
@@ -109,15 +106,15 @@ int main(int argc, char **argv)
             for (auto side : pkt.sideData()) {
                 clog << "  found packet side data: " << side.name() << endl;
                 if (side.type() == AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL) {
-                    assert(side.data().size() >= sizeof(uint64_t));
+                    assert(side.span().size() >= sizeof(uint64_t));
 
                     // BE
                     uint64_t idType{};
-                    memcpy(&idType, side.data().data(), sizeof(idType));
+                    memcpy(&idType, side.span().data(), sizeof(idType));
                     //idType = std::endian::native == std::endian::little ? std::byteswap(idType) : idType;
                     idType = av_be2ne64(idType);
 
-                    auto payload = side.data().subspan(sizeof(uint64_t));
+                    auto payload = side.span().subspan(sizeof(uint64_t));
                     clog << "    matroska block additions id type = " << idType << endl;
                     if (!payload.empty() && idType == 100 /* vendor specific */) {
                         clog << "      block additions data: " << std::string_view{(const char*)payload.data(), payload.size()} << endl;

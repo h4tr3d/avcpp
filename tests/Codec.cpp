@@ -6,8 +6,8 @@
 #    include <format>
 #endif
 
-#include "codec.h"
-#include "ffmpeg.h"
+#include "avcpp/codec.h"
+#include "avcpp/ffmpeg.h"
 
 #ifdef _MSC_VER
 #    pragma warning(disable : 4702) // Disable warning: unreachable code

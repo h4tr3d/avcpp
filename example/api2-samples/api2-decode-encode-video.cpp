@@ -4,19 +4,19 @@
 #include <memory>
 #include <functional>
 
-#include "av.h"
-#include "ffmpeg.h"
-#include "codec.h"
-#include "packet.h"
-#include "videorescaler.h"
-#include "audioresampler.h"
-#include "avutils.h"
+#include "avcpp/av.h"
+#include "avcpp/ffmpeg.h"
+#include "avcpp/codec.h"
+#include "avcpp/packet.h"
+#include "avcpp/videorescaler.h"
+#include "avcpp/audioresampler.h"
+#include "avcpp/avutils.h"
 
 // API2
-#include "format.h"
-#include "formatcontext.h"
-#include "codec.h"
-#include "codeccontext.h"
+#include "avcpp/format.h"
+#include "avcpp/formatcontext.h"
+#include "avcpp/codec.h"
+#include "avcpp/codeccontext.h"
 
 using namespace std;
 using namespace av;

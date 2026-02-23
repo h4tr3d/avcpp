@@ -6,7 +6,7 @@
 #  include <format>
 #endif
 
-#include "rational.h"
+#include "avcpp/rational.h"
 
 #ifdef _MSC_VER
 # pragma warning (disable : 4702) // Disable warning: unreachable code

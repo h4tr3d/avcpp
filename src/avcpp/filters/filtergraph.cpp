@@ -4,10 +4,10 @@
 #include <sstream>
 #include <cassert>
 
-#include "avutils.h"
 #include "filtergraph.h"
-//#include "filterinout.h"
-#include "avlog.h"
+
+#include "avcpp/avutils.h"
+#include "avcpp/avlog.h"
 
 #if AVCPP_HAS_AVFILTER
 

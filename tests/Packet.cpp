@@ -2,7 +2,8 @@
 
 #include <vector>
 
-#include "packet.h"
+#include "avcpp/avconfig.h"
+#include "avcpp/packet.h"
 
 #ifdef _MSC_VER
 # pragma warning (disable : 4702) // Disable warning: unreachable code
@@ -178,6 +179,92 @@ TEST_CASE("Packet define", "[Packet][Construct]")
             CHECK(pkt.timeBase() == tb);
         }
     }
+
+#if AVCPP_HAS_PKT_SIDE_DATA
+    SECTION("Packet side data")
+    {
+        const av::Rational tb{1000,1};
+        av::Packet in_pkt{pkt_data, sizeof(pkt_data)};
+        CHECK(in_pkt.timeBase() == av::Rational());
+        in_pkt.setTimeBase(tb);
+        CHECK(in_pkt.timeBase() == tb);
+
+        {
+            auto sd = in_pkt.sideData(AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL);
+            REQUIRE(sd.empty());
+        }
+
+        // Iterate on null packet
+        {
+            av::Packet pkt;
+            // its a hack to gen null for the nested m_raw
+            //auto ptr = frame.raw();
+            pkt.reset();
+            REQUIRE(pkt.raw() == nullptr);
+
+            int count{};
+            for (auto&& sd : pkt.sideData()) {
+                ++count;
+            }
+            REQUIRE(count == 0);
+        }
+
+        std::string meta = "field=val;field2=val2";
+
+        {
+            std::vector<uint8_t> side_block_adds(meta.size() + sizeof(uint64_t));
+            std::span out = side_block_adds;
+            uint64_t id = 100;
+            //if (std::endian::native == std::endian::little)
+            if (AV_HAVE_BIGENDIAN == 0)
+                id = av_bswap64(id);
+            memcpy(out.data(), &id, sizeof(id));
+            out = out.subspan(sizeof(id));
+            std::ranges::copy(meta, out.begin());
+
+            REQUIRE_NOTHROW(in_pkt.addSideData(AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL, side_block_adds));
+            REQUIRE(in_pkt.sideDataCount() == 1);
+        }
+
+        {
+            auto sd = in_pkt.sideData(AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL);
+            REQUIRE(!sd.empty());
+            REQUIRE(sd.size() == sizeof(uint64_t) + meta.size());
+
+            auto in = sd;
+            uint64_t id{};
+            memcpy(&id, in.data(), sizeof(uint64_t));
+            in = in.subspan(sizeof(uint64_t));
+            //if (std::endian::native == std::endian::little)
+            if (AV_HAVE_BIGENDIAN == 0)
+                id = av_bswap64(id);
+            REQUIRE(id == 100);
+
+            std::string meta_read{reinterpret_cast<const char*>(in.data()), in.size()};
+            REQUIRE(meta_read == meta);
+        }
+
+        {
+            auto const& pkt = in_pkt;
+            auto sd = pkt.sideData(AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL);
+            REQUIRE(!sd.empty());
+            REQUIRE(sd.size() == sizeof(uint64_t) + meta.size());
+
+            auto in = sd;
+            uint64_t id{};
+            memcpy(&id, in.data(), sizeof(uint64_t));
+            in = in.subspan(sizeof(uint64_t));
+            //if (std::endian::native == std::endian::little)
+            if (AV_HAVE_BIGENDIAN == 0)
+                id = av_bswap64(id);
+            REQUIRE(id == 100);
+
+            std::string meta_read{reinterpret_cast<const char*>(in.data()), in.size()};
+            REQUIRE(meta_read == meta);
+        }
+
+    }
+#endif
 
 #ifdef __cpp_lib_print
     SECTION("std::format formatter :: Side Data")
