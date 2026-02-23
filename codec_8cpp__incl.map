@@ -1,9 +1,9 @@
-<map id="src/codec.cpp" name="src/codec.cpp">
-<area shape="rect" id="node1" title=" " alt="" coords="1013,5,1123,32"/>
+<map id="src/avcpp/codec.cpp" name="src/avcpp/codec.cpp">
+<area shape="rect" id="node1" title=" " alt="" coords="991,5,1145,32"/>
 <area shape="rect" id="node2" href="$avcompat_8h.html" title=" " alt="" coords="141,453,240,480"/>
 <area shape="rect" id="node4" href="$codec_8h.html" title=" " alt="" coords="1032,80,1104,107"/>
 <area shape="rect" id="node21" href="$avutils_8h.html" title=" " alt="" coords="1399,229,1478,256"/>
-<area shape="rect" id="node3" title=" " alt="" coords="1123,528,1213,555"/>
+<area shape="rect" id="node3" title=" " alt="" coords="1102,528,1234,555"/>
 <area shape="rect" id="node5" title=" " alt="" coords="1257,155,1300,181"/>
 <area shape="rect" id="node6" title=" " alt="" coords="1305,304,1367,331"/>
 <area shape="rect" id="node7" title=" " alt="" coords="1087,304,1164,331"/>

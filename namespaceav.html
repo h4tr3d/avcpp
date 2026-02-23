@@ -76,6 +76,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
+<tr class="memitem:namespaceav_1_1buffer"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav_1_1buffer.html">buffer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceav_1_1codec__context"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav_1_1codec__context.html">codec_context</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceav_1_1frame"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav_1_1frame.html">frame</a></td></tr>
@@ -113,6 +115,12 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structav_1_1EqualComparator.html">EqualComparator</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1BufferRefView.html">BufferRefView</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-owning view for the nested AVBufferRef.  <a href="classav_1_1BufferRefView.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1BufferRef.html">BufferRef</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Light weight wrapper for the FFmpeg AVBufferRef functionality.  <a href="classav_1_1BufferRef.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Codec.html">Codec</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html">CodecContext2</a></td></tr>
@@ -144,6 +152,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1DictionaryArray.html">DictionaryArray</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array of Dictinaries wrapper.  <a href="classav_1_1DictionaryArray.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1FrameCommon.html">FrameCommon</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Frame.html">Frame</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -221,34 +231,36 @@ Enumerations</h2></td></tr>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905aefab9f1fe511021e3212681fb42a15ef">DictOutOfRage</a>
 , <br />
 &#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ae1860b6dc43f80fbf338e8f12475c017">DictNoKey</a>
+, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a9a107e5868ac65d2cdfc7a5420192c09">BufferReadonly</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ab995795081e41596cf1fe3df6895427f">FormatCantAddStream</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a6f29cf8a3b7b88855563a28e56117865">FormatAlreadyOpened</a>
-, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905af90c8b1decafb5b24195d971275f9e99">FormatNullOutputFormat</a>
 , <br />
-&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ae5993e9017e2eec5bd8aebfc6d57f224">FormatWrongCountOfStreamOptions</a>
+&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905af90c8b1decafb5b24195d971275f9e99">FormatNullOutputFormat</a>
+, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ae5993e9017e2eec5bd8aebfc6d57f224">FormatWrongCountOfStreamOptions</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a1fae286f7fe928dfee5fa728a31c28a7">FormatNoStreams</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ac8c8c9594adbc94f69d366916262ed98">FormatInvalidStreamIndex</a>
-, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a1da3132ded7e81147ca9fe19b4962fa7">FormatNotOpened</a>
 , <br />
-&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ab67a5b62f8ae5fa40d16c6e38e22da28">FormatInvalidDirection</a>
+&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a1da3132ded7e81147ca9fe19b4962fa7">FormatNotOpened</a>
+, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ab67a5b62f8ae5fa40d16c6e38e22da28">FormatInvalidDirection</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905afb4332f789792b1fb58a1d9eac321837">FormatHeaderNotWriten</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a24d0555befd233c3911ab2966d65dc25">FormatCodecUnsupported</a>
-, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a570ba3dadc4860d37a8493699aa6e41e">ResamplerInvalidParameters</a>
 , <br />
-&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a6e6e5ecca29077a146d3b5bbffae5631">ResamplerNotInited</a>
+&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a570ba3dadc4860d37a8493699aa6e41e">ResamplerInvalidParameters</a>
+, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a6e6e5ecca29077a146d3b5bbffae5631">ResamplerNotInited</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905af2b1bf3e873f8413c58f99214e0bca3e">ResamplerInputChanges</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ab0fb11a0e601f48e3c2bafde69933f37">ResamplerOutputChanges</a>
-, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ae5543d51cf004af55cab86c72adc23e0">RescalerInvalidParameters</a>
 , <br />
-&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ac05e44fa225fa53aa411c967b41e419b">RescalerInternalSwsError</a>
+&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ae5543d51cf004af55cab86c72adc23e0">RescalerInvalidParameters</a>
+, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905ac05e44fa225fa53aa411c967b41e419b">RescalerInternalSwsError</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a054170ee930378e7c50c33e9fc7effae">FilterNotInFilterGraph</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a4a6a34a088f21633655c862338232af4">FilterGraphDescriptionEmpty</a>
-, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a43be925eaee7a45b349cb3ec28f25c61">IncorrectBufferSrcFilter</a>
 , <br />
-&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a5a2e83ca3894e38725e9b9c0d9a7fde5">IncorrectBufferSrcMediaType</a>
+&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a43be925eaee7a45b349cb3ec28f25c61">IncorrectBufferSrcFilter</a>
+, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a5a2e83ca3894e38725e9b9c0d9a7fde5">IncorrectBufferSrcMediaType</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a8fd75d537f7c63f23fba88ce58534e3d">IncorrectBufferSinkFilter</a>
 , <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a32299838e9eecaa4beb9c15e25cc273f">IncorrectBufferSinkMediaType</a>
-, <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a179c618bdfc226c7b0471e20a1d7c43c">MixBufferSinkAccess</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a179c618bdfc226c7b0471e20a1d7c43c">MixBufferSinkAccess</a>
 <br />
  }</td></tr>
 <tr class="separator:aa0be1141896ec64853346d02dbf2d905"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -401,8 +413,9 @@ Functions</h2></td></tr>
 <tr class="separator:ac6326c95d03730dc4a784986c4dd2991"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae040d790b73ffc63d502144c08b94a85"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#ae040d790b73ffc63d502144c08b94a85">operator!=</a> (const <a class="el" href="classav_1_1Dictionary_1_1Entry.html">Dictionary::Entry</a> &amp;lhs, const <a class="el" href="classav_1_1Dictionary_1_1Entry.html">Dictionary::Entry</a> &amp;rhs)</td></tr>
 <tr class="separator:ae040d790b73ffc63d502144c08b94a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7254bfa5398ae26f2a267271a61d7b4b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a7254bfa5398ae26f2a267271a61d7b4b">dummy_buffer_free</a> (void *, uint8_t *)</td></tr>
-<tr class="separator:a7254bfa5398ae26f2a267271a61d7b4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af580033ca649a24f95b61677a4c1ddaa"><td class="memTemplParams" colspan="2">template&lt;typename LookupProc &gt; </td></tr>
+<tr class="memitem:af580033ca649a24f95b61677a4c1ddaa"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classav_1_1PixelFormat.html">PixelFormat</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#af580033ca649a24f95b61677a4c1ddaa">adjustJpegPixelFormat</a> (AVFrame *frame, LookupProc &amp;&amp;proc)</td></tr>
+<tr class="separator:af580033ca649a24f95b61677a4c1ddaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2e740f3a15d0f74298e77c1f6bfc409"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:af2e740f3a15d0f74298e77c1f6bfc409"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#af2e740f3a15d0f74298e77c1f6bfc409">operator/</a> (T num, <a class="el" href="classav_1_1Rational.html">Rational</a> value) -&gt; std::enable_if_t&lt; std::is_floating_point_v&lt; T &gt;||std::is_integral_v&lt; T &gt;, <a class="el" href="classav_1_1Rational.html">Rational</a> &gt;</td></tr>
 <tr class="separator:af2e740f3a15d0f74298e77c1f6bfc409"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -531,6 +544,7 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="aa0be1141896ec64853346d02dbf2d905a6f7520ac46011c387640c38c099c0f1e"></a>FrameInvalid&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="aa0be1141896ec64853346d02dbf2d905aefab9f1fe511021e3212681fb42a15ef"></a>DictOutOfRage&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="aa0be1141896ec64853346d02dbf2d905ae1860b6dc43f80fbf338e8f12475c017"></a>DictNoKey&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa0be1141896ec64853346d02dbf2d905a9a107e5868ac65d2cdfc7a5420192c09"></a>BufferReadonly&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="aa0be1141896ec64853346d02dbf2d905ab995795081e41596cf1fe3df6895427f"></a>FormatCantAddStream&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="aa0be1141896ec64853346d02dbf2d905a6f29cf8a3b7b88855563a28e56117865"></a>FormatAlreadyOpened&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="aa0be1141896ec64853346d02dbf2d905af90c8b1decafb5b24195d971275f9e99"></a>FormatNullOutputFormat&#160;</td><td class="fielddoc"></td></tr>
@@ -593,6 +607,44 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="af580033ca649a24f95b61677a4c1ddaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af580033ca649a24f95b61677a4c1ddaa">&#9670;&nbsp;</a></span>adjustJpegPixelFormat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LookupProc &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classav_1_1PixelFormat.html">PixelFormat</a> av::adjustJpegPixelFormat </td>
+          <td>(</td>
+          <td class="paramtype">AVFrame *&#160;</td>
+          <td class="paramname"><em>frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">LookupProc &amp;&amp;&#160;</td>
+          <td class="paramname"><em>proc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aad297f78da09a7ed62a2ff24f04ec61b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aad297f78da09a7ed62a2ff24f04ec61b">&#9670;&nbsp;</a></span>array_to_container() <span class="overload">[1/4]</span></h2>
 
@@ -841,42 +893,6 @@ template&lt;typename T , typename Container , typename Callable &gt; </div>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="a7254bfa5398ae26f2a267271a61d7b4b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7254bfa5398ae26f2a267271a61d7b4b">&#9670;&nbsp;</a></span>dummy_buffer_free()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static void av::dummy_buffer_free </td>
-          <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>

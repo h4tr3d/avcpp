@@ -1,12 +1,14 @@
 var searchData=
 [
-  ['base_5fiterator_734',['base_iterator',['../classav_1_1LinkedListWrapper_1_1base__iterator.html#a75f04fd74b0355db78c17830cfc6cfcd',1,'av::LinkedListWrapper::base_iterator']]],
-  ['begin_735',['begin',['../classav_1_1Dictionary.html#a35ef397c2e65db9b61ee3478f5c6f82e',1,'av::Dictionary::begin()'],['../classav_1_1Dictionary.html#a206e56f66900fc354d1c798bbd6d5a3a',1,'av::Dictionary::begin() const'],['../classav_1_1LinkedListWrapper.html#a3efecdd7081806fc8e6165fd970a4dfb',1,'av::LinkedListWrapper::begin()'],['../classav_1_1LinkedListWrapper.html#ae1f114d75699c5820fa48148397177ff',1,'av::LinkedListWrapper::begin() const']]],
-  ['bitrate_736',['bitRate',['../classav_1_1CodecContext2.html#a16d79ee879085fffe4bf37f793bb46a6',1,'av::CodecContext2']]],
-  ['bitraterange_737',['bitRateRange',['../classav_1_1CodecContext2.html#aa2add60527fd7b9ddabc4621477132dd',1,'av::CodecContext2']]],
-  ['bitratetolerance_738',['bitRateTolerance',['../classav_1_1VideoCodecContext.html#a02adf9b7a52bf675d1b8260a07957fbc',1,'av::VideoCodecContext']]],
-  ['bitsperpixel_739',['bitsPerPixel',['../classav_1_1PixelFormat.html#a10955ce0056fa142e9636027f623ee84',1,'av::PixelFormat']]],
-  ['bitspersample_740',['bitsPerSample',['../classav_1_1SampleFormat.html#a55d0e4ec3cbf40e069bb1cb574b4d056',1,'av::SampleFormat']]],
-  ['buffersize_741',['bufferSize',['../classav_1_1VideoFrame.html#aa0d2d775732a541d7246fdadbf78cb3c',1,'av::VideoFrame']]],
-  ['bytespersample_742',['bytesPerSample',['../classav_1_1SampleFormat.html#aef4d1e6d5d3da4d6b080b77332795a8c',1,'av::SampleFormat']]]
+  ['base_5fiterator_762',['base_iterator',['../classav_1_1LinkedListWrapper_1_1base__iterator.html#a75f04fd74b0355db78c17830cfc6cfcd',1,'av::LinkedListWrapper::base_iterator']]],
+  ['begin_763',['begin',['../classav_1_1Dictionary.html#a35ef397c2e65db9b61ee3478f5c6f82e',1,'av::Dictionary::begin()'],['../classav_1_1Dictionary.html#a206e56f66900fc354d1c798bbd6d5a3a',1,'av::Dictionary::begin() const'],['../classav_1_1LinkedListWrapper.html#a3efecdd7081806fc8e6165fd970a4dfb',1,'av::LinkedListWrapper::begin()'],['../classav_1_1LinkedListWrapper.html#ae1f114d75699c5820fa48148397177ff',1,'av::LinkedListWrapper::begin() const']]],
+  ['bitrate_764',['bitRate',['../classav_1_1CodecContext2.html#a16d79ee879085fffe4bf37f793bb46a6',1,'av::CodecContext2']]],
+  ['bitraterange_765',['bitRateRange',['../classav_1_1CodecContext2.html#aa2add60527fd7b9ddabc4621477132dd',1,'av::CodecContext2']]],
+  ['bitratetolerance_766',['bitRateTolerance',['../classav_1_1VideoCodecContext.html#a02adf9b7a52bf675d1b8260a07957fbc',1,'av::VideoCodecContext']]],
+  ['bitsperpixel_767',['bitsPerPixel',['../classav_1_1PixelFormat.html#a10955ce0056fa142e9636027f623ee84',1,'av::PixelFormat']]],
+  ['bitspersample_768',['bitsPerSample',['../classav_1_1SampleFormat.html#a55d0e4ec3cbf40e069bb1cb574b4d056',1,'av::SampleFormat']]],
+  ['bufferref_769',['BufferRef',['../classav_1_1BufferRef.html#a5ccf088815803259e9d31f53fbf95363',1,'av::BufferRef::BufferRef(std::size_t size, bool keepUninit=true) noexcept'],['../classav_1_1BufferRef.html#a1937f183cdf13a555af430c9be27b99b',1,'av::BufferRef::BufferRef(BufferRef &amp;&amp;other) noexcept'],['../classav_1_1BufferRef.html#a8be1d7ab774eada6fb464f020c0b81ad',1,'av::BufferRef::BufferRef(const BufferRef &amp;other) noexcept'],['../classav_1_1BufferRef.html#ad95b49e5eb1f0df70bc14a8fa113c22e',1,'av::BufferRef::BufferRef(const uint8_t *data, size_t size, int flags=0) noexcept'],['../classav_1_1BufferRef.html#a2be670e3967744f769a1fff1612bfbe4',1,'av::BufferRef::BufferRef(const uint8_t *data, size_t size, void(*free)(void *opaque, uint8_t *data), void *opaque, int flags=0) noexcept'],['../classav_1_1BufferRef.html#ad7d8ace4067d972f235b9c591ab5de20',1,'av::BufferRef::BufferRef(uint8_t *data, size_t size, void(*free)(void *opaque, uint8_t *data), void *opaque, int flags=0) noexcept'],['../classav_1_1BufferRef.html#a1aef55d2bb97c53cbb0782134d300ba5',1,'av::BufferRef::BufferRef()=default']]],
+  ['bufferrefview_770',['BufferRefView',['../classav_1_1BufferRefView.html#a08c9cd15a158f94d8c3945a669769306',1,'av::BufferRefView::BufferRefView()=default'],['../classav_1_1BufferRefView.html#adf68777e6ca4542f230eea987d64cd9b',1,'av::BufferRefView::BufferRefView(BufferRef &amp;ref)'],['../classav_1_1BufferRefView.html#ab03975fff39115d4f3a87d6951cabecd',1,'av::BufferRefView::BufferRefView(const BufferRef &amp;ref)']]],
+  ['buffersize_771',['bufferSize',['../classav_1_1VideoFrame.html#aa0d2d775732a541d7246fdadbf78cb3c',1,'av::VideoFrame']]],
+  ['bytespersample_772',['bytesPerSample',['../classav_1_1SampleFormat.html#aef4d1e6d5d3da4d6b080b77332795a8c',1,'av::SampleFormat']]]
 ];

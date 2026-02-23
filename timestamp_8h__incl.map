@@ -1,9 +1,9 @@
-<map id="src/timestamp.h" name="src/timestamp.h">
-<area shape="rect" id="node1" title=" " alt="" coords="782,5,910,32"/>
+<map id="src/avcpp/timestamp.h" name="src/avcpp/timestamp.h">
+<area shape="rect" id="node1" title=" " alt="" coords="761,5,931,32"/>
 <area shape="rect" id="node2" title=" " alt="" coords="742,80,809,107"/>
 <area shape="rect" id="node3" href="$avutils_8h.html" title=" " alt="" coords="612,155,691,181"/>
 <area shape="rect" id="node27" href="$rational_8h.html" title=" " alt="" coords="1080,80,1164,107"/>
-<area shape="rect" id="node4" title=" " alt="" coords="1284,453,1373,480"/>
+<area shape="rect" id="node4" title=" " alt="" coords="1263,453,1395,480"/>
 <area shape="rect" id="node5" title=" " alt="" coords="793,229,859,256"/>
 <area shape="rect" id="node6" title=" " alt="" coords="883,229,942,256"/>
 <area shape="rect" id="node7" title=" " alt="" coords="5,229,68,256"/>

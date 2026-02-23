@@ -1,16 +1,16 @@
 var searchData=
 [
-  ['element_5ftype_170',['element_type',['../classav_1_1LinkedListWrapper.html#af79aa2759833579af486f4928c9feade',1,'av::LinkedListWrapper']]],
-  ['element_5fwrapper_5ftype_171',['element_wrapper_type',['../classav_1_1LinkedListWrapper.html#a098b556625901e46f5c670bfb14bf638',1,'av::LinkedListWrapper']]],
-  ['emptydeleter_172',['EmptyDeleter',['../structav_1_1EmptyDeleter.html',1,'av']]],
-  ['encode_173',['encode',['../classav_1_1VideoEncoderContext.html#a79e20d0cf4f21e69b14b00da2469293c',1,'av::VideoEncoderContext::encode(OptionalErrorCode ec=throws())'],['../classav_1_1VideoEncoderContext.html#a0d64caf6a65bdfbdb1d14a8679248d70',1,'av::VideoEncoderContext::encode(const VideoFrame &amp;inFrame, OptionalErrorCode ec=throws())'],['../classav_1_1AudioEncoderContext.html#a4453578bbbb0e53c7b3938253cd09474',1,'av::AudioEncoderContext::encode(OptionalErrorCode ec=throws())'],['../classav_1_1AudioEncoderContext.html#af1d2f1de3da1906054d29d203bf11c7b',1,'av::AudioEncoderContext::encode(const AudioSamples &amp;inSamples, OptionalErrorCode ec=throws())']]],
-  ['encodecommon_174',['encodeCommon',['../classav_1_1CodecContext2.html#a886815f78ad566dae2c78ac6be23dd27',1,'av::CodecContext2::encodeCommon(class Packet &amp;outPacket, const AVFrame *inFrame, int &amp;gotPacket, int(*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *)) noexcept'],['../classav_1_1CodecContext2.html#a02b9b4612c52b98fcde7a92f9040c6d8',1,'av::CodecContext2::encodeCommon(class Packet &amp;outPacket, const T &amp;inFrame, int &amp;gotPacket, int(*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *))']]],
-  ['encoding_175',['Encoding',['../namespaceav.html#a600677bbf00ef8be6735bfed71bfa288a169a6f6b44766410bffebf76ff3dcf17',1,'av']]],
-  ['encodingcodec_176',['encodingCodec',['../classav_1_1CodecParametersView.html#a347205e7b3525a0dc05f0450bab04f3f',1,'av::CodecParametersView']]],
-  ['end_177',['end',['../classav_1_1LinkedListWrapper.html#abd33a523919485a166a989cfb3bf976b',1,'av::LinkedListWrapper::end()'],['../classav_1_1Dictionary.html#a269a5a4280223f8df95ca18de466e64a',1,'av::Dictionary::end()'],['../classav_1_1Dictionary.html#a1b666886d56000f9785e0d0cc97a248e',1,'av::Dictionary::end() const'],['../classav_1_1LinkedListWrapper.html#a5fe270a927b6fa3025c4b5d4e6a659b2',1,'av::LinkedListWrapper::end()']]],
-  ['entry_178',['Entry',['../classav_1_1Dictionary_1_1Entry.html',1,'av::Dictionary']]],
-  ['equalcomparator_179',['EqualComparator',['../structav_1_1EqualComparator.html',1,'av::EqualComparator&lt; T &gt;'],['../structav_1_1EqualComparator.html#aa74565ca5ade101def1207f4d7a87d68',1,'av::EqualComparator::EqualComparator()']]],
-  ['error2string_180',['error2string',['../namespaceav.html#a58a30d94ed34cf03fed656df299a1aaa',1,'av']]],
-  ['errors_181',['Errors',['../namespaceav.html#aa0be1141896ec64853346d02dbf2d905',1,'av']]],
-  ['exception_182',['Exception',['../classav_1_1Exception.html',1,'av']]]
+  ['element_5ftype_180',['element_type',['../classav_1_1LinkedListWrapper.html#af79aa2759833579af486f4928c9feade',1,'av::LinkedListWrapper']]],
+  ['element_5fwrapper_5ftype_181',['element_wrapper_type',['../classav_1_1LinkedListWrapper.html#a098b556625901e46f5c670bfb14bf638',1,'av::LinkedListWrapper']]],
+  ['emptydeleter_182',['EmptyDeleter',['../structav_1_1EmptyDeleter.html',1,'av']]],
+  ['encode_183',['encode',['../classav_1_1VideoEncoderContext.html#a79e20d0cf4f21e69b14b00da2469293c',1,'av::VideoEncoderContext::encode(OptionalErrorCode ec=throws())'],['../classav_1_1VideoEncoderContext.html#a0d64caf6a65bdfbdb1d14a8679248d70',1,'av::VideoEncoderContext::encode(const VideoFrame &amp;inFrame, OptionalErrorCode ec=throws())'],['../classav_1_1AudioEncoderContext.html#a4453578bbbb0e53c7b3938253cd09474',1,'av::AudioEncoderContext::encode(OptionalErrorCode ec=throws())'],['../classav_1_1AudioEncoderContext.html#af1d2f1de3da1906054d29d203bf11c7b',1,'av::AudioEncoderContext::encode(const AudioSamples &amp;inSamples, OptionalErrorCode ec=throws())']]],
+  ['encodecommon_184',['encodeCommon',['../classav_1_1CodecContext2.html#a886815f78ad566dae2c78ac6be23dd27',1,'av::CodecContext2::encodeCommon(class Packet &amp;outPacket, const AVFrame *inFrame, int &amp;gotPacket, int(*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *)) noexcept'],['../classav_1_1CodecContext2.html#a02b9b4612c52b98fcde7a92f9040c6d8',1,'av::CodecContext2::encodeCommon(class Packet &amp;outPacket, const T &amp;inFrame, int &amp;gotPacket, int(*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *))']]],
+  ['encoding_185',['Encoding',['../namespaceav.html#a600677bbf00ef8be6735bfed71bfa288a169a6f6b44766410bffebf76ff3dcf17',1,'av']]],
+  ['encodingcodec_186',['encodingCodec',['../classav_1_1CodecParametersView.html#a347205e7b3525a0dc05f0450bab04f3f',1,'av::CodecParametersView']]],
+  ['end_187',['end',['../classav_1_1LinkedListWrapper.html#abd33a523919485a166a989cfb3bf976b',1,'av::LinkedListWrapper::end()'],['../classav_1_1Dictionary.html#a269a5a4280223f8df95ca18de466e64a',1,'av::Dictionary::end()'],['../classav_1_1Dictionary.html#a1b666886d56000f9785e0d0cc97a248e',1,'av::Dictionary::end() const'],['../classav_1_1LinkedListWrapper.html#a5fe270a927b6fa3025c4b5d4e6a659b2',1,'av::LinkedListWrapper::end()']]],
+  ['entry_188',['Entry',['../classav_1_1Dictionary_1_1Entry.html',1,'av::Dictionary']]],
+  ['equalcomparator_189',['EqualComparator',['../structav_1_1EqualComparator.html',1,'av::EqualComparator&lt; T &gt;'],['../structav_1_1EqualComparator.html#aa74565ca5ade101def1207f4d7a87d68',1,'av::EqualComparator::EqualComparator()']]],
+  ['error2string_190',['error2string',['../namespaceav.html#a58a30d94ed34cf03fed656df299a1aaa',1,'av']]],
+  ['errors_191',['Errors',['../namespaceav.html#aa0be1141896ec64853346d02dbf2d905',1,'av']]],
+  ['exception_192',['Exception',['../classav_1_1Exception.html',1,'av']]]
 ];

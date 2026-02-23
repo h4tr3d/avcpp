@@ -1,6 +1,6 @@
-<map id="src/filters/filtercontext.h" name="src/filters/filtercontext.h">
-<area shape="rect" id="node1" title=" " alt="" coords="114,5,291,32"/>
-<area shape="rect" id="node2" href="$filtercontext_8cpp.html" title=" " alt="" coords="5,80,197,107"/>
-<area shape="rect" id="node3" href="$filtergraph_8h.html" title=" " alt="" coords="221,80,387,107"/>
-<area shape="rect" id="node4" href="$filtergraph_8cpp.html" title=" " alt="" coords="214,155,394,181"/>
+<map id="src/avcpp/filters/filtercontext.h" name="src/avcpp/filters/filtercontext.h">
+<area shape="rect" id="node1" title=" " alt="" coords="135,5,355,32"/>
+<area shape="rect" id="node2" href="$filtercontext_8cpp.html" title=" " alt="" coords="5,80,240,107"/>
+<area shape="rect" id="node3" href="$filtergraph_8h.html" title=" " alt="" coords="264,80,472,107"/>
+<area shape="rect" id="node4" href="$filtergraph_8cpp.html" title=" " alt="" coords="257,155,479,181"/>
 </map>

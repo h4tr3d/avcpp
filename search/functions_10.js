@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['quality_925',['quality',['../classav_1_1VideoFrame.html#ae707252394e01f853714bd8d5e05ee73',1,'av::VideoFrame']]]
+  ['quality_957',['quality',['../classav_1_1VideoFrame.html#ae707252394e01f853714bd8d5e05ee73',1,'av::VideoFrame']]]
 ];

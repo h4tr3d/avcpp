@@ -1,3 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structFFWrapperRef.html" title=" " alt="" coords="5,5,159,32"/>
+<area shape="rect" id="node1" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,56,204,83"/>
+<area shape="rect" id="node2" href="$classav_1_1FrameCommon.html" title=" " alt="" coords="252,56,397,83"/>
+<area shape="rect" id="node3" href="$classav_1_1Frame.html" title=" " alt="" coords="453,5,647,32"/>
+<area shape="rect" id="node5" href="$classav_1_1Frame.html" title=" " alt="" coords="445,56,655,83"/>
+<area shape="rect" id="node7" href="$classav_1_1Frame.html" title=" " alt="" coords="488,107,612,133"/>
+<area shape="rect" id="node4" href="$classav_1_1VideoFrame.html" title=" " alt="" coords="711,5,833,32"/>
+<area shape="rect" id="node6" href="$classav_1_1AudioSamples.html" title=" " alt="" coords="703,56,841,83"/>
 </map>

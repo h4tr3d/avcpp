@@ -1,5 +1,6 @@
 <map id="av::VideoFrame" name="av::VideoFrame">
-<area shape="rect" id="node1" title=" " alt="" coords="43,155,166,181"/>
-<area shape="rect" id="node2" href="$classav_1_1Frame.html" title=" " alt="" coords="7,80,202,107"/>
-<area shape="rect" id="node3" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,5,204,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="43,229,166,256"/>
+<area shape="rect" id="node2" href="$classav_1_1Frame.html" title=" " alt="" coords="7,155,202,181"/>
+<area shape="rect" id="node3" href="$classav_1_1FrameCommon.html" title=" " alt="" coords="32,80,177,107"/>
+<area shape="rect" id="node4" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,5,204,32"/>
 </map>

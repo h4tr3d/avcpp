@@ -1,12 +1,12 @@
-<map id="src/timestamp.cpp" name="src/timestamp.cpp">
-<area shape="rect" id="node1" title=" " alt="" coords="949,5,1091,32"/>
+<map id="src/avcpp/timestamp.cpp" name="src/avcpp/timestamp.cpp">
+<area shape="rect" id="node1" title=" " alt="" coords="927,5,1113,32"/>
 <area shape="rect" id="node2" title=" " alt="" coords="812,304,897,331"/>
 <area shape="rect" id="node3" title=" " alt="" coords="937,80,996,107"/>
 <area shape="rect" id="node4" href="$timestamp_8h.html" title=" " alt="" coords="1021,80,1126,107"/>
 <area shape="rect" id="node6" href="$avutils_8h.html" title=" " alt="" coords="1329,229,1407,256"/>
 <area shape="rect" id="node5" title=" " alt="" coords="940,155,1007,181"/>
 <area shape="rect" id="node29" href="$rational_8h.html" title=" " alt="" coords="1031,155,1115,181"/>
-<area shape="rect" id="node7" title=" " alt="" coords="1569,528,1658,555"/>
+<area shape="rect" id="node7" title=" " alt="" coords="1547,528,1679,555"/>
 <area shape="rect" id="node8" title=" " alt="" coords="1695,304,1761,331"/>
 <area shape="rect" id="node9" title=" " alt="" coords="1785,304,1844,331"/>
 <area shape="rect" id="node10" title=" " alt="" coords="1869,304,1931,331"/>

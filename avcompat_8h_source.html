@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>avcpp: src/avcompat.h Source File</title>
+<title>avcpp: src/avcpp/avcompat.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -63,7 +63,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_a2c7323bfb573831362cdc1b2a36ff04.html">avcpp</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -73,7 +73,7 @@ $(function() {
 <div class="contents">
 <a href="avcompat_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;avconfig.h&quot;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;avcpp/avconfig.h&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#ifdef AVCPP_AVCODEC_VERSION_MAJOR</span></div>
@@ -122,61 +122,63 @@ $(function() {
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// if AVCPP_HAS_AVFORMAT</span></div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">// AVBuffer API switch to size_t</span></div>
 <div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="avcompat_8h.html#a9f3844f120ccf485483eb92641ee729a">   51</a></span>&#160;<span class="preprocessor">#define AVCPP_API_AVBUFFER_SIZE_T (AVCPP_AVUTIL_VERSION_MAJOR &gt;= 57)</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#if defined(__ICL) || defined (__INTEL_COMPILER)</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#    define FF_ENABLE_DEPRECATION_WARNINGS  __pragma(warning(pop))</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#elif defined(_MSC_VER)</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:4996))</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#    define FF_ENABLE_DEPRECATION_WARNINGS  __pragma(warning(pop))</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#elif defined(__GNUC__) || defined(__clang__)</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#    define FF_DISABLE_DEPRECATION_WARNINGS _Pragma(&quot;GCC diagnostic ignored \&quot;-Wdeprecated-declarations\&quot;&quot;</span>)</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#    define FF_ENABLE_DEPRECATION_WARNINGS  _Pragma(&quot;GCC diagnostic warning \&quot;-Wdeprecated-declarations\&quot;&quot;</span>)</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="avcompat_8h.html#a5837cafc419c2b5ecdb1dfa330675d13">   63</a></span>&#160;<span class="preprocessor">#    define FF_DISABLE_DEPRECATION_WARNINGS</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="avcompat_8h.html#aa6ef004d10669ab4ee062367a014ea33">   64</a></span>&#160;<span class="preprocessor">#    define FF_ENABLE_DEPRECATION_WARNINGS</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">// Allow to use spece-ship operator, whem possible</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="avcompat_8h.html#a357cddf84e2bc5c5991e763fc81671c9">   68</a></span>&#160;<span class="preprocessor">#define AVCPP_USE_SPACESHIP_OPERATOR 0</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#if __has_include(&lt;compare&gt;)</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#  include &lt;compare&gt;</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#  if defined(__cpp_lib_three_way_comparison) &amp;&amp; __cpp_lib_three_way_comparison &gt;= 201907</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#    undef  AVCPP_USE_SPACESHIP_OPERATOR</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#    define AVCPP_USE_SPACESHIP_OPERATOR 1</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#  endif</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">// avcodec</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#if AVCPP_AVCODEC_VERSION_INT &lt; AV_VERSION_INT(54,59,100) </span><span class="comment">// 1.0</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> avcodec_free_frame(AVFrame **frame)</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;{</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    av_freep(frame);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">// avfilter</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#if AVCPP_HAS_AVFILTER</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">#if AVCPP_AVFILTER_VERSION_INT &lt; AV_VERSION_INT(3,17,100) </span><span class="comment">// 1.0</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *avfilter_pad_get_name(AVFilterPad *pads, <span class="keywordtype">int</span> pad_idx)</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;{</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordflow">return</span> pads[pad_idx].name;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="keyword">inline</span> AVMediaType avfilter_pad_get_type(AVFilterPad *pads, <span class="keywordtype">int</span> pad_idx)</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;{</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordflow">return</span> pads[pad_idx].type;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// if AVCPP_HAS_AVFILTER</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">// Wrapper around av_free_packet()/av_packet_unref()</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#if AVCPP_AVCODEC_VERSION_INT &lt; AV_VERSION_INT(58,8,100) </span><span class="comment">// &lt; 3.0</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="preprocessor">#define avpacket_unref(p) av_free_packet(p)</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno"><a class="line" href="avcompat_8h.html#a1d284cd1d98085b420f9cd0992f8a6c0">  105</a></span>&#160;<span class="preprocessor">#define avpacket_unref(p) av_packet_unref(p)</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">// AVSideDataDescriptor exisits</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="avcompat_8h.html#a36a8c8d10b09f18c6e06e6aff35f0c61">   53</a></span>&#160;<span class="preprocessor">#define AVCPP_API_HAS_AVSIDEDATADESCRIPTOR (AVCPP_AVUTIL_VERSION_INT &gt;= AV_VERSION_INT(59, 10, 100))</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#if defined(__ICL) || defined (__INTEL_COMPILER)</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#    define FF_ENABLE_DEPRECATION_WARNINGS  __pragma(warning(pop))</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#elif defined(_MSC_VER)</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:4996))</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#    define FF_ENABLE_DEPRECATION_WARNINGS  __pragma(warning(pop))</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#elif defined(__GNUC__) || defined(__clang__)</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#    define FF_DISABLE_DEPRECATION_WARNINGS _Pragma(&quot;GCC diagnostic ignored \&quot;-Wdeprecated-declarations\&quot;&quot;</span>)</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#    define FF_ENABLE_DEPRECATION_WARNINGS  _Pragma(&quot;GCC diagnostic warning \&quot;-Wdeprecated-declarations\&quot;&quot;</span>)</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="avcompat_8h.html#a5837cafc419c2b5ecdb1dfa330675d13">   65</a></span>&#160;<span class="preprocessor">#    define FF_DISABLE_DEPRECATION_WARNINGS</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="avcompat_8h.html#aa6ef004d10669ab4ee062367a014ea33">   66</a></span>&#160;<span class="preprocessor">#    define FF_ENABLE_DEPRECATION_WARNINGS</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">// Allow to use spece-ship operator, whem possible</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="avcompat_8h.html#a357cddf84e2bc5c5991e763fc81671c9">   70</a></span>&#160;<span class="preprocessor">#define AVCPP_USE_SPACESHIP_OPERATOR 0</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#if __has_include(&lt;compare&gt;)</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#  include &lt;compare&gt;</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#  if defined(__cpp_lib_three_way_comparison) &amp;&amp; __cpp_lib_three_way_comparison &gt;= 201907</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#    undef  AVCPP_USE_SPACESHIP_OPERATOR</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#    define AVCPP_USE_SPACESHIP_OPERATOR 1</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#  endif</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">// avcodec</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#if AVCPP_AVCODEC_VERSION_INT &lt; AV_VERSION_INT(54,59,100) </span><span class="comment">// 1.0</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> avcodec_free_frame(AVFrame **frame)</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;{</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    av_freep(frame);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment">// avfilter</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">#if AVCPP_HAS_AVFILTER</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor">#if AVCPP_AVFILTER_VERSION_INT &lt; AV_VERSION_INT(3,17,100) </span><span class="comment">// 1.0</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *avfilter_pad_get_name(AVFilterPad *pads, <span class="keywordtype">int</span> pad_idx)</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;{</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">return</span> pads[pad_idx].name;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keyword">inline</span> AVMediaType avfilter_pad_get_type(AVFilterPad *pads, <span class="keywordtype">int</span> pad_idx)</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;{</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordflow">return</span> pads[pad_idx].type;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// if AVCPP_HAS_AVFILTER</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">// Wrapper around av_free_packet()/av_packet_unref()</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#if AVCPP_AVCODEC_VERSION_INT &lt; AV_VERSION_INT(58,8,100) </span><span class="comment">// &lt; 3.0</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="preprocessor">#define avpacket_unref(p) av_free_packet(p)</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno"><a class="line" href="avcompat_8h.html#a1d284cd1d98085b420f9cd0992f8a6c0">  107</a></span>&#160;<span class="preprocessor">#define avpacket_unref(p) av_packet_unref(p)</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

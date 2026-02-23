@@ -1,5 +1,5 @@
-<map id="src/stream.h" name="src/stream.h">
-<area shape="rect" id="node1" title=" " alt="" coords="310,5,413,32"/>
+<map id="src/avcpp/stream.h" name="src/avcpp/stream.h">
+<area shape="rect" id="node1" title=" " alt="" coords="288,5,435,32"/>
 <area shape="rect" id="node2" title=" " alt="" coords="261,379,339,405"/>
 <area shape="rect" id="node3" href="$averror_8h.html" title=" " alt="" coords="2128,379,2208,405"/>
 <area shape="rect" id="node6" href="$ffmpeg_8h.html" title=" " alt="" coords="1213,453,1293,480"/>
@@ -18,7 +18,7 @@
 <area shape="rect" id="node15" title=" " alt="" coords="447,528,580,555"/>
 <area shape="rect" id="node16" title=" " alt="" coords="605,528,763,555"/>
 <area shape="rect" id="node17" title=" " alt="" coords="787,528,999,555"/>
-<area shape="rect" id="node9" title=" " alt="" coords="1031,603,1121,629"/>
+<area shape="rect" id="node9" title=" " alt="" coords="1010,603,1142,629"/>
 <area shape="rect" id="node19" title=" " alt="" coords="147,304,207,331"/>
 <area shape="rect" id="node20" title=" " alt="" coords="145,379,237,405"/>
 <area shape="rect" id="node21" href="$avutils_8h.html" title=" " alt="" coords="771,304,850,331"/>
