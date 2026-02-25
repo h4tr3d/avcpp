@@ -109,6 +109,57 @@ macro(set_component_found _component )
 endmacro()
 
 #
+### Macro: parse_lib_version
+#
+# Reads the file '${_pkgconfig}/version.h' (and version_major.h) in the component's _INCLUDE_DIR,
+# and parses #define statements for COMPONENT_VERSION_(MAJOR|MINOR|PATCH)
+# into a dotted string ${_component}_VERSION.
+#
+# Needed if the version is not supplied via pkgconfig's PC_${_component}_VERSION
+macro(parse_lib_version _component _libname )
+  set(_version_h       "${${_component}_INCLUDE_DIRS}/${_libname}/version.h")
+  set(_version_major_h "${${_component}_INCLUDE_DIRS}/${_libname}/version_major.h")
+
+  string(TOUPPER "${_libname}" _prefix)
+
+  if(EXISTS "${_version_major_h}")
+    file(STRINGS "${_version_major_h}" _maj_version
+        REGEX "^[ \t]*#define[ \t]+${_prefix}_VERSION_MAJOR[ \t]+[0-9]+[ \t]*$")
+      string(REGEX REPLACE
+        "^.*${_prefix}_VERSION_MAJOR[ \t]+([0-9]+)[ \t]*$"
+        "\\1"
+        _maj_match "${_maj_version}")
+    set(_parts_major "${_maj_match}")
+  endif()
+
+  if(EXISTS "${_version_h}")
+    #message(STATUS "Parsing ${_component} version from ${_version_h}")
+    set(_parts)
+
+    # prepend initially major part, if any
+    if (_parts_major)
+        list(APPEND _parts "${_parts_major}")
+    endif()
+
+    foreach(_lvl MAJOR MINOR MICRO)
+      if (_parts_major AND "${_lvl}" STREQUAL "MAJOR")
+        continue()
+      endif()
+
+      file(STRINGS "${_version_h}" _lvl_version
+        REGEX "^[ \t]*#define[ \t]+${_prefix}_VERSION_${_lvl}[ \t]+[0-9]+[ \t]*$")
+      string(REGEX REPLACE
+        "^.*${_prefix}_VERSION_${_lvl}[ \t]+([0-9]+)[ \t]*$"
+        "\\1"
+        _lvl_match "${_lvl_version}")
+      list(APPEND _parts "${_lvl_match}")
+    endforeach()
+    list(JOIN _parts "." ${_component}_VERSION)
+    message(STATUS "Found ${_component} version: ${${_component}_VERSION}")
+  endif()
+endmacro()
+
+#
 ### Macro: find_component
 #
 # Checks for the given component by invoking pkgconfig and then looking up the libraries and
@@ -118,7 +169,7 @@ macro(find_component _component _pkgconfig _library _header)
 
   # use pkg-config to get the directories and then use these values
   # in the FIND_PATH() and FIND_LIBRARY() calls
-  find_package(PkgConfig)
+  find_package(PkgConfig QUIET)
   if (PKG_CONFIG_FOUND)
     pkg_check_modules(PC_${_component} ${_pkgconfig})
   endif ()
@@ -132,28 +183,26 @@ macro(find_component _component _pkgconfig _library _header)
       ffmpeg
   )
 
-  find_library(${_component}_LIBRARY NAMES ${PC_${_component}_LIBRARIES} ${_library}
+  find_library(${_component}_LIBRARIES NAMES ${PC_${_component}_LIBRARIES} ${_library}
       HINTS
       ${PC_${_component}_LIBDIR}
       ${PC_${_component}_LIBRARY_DIRS}
       ${PC_FFMPEG_LIBRARY_DIRS}
   )
 
-  #message(STATUS "L0: ${${_component}_LIBRARIES}")
-  #message(STATUS "L1: ${PC_${_component}_LIBRARIES}")
-  #message(STATUS "L2: ${_library}")
+  # Take version from PkgConfig, or parse from its version.h header
+  if (PC_${_component}_VERSION)
+    set(${_component}_VERSION ${PC_${_component}_VERSION})
+  else()
+    parse_lib_version(${_component} ${_pkgconfig})
+  endif()
 
   set(${_component}_DEFINITIONS  ${PC_${_component}_CFLAGS_OTHER})
-  set(${_component}_VERSION      ${PC_${_component}_VERSION})
-  set(${_component}_LIBRARY_DIRS ${PC_${_component}_LIBRARY_DIRS})
-  set(${_component}_LIBRARIES    ${PC_${_component}_LIBRARIES})
 
   set_component_found(${_component})
 
   mark_as_advanced(
-    ${_component}_LIBRARY
     ${_component}_INCLUDE_DIRS
-    ${_component}_LIBRARY_DIRS
     ${_component}_LIBRARIES
     ${_component}_DEFINITIONS
     ${_component}_VERSION)
@@ -186,11 +235,10 @@ if (TRUE)
       message(STATUS "Libs: ${${_component}_LIBRARIES} | ${PC_${_component}_LIBRARIES}")
 
       # message(STATUS "Required component ${_component} present.")
-      set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    ${${_component}_LIBRARY} ${${_component}_LIBRARIES})
+      set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    ${${_component}_LIBRARIES})
       set(FFMPEG_DEFINITIONS  ${FFMPEG_DEFINITIONS}  ${${_component}_DEFINITIONS})
 
       list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
-      list(APPEND FFMPEG_LIBRARY_DIRS ${${_component}_LIBRARY_DIRS})
 
       string(TOLOWER ${_component} _lowerComponent)
       if (NOT TARGET FFmpeg::${_lowerComponent})
@@ -199,7 +247,6 @@ if (TRUE)
             INTERFACE_COMPILE_OPTIONS "${${_component}_DEFINITIONS}"
             INTERFACE_INCLUDE_DIRECTORIES ${${_component}_INCLUDE_DIRS}
             INTERFACE_LINK_LIBRARIES "${${_component}_LIBRARY} ${${_component}_LIBRARIES} ${PC_${_component}_LIBRARIES}"
-            INTERFACE_LINK_DIRECTORIES "${PC_${_component}_LIBDIR} ${PC_${_component}_LIBRARY_DIRS} ${PC_FFMPEG_LIBRARY_DIRS}"
             IMPORTED_LINK_INTERFACE_MULTIPLICITY 3)
       endif()
     else()
@@ -223,9 +270,8 @@ if (NOT TARGET FFmpeg::FFmpeg)
   add_library(FFmpeg INTERFACE)
   set_target_properties(FFmpeg PROPERTIES
       INTERFACE_COMPILE_OPTIONS "${FFMPEG_DEFINITIONS}"
-      INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_INCLUDE_DIRS}
-      INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}"
-      INTERFACE_LINK_DIRECTORIES "${FFMPEG_LIBRARY_DIRS}")
+      INTERFACE_INCLUDE_DIRECTORIES "${FFMPEG_INCLUDE_DIRS}"
+      INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}")
   add_library(FFmpeg::FFmpeg ALIAS FFmpeg)
 endif()
 
