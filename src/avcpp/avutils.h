@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <functional>
 #include <type_traits>
+#include <limits>
 
 #if AVCPP_CXX_STANDARD >= 20
 #  include <span>
@@ -512,10 +513,10 @@ T guessValue(const T& value, L list)
         return value;
 
     T best = value;
-    T bestDistance = std::numeric_limits<T>::max();
+    T bestDistance = (std::numeric_limits<T>::max)();
 
     for (auto&& cur : list) {
-        auto const distance = std::max(cur, value) - std::min(cur, value);
+        auto const distance = (std::max)(cur, value) - (std::min)(cur, value);
         if (distance < bestDistance) {
             bestDistance = distance;
             best = cur;
@@ -567,11 +568,11 @@ T guessValue(const T& value, const L * list, C endListComparator)
         return value;
 
     T best = value;
-    T bestDistance = std::numeric_limits<T>::max();
+    T bestDistance = (std::numeric_limits<T>::max)();
 
     for (const L * ptr = list; !endListComparator(*ptr); ++ptr) {
         auto const cur = *ptr;
-        auto const distance = std::max(cur, value) - std::min(cur, value);
+        auto const distance = (std::max)(cur, value) - (std::min)(cur, value);
         if (distance < bestDistance) {
             bestDistance = distance;
             best = cur;

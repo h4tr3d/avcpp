@@ -102,7 +102,7 @@ Timestamp operator+(const Timestamp &left, const Timestamp &right) noexcept
 Timestamp operator-(const Timestamp &left, const Timestamp &right) noexcept
 {
     // Use more good precision
-    auto tb = std::min(left.timebase(), right.timebase());
+    auto tb = (std::min)(left.timebase(), right.timebase());
     auto tsleft  = left.timebase().rescale(left.timestamp(), tb);
     auto tsright = right.timebase().rescale(right.timestamp(), tb);
 
@@ -123,7 +123,7 @@ Timestamp operator/(const Timestamp &left, const Timestamp &right) noexcept
     int num, den;
 
     // Use more good precision
-    auto tb = std::min(left.timebase(), right.timebase());
+    auto tb = (std::min)(left.timebase(), right.timebase());
     auto tsleft  = left.timebase().rescale(left.timestamp(), tb);
     auto tsright = right.timebase().rescale(right.timestamp(), tb);
 
