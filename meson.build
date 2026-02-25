@@ -9,8 +9,8 @@ project(
     version: '2.4.0',
 )
 
+subdir('src/avcpp')
 if not meson.is_subproject()
-    subdir('src')
 
     if get_option('build_samples')
         subdir('example/api2-samples')
@@ -19,8 +19,6 @@ if not meson.is_subproject()
 #    if get_option('build_tests')
 #        subdir('tests')
 #    endif
-else
-    subdir('src')
 endif
 
 if meson.version().version_compare('>=0.54.0')
