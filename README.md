@@ -174,7 +174,7 @@ include(FetchContent)
 FetchContent_Declare(
     avcpp
     GIT_REPOSITORY https://github.com/h4tr3d/avcpp.git
-    GIT_TAG        v2.90.2
+    GIT_TAG        v3.0.1
 )
 FetchContent_MakeAvailable(avcpp)
 ```
