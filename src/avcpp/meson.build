@@ -71,7 +71,10 @@ endforeach
 configure_file(input : 'avconfig.h.in',
                output : 'avconfig.h',
                configuration : conf_data,
-               format: 'cmake')
+               format: 'cmake',
+               install: true,
+               install_dir: 'include/avcpp'
+               )
 
 #setting the include dir to the current folder (src)
 avcpp_incdir = include_directories('.','filters','..')
