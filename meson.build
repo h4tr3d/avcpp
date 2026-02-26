@@ -6,7 +6,7 @@ project(
         'c_std=c11', 
         'cpp_std=c++20'
     ],
-    version: '2.4.0',
+    version: files('VERSION.txt'),
 )
 
 subdir('src/avcpp')
