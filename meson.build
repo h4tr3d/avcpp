@@ -1,10 +1,10 @@
 project(
     'avcpp',
     'cpp',
-    meson_version: '>= 0.50.0',
+    meson_version: '>= 0.54.1',
     default_options : [
         'c_std=c11', 
-        'cpp_std=c++17'
+        'cpp_std=c++20'
     ],
     version: '2.4.0',
 )
@@ -21,6 +21,4 @@ if not meson.is_subproject()
 #    endif
 endif
 
-if meson.version().version_compare('>=0.54.0')
-    meson.override_dependency('avcpp', avcpp_dep)
-endif
+meson.override_dependency('avcpp', avcpp_dep)

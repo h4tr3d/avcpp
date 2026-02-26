@@ -2,10 +2,10 @@ if meson.project_name() == ''
     project(
         'avcpp',
         'cpp',
-        meson_version: '>= 0.50.0',
+        meson_version: '>= 0.54.1',
         default_options : [
             'c_std=c11', 
-            'cpp_std=c++17'
+            'cpp_std=c++20'
         ],
         version: '2.4.0',
     )
@@ -35,18 +35,46 @@ av_libs = [
     ['postproc', '52.0.0'],
 ]
 
+conf_data = configuration_data()
+if get_option('cpp_std') == 'c++17'
+    conf_data.set('AVCPP_CXX_STANDARD', '17')
+elif get_option('cpp_std') == 'c++20'
+    conf_data.set('AVCPP_CXX_STANDARD', '20')
+elif get_option('cpp_std') == 'c++23'
+    conf_data.set('AVCPP_CXX_STANDARD', '23')
+elif get_option('cpp_std') == 'c++26'
+    conf_data.set('AVCPP_CXX_STANDARD', '26')
+endif
+
 foreach lib : av_libs
-    avcpp_deps += [
-        dependency(
+    lib_dep =  dependency(
             'lib@0@'.format(lib[0]),
             required: true,
             fallback : ['ffmpeg', 'lib@0@_dep'.format(lib[0])],
             version : '>=@0@'.format(lib[1]))
-    ]
+    avcpp_deps += [ lib_dep ]
+    lib_version = lib_dep.version().split('.')
+    conf_data.set(
+            'AVCPP_' + lib[0].to_upper() + '_VERSION_MAJOR',
+            lib_version[0])
+    conf_data.set(
+            'AVCPP_' + lib[0].to_upper() + '_VERSION_MINOR',
+            lib_version[1])
+    conf_data.set(
+            'AVCPP_' + lib[0].to_upper() + '_VERSION_PATCH',
+            lib_version[2])
+    conf_data.set(
+            'AVCPP_' + lib[0].to_upper() + '_VERSION_TWEAK',
+            '0')
 endforeach
 
+configure_file(input : 'avconfig.h.in',
+               output : 'avconfig.h',
+               configuration : conf_data,
+               format: 'cmake')
+
 #setting the include dir to the current folder (src)
-avcpp_incdir = include_directories('.','filters')
+avcpp_incdir = include_directories('.','filters','..')
 
 #listing all the source files
 avcpp_sources = [
