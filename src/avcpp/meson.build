@@ -86,6 +86,7 @@ avcpp_sources = [
     'codeccontext.cpp',
     'codec.cpp',
     'codecparameters.cpp',
+    'buffer.cpp',
     'dictionary.cpp',
     'formatcontext.cpp',
     'format.cpp',
