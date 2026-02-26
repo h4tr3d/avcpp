@@ -36,16 +36,17 @@ av_libs = [
 ]
 
 conf_data = configuration_data()
-if get_option('cpp_std') == 'c++17' or get_option('cpp_std') == 'gnu++17'
+cpp_std = get_option('cpp_std')
+if cpp_std in ['c++17', 'gnu++17', 'vc++17']
     conf_data.set('AVCPP_CXX_STANDARD', '17')
-elif get_option('cpp_std') == 'c++20' or get_option('cpp_std') == 'gnu++20'
+elif cpp_std in ['c++20', 'gnu++20', 'vc++20']
     conf_data.set('AVCPP_CXX_STANDARD', '20')
-elif get_option('cpp_std') == 'c++23' or get_option('cpp_std') == 'gnu++23'
+elif cpp_std in ['c++23', 'gnu++23', 'vc++23']
     conf_data.set('AVCPP_CXX_STANDARD', '23')
-elif get_option('cpp_std') == 'c++26' or get_option('cpp_std') == 'gnu++26'
+elif cpp_std in ['c++26', 'gnu++26', 'vc++26']
     conf_data.set('AVCPP_CXX_STANDARD', '26')
 else
-    warning('C++ standard setting ', get_option('cpp_std'), ' not recognized')
+    warning('C++ standard setting ', cpp_std, ' not recognized')
 endif
 
 foreach lib : av_libs
