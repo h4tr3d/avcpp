@@ -1,12 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
-
-#include "avcpp/format.h"
-#include "avcpp/codec.h"
-#include "avcpp/ffmpeg.h"
-#include "avcpp/formatcontext.h"
 #include "catch2/catch_message.hpp"
 
-#include <print>
+#include "avcpp/format.h"
+#include "avcpp/formatcontext.h"
 
 #if AVCPP_HAS_AVFORMAT && (AVCPP_CXX_STANDARD >= 20)
 
