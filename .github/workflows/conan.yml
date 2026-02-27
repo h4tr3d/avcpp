@@ -25,8 +25,8 @@ jobs:
       - uses: conan-io/setup-conan@v1
       - uses: actions/checkout@v6
 
-      - name: (if on Ubuntu) install libva-dev
-        run: sudo apt-get install -y libva-dev || true
+      - name: (if on Ubuntu) install system libraries
+        run: sudo apt-get install -y libva-dev libvdpau-dev || true
         if: ${{ contains(matrix.platform, 'ubuntu') }}
 
       - run: conan profile detect --force
