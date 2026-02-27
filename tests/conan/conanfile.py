@@ -1,6 +1,4 @@
 from conan import ConanFile
-from conan.tools.cmake import CMakeDeps, CMakeToolchain
-import os
 
 required_conan_version = ">=2.0"
 
@@ -14,15 +12,7 @@ class Avcpp(ConanFile):
         "ffmpeg": "8.0.1",
         "build": "CMake"
     }
+    generators = 'PkgConfigDeps'
 
     def requirements(self):
       self.requires(f"ffmpeg/{self.options.ffmpeg}", transitive_headers=True)
-
-    def generate(self):
-      tc = CMakeToolchain(self)
-      tc.generate()
-
-      deps = CMakeDeps(self)
-      deps.set_property("ffmpeg", "cmake_file_name", "FFmpeg")
-      deps.set_property("ffmpeg", "cmake_target_name", "FFmpeg::FFmpeg")
-      deps.generate()
