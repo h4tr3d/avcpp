@@ -195,10 +195,10 @@ void FormatContext::close()
         m_headerWriten = false;
 
         // To prevent free not out custom IO, e.g. setted via raw pointer access
-        if (m_customIO) {
+        if (m_customIO && avio) {
             // Close custom IO
             av_freep(&avio->buffer);
-            av_freep(&avio);
+            avio_context_free(&avio);
             m_customIO = false;
         }
     }
@@ -1067,25 +1067,23 @@ void FormatContext::openCustomIO(CustomIO *io, size_t internalBufferSize, bool i
 
     AVIOContext *ctx = nullptr;
     // Note: buffer must be allocated only with av_malloc() and friends
-    uint8_t *internalBuffer = (uint8_t*)av_mallocz(internalBufferSize);
-    if (!internalBuffer)
-    {
+    auto internalBuffer = av::mallocz<uint8_t>(internalBufferSize);
+    if (!internalBuffer) {
         throws_if(ec, ENOMEM, std::system_category());
         return;
     }
 
-    ctx = avio_alloc_context(internalBuffer, internalBufferSize, isWritable, (void*)(io), custom_io_read, custom_io_write, custom_io_seek);
-    if (ctx)
-    {
+    ctx = avio_alloc_context(internalBuffer.get(), internalBufferSize, isWritable, (void*)(io), custom_io_read, custom_io_write, custom_io_seek);
+    if (ctx) {
         ctx->seekable = io->seekable();
         m_raw->flags |= AVFMT_FLAG_CUSTOM_IO;
         m_customIO = true;
-    }
-    else
-    {
+    } else {
         throws_if(ec, ENOMEM, std::system_category());
         return;
     }
+
+    internalBuffer.release(); // drop owning
 
     m_raw->pb = ctx;
 }
