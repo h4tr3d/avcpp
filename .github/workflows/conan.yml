@@ -49,9 +49,10 @@ jobs:
       - run: conan install tests/conan -pr:a=tests/conan/conan.profile -b=missing -of build -o ffmpeg=${{ matrix.ffmpeg }} -o build=CMake
 
       - name: Generate CMake build (Windows)
+        shell: cmd
         run: |
-          . .\conanbuild.ps1
-          . .\conanrun.ps1
+          call conanbuild.bat
+          call conanrun.bat
           cmake -DCMAKE_BUILD_TYPE=Release ..
         working-directory: ${{ github.workspace }}/build
         if: runner.os == 'Windows'
@@ -71,9 +72,10 @@ jobs:
           PKG_CONFIG_PATH: ${{ github.workspace }}/build
 
       - name: Build (Windows)
+        shell: cmd
         run: |
-          . .\conanbuild.ps1
-          . .\conanrun.ps1
+          call conanbuild.bat
+          call conanrun.bat
           cmake --build .
         if: runner.os == 'Windows'
         working-directory: ${{ github.workspace }}/build
@@ -87,8 +89,9 @@ jobs:
         working-directory: ${{ github.workspace }}/build
 
       - name: Run the unit tests (Windows)
+        shell: cmd
         run: |
-          . .\conanrun.ps1
+          call conanrun.bat
           ctest --output-on-failure
         if: runner.os == 'Windows'
         working-directory: ${{ github.workspace }}/build
