@@ -24,30 +24,103 @@ namespace av {
 
 using AvioInterruptCb = std::function<int()>;
 
+/**
+ * Interface class to customize IO operations with FormatContext
+ *
+ * It can be used for:
+ * - From memory I/O
+ * - mmapped files I/O
+ * - Specific containers reading (tar, zip files, for example)
+ * - Device I/O
+ * - Network I/O
+ * - Pattern generation
+ * - Image output to the display (for the appropriate formats, like rawvideo)
+ *
+ * CustomIO object is not owned by the av::FormatContext and must be alived across av::FormatContext life.
+ *
+ */
 struct CustomIO
 {
     virtual ~CustomIO() {}
+
+    /**
+     * Write part of data to the destination.
+     *
+     * Note, FFmpeg does not consider return value ​​>0 as the number of bytes actually written and assumes that
+     *       all data has been written. Be careful. If data can't be fit into destination better return appropriate
+     *       AVERROR code.
+     *
+     * @see avio_write()
+     *
+     * @param data   block of data to write
+     * @param size   size of the data block
+     *
+     * @return >=0 on success. AVERROR(xxx) for the system errors (errno wrap) or AVERROR_xxx codes.
+     */
     virtual int     write(const uint8_t *data, size_t size) 
     {
         static_cast<void>(data);
         static_cast<void>(size);
         return -1; 
     }
+
+    /**
+     * Read part of data from the data source
+     *
+     * Note, if requested more data that exists to read, you should fill buffer as much as possible and return
+     * actual count of the readed data. 0 readed bytes is a valid case, but return it only if there is temporary issues
+     * with upstream that can be solved quickly. Otherwise return AVERROR_EOF of AVERROR(EBUSY)/AVERROR(EAGAIN).
+     *
+     * @see avio_read()
+     *
+     * @param data  buffer to store data
+     * @param size  size of the buffer
+     *
+     * @return count of the actually readed data. AVERROR(xxx) for the system errors (errno wrap) or AVERROR_xxx for the
+     *         FFmpeg errors. AVERROR_EOF should be returns when end of file reached.
+     */
     virtual int     read(uint8_t *data, size_t size)
     {
         static_cast<void>(data);
         static_cast<void>(size);
         return -1;
     }
-    /// whence is a one of SEEK_* from stdio.h
+
+    /**
+     * Seek in stream.
+     *
+     * @a whence may support special FFmpeg-ralated values:
+     * - AVSEEK_SIZE - return size without actual seeking. If unsupported, seek() may return <0
+     * - AVSEEK_FORCE - read official FFmpeg documentation. Just ignore it.
+     *
+     * @see avio_seek()
+     *
+     * @param offset   offset, may be less zero, equal zero or greater zero.
+     * @param whence   is a one of SEEK_* from stdio.h
+     *
+     * @return new position or AVERROR
+     */
     virtual int64_t     seek(int64_t offset, int whence)
     {
         static_cast<void>(offset);
         static_cast<void>(whence);
         return -1;
     }
-    /// Return combination of AVIO_SEEKABLE_* flags or zero
+
+    /**
+     * Defines supported types of buffer seeking
+     *
+     * Used to fill AVIOContext::seekable. In any case, seek() work on the byte level.
+     *
+     * @return combination of AVIO_SEEKABLE_* flags or zero
+     */
     virtual int         seekable() const { return 0; }
+
+    /**
+     * Name of the I/O. Didn't used for now.
+     *
+     * @return  null-terminated name of the Custom I/O implementation
+     */
     virtual const char* name() const { return ""; }
 };
 
@@ -190,12 +263,48 @@ public:
     void openOutput(const std::string& uri, Dictionary &options, OptionalErrorCode ec = throws());
     void openOutput(const std::string& uri, Dictionary &&options, OptionalErrorCode ec = throws());
 
-    // TBD
-    //void openOutput(const std::string& uri, OutputFormat format, OptionalErrorCode ec = throws());
-    //void openOutput(const std::string& uri, Dictionary &options, OutputFormat format, OptionalErrorCode ec = throws());
-    //void openOutput(const std::string& uri, Dictionary &&options, OutputFormat format, OptionalErrorCode ec = throws());
+    void openOutput(const std::string& uri, OutputFormat format, OptionalErrorCode ec = throws());
+    void openOutput(const std::string& uri, Dictionary &options, OutputFormat format, OptionalErrorCode ec = throws());
+    void openOutput(const std::string& uri, Dictionary &&options, OutputFormat format, OptionalErrorCode ec = throws());
 
+    /// @{
+    /**
+     * Open Output with Custom IO
+     *
+     * Variants with @ref formatOptions internally calls @ref initOutput() with same return value meaning.
+     *
+     * @param io
+     * @param formatOptions
+     * @param format
+     * @param ec
+     * @param internalBufferSize
+     */
     void openOutput(CustomIO *io, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+    bool openOutput(CustomIO *io, Dictionary &formatOptions, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+    bool openOutput(CustomIO *io, Dictionary &&formatOptions, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+
+    void openOutput(CustomIO *io, OutputFormat format, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+    bool openOutput(CustomIO *io, Dictionary &formatOptions, OutputFormat format, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+    bool openOutput(CustomIO *io, Dictionary &&formatOptions, OutputFormat format, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+    /// @}
+
+    /// @{
+    /**
+     * Init output without header writing
+     *
+     * If dictionary passed, writeHeader() should not be called with the same dictioary.
+     *
+     * @param options format options in the dictionary form
+     * @param ec      holder for the error code. If not-null and error code set return value has not matter
+     *
+     * @retval true   format inited in avformat_init_output, @see AVSTREAM_INIT_IN_INIT_OUTPUT
+     * @retval false  format inited (will be) in avformat_write_header(), @see AVSTREAM_INIT_IN_WRITE_HEADER
+     *
+     */
+    bool initOutput(OptionalErrorCode ec = throws());
+    bool initOutput(Dictionary &options, OptionalErrorCode ec = throws());
+    bool initOutput(Dictionary &&options, OptionalErrorCode ec = throws());
+    /// @}
 
     void writeHeader(OptionalErrorCode ec = throws());
     void writeHeader(Dictionary &options, OptionalErrorCode ec = throws());
@@ -219,7 +328,9 @@ public:
 private:
     void openInput(const std::string& uri, InputFormat format, AVDictionary **options, OptionalErrorCode ec);
     void openOutput(const std::string& uri, OutputFormat format, AVDictionary **options, OptionalErrorCode ec);
-    void writeHeader(AVDictionary **options, OptionalErrorCode ec = throws());
+    bool initOutput(Dictionary &options, bool closeOnError, OptionalErrorCode ec);
+    bool initOutput(AVDictionary **options, OptionalErrorCode ec);
+    void writeHeader(AVDictionary **options, OptionalErrorCode ec);
     void writePacket(const Packet &pkt, OptionalErrorCode ec, int(*write_proc)(AVFormatContext *, AVPacket *));
     void writeFrame(AVFrame *frame, int streamIndex, OptionalErrorCode ec, int(*write_proc)(AVFormatContext*,int,AVFrame*));
 

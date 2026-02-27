@@ -69,7 +69,7 @@ void set_uri(AVFormatContext *ctx, string_view uri)
 #if AVCPP_API_AVFORMAT_URL
         if (ctx->url)
             av_free(ctx->url);
-        ctx->url = av_strdup(uri.data());
+        ctx->url = av_strndup(uri.data(), uri.size());
 #else
         av_strlcpy(ctx->filename, uri.data(), std::min<size_t>(sizeof(ctx->filename), uri.size() + 1));
         ctx->filename[uri.size()] = '\0';
@@ -195,10 +195,10 @@ void FormatContext::close()
         m_headerWriten = false;
 
         // To prevent free not out custom IO, e.g. setted via raw pointer access
-        if (m_customIO) {
+        if (m_customIO && avio) {
             // Close custom IO
             av_freep(&avio->buffer);
-            av_freep(&avio);
+            avio_context_free(&avio);
             m_customIO = false;
         }
     }
@@ -606,27 +606,40 @@ Packet FormatContext::readPacket(OptionalErrorCode ec)
 
 void FormatContext::openOutput(const string &uri, OptionalErrorCode ec)
 {
-    return openOutput(uri, OutputFormat(), nullptr, ec);
+    openOutput(uri, OutputFormat(), nullptr, ec);
 }
 
 void FormatContext::openOutput(const string &uri, Dictionary &options, OptionalErrorCode ec)
 {
     auto ptr = options.release();
-    try
-    {
-        openOutput(uri, OutputFormat(), &ptr, ec);
+    ScopeOutAction onScopeExit{[ptr, &options] {
         options.assign(ptr);
-    }
-    catch (const Exception&)
-    {
-        options.assign(ptr);
-        throw;
-    }
+    }};
+    openOutput(uri, OutputFormat(), &ptr, ec);
 }
 
 void FormatContext::openOutput(const string &uri, Dictionary &&options, OptionalErrorCode ec)
 {
     return openOutput(uri, options, ec);
+}
+
+void FormatContext::openOutput(const std::string &uri, OutputFormat format, OptionalErrorCode ec)
+{
+    openOutput(uri, format, nullptr, ec);
+}
+
+void FormatContext::openOutput(const std::string &uri, Dictionary &options, OutputFormat format, OptionalErrorCode ec)
+{
+    auto ptr = options.release();
+    ScopeOutAction onScopeExit{[ptr, &options] {
+        options.assign(ptr);
+    }};
+    openOutput(uri, format, &ptr, ec);
+}
+
+void FormatContext::openOutput(const std::string &uri, Dictionary &&options, OutputFormat format, OptionalErrorCode ec)
+{
+    openOutput(uri, options, format, ec);
 }
 
 void FormatContext::openOutput(const string &uri, OutputFormat format, AVDictionary **options, OptionalErrorCode ec)
@@ -693,6 +706,57 @@ void FormatContext::openOutput(const string &uri, OutputFormat format, AVDiction
     m_isOpened = true;
 }
 
+bool FormatContext::initOutput(Dictionary &options, bool closeOnError, OptionalErrorCode ec)
+{
+    auto dict = options.release();
+    ScopeOutAction onScopeExit([this, &dict, &options, ec, closeOnError](){
+        options.assign(dict);
+        //fflog(AV_LOG_ERROR, "init output.... done with %s\n", (is_error(ec) || std::uncaught_exceptions() > 0) ? "error" : "no error");
+        if (closeOnError && (is_error(ec) || std::uncaught_exceptions() > 0)) {
+            close();
+        }
+    });
+    return initOutput(&dict, ec);
+}
+
+bool FormatContext::initOutput(AVDictionary **options, OptionalErrorCode ec)
+{
+    clear_if(ec);
+
+    if (!isOpened()) {
+        throws_if(ec, Errors::FormatNotOpened);
+        return false;
+    }
+
+    if (!isOutput()) {
+        throws_if(ec, Errors::FormatInvalidDirection);
+        return false;
+    }
+
+    // just silent it???
+    if (m_headerWriten) {
+        return true;
+    }
+
+    resetSocketAccess();
+    int ret = avformat_init_output(m_raw, options);
+    ret = checkPbError(ret);
+    if (ret < 0) {
+        throws_if(ec, ret, ffmpeg_category());
+        return false;
+    }
+
+    fflog(AV_LOG_ERROR, "avformat_init_output: ret = %d\n", ret);
+
+    switch (ret) {
+        case AVSTREAM_INIT_IN_INIT_OUTPUT:
+            return true;
+        case AVSTREAM_INIT_IN_WRITE_HEADER:
+        default:
+            return false;
+    }
+}
+
 void FormatContext::openOutput(CustomIO *io, OptionalErrorCode ec, size_t internalBufferSize)
 {
     openCustomIOOutput(io, internalBufferSize, ec);
@@ -700,6 +764,66 @@ void FormatContext::openOutput(CustomIO *io, OptionalErrorCode ec, size_t intern
     {
         m_isOpened = true;
     }
+}
+
+bool FormatContext::openOutput(CustomIO *io, Dictionary &options, OptionalErrorCode ec, size_t internalBufferSize)
+{
+    openOutput(io, ec, internalBufferSize);
+    if (!is_error(ec)) {
+        return initOutput(options, true, ec);
+    }
+    return false;
+}
+
+bool FormatContext::openOutput(CustomIO *io, Dictionary &&formatOptions, OptionalErrorCode ec, size_t internalBufferSize)
+{
+    openOutput(io, ec, internalBufferSize);
+    if (!is_error(ec)) {
+        return initOutput(formatOptions, true, ec);
+    }
+    return false;
+}
+
+void FormatContext::openOutput(CustomIO *io, OutputFormat format, OptionalErrorCode ec, size_t internalBufferSize)
+{
+    if (format.isNull())
+        format = outputFormat();
+    else
+        setFormat(format);
+    openOutput(io, ec, internalBufferSize);
+}
+
+bool FormatContext::openOutput(CustomIO *io, Dictionary &formatOptions, OutputFormat format, OptionalErrorCode ec, size_t internalBufferSize)
+{
+    openOutput(io, format, ec, internalBufferSize);
+    if (!is_error(ec)) {
+        return initOutput(formatOptions, true, ec);
+    }
+    return false;
+}
+
+bool FormatContext::openOutput(CustomIO *io, Dictionary &&formatOptions, OutputFormat format, OptionalErrorCode ec, size_t internalBufferSize)
+{
+    openOutput(io, format, ec, internalBufferSize);
+    if (!is_error(ec)) {
+        return initOutput(formatOptions, true, ec);
+    }
+    return false;
+}
+
+bool FormatContext::initOutput(OptionalErrorCode ec)
+{
+    return initOutput(nullptr, ec);
+}
+
+bool FormatContext::initOutput(Dictionary &options, OptionalErrorCode ec)
+{
+    return initOutput(options, false, ec);
+}
+
+bool FormatContext::initOutput(Dictionary &&options, OptionalErrorCode ec)
+{
+    return initOutput(options, false, ec);
 }
 
 void FormatContext::writeHeader(OptionalErrorCode ec)
@@ -728,6 +852,11 @@ void FormatContext::writeHeader(Dictionary &&options, OptionalErrorCode ec)
 void FormatContext::writeHeader(AVDictionary **options, OptionalErrorCode ec)
 {
     clear_if(ec);
+
+    if (m_headerWriten) {
+        // TBD: just silent it?
+        return;
+    }
 
     if (!isOpened())
     {
@@ -1051,6 +1180,12 @@ void FormatContext::openCustomIO(CustomIO *io, size_t internalBufferSize, bool i
 {
     clear_if(ec);
 
+    if (!io) {
+        fflog(AV_LOG_ERROR, "Open CustomIO with null io context");
+        throws_if(ec, Errors::InvalidArgument);
+        return;
+    }
+
     if (!m_raw)
     {
         throws_if(ec, Errors::Unallocated);
@@ -1067,25 +1202,23 @@ void FormatContext::openCustomIO(CustomIO *io, size_t internalBufferSize, bool i
 
     AVIOContext *ctx = nullptr;
     // Note: buffer must be allocated only with av_malloc() and friends
-    uint8_t *internalBuffer = (uint8_t*)av_mallocz(internalBufferSize);
-    if (!internalBuffer)
-    {
+    auto internalBuffer = av::mallocz<uint8_t>(internalBufferSize);
+    if (!internalBuffer) {
         throws_if(ec, ENOMEM, std::system_category());
         return;
     }
 
-    ctx = avio_alloc_context(internalBuffer, internalBufferSize, isWritable, (void*)(io), custom_io_read, custom_io_write, custom_io_seek);
-    if (ctx)
-    {
+    ctx = avio_alloc_context(internalBuffer.get(), internalBufferSize, isWritable, (void*)(io), custom_io_read, custom_io_write, custom_io_seek);
+    if (ctx) {
         ctx->seekable = io->seekable();
         m_raw->flags |= AVFMT_FLAG_CUSTOM_IO;
         m_customIO = true;
-    }
-    else
-    {
+    } else {
         throws_if(ec, ENOMEM, std::system_category());
         return;
     }
+
+    internalBuffer.release(); // drop owning
 
     m_raw->pb = ctx;
 }
