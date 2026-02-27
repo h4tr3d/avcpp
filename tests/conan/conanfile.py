@@ -16,6 +16,8 @@ class Avcpp(ConanFile):
 
     def requirements(self):
       self.requires(f"ffmpeg/{self.options.ffmpeg}", transitive_headers=True)
+      if self.settings.os == 'Windows':
+         self.tool_requires("pkgconf/2.5.1")
 
     def configure(self):
        self.options["ffmpeg"].fPIC = True
