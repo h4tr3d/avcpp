@@ -21,12 +21,12 @@ jobs:
       - uses: conan-io/setup-conan@v1
       - uses: actions/checkout@v6
 
-      - name: (if on Ubuntu) install fonts
+      - name: (if on Ubuntu) install libva-dev
         run: sudo apt-get install -y libva-dev || true
         if: ${{ contains(inputs.platform, 'ubuntu') }}
 
       - run: conan profile detect --force
-      - run: conan install --requires ffmpeg/${{ matrix.ffmpeg }} -b=missing -g cmaketoolchain -g cmakedeps -of build
+      - run: conan install --requires ffmpeg/${{ matrix.ffmpeg }} -b=missing -g CMakeToolchain -g CMakeDeps -of build
 
       - run: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmake" ..
         working-directory: ${{ github.workspace }}/build
