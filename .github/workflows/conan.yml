@@ -46,7 +46,7 @@ jobs:
       - run: conan install tests/conan -pr:a=tests/conan/conan.profile -b=missing -of build -o ffmpeg=${{ matrix.ffmpeg }} -o build=CMake
 
       - name: Generate CMake build (Windows)
-        shell: bash
+        shell: cmd
         run: |
           source conanbuild.sh
           cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -57,7 +57,7 @@ jobs:
           PKG_CONFIG_PATH: ${{ github.workspace }}/build
 
       - name: Generate CMake build (Linux/macOS)
-        shell: cmd
+        shell: bash
         run: |
           conanbuild.bat
           cmake -DCMAKE_BUILD_TYPE=Release ..
