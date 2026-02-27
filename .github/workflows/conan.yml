@@ -26,6 +26,8 @@ jobs:
         run: gh cache delete --all
         shell: bash
         if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: conan-io/setup-conan@v1
       - uses: actions/checkout@v6
