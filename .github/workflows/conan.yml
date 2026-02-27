@@ -27,7 +27,7 @@ jobs:
 
       - name: (if on Ubuntu) install libva-dev
         run: sudo apt-get install -y libva-dev || true
-        if: ${{ contains(inputs.platform, 'ubuntu') }}
+        if: ${{ contains(matrix.platform, 'ubuntu') }}
 
       - run: conan profile detect --force
       - run: conan install --requires ffmpeg/${{ matrix.ffmpeg }} -b=missing -g CMakeToolchain -g CMakeDeps -of build
