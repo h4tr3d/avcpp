@@ -4,7 +4,7 @@
 #include "avcpp/format.h"
 #include "avcpp/formatcontext.h"
 
-#if AVCPP_HAS_AVFORMAT && (AVCPP_CXX_STANDARD >= 20)
+#if AVCPP_HAS_AVFORMAT && (AVCPP_CXX_STANDARD >= 20) && defined(__cpp_lib_format)
 
 #include <format>
 
