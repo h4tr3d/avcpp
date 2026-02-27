@@ -16,3 +16,7 @@ class Avcpp(ConanFile):
 
     def requirements(self):
       self.requires(f"ffmpeg/{self.options.ffmpeg}", transitive_headers=True)
+
+    def configure(self):
+       self.options["ffmpeg"].fPIC = True
+       self.options["ffmpeg"].shared = True
