@@ -47,8 +47,8 @@ jobs:
       - run: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmake" ..
         working-directory: ${{ github.workspace }}/build
 
-      - run: cmake --build
+      - run: cmake --build .
         working-directory: ${{ github.workspace }}/build
 
-      - run: cmake --test
+      - run: cmake --test .
         working-directory: ${{ github.workspace }}/build
