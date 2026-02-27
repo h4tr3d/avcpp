@@ -22,6 +22,9 @@ jobs:
         ffmpeg: [ 8.0.1, 7.1.3, 6.1.1 ]
 
     steps:
+      - uses: conan-io/setup-conan@v1
+      - uses: actions/checkout@v6
+
       - name: Get conan home
         shell: bash
         id: conan_home
@@ -36,9 +39,6 @@ jobs:
         run: rm -rf ${{ steps.conan_home.outputs.path }}
         shell: bash
         if: github.event_name == 'schedule'
-
-      - uses: conan-io/setup-conan@v1
-      - uses: actions/checkout@v6
 
       - name: (if on Ubuntu) install system libraries
         run: sudo apt-get install -y libva-dev libvdpau-dev libx11-dev libx11-xcb-dev libfontenc-dev libice-dev libsm-dev libxau-dev libxaw7-dev || true
