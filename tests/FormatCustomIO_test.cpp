@@ -6,6 +6,8 @@
 
 #if AVCPP_HAS_AVFORMAT && (AVCPP_CXX_STANDARD >= 20)
 
+#include <format>
+
 static constexpr std::size_t     ImageW = 640;
 static constexpr std::size_t     ImageH = 480;
 static constexpr std::size_t     ImageCount = 11;
