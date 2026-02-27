@@ -41,8 +41,7 @@ jobs:
         if: github.event_name == 'schedule'
 
       - run: conan profile detect --force
-      - run: conan config install tests/conan/global.conf
-      - run: conan install tests/conan -b=missing -of build -o ffmpeg=${{ matrix.ffmpeg }} -o build=CMake
+      - run: conan install tests/conan -pr:a=tests/conan/conan.profile -b=missing -of build -o ffmpeg=${{ matrix.ffmpeg }} -o build=CMake
 
       - run: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmake" ..
         working-directory: ${{ github.workspace }}/build
