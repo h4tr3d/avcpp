@@ -16,9 +16,9 @@ if not meson.is_subproject()
         subdir('example/api2-samples')
     endif
 
-#    if get_option('build_tests')
-#        subdir('tests')
-#    endif
+    if get_option('build_tests')
+        subdir('tests')
+    endif
 endif
 
 meson.override_dependency('avcpp', avcpp_dep)
