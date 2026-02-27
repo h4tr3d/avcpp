@@ -40,12 +40,8 @@ jobs:
         shell: bash
         if: github.event_name == 'schedule'
 
-      - name: (if on Ubuntu) install system libraries
-        run: sudo apt-get install -y libva-dev libvdpau-dev libx11-dev libx11-xcb-dev libfontenc-dev libice-dev libsm-dev libxau-dev libxaw7-dev || true
-        if: ${{ contains(matrix.platform, 'ubuntu') }}
-
       - run: conan profile detect --force
-      - run: conan install --requires ffmpeg/${{ matrix.ffmpeg }} -b=missing -g CMakeToolchain -g CMakeDeps -of build
+      - run: conan install --requires ffmpeg/${{ matrix.ffmpeg }} -b=missing -g CMakeToolchain -g CMakeDeps -of build -c tools.system.package_manager:mode=install
 
       - run: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmake" ..
         working-directory: ${{ github.workspace }}/build
