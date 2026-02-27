@@ -48,7 +48,7 @@ jobs:
       - name: Generate CMake build (Windows)
         shell: cmd
         run: |
-          source conanbuild.sh
+          conanbuild.bat
           cmake -DCMAKE_BUILD_TYPE=Release ..
         working-directory: ${{ github.workspace }}/build
         if: runner.os == 'Windows'
@@ -59,7 +59,7 @@ jobs:
       - name: Generate CMake build (Linux/macOS)
         shell: bash
         run: |
-          conanbuild.bat
+          source conanbuild.sh
           cmake -DCMAKE_BUILD_TYPE=Release ..
         working-directory: ${{ github.workspace }}/build
         if: runner.os != 'Windows'
