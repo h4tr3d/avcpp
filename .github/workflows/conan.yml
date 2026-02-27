@@ -51,5 +51,5 @@ jobs:
       - run: cmake --build .
         working-directory: ${{ github.workspace }}/build
 
-      - run: cmake --test .
+      - run: ctest --output-on-failure
         working-directory: ${{ github.workspace }}/build
