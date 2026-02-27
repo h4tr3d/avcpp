@@ -41,7 +41,8 @@ jobs:
         if: github.event_name == 'schedule'
 
       - run: conan profile detect --force
-      - run: conan install --requires ffmpeg/${{ matrix.ffmpeg }} -b=missing -g CMakeToolchain -g CMakeDeps -of build -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=true
+      - run: conan config install test/conan/global.conf
+      - run: conan install test/conan -b=missing -of build -o ffmpeg=${{ matrix.ffmpeg }} -o build=CMake
 
       - run: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmake" ..
         working-directory: ${{ github.workspace }}/build
