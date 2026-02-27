@@ -20,5 +20,7 @@ class Avcpp(ConanFile):
          self.tool_requires("pkgconf/2.5.1")
 
     def configure(self):
-       self.options["ffmpeg"].fPIC = True
-       self.options["ffmpeg"].shared = True
+      self.options["ffmpeg"].fPIC = True
+      self.options["ffmpeg"].shared = True
+      self.options["ffmpeg"].postproc = True
+      
