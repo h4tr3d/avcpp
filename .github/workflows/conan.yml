@@ -45,12 +45,24 @@ jobs:
       - run: conan profile detect --force
       - run: conan install tests/conan -pr:a=tests/conan/conan.profile -b=missing -of build -o ffmpeg=${{ matrix.ffmpeg }} -o build=CMake
 
-      - name: Generate CMake build
+      - name: Generate CMake build (Windows)
         shell: bash
         run: |
           source conanbuild.sh
           cmake -DCMAKE_BUILD_TYPE=Release ..
         working-directory: ${{ github.workspace }}/build
+        if: runner.os == 'Windows'
+        env:
+          PKG_CONFIG_EXECUTABLE: pkgconf.exe
+          PKG_CONFIG_PATH: ${{ github.workspace }}/build
+
+      - name: Generate CMake build (Linux/macOS)
+        shell: cmd
+        run: |
+          conanbuild.bat
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+        working-directory: ${{ github.workspace }}/build
+        if: runner.os != 'Windows'
         env:
           PKG_CONFIG_PATH: ${{ github.workspace }}/build
 
