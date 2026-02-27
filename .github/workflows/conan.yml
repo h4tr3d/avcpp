@@ -43,12 +43,14 @@ jobs:
         if: github.event_name == 'schedule'
 
       - run: conan profile detect --force
+        shell: bash
       - run: conan install tests/conan -pr:a=tests/conan/conan.profile -b=missing -of build -o ffmpeg=${{ matrix.ffmpeg }} -o build=CMake
+        shell: bash
 
       - name: Generate CMake build (Windows)
-        shell: cmd
+        shell: bash
         run: |
-          conanbuild.bat
+          source conanbuild.sh
           cmake -DCMAKE_BUILD_TYPE=Release ..
         working-directory: ${{ github.workspace }}/build
         if: runner.os == 'Windows'
