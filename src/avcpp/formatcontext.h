@@ -263,12 +263,48 @@ public:
     void openOutput(const std::string& uri, Dictionary &options, OptionalErrorCode ec = throws());
     void openOutput(const std::string& uri, Dictionary &&options, OptionalErrorCode ec = throws());
 
-    // TBD
-    //void openOutput(const std::string& uri, OutputFormat format, OptionalErrorCode ec = throws());
-    //void openOutput(const std::string& uri, Dictionary &options, OutputFormat format, OptionalErrorCode ec = throws());
-    //void openOutput(const std::string& uri, Dictionary &&options, OutputFormat format, OptionalErrorCode ec = throws());
+    void openOutput(const std::string& uri, OutputFormat format, OptionalErrorCode ec = throws());
+    void openOutput(const std::string& uri, Dictionary &options, OutputFormat format, OptionalErrorCode ec = throws());
+    void openOutput(const std::string& uri, Dictionary &&options, OutputFormat format, OptionalErrorCode ec = throws());
 
+    /// @{
+    /**
+     * Open Output with Custom IO
+     *
+     * Variants with @ref formatOptions internally calls @ref initOutput() with same return value meaning.
+     *
+     * @param io
+     * @param formatOptions
+     * @param format
+     * @param ec
+     * @param internalBufferSize
+     */
     void openOutput(CustomIO *io, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+    bool openOutput(CustomIO *io, Dictionary &formatOptions, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+    bool openOutput(CustomIO *io, Dictionary &&formatOptions, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+
+    void openOutput(CustomIO *io, OutputFormat format, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+    bool openOutput(CustomIO *io, Dictionary &formatOptions, OutputFormat format, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+    bool openOutput(CustomIO *io, Dictionary &&formatOptions, OutputFormat format, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+    /// @}
+
+    /// @{
+    /**
+     * Init output without header writing
+     *
+     * If dictionary passed, writeHeader() should not be called with the same dictioary.
+     *
+     * @param options format options in the dictionary form
+     * @param ec      holder for the error code. If not-null and error code set return value has not matter
+     *
+     * @retval true   format inited in avformat_init_output, @see AVSTREAM_INIT_IN_INIT_OUTPUT
+     * @retval false  format inited (will be) in avformat_write_header(), @see AVSTREAM_INIT_IN_WRITE_HEADER
+     *
+     */
+    bool initOutput(OptionalErrorCode ec = throws());
+    bool initOutput(Dictionary &options, OptionalErrorCode ec = throws());
+    bool initOutput(Dictionary &&options, OptionalErrorCode ec = throws());
+    /// @}
 
     void writeHeader(OptionalErrorCode ec = throws());
     void writeHeader(Dictionary &options, OptionalErrorCode ec = throws());
@@ -292,7 +328,9 @@ public:
 private:
     void openInput(const std::string& uri, InputFormat format, AVDictionary **options, OptionalErrorCode ec);
     void openOutput(const std::string& uri, OutputFormat format, AVDictionary **options, OptionalErrorCode ec);
-    void writeHeader(AVDictionary **options, OptionalErrorCode ec = throws());
+    bool initOutput(Dictionary &options, bool closeOnError, OptionalErrorCode ec);
+    bool initOutput(AVDictionary **options, OptionalErrorCode ec);
+    void writeHeader(AVDictionary **options, OptionalErrorCode ec);
     void writePacket(const Packet &pkt, OptionalErrorCode ec, int(*write_proc)(AVFormatContext *, AVPacket *));
     void writeFrame(AVFrame *frame, int streamIndex, OptionalErrorCode ec, int(*write_proc)(AVFormatContext*,int,AVFrame*));
 
