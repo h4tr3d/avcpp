@@ -24,6 +24,8 @@ jobs:
     steps:
       - uses: conan-io/setup-conan@v1
       - uses: actions/checkout@v6
+        with:
+          submodules: true
 
       - name: Get conan home
         shell: bash
