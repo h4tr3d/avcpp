@@ -106,11 +106,7 @@ if (AVCPP_NOT_SUBPROJECT)
     #    APPEND
     #    FILE ${CMAKE_CURRENT_BINARY_DIR}/avcpp-targets.cmake)
 
-    # FFmpeg may not come from us
-    if (TARGET FFmpeg)
-        SET(TARGET_FFMPEG FFmpeg)
-    endif ()
-    install(TARGETS ${AV_TARGETS} ${TARGET_FFMPEG}
+    install(TARGETS ${AV_TARGETS} FFmpeg}
         EXPORT avcpp-targets
         LIBRARY DESTINATION        ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION        ${CMAKE_INSTALL_LIBDIR}
