@@ -24,10 +24,10 @@ jobs:
         include:
           - os: ubuntu-22.04
             build_type: Release
-            skip_meson: true
+            skip_meson: false
           - os: ubuntu-22.04
             build_type: Debug
-            skip_meson: true
+            skip_meson: false
 
 
     # The CMake configure and build commands are platform agnostic and should work equally

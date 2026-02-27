@@ -1,29 +1,18 @@
 #get catch2
-catch2 = dependency('catch2', required: true, fallback:['catch2','catch2_dep'])
+catch2 = dependency('catch2-with-main', required: true)
 
-#create main_test as library and export the dependency
-main_test = static_library(
-    'main_test', 
-    'test-main.cpp', 
-    dependencies: [catch2, avcpp_dep]
-)
-
-main_test_dep = declare_dependency(
-    link_with : main_test,
-    dependencies : catch2,
-    version: meson.project_version()
-)
-
-#make both dependencies into one array
-deps = [avcpp_dep]
-deps += main_test_dep
+deps = [avcpp_dep, catch2]
 
 tests = [
-    'Frame',
     'AvDeleter',
-    'Packet',
+    'Buffer',
+    'Codec',
     'Format',
+    'Frame',
+    'Packet',
+    'PixelSampleFormat',
     'Rational',
+    'Timestamp'
 ]
 
 #create all the tests
