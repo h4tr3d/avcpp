@@ -12,7 +12,7 @@ tests = [
     'Packet',
     'PixelSampleFormat',
     'Rational',
-    'TimeStamp'
+    'Timestamp'
 ]
 
 #create all the tests
