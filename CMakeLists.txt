@@ -1,7 +1,8 @@
 cmake_minimum_required (VERSION 3.19)
 
-# Declare here
-set (AVCPP_VERSION 3.0.1)
+# Declare the version version.txt
+file(READ "VERSION.txt" AVCPP_VERSION)
+string(STRIP "${AVCPP_VERSION}" AVCPP_VERSION)
 
 if(NOT DEFINED PROJECT_NAME)
     set(AVCPP_NOT_SUBPROJECT ON)
