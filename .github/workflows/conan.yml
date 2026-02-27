@@ -50,8 +50,8 @@ jobs:
 
       - name: Generate CMake build (Windows)
         run: |
-          conanbuild
-          conanrun
+          . .\conanbuild.ps1
+          . .\conanrun.ps1
           cmake -DCMAKE_BUILD_TYPE=Release ..
         working-directory: ${{ github.workspace }}/build
         if: runner.os == 'Windows'
@@ -70,8 +70,32 @@ jobs:
         env:
           PKG_CONFIG_PATH: ${{ github.workspace }}/build
 
-      - run: cmake --build .
+      - name: Build (Windows)
+        run: |
+          . .\conanbuild.ps1
+          . .\conanrun.ps1
+          cmake --build .
+        if: runner.os == 'Windows'
         working-directory: ${{ github.workspace }}/build
 
-      - run: ctest --output-on-failure
+      - name: Build (Linux/macOS)
+        run: |
+          source conanbuild.sh
+          source conanrun.sh
+          cmake --build .
+        if: runner.os != 'Windows'
+        working-directory: ${{ github.workspace }}/build
+
+      - name: Run the unit tests (Windows)
+        run: |
+          . .\conanrun.ps1
+          ctest --output-on-failure
+        if: runner.os == 'Windows'
+        working-directory: ${{ github.workspace }}/build
+
+      - name: Run the unit tests (Linux/macOS)
+        run: |
+          source conanrun.sh
+          ctest --output-on-failure
+        if: runner.os != 'Windows'
         working-directory: ${{ github.workspace }}/build
