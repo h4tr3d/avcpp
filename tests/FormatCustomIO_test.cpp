@@ -95,7 +95,7 @@ public:
             return _buffer.size();
         }
 
-        ssize_t cur = -1;
+        long cur = -1;
 
         if (whence == SEEK_CUR) {
             cur = std::distance(_buffer.begin(), _pos);
