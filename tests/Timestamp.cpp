@@ -1,4 +1,4 @@
-﻿#include <catch2/catch_test_macros.hpp>
+﻿#include <version>
 
 #ifdef __cpp_lib_print
 #  include <format>
@@ -12,7 +12,54 @@
 #endif
 
 
-using namespace std;
+#if AVCPP_CXX_STANDARD < 20 ||  __cpp_lib_chrono < 201907L
+#include <sstream>
+#include <iostream>
+#include <type_traits>
+#include <chrono>
+
+template<typename Rep, typename Period>
+std::ostream& operator<<(std::ostream& ost, const std::chrono::duration<Rep, Period>& dur)
+{
+    using namespace std::literals;
+
+    std::ostringstream s;
+    s.flags(ost.flags());
+    s.imbue(ost.getloc());
+    s.precision(ost.precision());
+
+    s << +dur.count();
+
+    // Ref: https://en.cppreference.com/w/cpp/chrono/duration/operator_ltlt.html
+    if      constexpr (std::is_same_v<Period, std::atto>) s << "as"sv;
+    else if constexpr (std::is_same_v<Period, std::femto>) s << "fs"sv;
+    else if constexpr (std::is_same_v<Period, std::pico>) s << "fs"sv;
+    else if constexpr (std::is_same_v<Period, std::nano>) s << "ns"sv;
+    else if constexpr (std::is_same_v<Period, std::micro>) s << "us"sv;
+    else if constexpr (std::is_same_v<Period, std::milli>) s << "ms"sv;
+    else if constexpr (std::is_same_v<Period, std::centi>) s << "cs"sv;
+    else if constexpr (std::is_same_v<Period, std::deci>) s << "ds"sv;
+    else if constexpr (std::is_same_v<Period, std::ratio<1>>) s << "s"sv;
+    else if constexpr (std::is_same_v<Period, std::deca>) s << "das"sv;
+    else if constexpr (std::is_same_v<Period, std::hecto>) s << "hs"sv;
+    else if constexpr (std::is_same_v<Period, std::kilo>) s << "ks"sv;
+    else if constexpr (std::is_same_v<Period, std::mega>) s << "Ms"sv;
+    else if constexpr (std::is_same_v<Period, std::giga>) s << "Gs"sv;
+    else if constexpr (std::is_same_v<Period, std::tera>) s << "Ts"sv;
+    else if constexpr (std::is_same_v<Period, std::peta>) s << "Ps"sv;
+    else if constexpr (std::is_same_v<Period, std::exa>) s << "Es"sv;
+    else if constexpr (std::is_same_v<Period, std::ratio<60>>) s << "min"sv;
+    else if constexpr (std::is_same_v<Period, std::ratio<3600>>) s << "h"sv;
+    else if constexpr (std::is_same_v<Period, std::ratio<86400>>) s << "d"sv;
+    else if constexpr (Period::den == 1) s << '[' << Period::num << "]s"sv;
+    else
+        s << '[' << Period::num << '/' << Period::num << "]s"sv;
+    ost << std::move(s).str();
+    return ost;
+}
+#endif
+
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Core::Timestamp", "Timestamp")
 {
