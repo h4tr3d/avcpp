@@ -86,10 +86,18 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a30034560d384229430fdfc1c7c843ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65180ecb4caa480ea4912959dc7f874b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#a65180ecb4caa480ea4912959dc7f874b">Timestamp</a> (int64_t <a class="el" href="classav_1_1Timestamp.html#a40aa289b7b626c6b5f19a0e666770d87">timestamp</a>, const <a class="el" href="classav_1_1Rational.html">Rational</a> &amp;<a class="el" href="classav_1_1Timestamp.html#aab382d706bbe7464b54b5f845cd37340">timebase</a>) noexcept</td></tr>
 <tr class="separator:a65180ecb4caa480ea4912959dc7f874b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a364f530d9dbb6a655d9034eb2e851a03"><td class="memTemplParams" colspan="2">template&lt;typename Duration , typename  = typename Duration::period&gt; </td></tr>
-<tr class="memitem:a364f530d9dbb6a655d9034eb2e851a03"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#a364f530d9dbb6a655d9034eb2e851a03">Timestamp</a> (const Duration &amp;duration)</td></tr>
-<tr class="memdesc:a364f530d9dbb6a655d9034eb2e851a03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create AvCpp/FFmpeg compatible timestamp value from the std::chrono::duration/boost::chrono::duration.  <a href="classav_1_1Timestamp.html#a364f530d9dbb6a655d9034eb2e851a03">More...</a><br /></td></tr>
-<tr class="separator:a364f530d9dbb6a655d9034eb2e851a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a505000a93ca77a7fd4bbe1e7264b317c"><td class="memTemplParams" colspan="2">template&lt;typename Duration , typename  = typename Duration::period, typename  = std::enable_if_t&lt;std::is_integral_v&lt;typename Duration::rep&gt;&gt;&gt; </td></tr>
+<tr class="memitem:a505000a93ca77a7fd4bbe1e7264b317c"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#a505000a93ca77a7fd4bbe1e7264b317c">Timestamp</a> (const Duration &amp;duration)</td></tr>
+<tr class="memdesc:a505000a93ca77a7fd4bbe1e7264b317c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create AvCpp/FFmpeg compatible timestamp value from the std::chrono::duration/boost::chrono::duration.  <a href="classav_1_1Timestamp.html#a505000a93ca77a7fd4bbe1e7264b317c">More...</a><br /></td></tr>
+<tr class="separator:a505000a93ca77a7fd4bbe1e7264b317c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93709d6e456d6ada74bc4668325e2bf4"><td class="memTemplParams" colspan="2">template&lt;typename Duration , typename PrecisionPeriod , typename  = typename Duration::period, typename  = std::enable_if_t&lt;std::is_floating_point_v&lt;typename Duration::rep&gt;&gt;&gt; </td></tr>
+<tr class="memitem:a93709d6e456d6ada74bc4668325e2bf4"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#a93709d6e456d6ada74bc4668325e2bf4">Timestamp</a> (const Duration &amp;duration, PrecisionPeriod)</td></tr>
+<tr class="memdesc:a93709d6e456d6ada74bc4668325e2bf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create AvCpp/FFmpeg compatible timestamp value from the floating point std::chrono::duration/boost::chrono::duration with given precision.  <a href="classav_1_1Timestamp.html#a93709d6e456d6ada74bc4668325e2bf4">More...</a><br /></td></tr>
+<tr class="separator:a93709d6e456d6ada74bc4668325e2bf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeb62ec6f8184523cbdf08931302ae54"><td class="memTemplParams" colspan="2">template&lt;typename Duration , typename  = typename Duration::period, typename  = std::enable_if_t&lt;std::is_floating_point_v&lt;typename Duration::rep&gt;&gt;&gt; </td></tr>
+<tr class="memitem:afeb62ec6f8184523cbdf08931302ae54"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#afeb62ec6f8184523cbdf08931302ae54">Timestamp</a> (const Duration &amp;duration, const <a class="el" href="classav_1_1Rational.html">Rational</a> &amp;<a class="el" href="classav_1_1Timestamp.html#aab382d706bbe7464b54b5f845cd37340">timebase</a>)</td></tr>
+<tr class="memdesc:afeb62ec6f8184523cbdf08931302ae54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create AvCpp/FFmpeg compatible timestamp value from the floating point std::chrono::duration/boost::chrono::duration with given precision.  <a href="classav_1_1Timestamp.html#afeb62ec6f8184523cbdf08931302ae54">More...</a><br /></td></tr>
+<tr class="separator:afeb62ec6f8184523cbdf08931302ae54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40aa289b7b626c6b5f19a0e666770d87"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#a40aa289b7b626c6b5f19a0e666770d87">timestamp</a> () const noexcept</td></tr>
 <tr class="separator:a40aa289b7b626c6b5f19a0e666770d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a289dad12e932c3dc0da53a2540e5ec1e"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#a289dad12e932c3dc0da53a2540e5ec1e">timestamp</a> (const <a class="el" href="classav_1_1Rational.html">Rational</a> &amp;<a class="el" href="classav_1_1Timestamp.html#aab382d706bbe7464b54b5f845cd37340">timebase</a>) const noexcept</td></tr>
@@ -106,10 +114,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a29541d4fc1b860560181a714b0132bfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9e22924dc8cbffc28ef319e3fe1b6cd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#aa9e22924dc8cbffc28ef319e3fe1b6cd">seconds</a> () const noexcept</td></tr>
 <tr class="separator:aa9e22924dc8cbffc28ef319e3fe1b6cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a6da4151b3bdac0b07aad8e79ad065d"><td class="memTemplParams" colspan="2">template&lt;typename Duration &gt; </td></tr>
-<tr class="memitem:a6a6da4151b3bdac0b07aad8e79ad065d"><td class="memTemplItemLeft" align="right" valign="top">Duration&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#a6a6da4151b3bdac0b07aad8e79ad065d">toDuration</a> () const</td></tr>
-<tr class="memdesc:a6a6da4151b3bdac0b07aad8e79ad065d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to the std::chrono::duration compatible value.  <a href="classav_1_1Timestamp.html#a6a6da4151b3bdac0b07aad8e79ad065d">More...</a><br /></td></tr>
-<tr class="separator:a6a6da4151b3bdac0b07aad8e79ad065d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf1ac3358bca678193d68278a292c675"><td class="memTemplParams" colspan="2">template&lt;typename Duration , typename  = typename Duration::period, typename  = typename Duration::rep&gt; </td></tr>
+<tr class="memitem:abf1ac3358bca678193d68278a292c675"><td class="memTemplItemLeft" align="right" valign="top">constexpr Duration&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#abf1ac3358bca678193d68278a292c675">toDuration</a> () const</td></tr>
+<tr class="memdesc:abf1ac3358bca678193d68278a292c675"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to the std::chrono::duration compatible value.  <a href="classav_1_1Timestamp.html#abf1ac3358bca678193d68278a292c675">More...</a><br /></td></tr>
+<tr class="separator:abf1ac3358bca678193d68278a292c675"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a752ce44b3e0652df5b6b9b98f2628818"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Timestamp.html">Timestamp</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#a752ce44b3e0652df5b6b9b98f2628818">operator+=</a> (const <a class="el" href="classav_1_1Timestamp.html">Timestamp</a> &amp;other)</td></tr>
 <tr class="separator:a752ce44b3e0652df5b6b9b98f2628818"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad87378f20d397bcd9e4115a164dd0a3b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Timestamp.html">Timestamp</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Timestamp.html#ad87378f20d397bcd9e4115a164dd0a3b">operator-=</a> (const <a class="el" href="classav_1_1Timestamp.html">Timestamp</a> &amp;other)</td></tr>
@@ -121,9 +129,10 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classav_1_1Timestamp.html" title="The Timestamp class represents timestamp value and it timebase.">Timestamp</a> class represents timestamp value and it timebase. </p>
+<p><a class="el" href="classav_1_1Timestamp.html" title="The Timestamp class represents timestamp value and it timebase.">Timestamp</a> class can be treated as Fixed Point time representation where timestamp itself is a value and Time Base is a multiplicator. Be careful with construct <a class="el" href="classav_1_1Timestamp.html" title="The Timestamp class represents timestamp value and it timebase.">Timestamp</a> from the std::chrono::duration with floating point <em>rep</em> </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a30034560d384229430fdfc1c7c843ff4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a30034560d384229430fdfc1c7c843ff4">&#9670;&nbsp;</a></span>Timestamp() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a30034560d384229430fdfc1c7c843ff4">&#9670;&nbsp;</a></span>Timestamp() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -148,7 +157,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="a65180ecb4caa480ea4912959dc7f874b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a65180ecb4caa480ea4912959dc7f874b">&#9670;&nbsp;</a></span>Timestamp() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a65180ecb4caa480ea4912959dc7f874b">&#9670;&nbsp;</a></span>Timestamp() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -183,19 +192,19 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a364f530d9dbb6a655d9034eb2e851a03"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a364f530d9dbb6a655d9034eb2e851a03">&#9670;&nbsp;</a></span>Timestamp() <span class="overload">[3/3]</span></h2>
+<a id="a505000a93ca77a7fd4bbe1e7264b317c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a505000a93ca77a7fd4bbe1e7264b317c">&#9670;&nbsp;</a></span>Timestamp() <span class="overload">[3/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Duration , typename  = typename Duration::period&gt; </div>
+template&lt;typename Duration , typename  = typename Duration::period, typename  = std::enable_if_t&lt;std::is_integral_v&lt;typename Duration::rep&gt;&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">av::Timestamp::Timestamp </td>
+          <td class="memname">constexpr av::Timestamp::Timestamp </td>
           <td>(</td>
           <td class="paramtype">const Duration &amp;&#160;</td>
           <td class="paramname"><em>duration</em></td><td>)</td>
@@ -204,12 +213,94 @@ template&lt;typename Duration , typename  = typename Duration::period&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Create AvCpp/FFmpeg compatible timestamp value from the std::chrono::duration/boost::chrono::duration. </p>
+<p>Duration class must not be a floating point to avoid lost precision: <a class="el" href="classav_1_1Timestamp.html" title="The Timestamp class represents timestamp value and it timebase.">Timestamp</a> in the FFmpeg internally are int64_t with integer AVRAtional as timebase that also uses int64_t internally to store numerator and denominator. </p>
+
+</div>
+</div>
+<a id="a93709d6e456d6ada74bc4668325e2bf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93709d6e456d6ada74bc4668325e2bf4">&#9670;&nbsp;</a></span>Timestamp() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Duration , typename PrecisionPeriod , typename  = typename Duration::period, typename  = std::enable_if_t&lt;std::is_floating_point_v&lt;typename Duration::rep&gt;&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr av::Timestamp::Timestamp </td>
+          <td>(</td>
+          <td class="paramtype">const Duration &amp;&#160;</td>
+          <td class="paramname"><em>duration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PrecisionPeriod&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create AvCpp/FFmpeg compatible timestamp value from the floating point std::chrono::duration/boost::chrono::duration with given precision. </p>
+<p>PrecisionPeriod defines holded TimeBase </p>
+
+</div>
+</div>
+<a id="afeb62ec6f8184523cbdf08931302ae54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeb62ec6f8184523cbdf08931302ae54">&#9670;&nbsp;</a></span>Timestamp() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Duration , typename  = typename Duration::period, typename  = std::enable_if_t&lt;std::is_floating_point_v&lt;typename Duration::rep&gt;&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr av::Timestamp::Timestamp </td>
+          <td>(</td>
+          <td class="paramtype">const Duration &amp;&#160;</td>
+          <td class="paramname"><em>duration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classav_1_1Rational.html">Rational</a> &amp;&#160;</td>
+          <td class="paramname"><em>timebase</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create AvCpp/FFmpeg compatible timestamp value from the floating point std::chrono::duration/boost::chrono::duration with given precision. </p>
 
 </div>
 </div>
@@ -487,19 +578,19 @@ template&lt;typename Duration , typename  = typename Duration::period&gt; </div>
 
 </div>
 </div>
-<a id="a6a6da4151b3bdac0b07aad8e79ad065d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a6da4151b3bdac0b07aad8e79ad065d">&#9670;&nbsp;</a></span>toDuration()</h2>
+<a id="abf1ac3358bca678193d68278a292c675"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf1ac3358bca678193d68278a292c675">&#9670;&nbsp;</a></span>toDuration()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Duration &gt; </div>
+template&lt;typename Duration , typename  = typename Duration::period, typename  = typename Duration::rep&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Duration av::Timestamp::toDuration </td>
+          <td class="memname">constexpr Duration av::Timestamp::toDuration </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -507,12 +598,13 @@ template&lt;typename Duration &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Convert to the std::chrono::duration compatible value. </p>
+<p>It possible to convert to the floating point duration without additional casts. </p>
 
 </div>
 </div>
