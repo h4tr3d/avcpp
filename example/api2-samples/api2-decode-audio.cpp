@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
     string uri {argv[1]};
 
-    ssize_t      audioStream = -1;
+    long      audioStream = -1;
     AudioDecoderContext adec;
     Stream      ast;
     error_code   ec;
