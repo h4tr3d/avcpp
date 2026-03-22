@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <functional>
 
 #include "ffmpeg.h"
@@ -13,7 +15,7 @@ namespace av {
 
 // TODO: support New Channel Layout directly
 
-class AudioResampler : public FFWrapperPtr<SwrContext>, public noncopyable
+class AVCPP_EXPORT AudioResampler : public FFWrapperPtr<SwrContext>, public noncopyable
 {
 public:
     AudioResampler();

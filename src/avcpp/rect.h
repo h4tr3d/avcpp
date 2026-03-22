@@ -1,8 +1,10 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 namespace av {
 
-class Rect
+class AVCPP_EXPORT Rect
 {
 public:
     Rect() noexcept = default;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <vector>
 
 #include "avcompat.h"
@@ -28,16 +30,16 @@ namespace av
 
 namespace frame
 {
-int64_t get_best_effort_timestamp(const AVFrame* frame);
-uint64_t get_channel_layout(const AVFrame* frame);
-void set_channel_layout(AVFrame* frame, uint64_t layout);
+AVCPP_EXPORT int64_t get_best_effort_timestamp(const AVFrame* frame);
+AVCPP_EXPORT uint64_t get_channel_layout(const AVFrame* frame);
+AVCPP_EXPORT void set_channel_layout(AVFrame* frame, uint64_t layout);
 } // ::av::frame
 
 #if AVCPP_HAS_FRAME_SIDE_DATA
 /**
  * Simple view for the AVFrameSideData elements
  */
-class FrameSideData : public FFWrapperPtr<AVFrameSideData>
+class AVCPP_EXPORT FrameSideData : public FFWrapperPtr<AVFrameSideData>
 {
 public:
     using FFWrapperPtr<AVFrameSideData>::FFWrapperPtr;
@@ -67,7 +69,7 @@ public:
 };
 #endif // AVCPP_HAS_PKT_SIDE_DATA
 
-class FrameCommon : public FFWrapperPtr<AVFrame>
+class AVCPP_EXPORT FrameCommon : public FFWrapperPtr<AVFrame>
 {
 public:
     /**
@@ -257,7 +259,7 @@ static_assert(std::is_copy_constructible_v<FrameCommon> == true);
 static_assert(std::is_move_assignable_v<FrameCommon> == false);
 static_assert(std::is_move_constructible_v<FrameCommon> == true);
 
-class VideoFrame : public Frame<VideoFrame>
+class AVCPP_EXPORT VideoFrame : public Frame<VideoFrame>
 {
 public:
     using Frame<VideoFrame>::Frame;
@@ -367,7 +369,7 @@ static_assert(std::is_copy_constructible_v<VideoFrame> == true);
 static_assert(std::is_move_assignable_v<VideoFrame> == true);
 static_assert(std::is_move_constructible_v<VideoFrame> == true);
 
-class AudioSamples : public Frame<AudioSamples>
+class AVCPP_EXPORT AudioSamples : public Frame<AudioSamples>
 {
 public:
     using Frame<AudioSamples>::Frame;
