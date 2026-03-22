@@ -235,7 +235,7 @@ if (TRUE)
       message(STATUS "Libs: ${${_component}_LIBRARIES} | ${PC_${_component}_LIBRARIES}")
 
       # message(STATUS "Required component ${_component} present.")
-      set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    ${${_component}_LIBRARIES})
+      set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    ${${_component}_LIBRARIES} ${PC_${_component}_LINK_LIBRARIES})
       set(FFMPEG_DEFINITIONS  ${FFMPEG_DEFINITIONS}  ${${_component}_DEFINITIONS})
 
       list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
@@ -246,9 +246,10 @@ if (TRUE)
         set_target_properties(FFmpeg::${_lowerComponent} PROPERTIES
             INTERFACE_COMPILE_OPTIONS "${${_component}_DEFINITIONS}"
             INTERFACE_INCLUDE_DIRECTORIES ${${_component}_INCLUDE_DIRS}
-            INTERFACE_LINK_LIBRARIES "${${_component}_LIBRARY} ${${_component}_LIBRARIES} ${PC_${_component}_LIBRARIES}"
+            INTERFACE_LINK_LIBRARIES "${${_component}_LIBRARY};${${_component}_LIBRARIES};${PC_${_component}_LINK_LIBRARIES}"
             IMPORTED_LINK_INTERFACE_MULTIPLICITY 3)
       endif()
+      list(APPEND _FFMPEG_COMPONENT_TARGETS FFmpeg::${_lowerComponent})
     else()
       # message(STATUS "Required component ${_component} missing.")
     endif()
@@ -271,7 +272,7 @@ if (NOT TARGET FFmpeg::FFmpeg)
   set_target_properties(FFmpeg PROPERTIES
       INTERFACE_COMPILE_OPTIONS "${FFMPEG_DEFINITIONS}"
       INTERFACE_INCLUDE_DIRECTORIES "${FFMPEG_INCLUDE_DIRS}"
-      INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}")
+      INTERFACE_LINK_LIBRARIES "${_FFMPEG_COMPONENT_TARGETS}")
   add_library(FFmpeg::FFmpeg ALIAS FFmpeg)
 endif()
 
