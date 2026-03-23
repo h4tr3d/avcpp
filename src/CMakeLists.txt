@@ -158,7 +158,7 @@ if (AVCPP_NOT_SUBPROJECT)
           "${CMAKE_CURRENT_BINARY_DIR}/avcpp/avcpp-config.cmake"
           "${CMAKE_CURRENT_BINARY_DIR}/avcpp/avcpp-config-version.cmake"
         DESTINATION
-          "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/cmake/avcpp"
+          "${CMAKE_INSTALL_LIBDIR}/cmake/avcpp"
       )
 
     if (PKG_CONFIG_FOUND)
