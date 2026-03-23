@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <tuple>
 #include <memory>
 #include <iterator>
@@ -27,7 +29,7 @@ namespace av {
  * This class also provide way to controll owning: you can create entity that does not owning data but
  * provide access to them. You can drop owning by release() call.
  */
-class Dictionary : public FFWrapperPtr<AVDictionary>
+class AVCPP_EXPORT Dictionary : public FFWrapperPtr<AVDictionary>
 {
 public:
     /**
@@ -130,7 +132,7 @@ public:
     /**
      * Dictionary key and value holder and accessor
      */
-    class Entry
+    class AVCPP_EXPORT Entry
     {
     public:
 
@@ -181,8 +183,8 @@ public:
          */
         bool isNull() const;
 
-        friend bool operator==(const Entry& lhs, const Entry& rhs);
-        friend bool operator!=(const Entry& lhs, const Entry& rhs);
+        AVCPP_EXPORT friend bool operator==(const Entry& lhs, const Entry& rhs);
+        AVCPP_EXPORT friend bool operator!=(const Entry& lhs, const Entry& rhs);
 
     private:
         AVDictionaryEntry *m_entry = nullptr;
@@ -585,7 +587,7 @@ private:
  *
  * It is not iterator-friendly and must not be used generally.
  */
-class DictionaryArray
+class AVCPP_EXPORT DictionaryArray
 {
 public:
 
