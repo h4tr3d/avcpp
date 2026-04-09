@@ -65,6 +65,10 @@ public:
      */
     struct wrap_data_static {};
 
+#if AVCPP_API_AVCODEC_NEW_INIT_PACKET
+    explicit Packet(std::nullptr_t); // explicit nullptr packet. There is no extra internal checks, so be careful
+#endif
+
     Packet();
     Packet(const Packet &packet, OptionalErrorCode ec);
     Packet(const Packet &packet);
