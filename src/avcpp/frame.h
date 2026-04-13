@@ -110,6 +110,8 @@ public:
 
     operator bool() const;
 
+    bool isHwFrame() const;
+
     uint8_t *data(size_t plane = 0);
     const uint8_t *data(size_t plane = 0) const;
 

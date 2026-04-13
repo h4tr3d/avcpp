@@ -5,19 +5,25 @@ using namespace std;
 
 namespace av {
 
+#if AVCPP_API_AVCODEC_NEW_INIT_PACKET
+Packet::Packet(std::nullptr_t)
+    : FFWrapperPtr<AVPacket>(nullptr),
+      m_completeFlag(false),
+      m_timeBase(0,0)
+{
+}
+#endif
+
 Packet::Packet()
+    : m_completeFlag(false),
+      m_timeBase(0, 0)
 {
 #if AVCPP_API_AVCODEC_NEW_INIT_PACKET
     m_raw = av_packet_alloc();
 #else
     av_init_packet(raw());
 #endif
-
     raw()->stream_index = -1; // no stream
-
-    m_completeFlag = false;
-    m_timeBase     = Rational(0, 0);
-
 }
 
 Packet::Packet(const Packet &packet)

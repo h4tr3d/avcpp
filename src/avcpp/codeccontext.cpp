@@ -893,17 +893,28 @@ std::pair<int, const error_category *> CodecContext2::decodeCommon(AVFrame *outF
     if (!decodeProc)
         return make_error_pair(Errors::CodecInvalidDecodeProc);
 
-    if (offset && inPacket.size() && offset >= inPacket.size())
-        return make_error_pair(Errors::CodecDecodingOffsetToLarge);
-
+    // sizeof(AVPacket) is not a part of the public API
+    std::unique_ptr<AVPacket, av::SmartDeleter> pkt;
+    auto processPkt = inPacket.raw();
     frameFinished = 0;
 
-    AVPacket pkt = *inPacket.raw();
-    pkt.data += offset;
-    pkt.size -= offset;
+    if (inPacket.raw() && offset) {
+        if (offset && inPacket.size() && offset >= inPacket.size())
+            return make_error_pair(Errors::CodecDecodingOffsetToLarge);
 
-    int decoded = decodeProc(m_raw, outFrame, &frameFinished, &pkt);
-    return make_error_pair(decoded);
+        std::error_code ec;
+        pkt.reset(inPacket.makeRef(ec));
+        if (ec) {
+            return {ec.value(), &ec.category()};
+        }
+
+        pkt->data += offset;
+        pkt->size -= offset;
+        processPkt = pkt.get();
+    }
+
+    // not a "flush" internally: just read-out Frame from output queue
+    return make_error_pair(decodeProc(m_raw, outFrame, &frameFinished, processPkt));
 }
 
 std::pair<int, const error_category *> CodecContext2::encodeCommon(Packet &outPacket, const AVFrame *inFrame, int &gotPacket, int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *)) noexcept
@@ -1028,7 +1039,7 @@ CodecContext2::decodeCommon(T &outFrame,
 
     // Dial with PTS/DTS in packet/stream timebase
 
-    if (inPacket.timeBase() != Rational())
+    if (inPacket.raw() && inPacket.timeBase() != Rational())
         outFrame.setTimeBase(inPacket.timeBase());
 #if AVCPP_HAS_AVFORMAT
     else
@@ -1051,7 +1062,7 @@ CodecContext2::decodeCommon(T &outFrame,
     // Convert to decoder/frame time base. Seems not nessesary.
     outFrame.setTimeBase(timeBase());
 
-    if (inPacket)
+    if (inPacket.raw() && inPacket)
         outFrame.setStreamIndex(inPacket.streamIndex());
 #if AVCPP_HAS_AVFORMAT
     else

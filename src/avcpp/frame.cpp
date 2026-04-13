@@ -646,11 +646,15 @@ bool FrameCommon::isComplete() const { return m_isComplete; }
 bool FrameCommon::isValid() const {
     return (!isNull() &&
             ((m_raw->data[0] && m_raw->linesize[0]) ||
-             ((m_raw->format == AV_PIX_FMT_VAAPI) && ((intptr_t)m_raw->data[3] > 0)))
-            );
+             ((m_raw->hw_frames_ctx) && ((intptr_t)m_raw->data[3] > 0))));
 }
 
 FrameCommon::operator bool() const { return isValid() && isComplete(); }
+
+bool FrameCommon::isHwFrame() const
+{
+    return !isNull() && !!m_raw->hw_frames_ctx;
+}
 
 uint8_t *FrameCommon::data(size_t plane) {
     if (!m_raw || plane >= size_t(AV_NUM_DATA_POINTERS + m_raw->nb_extended_buf))

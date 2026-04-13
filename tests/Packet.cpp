@@ -106,6 +106,12 @@ TEST_CASE("Packet define", "[Packet][Construct]")
         CHECK(pkt.refCount() == 1);
     }
 
+    SECTION("Nullptr packet") {
+        av::Packet pkt{nullptr};
+        CHECK(pkt.raw() == nullptr);
+        // any other operation not permitted
+    }
+
     SECTION("setPts/Dts") {
         {
             av::Packet pkt;
