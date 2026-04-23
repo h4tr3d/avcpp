@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include "averror.h"
 #include "ffmpeg.h"
 #include "avutils.h"
@@ -24,7 +26,7 @@ enum class Direction
  *
  * Not-owned wrapper for AVCodecParameters. Do not keep for a long time.
  */
-class CodecParametersView : public FFWrapperPtr<AVCodecParameters>
+class AVCPP_EXPORT CodecParametersView : public FFWrapperPtr<AVCodecParameters>
 {
 public:
     CodecParametersView(AVCodecParameters *codecpar = nullptr);
@@ -58,7 +60,7 @@ public:
     // TBD
 };
 
-class CodecParameters : public CodecParametersView, public noncopyable
+class AVCPP_EXPORT CodecParameters : public CodecParametersView, public noncopyable
 {
 public:
     CodecParameters();

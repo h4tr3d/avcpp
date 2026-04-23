@@ -1,11 +1,13 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 namespace av {
 
 /**
  * Init all subsustems needed by avcpp. Must be call before any other functionality
  */
-void init();
+AVCPP_EXPORT void init();
 
 } // ::av
 

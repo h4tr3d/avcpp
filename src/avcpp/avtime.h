@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include "ffmpeg.h"
 
 namespace av {
@@ -7,7 +9,7 @@ namespace av {
 /**
  * Get the current time in microseconds.
  */
-int64_t gettime();
+AVCPP_EXPORT int64_t gettime();
 
 
 /**
@@ -18,7 +20,7 @@ int64_t gettime();
  * @param  usec Number of microseconds to sleep.
  * @return zero on success or (negative) error code.
  */
-int usleep(unsigned usec);
+AVCPP_EXPORT int usleep(unsigned usec);
 
 
 } // ::av

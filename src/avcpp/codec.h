@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <list>
 #include <deque>
 #include <memory>
@@ -14,7 +16,7 @@
 
 namespace av {
 
-class Codec : public FFWrapperPtr<const AVCodec>
+class AVCPP_EXPORT Codec : public FFWrapperPtr<const AVCodec>
 {
 public:
     using FFWrapperPtr<const AVCodec>::FFWrapperPtr;
@@ -42,15 +44,15 @@ public:
 
 
 
-Codec findEncodingCodec(AVCodecID id);
-Codec findEncodingCodec(const std::string& name);
+AVCPP_EXPORT Codec findEncodingCodec(AVCodecID id);
+AVCPP_EXPORT Codec findEncodingCodec(const std::string& name);
 
-Codec findDecodingCodec(AVCodecID id);
-Codec findDecodingCodec(const std::string& name);
+AVCPP_EXPORT Codec findDecodingCodec(AVCodecID id);
+AVCPP_EXPORT Codec findDecodingCodec(const std::string& name);
 
 #if AVCPP_HAS_AVFORMAT
-Codec findEncodingCodec(const OutputFormat &format, bool isVideo = true);
-Codec guessEncodingCodec(OutputFormat format, const char *name, const char *url, const char* mime, AVMediaType mediaType);
+AVCPP_EXPORT Codec findEncodingCodec(const OutputFormat &format, bool isVideo = true);
+AVCPP_EXPORT Codec guessEncodingCodec(OutputFormat format, const char *name, const char *url, const char* mime, AVMediaType mediaType);
 #endif // if AVCPP_HAS_AVFORMAT
 
 } // ::fmpeg
