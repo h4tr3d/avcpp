@@ -246,7 +246,7 @@ if (TRUE)
         set_target_properties(FFmpeg::${_lowerComponent} PROPERTIES
             INTERFACE_COMPILE_OPTIONS "${${_component}_DEFINITIONS}"
             INTERFACE_INCLUDE_DIRECTORIES ${${_component}_INCLUDE_DIRS}
-            INTERFACE_LINK_LIBRARIES "${${_component}_LIBRARY} ${${_component}_LIBRARIES} ${PC_${_component}_LIBRARIES}"
+            INTERFACE_LINK_LIBRARIES "${${_component}_LIBRARY}" "${${_component}_LIBRARIES}" "${PC_${_component}_LIBRARIES}"
             IMPORTED_LINK_INTERFACE_MULTIPLICITY 3)
       endif()
     else()
