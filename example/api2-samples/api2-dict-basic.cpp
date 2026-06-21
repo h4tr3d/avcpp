@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include "avcpp/av.h"
 #include "avcpp/dictionary.h"

@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     // INPUT
     //
     FormatContext ictx;
-    ssize_t videoStream = -1;
+    long videoStream = -1;
     VideoDecoderContext vdec;
     Stream vst;
 
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     // STATIC IMAGE (more or less identical to INPUT)
     //
     FormatContext static_image_ctx;
-    ssize_t imageStream = -1;
+    long imageStream = -1;
     VideoDecoderContext static_image_dec;
     Stream image_st;
 

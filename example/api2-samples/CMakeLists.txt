@@ -23,10 +23,13 @@ set(TARGETS
   api2-dict-basic
   api2-timestamp
   api2-demux-seek
-  api2-remux
   api2-hw-encode
   api2-decode-raw-h264
 )
+
+if(NOT WIN32)
+  list(APPEND TARGETS api2-remux)
+endif()
 
 if (AV_DISABLE_AVFORMAT)
   list(REMOVE_ITEM TARGETS
