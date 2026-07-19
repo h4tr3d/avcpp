@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include "avcompat.h"
 
 #include <vector>
@@ -26,7 +28,7 @@ namespace av {
 /**
  * Simple view for the AVPacketSideData elements
  */
-class PacketSideData : public FFWrapperRef<AVPacketSideData>
+class AVCPP_EXPORT PacketSideData : public FFWrapperRef<AVPacketSideData>
 {
 public:
     using FFWrapperRef<AVPacketSideData>::FFWrapperRef;
@@ -43,7 +45,7 @@ public:
 };
 #endif // AVCPP_HAS_PKT_SIDE_DATA
 
-class Packet :
+class AVCPP_EXPORT Packet :
 #if AVCPP_API_AVCODEC_NEW_INIT_PACKET
     public FFWrapperPtr<AVPacket>
 #else

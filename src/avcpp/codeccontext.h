@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include "avcompat.h"
 
 #include "ffmpeg.h"
@@ -20,17 +22,17 @@ extern "C" {
 namespace av {
 
 namespace codec_context::audio {
-void set_channels(AVCodecContext *obj, int channels);
-void set_channel_layout_mask(AVCodecContext *obj, uint64_t mask);
-int get_channels(const AVCodecContext *obj);
-uint64_t get_channel_layout_mask(const AVCodecContext *obj);
+AVCPP_EXPORT void set_channels(AVCodecContext *obj, int channels);
+AVCPP_EXPORT void set_channel_layout_mask(AVCodecContext *obj, uint64_t mask);
+AVCPP_EXPORT int get_channels(const AVCodecContext *obj);
+AVCPP_EXPORT uint64_t get_channel_layout_mask(const AVCodecContext *obj);
 }
 
 namespace codec_context::internal {
-const int *get_supported_samplerates(const struct AVCodec *codec);
+AVCPP_EXPORT const int *get_supported_samplerates(const struct AVCodec *codec);
 }
 
-class CodecContext2 : public FFWrapperPtr<AVCodecContext>, public noncopyable
+class AVCPP_EXPORT CodecContext2 : public FFWrapperPtr<AVCodecContext>, public noncopyable
 {
 protected:
     void swap(CodecContext2 &other);
@@ -187,7 +189,7 @@ private:
  * encoding coder.
  *
  */
-class GenericCodecContext : public CodecContext2
+class AVCPP_EXPORT GenericCodecContext : public CodecContext2
 {
 protected:
     using CodecContext2::codecType;
@@ -398,7 +400,7 @@ protected:
 };
 
 
-class VideoDecoderContext : public VideoCodecContext<VideoDecoderContext, Direction::Decoding>
+class AVCPP_EXPORT VideoDecoderContext : public VideoCodecContext<VideoDecoderContext, Direction::Decoding>
 {
 public:
     using Parent = VideoCodecContext<VideoDecoderContext, Direction::Decoding>;
@@ -454,7 +456,7 @@ private:
 };
 
 
-class VideoEncoderContext : public VideoCodecContext<VideoEncoderContext, Direction::Encoding>
+class AVCPP_EXPORT VideoEncoderContext : public VideoCodecContext<VideoEncoderContext, Direction::Encoding>
 {
 public:
     using Parent = VideoCodecContext<VideoEncoderContext, Direction::Encoding>;
@@ -587,7 +589,7 @@ protected:
 };
 
 
-class AudioDecoderContext : public AudioCodecContext<AudioDecoderContext, Direction::Decoding>
+class AVCPP_EXPORT AudioDecoderContext : public AudioCodecContext<AudioDecoderContext, Direction::Decoding>
 {
 public:
     using Parent = AudioCodecContext<AudioDecoderContext, Direction::Decoding>;
@@ -604,7 +606,7 @@ public:
 };
 
 
-class AudioEncoderContext : public AudioCodecContext<AudioEncoderContext, Direction::Encoding>
+class AVCPP_EXPORT AudioEncoderContext : public AudioCodecContext<AudioEncoderContext, Direction::Encoding>
 {
 public:
     using Parent = AudioCodecContext<AudioEncoderContext, Direction::Encoding>;

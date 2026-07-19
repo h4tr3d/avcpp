@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <string>
 #include <string_view>
 #include <bitset>
@@ -14,14 +16,14 @@ extern "C" {
 
 namespace av {
 
-std::string channel_name(AVChannel channel);
-std::string channel_description(AVChannel channel);
-AVChannel   channel_from_string(const std::string &name);
-AVChannel   channel_from_string(const char *name);
+AVCPP_EXPORT std::string channel_name(AVChannel channel);
+AVCPP_EXPORT std::string channel_description(AVChannel channel);
+AVCPP_EXPORT AVChannel   channel_from_string(const std::string &name);
+AVCPP_EXPORT AVChannel   channel_from_string(const char *name);
 
 class ChannelLayout;
 
-class ChannelLayoutView
+class AVCPP_EXPORT ChannelLayoutView
 {
 public:
     ChannelLayoutView() noexcept;
@@ -77,7 +79,7 @@ protected:
 
 
 
-class ChannelLayout : public ChannelLayoutView
+class AVCPP_EXPORT ChannelLayout : public ChannelLayoutView
 {
 public:
     ChannelLayout() = default;

@@ -1,4 +1,5 @@
 include(GNUInstallDirs)
+include(GenerateExportHeader)
 
 file(GLOB_RECURSE AV_SOURCES "avcpp/*.cpp")
 file(GLOB_RECURSE AV_HEADERS "avcpp/*.h" "avcpp/*.hpp")
@@ -58,7 +59,7 @@ foreach(TARGET ${AV_TARGETS})
         #PRIVATE
         #  ${CMAKE_CURRENT_SOURCE_DIR}
       )
-    set_target_properties(${TARGET} PROPERTIES PUBLIC_HEADER "${AV_HEADERS};${CMAKE_CURRENT_BINARY_DIR}/avcpp/avconfig.h")
+    set_target_properties(${TARGET} PROPERTIES PUBLIC_HEADER "${AV_HEADERS};${CMAKE_CURRENT_BINARY_DIR}/avcpp/avconfig.h;${CMAKE_CURRENT_BINARY_DIR}/avcpp/avcpp_export.h")
 
     # If not CMAKE_CXX_STANARD provided globally (subproject), use latest supported one
     if (NOT CMAKE_CXX_STANDARD)
@@ -83,15 +84,35 @@ foreach(TARGET ${AV_TARGETS})
       target_link_libraries(${TARGET} PRIVATE ws2_32)
     endif()
 
-    if(MSVC AND TYPE STREQUAL "SHARED")
-        set_target_properties(${TARGET} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-    endif()
-
     add_library(${AV_NAMESPACE}::${TARGET} ALIAS ${TARGET})
 endforeach()
 
 if (TARGET ${AV_BASENAME}-static)
     set_target_properties(${AV_BASENAME}-static PROPERTIES OUTPUT_NAME ${AV_BASENAME})
+endif()
+
+# prepare export header for visibility macros
+string(TOUPPER ${AV_BASENAME} AV_BASENAME_UPPER)
+generate_export_header(${AV_BASENAME}
+    EXPORT_FILE_NAME    ${CMAKE_CURRENT_BINARY_DIR}/avcpp/avcpp_export.h
+    STATIC_DEFINE       ${AV_BASENAME_UPPER}_STATIC_DEFINE
+)
+if (AV_ENABLE_SHARED)
+    set_target_properties(${AV_BASENAME} PROPERTIES
+        CXX_VISIBILITY_PRESET    hidden
+        C_VISIBILITY_PRESET      hidden
+        VISIBILITY_INLINES_HIDDEN ON
+    )
+
+    if (TARGET ${AV_BASENAME}-static)
+        target_compile_definitions(${AV_BASENAME}-static PUBLIC
+            ${AV_BASENAME_UPPER}_STATIC_DEFINE
+        )
+    endif()
+else()
+    target_compile_definitions(${AV_BASENAME} PUBLIC
+        ${AV_BASENAME_UPPER}_STATIC_DEFINE
+    )
 endif()
 
 # prepare configuration file
@@ -137,7 +158,7 @@ if (AVCPP_NOT_SUBPROJECT)
           "${CMAKE_CURRENT_BINARY_DIR}/avcpp/avcpp-config.cmake"
           "${CMAKE_CURRENT_BINARY_DIR}/avcpp/avcpp-config-version.cmake"
         DESTINATION
-          "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/cmake/avcpp"
+          "${CMAKE_INSTALL_LIBDIR}/cmake/avcpp"
       )
 
     if (PKG_CONFIG_FOUND)
@@ -191,7 +212,6 @@ if (AVCPP_NOT_SUBPROJECT)
 
         install(FILES   "${CMAKE_CURRENT_BINARY_DIR}/avcpp/libavcpp.pc"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-
     endif()
 endif()
 

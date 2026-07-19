@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <string>
 #include <iostream>
 
@@ -23,7 +25,7 @@ namespace av {
  *
  * It has size same to the AVPixelFormat, but wrap pixel description function too.
  */
-class PixelFormat : public PixSampleFmtWrapper<PixelFormat, AVPixelFormat>
+class AVCPP_EXPORT PixelFormat : public PixSampleFmtWrapper<PixelFormat, AVPixelFormat>
 {
 public:
     using Parent = PixSampleFmtWrapper<PixelFormat, AVPixelFormat>;

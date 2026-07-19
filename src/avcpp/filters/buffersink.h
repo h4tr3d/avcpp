@@ -16,7 +16,7 @@
 
 namespace av {
 
-class BufferSinkFilterContext
+class AVCPP_EXPORT BufferSinkFilterContext
 {
     // To protect access
     enum {

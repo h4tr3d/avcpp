@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <memory>
 #include <chrono>
 #include <functional>
@@ -39,7 +41,7 @@ using AvioInterruptCb = std::function<int()>;
  * CustomIO object is not owned by the av::FormatContext and must be alived across av::FormatContext life.
  *
  */
-struct CustomIO
+struct AVCPP_EXPORT CustomIO
 {
     virtual ~CustomIO() {}
 
@@ -124,7 +126,7 @@ struct CustomIO
     virtual const char* name() const { return ""; }
 };
 
-class FormatContext : public FFWrapperPtr<AVFormatContext>, public noncopyable
+class AVCPP_EXPORT FormatContext : public FFWrapperPtr<AVFormatContext>, public noncopyable
 {
 #if AVCPP_CXX_STANDARD >= 20
     struct _StreamTransform {

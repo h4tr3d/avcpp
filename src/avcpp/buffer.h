@@ -1,5 +1,6 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
 #include "avcpp/averror.h"
 #include "ffmpeg.h"
 
@@ -13,7 +14,7 @@ namespace buffer {
 /**
  * Buffer deleter that do nothing. To wrap static data.
  */
-void null_deleter(void* /*opaque*/, uint8_t* /*data*/);
+AVCPP_EXPORT void null_deleter(void* /*opaque*/, uint8_t* /*data*/);
 } // ::buffer
 
 class BufferRef;
@@ -21,7 +22,7 @@ class BufferRef;
 /**
  * Non-owning view for the nested AVBufferRef
  */
-class BufferRefView : public FFWrapperPtr<AVBufferRef>
+class AVCPP_EXPORT BufferRefView : public FFWrapperPtr<AVBufferRef>
 {
 public:
     using FFWrapperPtr<AVBufferRef>::FFWrapperPtr;
@@ -115,7 +116,7 @@ public:
 /**
  * Light weight wrapper for the FFmpeg AVBufferRef functionality
  */
-class BufferRef : public BufferRefView
+class AVCPP_EXPORT BufferRef : public BufferRefView
 {
     //using FFWrapperPtr<AVBufferRef>::FFWrapperPtr;
     using BufferRefView::BufferRefView;

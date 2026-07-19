@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <system_error>
 #include <exception>
 
@@ -62,7 +64,7 @@ enum class Errors
     MixBufferSinkAccess,
 };
 
-class OptionalErrorCode
+class AVCPP_EXPORT OptionalErrorCode
 {
     OptionalErrorCode() {}
 
@@ -85,7 +87,7 @@ private:
  *
  * Simple wrap error code value and category
  */
-class Exception : public std::system_error
+class AVCPP_EXPORT Exception : public std::system_error
 {
 public:
     using std::system_error::system_error;
@@ -95,7 +97,7 @@ public:
  * @brief The AvcppCategory class
  * Describes internal AvCpp errors
  */
-class AvcppCategory : public std::error_category
+class AVCPP_EXPORT AvcppCategory : public std::error_category
 {
 public:
 
@@ -107,7 +109,7 @@ public:
  * @brief The FfmpegCategory class
  * Describers FFmpeg internal errors
  */
-class FfmpegCategory : public std::error_category
+class AVCPP_EXPORT FfmpegCategory : public std::error_category
 {
     virtual const char *name() const noexcept override;
     virtual std::string message(int ev) const override;

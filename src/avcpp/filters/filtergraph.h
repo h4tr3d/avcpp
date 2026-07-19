@@ -14,7 +14,7 @@
 
 namespace av {
 
-class FilterGraph : FFWrapperPtr<AVFilterGraph>
+class AVCPP_EXPORT FilterGraph : FFWrapperPtr<AVFilterGraph>
 {
     friend class FilterInOut;
 

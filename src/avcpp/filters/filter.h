@@ -21,7 +21,7 @@ enum class FilterMediaType
 };
 
 
-class Filter : public FFWrapperPtr<const AVFilter>
+class AVCPP_EXPORT Filter : public FFWrapperPtr<const AVFilter>
 {
 public:
     using FFWrapperPtr<const AVFilter>::FFWrapperPtr;

@@ -11,7 +11,7 @@
 
 namespace av {
 
-class FilterPadList : public FFWrapperPtr<const AVFilterPad>
+class AVCPP_EXPORT FilterPadList : public FFWrapperPtr<const AVFilterPad>
 {
 private:
     friend class Filter;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <iostream>
 #include <string>
 
@@ -18,7 +20,7 @@ namespace av {
  * It allows to quckly ask some info about sample format. Only base one is provided.
  *
  */
-class SampleFormat : public PixSampleFmtWrapper<SampleFormat, AVSampleFormat>
+class AVCPP_EXPORT SampleFormat : public PixSampleFmtWrapper<SampleFormat, AVSampleFormat>
 {
 public:
     enum Alignment

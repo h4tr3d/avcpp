@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <memory>
 #include <string>
 
@@ -24,8 +26,8 @@ using avcpp_format_const = typename std::conditional<
 
 using FmtCodec = class Codec;
 namespace internal {
-bool codec_supported(const AVCodecTag *const *codecTag, const FmtCodec &codec);
-bool codec_supported(const AVCodecTag *const *codecTag, AVCodecID codec_id);
+AVCPP_EXPORT bool codec_supported(const AVCodecTag *const *codecTag, const FmtCodec &codec);
+AVCPP_EXPORT bool codec_supported(const AVCodecTag *const *codecTag, AVCodecID codec_id);
 } // ::internal
 
 template<typename T>
@@ -74,7 +76,7 @@ protected:
     using FFWrapperPtr<T>::m_raw;
 };
 
-class InputFormat : public Format<avcpp_format_const<AVInputFormat>>
+class AVCPP_EXPORT InputFormat : public Format<avcpp_format_const<AVInputFormat>>
 {
 public:
     using Format<avcpp_format_const<AVInputFormat>>::Format;
@@ -89,7 +91,7 @@ public:
 };
 
 
-class OutputFormat : public Format<avcpp_format_const<AVOutputFormat>>
+class AVCPP_EXPORT OutputFormat : public Format<avcpp_format_const<AVOutputFormat>>
 {
 public:
     using Format<avcpp_format_const<AVOutputFormat>>::Format;
@@ -110,7 +112,7 @@ public:
 };
 
 
-OutputFormat guessOutputFormat(const std::string& name,
+AVCPP_EXPORT OutputFormat guessOutputFormat(const std::string& name,
                                const std::string& url  = std::string(),
                                const std::string& mime = std::string());
 

@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <chrono>
 
 #include "avutils.h"
@@ -14,7 +16,7 @@ namespace av {
  * is a multiplicator. Be careful with construct Timestamp from the std::chrono::duration with floating point @a rep
  *
  */
-class Timestamp
+class AVCPP_EXPORT Timestamp
 {
 public:
     Timestamp() noexcept;
@@ -194,10 +196,10 @@ bool operator<=(const Timestamp& left, const Timestamp& right) noexcept
 // Math operations
 //
 
-Timestamp operator+(const Timestamp& left, const Timestamp &right) noexcept;
-Timestamp operator-(const Timestamp& left, const Timestamp &right) noexcept;
-Timestamp operator*(const Timestamp& left, const Timestamp &right) noexcept;
-Timestamp operator/(const Timestamp& left, const Timestamp &right) noexcept;
+AVCPP_EXPORT Timestamp operator+(const Timestamp& left, const Timestamp &right) noexcept;
+AVCPP_EXPORT Timestamp operator-(const Timestamp& left, const Timestamp &right) noexcept;
+AVCPP_EXPORT Timestamp operator*(const Timestamp& left, const Timestamp &right) noexcept;
+AVCPP_EXPORT Timestamp operator/(const Timestamp& left, const Timestamp &right) noexcept;
 
 //
 // Output

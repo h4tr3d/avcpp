@@ -13,7 +13,7 @@
 
 namespace av {
 
-class BufferSrcFilterContext
+class AVCPP_EXPORT BufferSrcFilterContext
 {
 public:
     BufferSrcFilterContext() = default;
