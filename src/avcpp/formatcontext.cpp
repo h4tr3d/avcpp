@@ -300,6 +300,7 @@ Stream FormatContext::addStream(const AudioEncoderContext &encCtx, OptionalError
     return addStream(static_cast<const CodecContext2&>(encCtx), ec);
 }
 
+#if AVCPP_CXX_STANDARD >= 20
 FormatContext::StreamsView FormatContext::streams(OptionalErrorCode ec) const {
     if (!m_raw || !m_raw->streams || !m_raw->nb_streams) {
         throws_if(ec, Errors::Unallocated);
@@ -307,6 +308,7 @@ FormatContext::StreamsView FormatContext::streams(OptionalErrorCode ec) const {
     }
     return std::span(m_raw->streams, m_raw->nb_streams) | std::views::transform(_StreamTransform{this});
 }
+#endif // AVCPP_CXX_STANDARD
 
 bool FormatContext::seekable() const noexcept
 {
