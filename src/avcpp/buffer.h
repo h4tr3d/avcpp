@@ -179,7 +179,7 @@ public:
      */
     BufferRef(const uint8_t *data, size_t size, int flags = 0) noexcept;
 
-#if AVCPP_CXX_STANDARD
+#if AVCPP_CXX_STANDARD >= 20
     /**
      * Same to BufferRef(data, size, free, opaque, flags) but pass data via std::span() interface. Span must be pointed
      * into start of the allocated block.

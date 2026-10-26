@@ -145,7 +145,7 @@ BufferRef::BufferRef(const uint8_t *data, size_t size, int flags) noexcept
         mem.release(); // memory owned by the buffer now
 }
 
-#if AVCPP_CXX_STANDARD
+#if AVCPP_CXX_STANDARD >= 20
 BufferRef::BufferRef(std::span<uint8_t> data, void (*free)(void *, uint8_t *), void *opaque, int flags) noexcept
     : BufferRef(data.data(), data.size(), free, opaque, flags)
 {
