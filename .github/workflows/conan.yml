@@ -1,0 +1,104 @@
+name: Cross-platform build using conan
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "master" ]
+  schedule:
+    - cron: '34 5 * * 5'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  CMake:
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ ubuntu-latest, macos-latest, windows-latest ]
+        ffmpeg: [ 8.0.1, 7.1.3, 6.1.1 ]
+
+    steps:
+      - name: Restart from scratch every Friday
+        run: gh cache delete --all
+        shell: bash
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: conan-io/setup-conan@v1
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Get conan home
+        shell: bash
+        id: conan_home
+        run: echo path=`conan config home` >> $GITHUB_OUTPUT
+      - name: Cache conan artifacts
+        id: conan-artifacts
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.conan_home.outputs.path }}
+          key: conan-${{ matrix.platform }}-${{ matrix.ffmpeg}}-cmake
+
+      - run: conan profile detect --force
+      - run: conan install tests/conan -pr:a=tests/conan/conan.profile -b=missing -of build -o ffmpeg=${{ matrix.ffmpeg }} -o build=CMake
+
+      - name: Generate CMake build (Windows)
+        shell: cmd
+        run: |
+          call conanbuild.bat
+          call conanrun.bat
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+        working-directory: ${{ github.workspace }}/build
+        if: runner.os == 'Windows'
+        env:
+          PKG_CONFIG_EXECUTABLE: pkgconf.exe
+          PKG_CONFIG_PATH: ${{ github.workspace }}/build
+
+      - name: Generate CMake build (Linux/macOS)
+        shell: bash
+        run: |
+          source conanbuild.sh
+          source conanrun.sh
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+        working-directory: ${{ github.workspace }}/build
+        if: runner.os != 'Windows'
+        env:
+          PKG_CONFIG_PATH: ${{ github.workspace }}/build
+
+      - name: Build (Windows)
+        shell: cmd
+        run: |
+          call conanbuild.bat
+          call conanrun.bat
+          cmake --build .
+        if: runner.os == 'Windows'
+        working-directory: ${{ github.workspace }}/build
+
+      - name: Build (Linux/macOS)
+        run: |
+          source conanbuild.sh
+          source conanrun.sh
+          cmake --build .
+        if: runner.os != 'Windows'
+        working-directory: ${{ github.workspace }}/build
+
+      - name: Run the unit tests (Windows)
+        shell: cmd
+        run: |
+          call conanrun.bat
+          ctest --output-on-failure
+        if: runner.os == 'Windows'
+        working-directory: ${{ github.workspace }}/build
+
+      - name: Run the unit tests (Linux/macOS)
+        run: |
+          source conanrun.sh
+          ctest --output-on-failure
+        if: runner.os != 'Windows'
+        working-directory: ${{ github.workspace }}/build

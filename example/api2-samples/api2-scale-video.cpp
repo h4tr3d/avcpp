@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     // INPUT
     //
     FormatContext ictx;
-    ssize_t      videoStream = -1;
+    long      videoStream = -1;
     VideoDecoderContext vdec;
     Stream      vst;
 
