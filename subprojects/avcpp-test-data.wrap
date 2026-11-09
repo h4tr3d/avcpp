@@ -1,6 +1,6 @@
 [wrap-git]
 url = https://github.com/h4tr3d/avcpp-test-data.git
-revision = main
+revision = master
 directory = avcpp-test-data
 
 [provide]

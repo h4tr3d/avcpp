@@ -122,7 +122,7 @@ Refer to CMake documentation for more details that can cover some special cases.
 - `AV_DISABLE_AVFORMAT` - Bool, disable livavformat usage. libavformat enabled by default. As dependency disables libavfilter and libavdevice.
 - `AV_DISABLE_AVFILTER` - Bool, disable libavfilter usage. libavfilter enabled by default. As dependency disables libavdevice.
 - `AV_DISABLE_AVDEVICE` - Bool, disable libavdevice usage. libavdevice enabled by default.
-- `AVCPP_TEST_DATA` - Bool, enable tests that use the `avcpp-test-data` binary fixtures, Off by default because the repository is private. Point `FETCHCONTENT_SOURCE_DIR_AVCPP_TEST_DATA` at a local checkout to avoid a network fetch.
+- `AVCPP_TEST_DATA` - Bool, enable tests that use the `avcpp-test-data` binary fixtures, Off by default. The fixtures are fetched over HTTPS from a separate repository; point `FETCHCONTENT_SOURCE_DIR_AVCPP_TEST_DATA` at a local checkout to avoid a network fetch.
 - C++ related
   - `CMAKE_CXX_STANDARD` - Can be defined globally to override default C++ version. C++17 required at least.
 - FFmpeg related:
