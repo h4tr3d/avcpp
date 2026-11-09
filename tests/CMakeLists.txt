@@ -10,7 +10,9 @@ add_executable(test_executor
     Common.cpp
     Buffer.cpp
     FormatCustomIO_test.cpp
-    CodecContext.cpp)
+    CodecContext.cpp
+    CodecContextSendReceive.cpp
+    Patterns.cpp)
 target_link_libraries(test_executor PRIVATE Catch2::Catch2WithMain avcpp::avcpp)
 
 include(CTest)
