@@ -21,6 +21,7 @@ jobs:
         os: [macos-latest]
         build_type: [Release, Debug]
         skip_meson: [true]
+        configure_args: ['']
         include:
           - os: ubuntu-22.04
             build_type: Release
@@ -28,6 +29,16 @@ jobs:
           - os: ubuntu-22.04
             build_type: Debug
             skip_meson: false
+          # Build without libavformat but with tests enabled.
+          - os: ubuntu-22.04
+            build_type: Release
+            skip_meson: true
+            configure_args: '-DAV_DISABLE_AVFORMAT=ON'
+          # Build without tests.
+          - os: ubuntu-22.04
+            build_type: Release
+            skip_meson: true
+            configure_args: '-DAVCPP_ENABLE_TESTS=OFF'
 
 
     # The CMake configure and build commands are platform agnostic and should work equally
@@ -41,14 +52,19 @@ jobs:
       OS_NAME: ${{ matrix.os }}
       BUILD_TYPE: ${{ matrix.build_type }}
       SKIP_MESON: ${{ matrix.skip_meson }}
+      CONFIGURE_ARGS: ${{ matrix.configure_args }}
     
     steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: 'true'
+    - uses: actions/checkout@v4
 
     - name: Dump environment variables
-      run: echo "OS_NAME=$OS_NAME, BUILD_TYPE=$BUILD_TYPE, SKIP_MESON=$SKIP_MESON"
+      run: echo "OS_NAME=$OS_NAME, BUILD_TYPE=$BUILD_TYPE, SKIP_MESON=$SKIP_MESON, CONFIGURE_ARGS=$CONFIGURE_ARGS"
+
+    - name: Cache Catch2 sources
+      uses: actions/cache@v4
+      with:
+        path: ${{github.workspace}}/build/_deps
+        key: ${{ runner.os }}-catch2-v3.16.1
       
     - name: Install packages for Linux
       if: ${{ matrix.os != 'macos-latest' && matrix.os != 'windows-latest' }}
@@ -61,13 +77,14 @@ jobs:
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ${CONFIGURE_ARGS}
 
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{ matrix.build_type }}
 
     - name: Test
+      if: ${{ !contains(matrix.configure_args, 'AVCPP_ENABLE_TESTS=OFF') }}
       working-directory: ${{github.workspace}}/build
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail

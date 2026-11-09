@@ -30,6 +30,24 @@ namespace codec_context::internal {
 const int *get_supported_samplerates(const struct AVCodec *codec);
 }
 
+/**
+ * @brief Base class for audio and video codec contexts.
+ *
+ * @par Send/receive contract
+ * The send/receive API wraps the FFmpeg send/receive model:
+ *
+ * - send() submits one packet (decoding) or one frame (encoding) and returns
+ *   false when the codec cannot accept more input until the output is drained.
+ *   This EAGAIN condition is not an error.
+ * - receive() returns one output object. An empty (invalid) result means that
+ *   no output is available yet (EAGAIN) or that the stream has ended.
+ * - After the last input, call flush() once and keep calling receive() until it
+ *   returns an empty result. At that point isEof() becomes true.
+ * - An empty result is never marked as complete. Callers must check the object
+ *   with operator bool() or isNull()/isValid().
+ * - flushBuffers() resets the codec state and the EOF flag, for example after a
+ *   seek back to a key frame.
+ */
 class CodecContext2 : public FFWrapperPtr<AVCodecContext>, public noncopyable
 {
 protected:
@@ -543,8 +561,24 @@ public:
 
 
 #if AVCPP_NEW_CODEC_API
+    /**
+     * @brief Sends a packet to the decoder.
+     *
+     * @return false if the decoder cannot accept more input until receive()
+     *         is called. This EAGAIN condition is not an error.
+     */
     bool send(const Packet &packet, OptionalErrorCode ec = throws());
 
+    /**
+     * @brief Receives one decoded frame.
+     *
+     * Returns an invalid frame when no frame is available yet (EAGAIN) and
+     * when the stream has ended. Use isEof() to distinguish the two cases.
+     *
+     * @note avcodec_receive_frame() always writes into the frame allocated by
+     *       the decoder, so @p autoAllocateFrame only affects the wrapper
+     *       object and is kept for compatibility.
+     */
     VideoFrame receive(OptionalErrorCode ec = throws(), bool autoAllocateFrame = true);
 #endif
 
@@ -596,8 +630,20 @@ public:
 
 #if AVCPP_NEW_CODEC_API
 
+    /**
+     * @brief Sends a frame to the encoder.
+     *
+     * @return false if the encoder cannot accept more input until receive()
+     *         is called. This EAGAIN condition is not an error.
+     */
     bool send(const VideoFrame& frame, OptionalErrorCode ec = throws());
 
+    /**
+     * @brief Receives one encoded packet.
+     *
+     * Returns an empty packet when no packet is available yet (EAGAIN) and
+     * when the stream has ended. Use isEof() to distinguish the two cases.
+     */
     Packet receive(OptionalErrorCode ec = throws());
 
 #endif
@@ -716,8 +762,20 @@ public:
 
 #if AVCPP_NEW_CODEC_API
 
+    /**
+     * @brief Sends a packet to the decoder.
+     *
+     * @return false if the decoder cannot accept more input until receive()
+     *         is called. This EAGAIN condition is not an error.
+     */
     bool send(const Packet& packet, OptionalErrorCode ec = throws());
 
+    /**
+     * @brief Receives one decoded audio buffer.
+     *
+     * Returns invalid samples when no buffer is available yet (EAGAIN) and
+     * when the stream has ended. Use isEof() to distinguish the two cases.
+     */
     AudioSamples receive(OptionalErrorCode ec = throws());
 
 #endif
@@ -741,8 +799,20 @@ public:
 
 #if AVCPP_NEW_CODEC_API
 
+    /**
+     * @brief Sends audio samples to the encoder.
+     *
+     * @return false if the encoder cannot accept more input until receive()
+     *         is called. This EAGAIN condition is not an error.
+     */
     bool send(const AudioSamples &samples, OptionalErrorCode ec = throws());
 
+    /**
+     * @brief Receives one encoded packet.
+     *
+     * Returns an empty packet when no packet is available yet (EAGAIN) and
+     * when the stream has ended. Use isEof() to distinguish the two cases.
+     */
     Packet receive(OptionalErrorCode ec = throws());
 
 #endif

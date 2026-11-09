@@ -26,6 +26,7 @@ set(TARGETS
   api2-remux
   api2-hw-encode
   api2-decode-raw-h264
+  api2-send-receive
 )
 
 if (AV_DISABLE_AVFORMAT)
@@ -40,6 +41,7 @@ if (AV_DISABLE_AVFORMAT)
     api2-scale-video
     api2-decode-rasample-audio
     api2-demux-seek
+    api2-send-receive
   )
 endif()
 

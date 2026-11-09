@@ -19,6 +19,7 @@ samples = [
     'api2-timestamp',
     'api2-demux-seek',
     'api2-remux',
+    'api2-send-receive',
 ]
 
 foreach sample : samples
