@@ -1,9 +1,3 @@
-cmake_minimum_required(VERSION 3.19)
-
-project(avcpp_tests LANGUAGES CXX VERSION 0.0.1)
-
-enable_testing()
-
 add_executable(test_executor
     Frame.cpp
     AvDeleter.cpp
@@ -17,10 +11,7 @@ add_executable(test_executor
     Buffer.cpp
     FormatCustomIO_test.cpp
     CodecContext.cpp)
-target_link_libraries(test_executor PUBLIC Catch2::Catch2WithMain avcpp::avcpp)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../catch2/contrib")
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}/../catch2/contrib")
+target_link_libraries(test_executor PRIVATE Catch2::Catch2WithMain avcpp::avcpp)
 
 include(CTest)
 include(Catch)

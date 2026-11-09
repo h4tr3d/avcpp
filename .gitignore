@@ -7,11 +7,18 @@ qtcreator-build-*/
 scripts/valgrind.txt
 transcoder-manager-*-win32.zip
 build
+build-*/
 doc
 
 .cache
 subprojects/Catch2-*
 subprojects/packagecache
+
+# Local test media, never committed. See the avcpp-test-data repository.
+/tests/data/
+
+# CMake FetchContent downloads
+/_deps/
 
 .idea
 cmake-*

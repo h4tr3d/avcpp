@@ -17,7 +17,11 @@ set(AV_ENABLE_STATIC On CACHE BOOL "Enable static library build (On)")
 set(AV_ENABLE_SHARED On CACHE BOOL "Enable shared library build (On)")
 set(AV_ENABLE_STATIC_PIC On CACHE BOOL "Enable Position Independent Code build for the statis library")
 set(AV_BUILD_EXAMPLES On CACHE BOOL "Build example applications (On)")
-set(AV_BUILD_TESTS On CACHE BOOL "Build tests (On)")
+if (DEFINED AV_BUILD_TESTS)
+    message(DEPRECATION "AV_BUILD_TESTS is deprecated, use AVCPP_ENABLE_TESTS")
+    set(AVCPP_ENABLE_TESTS ${AV_BUILD_TESTS})
+endif()
+option(AVCPP_ENABLE_TESTS "Build tests" On)
 option(AV_DISABLE_AVFORMAT "Disable libavformat usage. Also turns off: AVFILTER, AVDEVICE" Off)
 option(AV_DISABLE_AVFILTER "Disable libavfilter usage. Also turns off: AVDEVICE" Off)
 option(AV_DISABLE_AVDEVICE "Disable libavdevice usage." Off)
@@ -63,15 +67,26 @@ if (${AV_BUILD_EXAMPLES})
 	add_subdirectory(example/api2-samples)
 endif()
 
-if (AV_BUILD_TESTS)
-    set(CATCH_DIR ${CMAKE_CURRENT_LIST_DIR}/catch2)
-    if (EXISTS ${CATCH_DIR}/CMakeLists.txt)
-        enable_testing()
-        set(CATCH_BUILD_TESTING Off CACHE STRING "")
-        add_subdirectory(${CATCH_DIR})
-        add_subdirectory(tests)
-    else()
-        message(STATUS "Catch2 not found, testing skipped")
-    endif()
+if (AVCPP_ENABLE_TESTS)
+    enable_testing()
+
+    include(FetchContent)
+
+    # The test framework is downloaded at configure time. Point
+    # FETCHCONTENT_SOURCE_DIR_CATCH2 at a local checkout to work offline.
+    FetchContent_Declare(Catch2
+        URL "https://github.com/catchorg/Catch2/archive/refs/tags/v3.16.1.tar.gz"
+        URL_HASH SHA256=d16bd1b8b2364918bd472cb216394acb93bde6784890df0d91bccfb3f28d777d
+        DOWNLOAD_EXTRACT_TIMESTAMP ON
+    )
+
+    set(CATCH_BUILD_TESTING Off CACHE BOOL "" FORCE)
+    set(CATCH_BUILD_EXAMPLES Off CACHE BOOL "" FORCE)
+    set(CATCH_INSTALL_DOCS Off CACHE BOOL "" FORCE)
+    set(CATCH_INSTALL_EXTRAS On CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(Catch2)
+
+    list(APPEND CMAKE_MODULE_PATH "${catch2_SOURCE_DIR}/extras")
+    add_subdirectory(tests)
 endif()
 
