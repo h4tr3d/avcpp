@@ -3,6 +3,12 @@ catch2 = dependency('catch2-with-main', required: true)
 
 deps = [avcpp_dep, catch2]
 
+# Optional binary fixtures, mirroring AVCPP_TEST_DATA in the CMake build.
+if get_option('test_data')
+    avcpp_test_data = subproject('avcpp-test-data')
+    deps += avcpp_test_data.get_variable('avcpp_test_data_dep')
+endif
+
 # Shared helpers for the generated test patterns
 test_support = static_library(
     'test_support',
@@ -22,6 +28,7 @@ tests = [
     'CodecContext',
     'CodecContextSendReceive',
     'Common',
+    'Fixtures',
     'Format',
     'FormatCustomIO_test',
     'Frame',
