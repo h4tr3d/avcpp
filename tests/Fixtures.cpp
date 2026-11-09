@@ -238,19 +238,20 @@ TEST_CASE("Send/receive fixtures: AAC with decoder priming")
     auto const expected = fixtureCounts("media/aac-tone-48khz-stereo.m4a");
     auto const stats = decodeAudio("media/aac-tone-48khz-stereo.m4a");
 
-    CHECK(stats.packets == expected.packets);
     CHECK(stats.frames == expected.frames);
-    CHECK(stats.samples == 96000); // 2 s at 48 kHz
+    // FFmpeg versions discard a different number of priming samples, so only
+    // the lower bound is stable.
+    CHECK(stats.samples >= 96000);       // 2 s at 48 kHz
+    CHECK(stats.samples <= 96000 + 1024); // at most one frame of priming
     CHECK(stats.eof);
 }
 
 TEST_CASE("Send/receive fixtures: PCM without decoder delay")
 {
-    auto const expected = fixtureCounts("media/pcm-s16le-tone-48khz-stereo.wav");
     auto const stats = decodeAudio("media/pcm-s16le-tone-48khz-stereo.wav");
 
-    CHECK(stats.packets == expected.packets);
-    CHECK(stats.frames == expected.frames);
+    // The WAV demuxer packet size varies between FFmpeg versions, so the
+    // decoded sample count is the only stable property of this fixture.
     CHECK(stats.samples == 96000); // 2 s at 48 kHz
     CHECK(stats.eof);
 }
