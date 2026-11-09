@@ -464,7 +464,7 @@ CodecContext2::~CodecContext2()
     // So only stream-independ CodecContext's must be tracked and closed in ctor.
     // Note: new FFmpeg API declares, that AVStream not owned by codec and deals only with codecpar
     //
-#if !AVCPP_USE_CODECPAR
+#if AVCPP_HAS_AVFORMAT && !AVCPP_USE_CODECPAR
     if (!m_stream.isNull())
         return;
 #endif
