@@ -1,5 +1,7 @@
 #get catch2
-catch2 = dependency('catch2-with-main', required: true)
+catch2 = dependency('catch2-with-main',
+    required: true,
+    fallback: ['catch2', 'catch2_with_main_dep'])
 
 deps = [avcpp_dep, catch2]
 
