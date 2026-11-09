@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <iostream>
 #include <memory>
 
@@ -34,7 +36,7 @@ enum SwsFlags
     SwsFlagErrorDiffusion = SWS_ERROR_DIFFUSION,
 };
 
-class VideoRescaler : public FFWrapperPtr<SwsContext>, public noncopyable
+class AVCPP_EXPORT VideoRescaler : public FFWrapperPtr<SwsContext>, public noncopyable
 {
 public:
     VideoRescaler();

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <memory>
 
 #include "averror.h"
@@ -12,7 +14,7 @@
 
 namespace av
 {
-class Stream : public FFWrapperPtr<AVStream>
+class AVCPP_EXPORT Stream : public FFWrapperPtr<AVStream>
 {
 private:
     friend class FormatContext;

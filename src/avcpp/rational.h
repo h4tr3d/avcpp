@@ -1,5 +1,7 @@
 #pragma once
 
+#include "avcpp/avcpp_export.h"
+
 #include <utility>
 #include <iostream>
 #include <memory>
@@ -22,7 +24,7 @@ enum
     RationalMaxPrecision = 5
 };
 
-class Rational
+class AVCPP_EXPORT Rational
 {
 public:
     Rational() noexcept;

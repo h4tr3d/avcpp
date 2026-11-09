@@ -1,6 +1,7 @@
 #pragma once
 
 #include "avcpp/avconfig.h"
+#include "avcpp/avcpp_export.h"
 
 #include <ranges>
 #include <string>
@@ -48,7 +49,7 @@ R lexical_cast(const T& v)
     return result;
 }
 
-class noncopyable
+class AVCPP_EXPORT noncopyable
 {
 protected:
     noncopyable() = default;
@@ -63,7 +64,7 @@ protected:
  *               mean less logging.  A negative number tells FFmpeg to
  *               shut up.
  */
-void set_logging_level(int32_t level);
+AVCPP_EXPORT void set_logging_level(int32_t level);
 
 
 /**
@@ -75,7 +76,7 @@ void set_logging_level(int32_t level);
  *                boost::lexical_cast will be used and set_logging_level(int32_t) will be
  *                called.
  */
-void set_logging_level(const std::string& level);
+AVCPP_EXPORT void set_logging_level(const std::string& level);
 
 // Compat code
 #define setFFmpegLoggingLevel set_logging_level
@@ -88,7 +89,7 @@ void set_logging_level(const std::string& level);
  * @param width         output width in hex values (real text screen with is: sw = width * 3 - 1)
  */
 [[deprecated("Use av::hex_dump()")]]
-void dumpBinaryBuffer(uint8_t *buffer, int buffer_size, int width = 16);
+AVCPP_EXPORT void dumpBinaryBuffer(uint8_t *buffer, int buffer_size, int width = 16);
 
 
 /**
@@ -96,7 +97,7 @@ void dumpBinaryBuffer(uint8_t *buffer, int buffer_size, int width = 16);
  * @param error - error code to convert to string
  * @return string representation of error code
  */
-std::string error2string(int error);
+AVCPP_EXPORT std::string error2string(int error);
 
 }
 
@@ -108,7 +109,7 @@ std::string error2string(int error);
 //
 namespace av {
 
-struct EmptyDeleter
+struct AVCPP_EXPORT EmptyDeleter
 {
     void operator()(void *) {}
 };
@@ -119,7 +120,7 @@ struct EmptyDeleter
  * Can be used with shared_ptr<> and so on.
  */
 namespace v1 {
-struct AvDeleter
+struct AVCPP_EXPORT AvDeleter
 {
     bool operator() (struct SwsContext* &swsContext);
     bool operator() (struct AVCodecContext* &codecContext);
@@ -138,7 +139,7 @@ struct AvDeleter
 } // ::v1
 
 inline namespace v2 {
-struct SmartDeleter
+struct AVCPP_EXPORT SmartDeleter
 {
     template<typename T>
     bool operator() (T *ptr) {
@@ -169,7 +170,7 @@ std::unique_ptr<T, void(*)(void*)> memdup(const void *p, size_t size)
  * Functor to take next element in list/array
  */
 #if 0
-struct AvNextElement
+struct AVCPP_EXPORT AvNextElement
 {
     AVFilterInOut * operator()(AVFilterInOut * x) const
     {
@@ -261,7 +262,7 @@ private:
  * In example above dtor of the action will be called before fd and we correctly close descriptor.
  *
  */
-class ScopeOutAction
+class AVCPP_EXPORT ScopeOutAction
 {
 public:
     template<typename Proc>
@@ -628,12 +629,12 @@ void array_to_container(const T* array, Container &container, Compare isEnd, Cal
 //
 // Allow to use without AVFORMAT library
 //
-void hex_dump(FILE *f, const uint8_t *buf, std::size_t size);
-void hex_dump_log(void *avcl, int level, const uint8_t *buf, std::size_t size);
+AVCPP_EXPORT void hex_dump(FILE *f, const uint8_t *buf, std::size_t size);
+AVCPP_EXPORT void hex_dump_log(void *avcl, int level, const uint8_t *buf, std::size_t size);
 
 #if AVCPP_CXX_STANDARD >= 20
-void hex_dump(FILE *f, std::span<const uint8_t> buf);
-void hex_dump_log(void *avcl, int level, std::span<const uint8_t> buf);
+AVCPP_EXPORT void hex_dump(FILE *f, std::span<const uint8_t> buf);
+AVCPP_EXPORT void hex_dump_log(void *avcl, int level, std::span<const uint8_t> buf);
 #endif // if AVCPP_CXX_STANDARD >= 20
 
 } // ::av

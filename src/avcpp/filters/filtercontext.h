@@ -12,7 +12,7 @@
 
 namespace av {
 
-class FilterContext : public FFWrapperPtr<AVFilterContext>
+class AVCPP_EXPORT FilterContext : public FFWrapperPtr<AVFilterContext>
 {
     friend class FilterGraph;
 
