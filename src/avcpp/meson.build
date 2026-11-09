@@ -32,7 +32,6 @@ av_libs = [
     ['avfilter', '3.0.0'],
     ['swscale', '2.0.0'],
     ['swresample', '0.0.0'],
-    ['postproc', '52.0.0'],
 ]
 
 conf_data = configuration_data()

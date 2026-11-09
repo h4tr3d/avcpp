@@ -6,8 +6,8 @@ option(AVCPP_TEST_DATA "Fetch the avcpp-test-data fixtures and enable fixture te
 if (AVCPP_TEST_DATA)
     include(FetchContent)
     FetchContent_Declare(avcpp_test_data
-        GIT_REPOSITORY git@github.com:h4tr3d/avcpp-test-data.git
-        GIT_TAG v1
+        GIT_REPOSITORY https://github.com/h4tr3d/avcpp-test-data.git
+        GIT_TAG main
     )
     FetchContent_MakeAvailable(avcpp_test_data)
 endif()

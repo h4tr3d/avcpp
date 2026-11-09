@@ -13,6 +13,7 @@ doc
 .cache
 subprojects/Catch2-*
 subprojects/ffmpeg
+subprojects/avcpp-test-data
 subprojects/.wraplock
 subprojects/packagecache
 

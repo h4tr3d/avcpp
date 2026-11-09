@@ -30,7 +30,6 @@ tests = [
     'CodecContext',
     'CodecContextSendReceive',
     'Common',
-    'Fixtures',
     'Format',
     'FormatCustomIO_test',
     'Frame',
@@ -39,6 +38,10 @@ tests = [
     'Rational',
     'Timestamp'
 ]
+
+if get_option('test_data')
+    tests += ['Fixtures']
+endif
 
 #create all the tests
 foreach test_obj : tests
