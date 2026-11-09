@@ -96,6 +96,30 @@ public:
     Rational timeBase() const noexcept;
     void setTimeBase(const Rational &value) noexcept;
 
+#if AVCPP_NEW_CODEC_API
+    /**
+     * @brief Returns true if the codec has been flushed and all output is drained.
+     *
+     * An empty result of receive() with isEof() == false means that more input is
+     * required (EAGAIN), for example during the initial delay of a reordering
+     * decoder.
+     */
+    bool isEof() const noexcept { return m_eof; }
+
+    /**
+     * @brief Resets the codec internal state and the end-of-stream flag.
+     *
+     * Wraps avcodec_flush_buffers(). Use it to reuse the context after EOF or to
+     * seek back to a key frame.
+     */
+    void flushBuffers() noexcept
+    {
+        if (m_raw)
+            avcodec_flush_buffers(m_raw);
+        m_eof = false;
+    }
+#endif
+
 #if AVCPP_HAS_AVFORMAT
     const Stream& stream() const noexcept;
 #endif // if AVCPP_HAS_AVFORMAT
@@ -161,10 +185,14 @@ protected:
     // Decode
     std::error_code sendCommon(const class Packet& pkt);
     std::error_code receiveCommon(AVFrame *frame);
+    template<typename T>
+    std::error_code receiveCommon(T &frame);
 
     // Encode
     std::error_code sendCommon(const AVFrame* frame);
     std::error_code receiveCommon(class Packet& pkt);
+    template<typename T>
+    std::error_code sendCommon(const T& frame);
 #endif
 
 public:
@@ -186,12 +214,6 @@ public:
 #if AVCPP_NEW_CODEC_API
     // Decode
     bool send(const Packet &packet, OptionalErrorCode ec = throws());
-    template<typename T>
-    std::error_code receiveCommon(T &frame);
-
-    // Encode
-    template<typename T>
-    std::error_code sendCommon(const T& frame);
     Packet receive(OptionalErrorCode ec = throws());
 #endif
 
@@ -199,6 +221,10 @@ private:
 #if AVCPP_HAS_AVFORMAT
     Stream m_stream;
 #endif // if AVCPP_HAS_AVFORMAT
+    Direction m_direction{Direction::Invalid};
+#if AVCPP_NEW_CODEC_API
+    bool m_eof{false};
+#endif
 };
 
 
@@ -294,6 +320,16 @@ public:
 
 #if AVCPP_NEW_CODEC_API
 
+    /**
+     * @brief Puts the codec into draining mode.
+     *
+     * After a successful flush() the caller must drain the output with repeated
+     * receive() calls until an empty result is returned. When the draining is
+     * complete, isEof() returns true.
+     *
+     * @return true if draining was initiated (or the codec is already drained),
+     *         false if the output queue is full and must be drained first.
+     */
     bool flush(OptionalErrorCode ec = throws())
     {
         clear_if(ec);
@@ -316,8 +352,14 @@ public:
         }
 
         if (ret == AVERROR(EAGAIN)) {
+            // Output queue is full: drain it first, then call flush() again
             return false;
-        } else if (ret) {
+        }
+        if (ret == AVERROR_EOF) {
+            // Already drained, flush is idempotent
+            return true;
+        }
+        if (ret) {
             throws_if(ec, ret, ffmpeg_category());
             return false;
         }

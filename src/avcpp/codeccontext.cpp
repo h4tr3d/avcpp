@@ -73,27 +73,18 @@ std::error_code CodecContext2::receiveCommon(T &frame)
     if (st)
         return st;
 
-    // Adjust Timebase if any
-#if AVCPP_HAS_AVFORMAT
-    if (m_stream.isValid())
-        frame.setTimeBase(m_stream.timeBase());
-#endif // if AVCPP_HAS_AVFORMAT
+    // EAGAIN or EOF: nothing was decoded, keep the output object empty
+    if (!frame.isValid())
+        return st;
 
     AVFrame *rawFrame = frame.raw();
 
+    // Decoders report frame timestamps in the codec context time base
+    if (timeBase() != Rational())
+        frame.setTimeBase(timeBase());
+
     if (rawFrame->pts == av::NoPts)
         rawFrame->pts = av::frame::get_best_effort_timestamp(rawFrame);
-
-#if AVCPP_AVCODEC_VERSION_MAJOR < 57
-    if (rawFrame->pts == av::NoPts)
-        rawFrame->pts = rawFrame->pkt_pts;
-#endif
-
-    if (rawFrame->pts == av::NoPts)
-        rawFrame->pts = rawFrame->pkt_dts;
-
-    // Convert to decoder/frame time base. Seems not nessesary.
-    frame.setTimeBase(timeBase());
 
 #if AVCPP_HAS_AVFORMAT
     if (m_stream.isValid())
@@ -283,7 +274,7 @@ VideoFrame VideoDecoderContext::receive(OptionalErrorCode ec, bool autoAllocateF
         return VideoFrame();
     }
 
-    if (outFrame) {
+    if (outFrame && outFrame.pictureType() == AV_PICTURE_TYPE_NONE && outFrame.isKeyFrame()) {
         outFrame.setPictureType(AV_PICTURE_TYPE_I);
     }
 
@@ -386,14 +377,8 @@ bool VideoEncoderContext::send(const VideoFrame &frame, OptionalErrorCode ec)
 
 Packet VideoEncoderContext::receive(OptionalErrorCode ec)
 {
-    auto pkt = CodecContext2::receive(ec);
-    if (pkt && !ec) {
-// Only for the video???
-#if AVCPP_AVCODEC_VERSION_INT < AV_VERSION_INT(56, 60, 100)
-        packet.setKeyPacket(!!m_raw->coded_frame->key_frame);
-#endif
-    }
-    return pkt;
+    // avcodec_receive_packet() sets AV_PKT_FLAG_KEY, no extra handling is required
+    return CodecContext2::receive(ec);
 }
 
 #endif
@@ -404,6 +389,10 @@ void CodecContext2::swap(CodecContext2 &other)
 #if AVCPP_HAS_AVFORMAT
     swap(m_stream, other.m_stream);
 #endif // if AVCPP_HAS_AVFORMAT
+#if AVCPP_NEW_CODEC_API
+    swap(m_eof, other.m_eof);
+#endif
+    swap(m_direction, other.m_direction);
     swap(m_raw, other.m_raw);
 }
 
@@ -414,7 +403,8 @@ CodecContext2::CodecContext2()
 
 #if AVCPP_HAS_AVFORMAT
 CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction direction, AVMediaType type)
-    : m_stream(st)
+    : m_stream(st),
+      m_direction(direction)
 {
     if (st.direction() != direction)
         throw av::Exception(make_avcpp_error(Errors::CodecInvalidDirection));
@@ -457,6 +447,7 @@ CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction dir
 #endif // if AVCPP_HAS_AVFORMAT
 
 CodecContext2::CodecContext2(const Codec &codec, Direction direction, AVMediaType type)
+    : m_direction(direction)
 {
     if (checkCodec(codec, direction, type, throws()))
         m_raw = avcodec_alloc_context3(codec.raw());
@@ -987,8 +978,13 @@ void CodecContext2::open(const Codec &codec, AVDictionary **options, OptionalErr
     }
 
     int stat = avcodec_open2(m_raw, codec.raw(), options);
-    if (stat < 0)
+    if (stat < 0) {
         throws_if(ec, stat, ffmpeg_category());
+    } else {
+#if AVCPP_NEW_CODEC_API
+        m_eof = false;
+#endif
+    }
 }
 
 #if AVCPP_NEW_CODEC_API
@@ -1020,7 +1016,6 @@ Packet CodecContext2::receive(OptionalErrorCode ec)
         return Packet{};
     }
 
-    packet.setComplete(true);
     return packet;
 }
 
@@ -1032,7 +1027,13 @@ std::error_code CodecContext2::sendCommon(const Packet &pkt)
     if (!isOpened())
         return make_error_code(Errors::CodecNotOpened);
 
-    return make_ffmpeg_error(avcodec_send_packet(m_raw, pkt.raw()));
+    if (m_direction != Direction::Invalid && m_direction != Direction::Decoding)
+        return make_error_code(Errors::CodecInvalidDirection);
+
+    int ret = avcodec_send_packet(m_raw, pkt.raw());
+    if (ret == AVERROR_EOF)
+        m_eof = true;
+    return make_ffmpeg_error(ret);
 }
 
 
@@ -1044,9 +1045,16 @@ std::error_code CodecContext2::receiveCommon(AVFrame *frame)
     if (!isOpened())
         return make_error_code(Errors::CodecNotOpened);
 
+    if (m_direction != Direction::Invalid && m_direction != Direction::Decoding)
+        return make_error_code(Errors::CodecInvalidDirection);
+
     int ret = avcodec_receive_frame(m_raw, frame);
-    if (ret < 0 && ret == AVERROR(EAGAIN))
-        ret = 0; // just return Empty frame
+    if (ret == AVERROR(EAGAIN))
+        return {}; // no frame yet, more input is required
+    if (ret == AVERROR_EOF) {
+        m_eof = true; // draining is complete
+        return {};
+    }
     return av::make_ffmpeg_error(ret);
 }
 
@@ -1059,7 +1067,13 @@ std::error_code CodecContext2::sendCommon(const AVFrame *frame)
     if (!isOpened())
         return make_error_code(Errors::CodecNotOpened);
 
-    return make_ffmpeg_error(avcodec_send_frame(m_raw, frame));
+    if (m_direction != Direction::Invalid && m_direction != Direction::Encoding)
+        return make_error_code(Errors::CodecInvalidDirection);
+
+    int ret = avcodec_send_frame(m_raw, frame);
+    if (ret == AVERROR_EOF)
+        m_eof = true;
+    return make_ffmpeg_error(ret);
 }
 
 std::error_code CodecContext2::receiveCommon(Packet &pkt)
@@ -1070,30 +1084,41 @@ std::error_code CodecContext2::receiveCommon(Packet &pkt)
     if (!isOpened())
         return make_error_code(Errors::CodecNotOpened);
 
+    if (m_direction != Direction::Invalid && m_direction != Direction::Encoding)
+        return make_error_code(Errors::CodecInvalidDirection);
+
     int ret = avcodec_receive_packet(m_raw, pkt.raw());
-    if (ret < 0 && ret == AVERROR(EAGAIN))
-        ret = 0; // just return Empty packet in this case
+    if (ret == AVERROR(EAGAIN))
+        return {}; // no packet yet, more input is required
+    if (ret == AVERROR_EOF) {
+        m_eof = true; // draining is complete
+        return {};
+    }
 
     if (!pkt.isNull()) {
+        bool timeBaseSet = false;
 #if AVCPP_HAS_AVFORMAT
         if (m_stream.isValid()) {
             pkt.setStreamIndex(m_stream.index());
 #if AVCPP_USE_CODECPAR
 #if defined(AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE) && (AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE)
             pkt.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
+            timeBaseSet = true;
 #endif
 #else
             FF_DISABLE_DEPRECATION_WARNINGS
-                if (m_stream.raw()->codec) {
+            if (m_stream.raw()->codec) {
                 pkt.setTimeBase(m_stream.raw()->codec->time_base);
+                timeBaseSet = true;
             }
             FF_ENABLE_DEPRECATION_WARNINGS
 #endif
         }
 #endif // if AVCPP_HAS_AVFORMAT
-        else if (timeBase() != Rational()) {
+
+        if (!timeBaseSet && timeBase() != Rational())
             pkt.setTimeBase(timeBase());
-        }
+
         pkt.setComplete(true);
     }
 

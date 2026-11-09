@@ -421,10 +421,21 @@ struct ArrayIterator
     //
     friend bool operator==(ArrayIterator it, std::default_sentinel_t) = delete;
 
-    friend bool operator==(ArrayIterator it, auto sentinel) { return it.m_ptr == sentinel; }
-    friend bool operator!=(ArrayIterator it, auto sentinel) { return it.m_ptr != sentinel; }
-    friend bool operator==(auto sentinel, ArrayIterator it) { return it.m_ptr == sentinel; }
-    friend bool operator!=(auto sentinel, ArrayIterator it) { return it.m_ptr != sentinel; }
+    template<class Policy>
+    friend constexpr bool operator==(ArrayIterator it, const ArraySentinel<T, Policy>& sentinel)
+    { return sentinel.policy.isEnd(it.m_ptr); }
+
+    template<class Policy>
+    friend constexpr bool operator!=(ArrayIterator it, const ArraySentinel<T, Policy>& sentinel)
+    { return !sentinel.policy.isEnd(it.m_ptr); }
+
+    template<class Policy>
+    friend constexpr bool operator==(const ArraySentinel<T, Policy>& sentinel, ArrayIterator it)
+    { return sentinel.policy.isEnd(it.m_ptr); }
+
+    template<class Policy>
+    friend constexpr bool operator!=(const ArraySentinel<T, Policy>& sentinel, ArrayIterator it)
+    { return !sentinel.policy.isEnd(it.m_ptr); }
 
 private:
     pointer m_ptr{};

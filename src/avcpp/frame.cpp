@@ -723,7 +723,7 @@ void FrameCommon::dump() const {
             av::hex_dump(stdout, m_raw->buf[i]->data, m_raw->buf[i]->size);
         }
     } else if (m_raw->data[0]) {
-        av_hex_dump(stdout, m_raw->data[0], size());
+        av::hex_dump(stdout, m_raw->data[0], size());
     }
 }
 
