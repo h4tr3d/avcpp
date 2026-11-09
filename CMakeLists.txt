@@ -76,11 +76,16 @@ if (AVCPP_ENABLE_TESTS)
 
     # The test framework is downloaded at configure time. Point
     # FETCHCONTENT_SOURCE_DIR_CATCH2 at a local checkout to work offline.
-    FetchContent_Declare(Catch2
+    set(AVCPP_CATCH2_DECLARE_ARGS
         URL "https://github.com/catchorg/Catch2/archive/refs/tags/v3.16.1.tar.gz"
         URL_HASH SHA256=d16bd1b8b2364918bd472cb216394acb93bde6784890df0d91bccfb3f28d777d
-        DOWNLOAD_EXTRACT_TIMESTAMP ON
     )
+    # DOWNLOAD_EXTRACT_TIMESTAMP is only understood by CMake 3.24 and newer.
+    if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+        list(APPEND AVCPP_CATCH2_DECLARE_ARGS DOWNLOAD_EXTRACT_TIMESTAMP ON)
+    endif()
+
+    FetchContent_Declare(Catch2 ${AVCPP_CATCH2_DECLARE_ARGS})
 
     set(CATCH_BUILD_TESTING Off CACHE BOOL "" FORCE)
     set(CATCH_BUILD_EXAMPLES Off CACHE BOOL "" FORCE)

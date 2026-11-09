@@ -1,0 +1,102 @@
+#pragma once
+
+extern "C" {
+#include <libavutil/version.h>
+}
+
+#mesondefine AVCPP_CXX_STANDARD
+
+#define AVCPP_HAS_PKT_SIDE_DATA (AVCPP_CXX_STANDARD >= 20)
+#define AVCPP_HAS_FRAME_SIDE_DATA (AVCPP_CXX_STANDARD >= 20)
+
+// Define versions of the FFmpeg components wich was used for the build
+#mesondefine AVCPP_AVCODEC_VERSION_MAJOR
+#mesondefine AVCPP_AVCODEC_VERSION_MINOR
+#mesondefine AVCPP_AVCODEC_VERSION_PATCH
+#mesondefine AVCPP_AVCODEC_VERSION_TWEAK
+#ifdef AVCPP_AVCODEC_VERSION_MAJOR
+#define AVCPP_HAS_AVCODEC 1
+#define AVCPP_AVCODEC_VERSION_INT AV_VERSION_INT(AVCPP_AVCODEC_VERSION_MAJOR, \
+                                                AVCPP_AVCODEC_VERSION_MINOR, \
+                                                AVCPP_AVCODEC_VERSION_PATCH)
+#else
+#define AVCPP_HAS_AVCODEC 0
+#endif
+
+#mesondefine AVCPP_AVFORMAT_VERSION_MAJOR
+#mesondefine AVCPP_AVFORMAT_VERSION_MINOR
+#mesondefine AVCPP_AVFORMAT_VERSION_PATCH
+#mesondefine AVCPP_AVFORMAT_VERSION_TWEAK
+#ifdef AVCPP_AVFORMAT_VERSION_MAJOR
+#define AVCPP_HAS_AVFORMAT 1
+#define AVCPP_AVFORMAT_VERSION_INT AV_VERSION_INT(AVCPP_AVFORMAT_VERSION_MAJOR, \
+                                                  AVCPP_AVFORMAT_VERSION_MINOR, \
+                                                  AVCPP_AVFORMAT_VERSION_PATCH)
+#else
+#define AVCPP_HAS_AVFORMAT 0
+#endif
+
+#mesondefine AVCPP_AVUTIL_VERSION_MAJOR
+#mesondefine AVCPP_AVUTIL_VERSION_MINOR
+#mesondefine AVCPP_AVUTIL_VERSION_PATCH
+#mesondefine AVCPP_AVUTIL_VERSION_TWEAK
+#ifdef AVCPP_AVUTIL_VERSION_MAJOR
+#define AVCPP_HAS_AVUTIL 1
+#define AVCPP_AVUTIL_VERSION_INT AV_VERSION_INT(AVCPP_AVUTIL_VERSION_MAJOR, \
+                                                AVCPP_AVUTIL_VERSION_MINOR, \
+                                                AVCPP_AVUTIL_VERSION_PATCH)
+#else
+#define AVCPP_HAS_AVUTIL 0
+#endif
+
+#mesondefine AVCPP_AVDEVICE_VERSION_MAJOR
+#mesondefine AVCPP_AVDEVICE_VERSION_MINOR
+#mesondefine AVCPP_AVDEVICE_VERSION_PATCH
+#mesondefine AVCPP_AVDEVICE_VERSION_TWEAK
+#ifdef AVCPP_AVDEVICE_VERSION_MAJOR
+#define AVCPP_HAS_AVDEVICE 1
+#define AVCPP_AVDEVICE_VERSION_INT AV_VERSION_INT(AVCPP_AVDEVICE_VERSION_MAJOR, \
+                                                  AVCPP_AVDEVICE_VERSION_MINOR, \
+                                                  AVCPP_AVDEVICE_VERSION_PATCH)
+#else
+#define AVCPP_HAS_AVDEVICE 0
+#endif
+
+#mesondefine AVCPP_AVFILTER_VERSION_MAJOR
+#mesondefine AVCPP_AVFILTER_VERSION_MINOR
+#mesondefine AVCPP_AVFILTER_VERSION_PATCH
+#mesondefine AVCPP_AVFILTER_VERSION_TWEAK
+#ifdef AVCPP_AVFILTER_VERSION_MAJOR
+#define AVCPP_HAS_AVFILTER 1
+#define AVCPP_AVFILTER_VERSION_INT AV_VERSION_INT(AVCPP_AVFILTER_VERSION_MAJOR, \
+                                                  AVCPP_AVFILTER_VERSION_MINOR, \
+                                                  AVCPP_AVFILTER_VERSION_PATCH)
+#else
+#define AVCPP_HAS_AVFILTER 0
+#endif
+
+#mesondefine AVCPP_SWSCALE_VERSION_MAJOR
+#mesondefine AVCPP_SWSCALE_VERSION_MINOR
+#mesondefine AVCPP_SWSCALE_VERSION_PATCH
+#mesondefine AVCPP_SWSCALE_VERSION_TWEAK
+#ifdef AVCPP_AVSWSCALE_VERSION_MAJOR
+#define AVCPP_HAS_AVSWSCALE 1
+#define AVCPP_SWSCALE_VERSION_INT AV_VERSION_INT(AVCPP_SWSCALE_VERSION_MAJOR, \
+                                                 AVCPP_SWSCALE_VERSION_MINOR, \
+                                                 AVCPP_SWSCALE_VERSION_PATCH)
+#else
+#define AVCPP_HAS_AVSWSCALE 0
+#endif
+
+#mesondefine AVCPP_SWRESAMPLE_VERSION_MAJOR
+#mesondefine AVCPP_SWRESAMPLE_VERSION_MINOR
+#mesondefine AVCPP_SWRESAMPLE_VERSION_PATCH
+#mesondefine AVCPP_SWRESAMPLE_VERSION_TWEAK
+#ifdef AVCPP_AVSWRESAMPLE_VERSION_MAJOR
+#define AVCPP_HAS_AVSWRESAMPLE 1
+#define AVCPP_AVSWRESAMPLE_VERSION_INT AV_VERSION_INT(AVCPP_SWRESAMPLE_VERSION_MAJOR, \
+                                                AVCPP_SWRESAMPLE_VERSION_MINOR, \
+                                                AVCPP_SWRESAMPLE_VERSION_PATCH)
+#else
+#define AVCPP_HAS_AVSWRESAMPLE 0
+#endif

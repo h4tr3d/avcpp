@@ -70,10 +70,9 @@ foreach lib : av_libs
             '0')
 endforeach
 
-configure_file(input : 'avconfig.h.in',
+configure_file(input : 'avconfig.meson.h.in',
                output : 'avconfig.h',
                configuration : conf_data,
-               format: 'cmake',
                install: true,
                install_dir: 'include/avcpp'
                )
