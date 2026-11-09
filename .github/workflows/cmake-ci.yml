@@ -21,14 +21,16 @@ jobs:
         os: [macos-latest]
         build_type: [Release, Debug]
         skip_meson: [true]
-        configure_args: ['']
+        configure_args: ['-DAVCPP_TEST_DATA=ON']
         include:
           - os: ubuntu-22.04
             build_type: Release
             skip_meson: false
+            configure_args: '-DAVCPP_TEST_DATA=ON'
           - os: ubuntu-22.04
             build_type: Debug
             skip_meson: false
+            configure_args: '-DAVCPP_TEST_DATA=ON'
           # Build without libavformat but with tests enabled.
           - os: ubuntu-22.04
             build_type: Release
@@ -63,7 +65,9 @@ jobs:
     - name: Cache Catch2 sources
       uses: actions/cache@v4
       with:
-        path: ${{github.workspace}}/build/_deps
+        path: |
+          ${{github.workspace}}/build/_deps/catch2-src
+          ${{github.workspace}}/build/_deps/catch2-build
         key: ${{ runner.os }}-catch2-v3.16.1
       
     - name: Install packages for Linux
