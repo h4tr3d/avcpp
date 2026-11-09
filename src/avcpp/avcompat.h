@@ -52,6 +52,9 @@ extern "C" {
 // AVSideDataDescriptor exisits
 #define AVCPP_API_HAS_AVSIDEDATADESCRIPTOR (AVCPP_AVUTIL_VERSION_INT >= AV_VERSION_INT(59, 10, 100))
 
+// Send/Receive API for the Codecs
+#define AVCPP_NEW_CODEC_API (AVCPP_AVCODEC_VERSION_INT >= AV_VERSION_INT(57,37,100))
+
 #if defined(__ICL) || defined (__INTEL_COMPILER)
 #    define FF_DISABLE_DEPRECATION_WARNINGS __pragma(warning(push)) __pragma(warning(disable:1478))
 #    define FF_ENABLE_DEPRECATION_WARNINGS  __pragma(warning(pop))

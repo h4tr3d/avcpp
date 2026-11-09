@@ -157,6 +157,16 @@ protected:
     encodeCommon(class Packet &outPacket, const AVFrame *inFrame, int &gotPacket,
                          int (*encodeProc)(AVCodecContext*, AVPacket*,const AVFrame*, int*)) noexcept;
 
+#if AVCPP_NEW_CODEC_API
+    // Decode
+    std::error_code sendCommon(const class Packet& pkt);
+    std::error_code receiveCommon(AVFrame *frame);
+
+    // Encode
+    std::error_code sendCommon(const AVFrame* frame);
+    std::error_code receiveCommon(class Packet& pkt);
+#endif
+
 public:
     template<typename T>
     std::pair<int, const std::error_category*>
@@ -172,6 +182,18 @@ public:
                  const T &inFrame,
                  int &gotPacket,
                  int (*encodeProc)(AVCodecContext *, AVPacket *, const AVFrame *, int *));
+
+#if AVCPP_NEW_CODEC_API
+    // Decode
+    bool send(const Packet &packet, OptionalErrorCode ec = throws());
+    template<typename T>
+    std::error_code receiveCommon(T &frame);
+
+    // Encode
+    template<typename T>
+    std::error_code sendCommon(const T& frame);
+    Packet receive(OptionalErrorCode ec = throws());
+#endif
 
 private:
 #if AVCPP_HAS_AVFORMAT
@@ -269,6 +291,40 @@ public:
     {
         return CodecContext2::codecType(_type);
     }
+
+#if AVCPP_NEW_CODEC_API
+
+    bool flush(OptionalErrorCode ec = throws())
+    {
+        clear_if(ec);
+
+        if (!isValid()) {
+            throws_if(ec, make_error_code(Errors::CodecInvalid));
+            return false;
+        }
+
+        if (!isOpened()) {
+            throws_if(ec, make_error_code(Errors::CodecNotOpened));
+            return false;
+        }
+
+        int ret = 0;
+        if constexpr (_direction == Direction::Decoding) {
+            ret = avcodec_send_packet(m_raw, nullptr);
+        } else {
+            ret = avcodec_send_frame(m_raw, nullptr);
+        }
+
+        if (ret == AVERROR(EAGAIN)) {
+            return false;
+        } else if (ret) {
+            throws_if(ec, ret, ffmpeg_category());
+            return false;
+        }
+        return true;
+    }
+
+#endif
 };
 
 
@@ -444,6 +500,12 @@ public:
                       bool    autoAllocateFrame = true);
 
 
+#if AVCPP_NEW_CODEC_API
+    bool send(const Packet &packet, OptionalErrorCode ec = throws());
+
+    VideoFrame receive(OptionalErrorCode ec = throws(), bool autoAllocateFrame = true);
+#endif
+
 private:
     VideoFrame decodeVideo(OptionalErrorCode ec,
                            const Packet &packet,
@@ -488,6 +550,15 @@ public:
      * @return
      */
     Packet encode(const VideoFrame &inFrame, OptionalErrorCode ec = throws());
+
+
+#if AVCPP_NEW_CODEC_API
+
+    bool send(const VideoFrame& frame, OptionalErrorCode ec = throws());
+
+    Packet receive(OptionalErrorCode ec = throws());
+
+#endif
 
 };
 
@@ -601,6 +672,13 @@ public:
     AudioSamples decode(const Packet &inPacket, OptionalErrorCode ec = throws());
     AudioSamples decode(const Packet &inPacket, size_t offset, OptionalErrorCode ec = throws());
 
+#if AVCPP_NEW_CODEC_API
+
+    bool send(const Packet& packet, OptionalErrorCode ec = throws());
+
+    AudioSamples receive(OptionalErrorCode ec = throws());
+
+#endif
 };
 
 
@@ -618,6 +696,14 @@ public:
     Packet encode(OptionalErrorCode ec = throws());
     Packet encode(const AudioSamples &inSamples, OptionalErrorCode ec = throws());
 
+
+#if AVCPP_NEW_CODEC_API
+
+    bool send(const AudioSamples &samples, OptionalErrorCode ec = throws());
+
+    Packet receive(OptionalErrorCode ec = throws());
+
+#endif
 };
 
 

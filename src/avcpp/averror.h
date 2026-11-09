@@ -204,6 +204,14 @@ void throws_if(OptionalErrorCode ec, T errcode)
         throw Exception(make_error_code(errcode));
 }
 
+static inline void throws_if(OptionalErrorCode ec, const std::error_code& errcode)
+{
+    if (ec)
+        *ec = errcode;
+    else
+        throw Exception(errcode);
+}
+
 
 /**
  * @brief clear_if - clear error code if it is not av::throws()
