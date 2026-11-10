@@ -1,5 +1,5 @@
 <map id="av::CodecContext2" name="av::CodecContext2">
-<area shape="rect" id="node1" title=" " alt="" coords="303,185,447,211"/>
+<area shape="rect" id="node1" title="Base class for audio and video codec contexts." alt="" coords="303,185,447,211"/>
 <area shape="rect" id="node4" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="496,6,684,62"/>
 <area shape="rect" id="node6" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="495,101,685,157"/>
 <area shape="rect" id="node8" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="506,210,674,266"/>

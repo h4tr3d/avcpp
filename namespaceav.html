@@ -124,6 +124,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1Codec.html">Codec</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html">CodecContext2</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for audio and video codec contexts.  <a href="classav_1_1CodecContext2.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1GenericCodecContext.html">GenericCodecContext</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classav_1_1GenericCodecContext.html" title="The GenericCodecContext class to copy contexts from input streams to output one.">GenericCodecContext</a> class to copy contexts from input streams to output one.  <a href="classav_1_1GenericCodecContext.html#details">More...</a><br /></td></tr>
@@ -336,6 +337,8 @@ Functions</h2></td></tr>
 <tr class="memitem:aefec6eb9919c9b701decb0155bbbe269"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Exception  = av::Exception&gt; </td></tr>
 <tr class="memitem:aefec6eb9919c9b701decb0155bbbe269"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceav.html#aefec6eb9919c9b701decb0155bbbe269">throws_if</a> (<a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec, T errcode)</td></tr>
 <tr class="separator:aefec6eb9919c9b701decb0155bbbe269"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2238ee48510e71683f79f4e7be0b40a9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a2238ee48510e71683f79f4e7be0b40a9">throws_if</a> (<a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec, const std::error_code &amp;errcode)</td></tr>
+<tr class="separator:a2238ee48510e71683f79f4e7be0b40a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4655c9ff13b7eb004bef48f572a36c5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceav.html#a4655c9ff13b7eb004bef48f572a36c5b">clear_if</a> (<a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec)</td></tr>
 <tr class="memdesc:a4655c9ff13b7eb004bef48f572a36c5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">clear_if - clear error code if it is not <a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b" title="Helper to construct null OptionalErrorCode object.">av::throws()</a>  <a href="namespaceav.html#a4655c9ff13b7eb004bef48f572a36c5b">More...</a><br /></td></tr>
 <tr class="separator:a4655c9ff13b7eb004bef48f572a36c5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2314,8 +2317,44 @@ template&lt;typename Exception  = av::Exception&gt; </div>
 
 </div>
 </div>
+<a id="a2238ee48510e71683f79f4e7be0b40a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2238ee48510e71683f79f4e7be0b40a9">&#9670;&nbsp;</a></span>throws_if() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void av::throws_if </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a>&#160;</td>
+          <td class="paramname"><em>ec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::error_code &amp;&#160;</td>
+          <td class="paramname"><em>errcode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ac823c1d1123c181745f96db7098be680"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac823c1d1123c181745f96db7098be680">&#9670;&nbsp;</a></span>throws_if() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac823c1d1123c181745f96db7098be680">&#9670;&nbsp;</a></span>throws_if() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2353,7 +2392,7 @@ template&lt;typename Category , typename Exception  = av::Exception&gt; </div>
 </div>
 </div>
 <a id="aefec6eb9919c9b701decb0155bbbe269"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aefec6eb9919c9b701decb0155bbbe269">&#9670;&nbsp;</a></span>throws_if() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aefec6eb9919c9b701decb0155bbbe269">&#9670;&nbsp;</a></span>throws_if() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

@@ -4,7 +4,7 @@
 <area shape="rect" id="node7" href="$classav_1_1AudioCodecContext.html" title=" " alt="" coords="711,85,893,141"/>
 <area shape="rect" id="node9" href="$classav_1_1VideoCodecContext.html" title=" " alt="" coords="711,165,893,221"/>
 <area shape="rect" id="node11" href="$classav_1_1VideoCodecContext.html" title=" " alt="" coords="711,245,893,301"/>
-<area shape="rect" id="node2" href="$classav_1_1CodecContext2.html" title=" " alt="" coords="303,140,447,167"/>
+<area shape="rect" id="node2" href="$classav_1_1CodecContext2.html" title="Base class for audio and video codec contexts." alt="" coords="303,140,447,167"/>
 <area shape="rect" id="node3" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,115,255,141"/>
 <area shape="rect" id="node4" href="$classav_1_1noncopyable.html" title=" " alt="" coords="66,165,194,192"/>
 <area shape="rect" id="node6" href="$classav_1_1AudioEncoderContext.html" title=" " alt="" coords="942,20,1127,47"/>

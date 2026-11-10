@@ -1,6 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
 <area shape="rect" id="node1" href="$structFFWrapperPtr.html" title=" " alt="" coords="325,166,575,193"/>
-<area shape="rect" id="node2" href="$classav_1_1CodecContext2.html" title=" " alt="" coords="630,170,774,197"/>
+<area shape="rect" id="node2" href="$classav_1_1CodecContext2.html" title="Base class for audio and video codec contexts." alt="" coords="630,170,774,197"/>
 <area shape="rect" id="node3" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="831,6,1019,62"/>
 <area shape="rect" id="node5" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="829,101,1020,157"/>
 <area shape="rect" id="node7" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="841,210,1009,266"/>

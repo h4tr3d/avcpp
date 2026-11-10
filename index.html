@@ -132,13 +132,13 @@ Ubuntu 18.04 and Linux Mint 19.x</h2>
 Build &amp; Usage</h1>
 <h2><a class="anchor" id="autotoc_md6"></a>
 Building with CMake</h2>
-<div class="fragment"><div class="line">git clone --recurse-submodules https://github.com/h4tr3d/avcpp.git avcpp-git</div>
+<div class="fragment"><div class="line">git clone https://github.com/h4tr3d/avcpp.git avcpp-git</div>
 <div class="line">cd avcpp-git</div>
 <div class="line">mkdir build</div>
 <div class="line">cd build</div>
 <div class="line">cmake ..</div>
 <div class="line">make -j8</div>
-</div><!-- fragment --><p>If your Git version so old (refer to the <a href="https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules">SO for clarification</a>) you can just replace <code>--recurse-submodules</code> with pair of <code>git submodule init &amp;&amp; git submodule update</code>.</p>
+</div><!-- fragment --><p>The test framework (Catch2) is downloaded automatically at configure time, so no submodules are required.</p>
 <p>If FFmpeg located in non-standard place:</p>
 <div class="fragment"><div class="line">cmake -DPC_FFMPEG_LIBRARY_DIRS=&lt;some_path&gt; -DPC_FFMPEG_INCLUDE_DIRS=&lt;some_path&gt; ..</div>
 </div><!-- fragment --><p>To point install prefix:</p>
@@ -154,10 +154,12 @@ Useful configure directives</h3>
 <li><code>AV_ENABLE_STATIC</code> - Bool, enable static library build, On by default.</li>
 <li><code>AV_ENABLE_SHARED</code> - Bool, enable shared library build, On by default.</li>
 <li><code>AV_BUILD_EXAMPLES</code> - Bool, enable examples build, On by default.</li>
-<li><code>AV_BUILD_TESTS</code> - Bool, enable tests build, On by default.</li>
+<li><code>AVCPP_ENABLE_TESTS</code> - Bool, enable tests build, On by default. Catch2 is downloaded at configure time with a pinned version and hash; set <code>FETCHCONTENT_SOURCE_DIR_CATCH2</code> to use a local copy.</li>
+<li><code>AV_BUILD_TESTS</code> - Deprecated alias for <code>AVCPP_ENABLE_TESTS</code>.</li>
 <li><code>AV_DISABLE_AVFORMAT</code> - Bool, disable livavformat usage. libavformat enabled by default. As dependency disables libavfilter and libavdevice.</li>
 <li><code>AV_DISABLE_AVFILTER</code> - Bool, disable libavfilter usage. libavfilter enabled by default. As dependency disables libavdevice.</li>
 <li><code>AV_DISABLE_AVDEVICE</code> - Bool, disable libavdevice usage. libavdevice enabled by default.</li>
+<li><code>AVCPP_TEST_DATA</code> - Bool, enable tests that use the <code>avcpp-test-data</code> binary fixtures, Off by default. The fixtures are fetched over HTTPS from a separate repository; point <code>FETCHCONTENT_SOURCE_DIR_AVCPP_TEST_DATA</code> at a local checkout to avoid a network fetch.</li>
 <li>C++ related<ul>
 <li><code>CMAKE_CXX_STANDARD</code> - Can be defined globally to override default C++ version. C++17 required at least.</li>
 </ul>
@@ -250,7 +252,8 @@ Building with Meson</h2>
 <p>By default the sample projects and the test are compiled. If you don't want this you can disable it with the following commands:</p>
 <div class="fragment"><div class="line">meson configure -Dbuild_tests=false</div>
 <div class="line">meson configure -Dbuild_samples=false</div>
-</div><!-- fragment --><p>You can set the install prefix using <code>meson --prefix &lt;your/own/prefix&gt;</code>. To see all of the available options just type <code>meson configure</code> and <code>meson configure --help</code> to get more information.</p>
+</div><!-- fragment --><p><code>build_tests</code> is the Meson equivalent of the CMake option <code>AVCPP_ENABLE_TESTS</code>. The optional binary fixtures are controlled by the <code>test_data</code> option and require the <code>avcpp-test-data</code> subproject; it is the Meson equivalent of the CMake option <code>AVCPP_TEST_DATA</code>.</p>
+<p>You can set the install prefix using <code>meson --prefix &lt;your/own/prefix&gt;</code>. To see all of the available options just type <code>meson configure</code> and <code>meson configure --help</code> to get more information.</p>
 <p>Installing the project:</p>
 <p>Just type <code>meson install</code> and the project will be installed in the configured prefix (/usr/local by default).</p>
 <p>Running the tests:</p>
