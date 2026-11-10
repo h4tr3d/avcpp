@@ -1,8 +1,16 @@
-cmake_minimum_required(VERSION 3.19)
+# Optional binary fixtures. The repository is private, so fixture tests are
+# opt-in; point FETCHCONTENT_SOURCE_DIR_AVCPP_TEST_DATA at a local checkout to
+# work without network access.
+option(AVCPP_TEST_DATA "Fetch the avcpp-test-data fixtures and enable fixture tests" Off)
 
-project(avcpp_tests LANGUAGES CXX VERSION 0.0.1)
-
-enable_testing()
+if (AVCPP_TEST_DATA)
+    include(FetchContent)
+    FetchContent_Declare(avcpp_test_data
+        GIT_REPOSITORY https://github.com/h4tr3d/avcpp-test-data.git
+        GIT_TAG master
+    )
+    FetchContent_MakeAvailable(avcpp_test_data)
+endif()
 
 add_executable(test_executor
     Frame.cpp
@@ -16,11 +24,15 @@ add_executable(test_executor
     Common.cpp
     Buffer.cpp
     FormatCustomIO_test.cpp
-    CodecContext.cpp)
-target_link_libraries(test_executor PUBLIC Catch2::Catch2WithMain avcpp::avcpp)
+    CodecContext.cpp
+    CodecContextSendReceive.cpp
+    Fixtures.cpp
+    Patterns.cpp)
+target_link_libraries(test_executor PRIVATE Catch2::Catch2WithMain avcpp::avcpp)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../catch2/contrib")
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}/../catch2/contrib")
+if (TARGET avcpp::test_data)
+    target_link_libraries(test_executor PRIVATE avcpp::test_data)
+endif()
 
 include(CTest)
 include(Catch)

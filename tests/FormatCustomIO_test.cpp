@@ -333,4 +333,11 @@ TEST_CASE("Format Custom IO checks", "[FormatCustomIo]")
     }
 }
 
+#else
+
+TEST_CASE("Format Custom IO checks")
+{
+    SUCCEED("libavformat or std::format is not available in this configuration");
+}
+
 #endif

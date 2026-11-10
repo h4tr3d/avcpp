@@ -1,6 +1,5 @@
 #include <stdexcept>
 
-#include "avcompat.h"
 #include "avlog.h"
 #include "avutils.h"
 #include "averror.h"
@@ -65,14 +64,51 @@ AVMediaType GenericCodecContext::codecType() const noexcept
 #endif // if AVCPP_HAS_AVFORMAT
 }
 
+#if AVCPP_NEW_CODEC_API
+
+template<typename T>
+std::error_code CodecContext2::receiveCommon(T &frame)
+{
+    auto st = receiveCommon(frame.raw());
+    if (st)
+        return st;
+
+    // EAGAIN or EOF: nothing was decoded, keep the output object empty
+    if (!frame.isValid())
+        return st;
+
+    AVFrame *rawFrame = frame.raw();
+
+    // Decoders report frame timestamps in the codec context time base
+    if (timeBase() != Rational())
+        frame.setTimeBase(timeBase());
+
+    if (rawFrame->pts == av::NoPts)
+        rawFrame->pts = av::frame::get_best_effort_timestamp(rawFrame);
+
+#if AVCPP_HAS_AVFORMAT
+    if (m_stream.isValid())
+        frame.setStreamIndex(m_stream.index());
+#endif // if AVCPP_HAS_AVFORMAT
+
+    frame.setComplete(true);
+
+    return st;
+}
+
+template<typename T>
+std::error_code CodecContext2::sendCommon(const T &frame)
+{
+    return sendCommon(frame.raw());
+}
+#endif
+
 // ::anonymous
 } // ::av
 
 namespace {
 
-#define NEW_CODEC_API (AVCPP_AVCODEC_VERSION_INT >= AV_VERSION_INT(57,37,100))
-
-#if NEW_CODEC_API
+#if AVCPP_NEW_CODEC_API
 // Use avcodec_send_packet() and avcodec_receive_frame()
 int decode(AVCodecContext *avctx,
            AVFrame *picture,
@@ -213,6 +249,39 @@ VideoFrame VideoDecoderContext::decode(const Packet &packet, size_t offset, size
     return decodeVideo(ec, packet, offset, &decodedBytes, autoAllocateFrame);
 }
 
+#if AVCPP_NEW_CODEC_API
+bool VideoDecoderContext::send(const Packet &packet, OptionalErrorCode ec)
+{
+    return CodecContext2::send(packet, ec);
+}
+
+VideoFrame VideoDecoderContext::receive(OptionalErrorCode ec, bool autoAllocateFrame)
+{
+    clear_if(ec);
+
+    VideoFrame outFrame;
+    if (!autoAllocateFrame) {
+        outFrame = {pixelFormat(), width(), height(), 32};
+        if (!outFrame.isValid()) {
+            throws_if(ec, Errors::FrameInvalid);
+            return VideoFrame();
+        }
+    }
+
+    auto st = receiveCommon(outFrame);
+    if (st) {
+        throws_if(ec, st);
+        return VideoFrame();
+    }
+
+    if (outFrame && outFrame.pictureType() == AV_PICTURE_TYPE_NONE && outFrame.isKeyFrame()) {
+        outFrame.setPictureType(AV_PICTURE_TYPE_I);
+    }
+
+    return outFrame;
+}
+#endif
+
 VideoFrame VideoDecoderContext::decodeVideo(OptionalErrorCode ec, const Packet &packet, size_t offset, size_t *decodedBytes, bool autoAllocateFrame)
 {
     clear_if(ec);
@@ -289,12 +358,41 @@ Packet VideoEncoderContext::encode(const VideoFrame &inFrame, OptionalErrorCode 
     return packet;
 }
 
+#if AVCPP_NEW_CODEC_API
+
+bool VideoEncoderContext::send(const VideoFrame &frame, OptionalErrorCode ec)
+{
+    clear_if(ec);
+
+    auto st = sendCommon(frame);
+    if (st) {
+        // not an error in common
+        if (st == make_ffmpeg_condition(AVERROR(EAGAIN)))
+            return false;
+        throws_if(ec, st);
+        return false;
+    }
+    return true;
+}
+
+Packet VideoEncoderContext::receive(OptionalErrorCode ec)
+{
+    // avcodec_receive_packet() sets AV_PKT_FLAG_KEY, no extra handling is required
+    return CodecContext2::receive(ec);
+}
+
+#endif
+
 void CodecContext2::swap(CodecContext2 &other)
 {
     using std::swap;
 #if AVCPP_HAS_AVFORMAT
     swap(m_stream, other.m_stream);
 #endif // if AVCPP_HAS_AVFORMAT
+#if AVCPP_NEW_CODEC_API
+    swap(m_eof, other.m_eof);
+#endif
+    swap(m_direction, other.m_direction);
     swap(m_raw, other.m_raw);
 }
 
@@ -305,7 +403,8 @@ CodecContext2::CodecContext2()
 
 #if AVCPP_HAS_AVFORMAT
 CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction direction, AVMediaType type)
-    : m_stream(st)
+    : m_stream(st),
+      m_direction(direction)
 {
     if (st.direction() != direction)
         throw av::Exception(make_avcpp_error(Errors::CodecInvalidDirection));
@@ -348,6 +447,7 @@ CodecContext2::CodecContext2(const Stream &st, const Codec &codec, Direction dir
 #endif // if AVCPP_HAS_AVFORMAT
 
 CodecContext2::CodecContext2(const Codec &codec, Direction direction, AVMediaType type)
+    : m_direction(direction)
 {
     if (checkCodec(codec, direction, type, throws()))
         m_raw = avcodec_alloc_context3(codec.raw());
@@ -364,7 +464,7 @@ CodecContext2::~CodecContext2()
     // So only stream-independ CodecContext's must be tracked and closed in ctor.
     // Note: new FFmpeg API declares, that AVStream not owned by codec and deals only with codecpar
     //
-#if !AVCPP_USE_CODECPAR
+#if AVCPP_HAS_AVFORMAT && !AVCPP_USE_CODECPAR
     if (!m_stream.isNull())
         return;
 #endif
@@ -878,9 +978,154 @@ void CodecContext2::open(const Codec &codec, AVDictionary **options, OptionalErr
     }
 
     int stat = avcodec_open2(m_raw, codec.raw(), options);
-    if (stat < 0)
+    if (stat < 0) {
         throws_if(ec, stat, ffmpeg_category());
+    } else {
+#if AVCPP_NEW_CODEC_API
+        m_eof = false;
+#endif
+    }
 }
+
+#if AVCPP_NEW_CODEC_API
+
+bool CodecContext2::send(const Packet &packet, OptionalErrorCode ec)
+{
+    clear_if(ec);
+
+    auto st = sendCommon(packet);
+    if (st) {
+        // not an error in common
+        if (st == make_ffmpeg_condition(AVERROR(EAGAIN)))
+            return false;
+
+        throws_if(ec, st);
+        return false;
+    }
+    return true;
+}
+
+Packet CodecContext2::receive(OptionalErrorCode ec)
+{
+    clear_if(ec);
+
+    Packet packet;
+    auto st = receiveCommon(packet);
+    if (st) {
+        throws_if(ec, st);
+        return Packet{};
+    }
+
+    return packet;
+}
+
+std::error_code CodecContext2::sendCommon(const Packet &pkt)
+{
+    if (!isValid())
+        return make_error_code(Errors::CodecInvalid);
+
+    if (!isOpened())
+        return make_error_code(Errors::CodecNotOpened);
+
+    if (m_direction != Direction::Invalid && m_direction != Direction::Decoding)
+        return make_error_code(Errors::CodecInvalidDirection);
+
+    int ret = avcodec_send_packet(m_raw, pkt.raw());
+    if (ret == AVERROR_EOF)
+        m_eof = true;
+    return make_ffmpeg_error(ret);
+}
+
+
+std::error_code CodecContext2::receiveCommon(AVFrame *frame)
+{
+    if (!isValid())
+        return make_error_code(Errors::CodecInvalid);
+
+    if (!isOpened())
+        return make_error_code(Errors::CodecNotOpened);
+
+    if (m_direction != Direction::Invalid && m_direction != Direction::Decoding)
+        return make_error_code(Errors::CodecInvalidDirection);
+
+    int ret = avcodec_receive_frame(m_raw, frame);
+    if (ret == AVERROR(EAGAIN))
+        return {}; // no frame yet, more input is required
+    if (ret == AVERROR_EOF) {
+        m_eof = true; // draining is complete
+        return {};
+    }
+    return av::make_ffmpeg_error(ret);
+}
+
+
+std::error_code CodecContext2::sendCommon(const AVFrame *frame)
+{
+    if (!isValid())
+        return make_error_code(Errors::CodecInvalid);
+
+    if (!isOpened())
+        return make_error_code(Errors::CodecNotOpened);
+
+    if (m_direction != Direction::Invalid && m_direction != Direction::Encoding)
+        return make_error_code(Errors::CodecInvalidDirection);
+
+    int ret = avcodec_send_frame(m_raw, frame);
+    if (ret == AVERROR_EOF)
+        m_eof = true;
+    return make_ffmpeg_error(ret);
+}
+
+std::error_code CodecContext2::receiveCommon(Packet &pkt)
+{
+    if (!isValid())
+        return make_error_code(Errors::CodecInvalid);
+
+    if (!isOpened())
+        return make_error_code(Errors::CodecNotOpened);
+
+    if (m_direction != Direction::Invalid && m_direction != Direction::Encoding)
+        return make_error_code(Errors::CodecInvalidDirection);
+
+    int ret = avcodec_receive_packet(m_raw, pkt.raw());
+    if (ret == AVERROR(EAGAIN))
+        return {}; // no packet yet, more input is required
+    if (ret == AVERROR_EOF) {
+        m_eof = true; // draining is complete
+        return {};
+    }
+
+    if (!pkt.isNull()) {
+        bool timeBaseSet = false;
+#if AVCPP_HAS_AVFORMAT
+        if (m_stream.isValid()) {
+            pkt.setStreamIndex(m_stream.index());
+#if AVCPP_USE_CODECPAR
+#if defined(AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE) && (AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE)
+            pkt.setTimeBase(av_stream_get_codec_timebase(m_stream.raw()));
+            timeBaseSet = true;
+#endif
+#else
+            FF_DISABLE_DEPRECATION_WARNINGS
+            if (m_stream.raw()->codec) {
+                pkt.setTimeBase(m_stream.raw()->codec->time_base);
+                timeBaseSet = true;
+            }
+            FF_ENABLE_DEPRECATION_WARNINGS
+#endif
+        }
+#endif // if AVCPP_HAS_AVFORMAT
+
+        if (!timeBaseSet && timeBase() != Rational())
+            pkt.setTimeBase(timeBase());
+
+        pkt.setComplete(true);
+    }
+
+    return make_ffmpeg_error(ret);
+}
+
+#endif
 
 std::pair<int, const error_category *> CodecContext2::decodeCommon(AVFrame *outFrame, const Packet &inPacket, size_t offset, int &frameFinished, int (*decodeProc)(AVCodecContext *, AVFrame *, int *, const AVPacket *)) noexcept
 {
@@ -984,6 +1229,35 @@ AudioSamples AudioDecoderContext::decode(const Packet &inPacket, size_t offset, 
     return outSamples;
 }
 
+#if AVCPP_NEW_CODEC_API
+
+bool AudioDecoderContext::send(const Packet &packet, OptionalErrorCode ec)
+{
+    return CodecContext2::send(packet, ec);
+}
+
+AudioSamples AudioDecoderContext::receive(OptionalErrorCode ec)
+{
+    clear_if(ec);
+
+    AudioSamples outSamples;
+    auto st = receiveCommon(outSamples);
+    if (st) {
+        throws_if(ec, st);
+        return AudioSamples();
+    }
+
+    // Fix channels layout, only for legacy Channel Layout, new API assumes both parameters more sync
+#if !AVCPP_API_NEW_CHANNEL_LAYOUT
+    if (outSamples.channelsCount() && !outSamples.channelsLayout())
+        av::frame::set_channel_layout(outSamples.raw(), av_get_default_channel_layout(outSamples.channelsCount()));
+#endif
+
+    return outSamples;
+}
+
+#endif
+
 AudioEncoderContext::AudioEncoderContext(AudioEncoderContext &&other)
     : Parent(std::move(other))
 {
@@ -1021,6 +1295,28 @@ Packet AudioEncoderContext::encode(const AudioSamples &inSamples, OptionalErrorC
 
     return outPacket;
 }
+
+#if AVCPP_NEW_CODEC_API
+bool AudioEncoderContext::send(const AudioSamples &samples, OptionalErrorCode ec)
+{
+    clear_if(ec);
+    auto st = sendCommon(samples);
+    if (st) {
+        // not an error in common
+        if (st == make_ffmpeg_condition(AVERROR(EAGAIN)))
+            return false;
+        throws_if(ec, st);
+        return false;
+    }
+    return true;
+}
+
+Packet AudioEncoderContext::receive(OptionalErrorCode ec)
+{
+    return CodecContext2::receive(ec);
+}
+
+#endif
 
 template<typename T>
 std::pair<int, const std::error_category*>

@@ -75,7 +75,7 @@ After that  just install the same packages as above.
 ### Building with CMake
 
 ```bash
-git clone --recurse-submodules https://github.com/h4tr3d/avcpp.git avcpp-git
+git clone https://github.com/h4tr3d/avcpp.git avcpp-git
 cd avcpp-git
 mkdir build
 cd build
@@ -83,8 +83,8 @@ cmake ..
 make -j8
 ```
 
-If your Git version so old (refer to the [SO for clarification](https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules)) you can just
-replace `--recurse-submodules` with pair of `git submodule init && git submodule update`.
+The test framework (Catch2) is downloaded automatically at configure time,
+so no submodules are required.
 
 If FFmpeg located in non-standard place:
 
@@ -117,10 +117,12 @@ Refer to CMake documentation for more details that can cover some special cases.
 - `AV_ENABLE_STATIC` - Bool, enable static library build, On by default.
 - `AV_ENABLE_SHARED` - Bool, enable shared library build, On by default.
 - `AV_BUILD_EXAMPLES` - Bool, enable examples build, On by default.
-- `AV_BUILD_TESTS` - Bool, enable tests build, On by default.
+- `AVCPP_ENABLE_TESTS` - Bool, enable tests build, On by default. Catch2 is downloaded at configure time with a pinned version and hash; set `FETCHCONTENT_SOURCE_DIR_CATCH2` to use a local copy.
+- `AV_BUILD_TESTS` - Deprecated alias for `AVCPP_ENABLE_TESTS`.
 - `AV_DISABLE_AVFORMAT` - Bool, disable livavformat usage. libavformat enabled by default. As dependency disables libavfilter and libavdevice.
 - `AV_DISABLE_AVFILTER` - Bool, disable libavfilter usage. libavfilter enabled by default. As dependency disables libavdevice.
 - `AV_DISABLE_AVDEVICE` - Bool, disable libavdevice usage. libavdevice enabled by default.
+- `AVCPP_TEST_DATA` - Bool, enable tests that use the `avcpp-test-data` binary fixtures, Off by default. The fixtures are fetched over HTTPS from a separate repository; point `FETCHCONTENT_SOURCE_DIR_AVCPP_TEST_DATA` at a local checkout to avoid a network fetch.
 - C++ related
   - `CMAKE_CXX_STANDARD` - Can be defined globally to override default C++ version. C++17 required at least.
 - FFmpeg related:
@@ -264,6 +266,11 @@ If you don't want this you can disable it with the following commands:
 meson configure -Dbuild_tests=false
 meson configure -Dbuild_samples=false
 ```
+
+`build_tests` is the Meson equivalent of the CMake option `AVCPP_ENABLE_TESTS`.
+The optional binary fixtures are controlled by the `test_data` option and
+require the `avcpp-test-data` subproject; it is the Meson equivalent of the
+CMake option `AVCPP_TEST_DATA`.
 
 You can set the install prefix using `meson --prefix <your/own/prefix>`.
 To see all of the available options just type `meson configure` and `meson configure --help` to get more information.
