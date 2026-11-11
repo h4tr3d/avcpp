@@ -23,6 +23,22 @@ using namespace std;
 
 TEST_CASE("Common tools and helpers", "[Common]")
 {
+    SECTION("wrap2sview")
+    {
+        CHECK(av::wrap2sview(nullptr).empty());
+        CHECK(av::wrap2sview("text") == "text");
+    }
+
+    SECTION("freep")
+    {
+        auto buffer = av::malloc<uint8_t>(4);
+        REQUIRE(buffer);
+
+        uint8_t *raw = buffer.release();
+        av::freep(raw);
+        CHECK(raw == nullptr);
+    }
+
 #ifdef __cpp_lib_print
     SECTION("std::format formatter for Rect")
     {

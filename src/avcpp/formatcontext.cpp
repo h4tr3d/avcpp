@@ -67,9 +67,9 @@ void set_uri(AVFormatContext *ctx, string_view uri)
 {
     if (!uri.empty()) {
 #if AVCPP_API_AVFORMAT_URL
-        if (ctx->url)
-            av_free(ctx->url);
-        ctx->url = av_strndup(uri.data(), uri.size());
+        auto copy = av::strdup(uri);
+        av::freep(ctx->url);
+        ctx->url = copy.release();
 #else
         av_strlcpy(ctx->filename, uri.data(), std::min<size_t>(sizeof(ctx->filename), uri.size() + 1));
         ctx->filename[uri.size()] = '\0';

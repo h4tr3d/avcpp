@@ -60,6 +60,8 @@ enum class Errors
     IncorrectBufferSinkFilter,
     IncorrectBufferSinkMediaType,
     MixBufferSinkAccess,
+
+    CodecUnsupportedOperation,
 };
 
 class OptionalErrorCode

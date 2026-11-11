@@ -20,6 +20,8 @@ samples = [
     'api2-demux-seek',
     'api2-remux',
     'api2-send-receive',
+    'api2-subtitles',
+    'api2-generate-subtitles',
 ]
 
 foreach sample : samples

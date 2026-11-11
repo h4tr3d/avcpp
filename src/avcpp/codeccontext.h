@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstring>
+
 #include "avcompat.h"
 
 #include "ffmpeg.h"
@@ -10,11 +12,13 @@
 #include "sampleformat.h"
 #include "avlog.h"
 #include "frame.h"
+#include "subtitle.h"
 #include "codec.h"
 #include "channellayout.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
+#include <libavutil/mem.h>
 }
 
 namespace av {
@@ -351,6 +355,11 @@ public:
     bool flush(OptionalErrorCode ec = throws())
     {
         clear_if(ec);
+
+        if constexpr (_type == AVMEDIA_TYPE_SUBTITLE) {
+            throws_if(ec, Errors::CodecUnsupportedOperation);
+            return false;
+        }
 
         if (!isValid()) {
             throws_if(ec, make_error_code(Errors::CodecInvalid));
@@ -815,6 +824,180 @@ public:
      */
     Packet receive(OptionalErrorCode ec = throws());
 
+#endif
+};
+
+
+/**
+ * @brief Base class for subtitle codec contexts.
+ *
+ * Subtitle codecs use the legacy avcodec_decode_subtitle2() /
+ * avcodec_encode_subtitle() functions. The FFmpeg send/receive API aborts for
+ * subtitle codecs, so send(), receive() and flush() are deleted here and the
+ * generic CodecContext2 implementations report
+ * Errors::CodecUnsupportedOperation.
+ *
+ * Text subtitle encoders (subrip, webvtt, mov_text, text) require a subtitle
+ * header before open(); use setDefaultSubtitleHeader() for a built-in ASS
+ * header. Bitmap encoders such as dvdsub do not need one.
+ */
+template<typename Clazz, Direction _direction>
+class SubtitleCodecContext : public CodecContextBase<Clazz, _direction, AVMEDIA_TYPE_SUBTITLE>
+{
+public:
+    using Parent = CodecContextBase<Clazz, _direction, AVMEDIA_TYPE_SUBTITLE>;
+    using Parent::Parent;
+
+    /**
+     * Subtitle header in ASS/SSA format, or an empty view when no header has
+     * been set.
+     */
+    std::string_view subtitleHeader() const noexcept
+    {
+        if (!this->m_raw || !this->m_raw->subtitle_header || this->m_raw->subtitle_header_size <= 0)
+            return {};
+
+        return { reinterpret_cast<const char*>(this->m_raw->subtitle_header),
+                 static_cast<std::size_t>(this->m_raw->subtitle_header_size) };
+    }
+
+    /**
+     * Sets the subtitle header. Allowed only before open(): the FFmpeg text
+     * subtitle encoders parse the header during avcodec_open2().
+     */
+    void setSubtitleHeader(std::string_view header, OptionalErrorCode ec = throws())
+    {
+        clear_if(ec);
+
+        if (!this->isValid()) {
+            throws_if(ec, Errors::CodecInvalid);
+            return;
+        }
+
+        if (this->isOpened()) {
+            throws_if(ec, Errors::CodecAlreadyOpened);
+            return;
+        }
+
+        std::unique_ptr<uint8_t, void(*)(void*)> copy(nullptr, av_free);
+        if (!header.empty()) {
+            copy = av::mallocz<uint8_t>(header.size() + 1);
+            if (!copy) {
+                throws_if(ec, Errors::Unallocated);
+                return;
+            }
+            std::memcpy(copy.get(), header.data(), header.size());
+        }
+
+        av::freep(this->m_raw->subtitle_header);
+        this->m_raw->subtitle_header = copy.release();
+        this->m_raw->subtitle_header_size = static_cast<int>(header.size());
+    }
+
+    /**
+     * Sets the built-in ASS header accepted by every text subtitle encoder
+     * provided by FFmpeg.
+     */
+    void setDefaultSubtitleHeader(OptionalErrorCode ec = throws())
+    {
+        this->setSubtitleHeader(subtitle::defaultAssHeader(), ec);
+    }
+
+    /**
+     * Releases the subtitle header. Allowed only before open().
+     */
+    void clearSubtitleHeader() noexcept
+    {
+        if (!this->m_raw || this->isOpened())
+            return;
+
+        av::freep(this->m_raw->subtitle_header);
+        this->m_raw->subtitle_header_size = 0;
+    }
+
+    /**
+     * Time base used by the decoder to fill AVSubtitle::pts. When it is not
+     * set, decode() falls back to the packet or stream time base.
+     */
+    Rational pktTimeBase() const noexcept
+    {
+        return this->m_raw ? Rational(this->m_raw->pkt_timebase) : Rational();
+    }
+
+    void setPktTimeBase(const Rational &value) noexcept
+    {
+        if (this->m_raw)
+            this->m_raw->pkt_timebase = value;
+    }
+
+    bool flush(OptionalErrorCode ec = throws()) = delete;
+};
+
+
+class SubtitleDecoderContext : public SubtitleCodecContext<SubtitleDecoderContext, Direction::Decoding>
+{
+public:
+    using Parent = SubtitleCodecContext<SubtitleDecoderContext, Direction::Decoding>;
+    using Parent::Parent;
+
+    SubtitleDecoderContext() = default;
+    SubtitleDecoderContext(SubtitleDecoderContext &&other);
+    SubtitleDecoderContext &operator=(SubtitleDecoderContext &&other);
+
+    /**
+     * @brief Decodes one subtitle packet.
+     *
+     * The returned frame owns its rectangles. AVSubtitle has no reference
+     * counting, so every call returns a newly allocated frame.
+     *
+     * The frame pts is in AV_TIME_BASE units. It is filled when pktTimeBase()
+     * or the packet/stream time base is available; otherwise pts() reports
+     * NoPts.
+     *
+     * An invalid frame means that the packet did not produce a subtitle yet
+     * (for example, a decoder that buffers partial data).
+     */
+    SubtitleFrame decode(const Packet &packet, OptionalErrorCode ec = throws());
+
+    /**
+     * @brief Decodes one subtitle packet starting at the given offset.
+     *
+     * @param[out] decodedBytes number of bytes consumed from the packet
+     */
+    SubtitleFrame decode(const Packet &packet, size_t offset, size_t &decodedBytes,
+                         OptionalErrorCode ec = throws());
+
+#if AVCPP_NEW_CODEC_API
+    bool send(const Packet &packet, OptionalErrorCode ec = throws()) = delete;
+    Packet receive(OptionalErrorCode ec = throws()) = delete;
+#endif
+};
+
+
+class SubtitleEncoderContext : public SubtitleCodecContext<SubtitleEncoderContext, Direction::Encoding>
+{
+public:
+    using Parent = SubtitleCodecContext<SubtitleEncoderContext, Direction::Encoding>;
+    using Parent::Parent;
+
+    SubtitleEncoderContext() = default;
+    SubtitleEncoderContext(SubtitleEncoderContext &&other);
+    SubtitleEncoderContext &operator=(SubtitleEncoderContext &&other);
+
+    /**
+     * @brief Encodes one subtitle frame.
+     *
+     * FFmpeg subtitle encoders accept only SUBTITLE_ASS rectangles and require
+     * startDisplayTime() to be zero. Text encoders additionally need a
+     * subtitle header set before open().
+     *
+     * An empty packet means that the encoder produced no output.
+     */
+    Packet encode(const SubtitleFrame &frame, OptionalErrorCode ec = throws());
+
+#if AVCPP_NEW_CODEC_API
+    bool send(const SubtitleFrame &frame, OptionalErrorCode ec = throws()) = delete;
+    Packet receive(OptionalErrorCode ec = throws()) = delete;
 #endif
 };
 

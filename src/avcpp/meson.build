@@ -101,6 +101,7 @@ avcpp_sources = [
     'rect.cpp',
     'sampleformat.cpp',
     'stream.cpp',
+    'subtitle.cpp',
     'timestamp.cpp',
     'videorescaler.cpp',
 
@@ -136,6 +137,7 @@ avcpp_header = [
     'rect.h',
     'sampleformat.h',
     'stream.h',
+    'subtitle.h',
     'timestamp.h',
     'videorescaler.h',
 ]

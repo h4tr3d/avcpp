@@ -20,6 +20,7 @@ add_executable(test_executor
     Rational.cpp
     Timestamp.cpp
     Codec.cpp
+    Subtitle.cpp
     PixelSampleFormat.cpp
     Common.cpp
     Buffer.cpp

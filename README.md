@@ -8,6 +8,7 @@ Currently covered next functionality:
 - Container formats & contexts muxing and demuxing
 - Codecs & codecs contexts: encoding and decoding
 - Streams (`AVStream` → `av::Stream`)
+- Subtitles (`AVSubtitle` → `av::SubtitleFrame`): decoding, encoding, text/ASS payloads and bitmap rectangles
 - Filters (audio & video): parsing from string, manual adding filters to the graph & other
 - SW Video & Audio resamplers
 

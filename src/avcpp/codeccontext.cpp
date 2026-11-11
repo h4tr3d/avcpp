@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <vector>
 
 #include "avlog.h"
 #include "avutils.h"
@@ -1030,6 +1031,9 @@ std::error_code CodecContext2::sendCommon(const Packet &pkt)
     if (m_direction != Direction::Invalid && m_direction != Direction::Decoding)
         return make_error_code(Errors::CodecInvalidDirection);
 
+    if (m_raw->codec_type == AVMEDIA_TYPE_SUBTITLE)
+        return make_error_code(Errors::CodecUnsupportedOperation);
+
     int ret = avcodec_send_packet(m_raw, pkt.raw());
     if (ret == AVERROR_EOF)
         m_eof = true;
@@ -1047,6 +1051,9 @@ std::error_code CodecContext2::receiveCommon(AVFrame *frame)
 
     if (m_direction != Direction::Invalid && m_direction != Direction::Decoding)
         return make_error_code(Errors::CodecInvalidDirection);
+
+    if (m_raw->codec_type == AVMEDIA_TYPE_SUBTITLE)
+        return make_error_code(Errors::CodecUnsupportedOperation);
 
     int ret = avcodec_receive_frame(m_raw, frame);
     if (ret == AVERROR(EAGAIN))
@@ -1070,6 +1077,9 @@ std::error_code CodecContext2::sendCommon(const AVFrame *frame)
     if (m_direction != Direction::Invalid && m_direction != Direction::Encoding)
         return make_error_code(Errors::CodecInvalidDirection);
 
+    if (m_raw->codec_type == AVMEDIA_TYPE_SUBTITLE)
+        return make_error_code(Errors::CodecUnsupportedOperation);
+
     int ret = avcodec_send_frame(m_raw, frame);
     if (ret == AVERROR_EOF)
         m_eof = true;
@@ -1086,6 +1096,9 @@ std::error_code CodecContext2::receiveCommon(Packet &pkt)
 
     if (m_direction != Direction::Invalid && m_direction != Direction::Encoding)
         return make_error_code(Errors::CodecInvalidDirection);
+
+    if (m_raw->codec_type == AVMEDIA_TYPE_SUBTITLE)
+        return make_error_code(Errors::CodecUnsupportedOperation);
 
     int ret = avcodec_receive_packet(m_raw, pkt.raw());
     if (ret == AVERROR(EAGAIN))
@@ -1493,6 +1506,188 @@ uint64_t get_channel_layout_mask(const AVCodecContext *obj)
 #endif
 }
 
+} // namespace codec_context::audio
+
+SubtitleDecoderContext::SubtitleDecoderContext(SubtitleDecoderContext &&other)
+    : Parent(std::move(other))
+{
+}
+
+SubtitleDecoderContext &SubtitleDecoderContext::operator=(SubtitleDecoderContext &&other)
+{
+    return moveOperator(std::move(other));
+}
+
+SubtitleFrame SubtitleDecoderContext::decode(const Packet &packet, OptionalErrorCode ec)
+{
+    size_t decodedBytes = 0;
+    return decode(packet, 0, decodedBytes, ec);
+}
+
+SubtitleFrame SubtitleDecoderContext::decode(const Packet &packet, size_t offset,
+                                             size_t &decodedBytes, OptionalErrorCode ec)
+{
+    clear_if(ec);
+    decodedBytes = 0;
+
+    if (!isValid()) {
+        throws_if(ec, Errors::CodecInvalid);
+        return {};
+    }
+
+    if (!isOpened()) {
+        throws_if(ec, Errors::CodecNotOpened);
+        return {};
+    }
+
+    if (offset && packet.raw() && offset >= packet.size()) {
+        throws_if(ec, Errors::CodecDecodingOffsetToLarge);
+        return {};
+    }
+
+    // The subtitle decoder stores AVSubtitle::pts in AV_TIME_BASE, but fills it
+    // only when pkt_timebase is known. Resolve it lazily, as FFmpeg does.
+    if (!m_raw->pkt_timebase.num || !m_raw->pkt_timebase.den) {
+        Rational timeBase = packet.timeBase();
+#if AVCPP_HAS_AVFORMAT
+        if (timeBase == Rational() && stream().isValid())
+            timeBase = stream().timeBase();
+#endif
+        if (timeBase != Rational())
+            m_raw->pkt_timebase = timeBase;
+    }
+
+    const AVPacket *input = packet.raw();
+    Packet ref;
+    if (input && offset) {
+        ref = packet.clone(ec);
+        if (ec && *ec)
+            return {};
+
+        ref.raw()->data += offset;
+        ref.raw()->size -= static_cast<int>(offset);
+        input = ref.raw();
+    }
+
+    SubtitleFrame frame;
+    int gotSubtitle = 0;
+    int consumed = avcodec_decode_subtitle2(m_raw, frame.raw(), &gotSubtitle,
+                                            const_cast<AVPacket*>(input));
+    if (consumed < 0) {
+        throws_if(ec, consumed, ffmpeg_category());
+        return {};
+    }
+
+    decodedBytes = static_cast<size_t>(consumed);
+
+    if (!gotSubtitle)
+        return {};
+
+    frame.setTimeBase(Rational(1, AV_TIME_BASE));
+#if AVCPP_HAS_AVFORMAT
+    if (stream().isValid())
+        frame.setStreamIndex(stream().index());
+#endif
+    frame.setComplete(true);
+
+    return frame;
+}
+
+SubtitleEncoderContext::SubtitleEncoderContext(SubtitleEncoderContext &&other)
+    : Parent(std::move(other))
+{
+}
+
+SubtitleEncoderContext &SubtitleEncoderContext::operator=(SubtitleEncoderContext &&other)
+{
+    return moveOperator(std::move(other));
+}
+
+Packet SubtitleEncoderContext::encode(const SubtitleFrame &frame, OptionalErrorCode ec)
+{
+    clear_if(ec);
+
+    if (!isValid()) {
+        throws_if(ec, Errors::CodecInvalid);
+        return Packet();
+    }
+
+    if (!isOpened()) {
+        throws_if(ec, Errors::CodecNotOpened);
+        return Packet();
+    }
+
+    if (!frame.raw() || !frame.isValid()) {
+        throws_if(ec, Errors::FrameInvalid);
+        return Packet();
+    }
+
+    // FFmpeg subtitle encoders reject a non-zero start time with a raw -1.
+    if (frame.startDisplayTime() != 0) {
+        throws_if(ec, Errors::InvalidArgument);
+        return Packet();
+    }
+
+    if (frame.endDisplayTime() < frame.startDisplayTime()) {
+        throws_if(ec, Errors::InvalidArgument);
+        return Packet();
+    }
+
+    size_t bufferSize = 1024;
+    for (size_t i = 0; i < frame.numRects(); ++i) {
+        SubtitleRect rect = frame.rect(i);
+
+        bufferSize += 2 * rect.text().size();
+        bufferSize += 2 * rect.ass().size();
+
+        if (rect.data(0) && rect.linesize(0) > 0 && rect.height() > 0)
+            bufferSize += static_cast<size_t>(rect.linesize(0))
+                          * static_cast<size_t>(rect.height());
+
+        if (rect.nbColors() > 0)
+            bufferSize += static_cast<size_t>(rect.nbColors()) * sizeof(uint32_t);
+    }
+
+    constexpr size_t maxBufferSize = 64u * 1024u * 1024u;
+    std::vector<uint8_t> buffer(bufferSize);
+
+    int ret = 0;
+    for (;;) {
+        ret = avcodec_encode_subtitle(m_raw, buffer.data(),
+                                      static_cast<int>(buffer.size()),
+                                      const_cast<AVSubtitle*>(frame.raw()));
+        if (ret == AVERROR_BUFFER_TOO_SMALL && buffer.size() < maxBufferSize)
+            buffer.resize(buffer.size() * 2);
+        else
+            break;
+    }
+
+    if (ret < 0) {
+        throws_if(ec, ret, ffmpeg_category());
+        return Packet();
+    }
+
+    if (ret == 0)
+        return Packet();
+
+    Packet packet(buffer.data(), static_cast<size_t>(ret));
+
+    Rational timeBase = this->timeBase();
+    if (timeBase == Rational())
+        timeBase = Rational(1, 1000);
+
+    packet.setTimeBase(timeBase);
+    if (!frame.pts().isNoPts())
+        packet.setPts(Timestamp(frame.pts().timestamp(timeBase), timeBase));
+    packet.setDuration(static_cast<int>(frame.endDisplayTime() - frame.startDisplayTime()),
+                       Rational(1, 1000));
+#if AVCPP_HAS_AVFORMAT
+    if (stream().isValid())
+        packet.setStreamIndex(stream().index());
+#endif
+    packet.setComplete(true);
+
+    return packet;
 }
 
 } // namespace av
