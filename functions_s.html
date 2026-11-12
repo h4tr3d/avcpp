@@ -100,6 +100,8 @@ $(function() {
 : <a class="el" href="classav_1_1AudioDecoderContext.html#a42ee5f2617afe5f0bb33e0699b761d04">av::AudioDecoderContext</a>
 , <a class="el" href="classav_1_1AudioEncoderContext.html#a7a456d18699972798d1c92c6ec0c0447">av::AudioEncoderContext</a>
 , <a class="el" href="classav_1_1CodecContext2.html#a42791cb2fb6d1fc78c524a5433d3a8cc">av::CodecContext2</a>
+, <a class="el" href="classav_1_1SubtitleDecoderContext.html#adf73a14dfbb7434c66cf9f2faf07ffcc">av::SubtitleDecoderContext</a>
+, <a class="el" href="classav_1_1SubtitleEncoderContext.html#a85d228c0a599358d5af0f042653eba3a">av::SubtitleEncoderContext</a>
 , <a class="el" href="classav_1_1VideoDecoderContext.html#a4bedc1d7e5c7bce7ca9d8649aecae203">av::VideoDecoderContext</a>
 , <a class="el" href="classav_1_1VideoEncoderContext.html#ad0ee733644a9ecbbc28ca8f08585cc89">av::VideoEncoderContext</a>
 </li>
@@ -110,6 +112,15 @@ $(function() {
 : <a class="el" href="classav_1_1Dictionary_1_1Entry.html#a2fadd9a6d61e86426cd3a3f1143729aa">av::Dictionary::Entry</a>
 , <a class="el" href="classav_1_1Dictionary.html#a5b961d04158ab0e8ab5aeafac9c00735">av::Dictionary</a>
 , <a class="el" href="structPixSampleFmtWrapper.html#aff7432d91a7708080d75f66f8bfeb820">PixSampleFmtWrapper&lt; WrapperClass, T, NoneValue &gt;</a>
+</li>
+<li>setArea()
+: <a class="el" href="classav_1_1SubtitleRect.html#a192bf9ad66f1c4e4454cc741ff65ddb4">av::SubtitleRect</a>
+</li>
+<li>setAss()
+: <a class="el" href="classav_1_1SubtitleRect.html#a8f62f57f9840071aca228a2454c98cd4">av::SubtitleRect</a>
+</li>
+<li>setBitmap()
+: <a class="el" href="classav_1_1SubtitleRect.html#a677ce8d496fa7ea2190c0b142df68f7e">av::SubtitleRect</a>
 </li>
 <li>setBitRate()
 : <a class="el" href="classav_1_1CodecContext2.html#a5d7f48b8d2dd121846b8bfd720ffc65f">av::CodecContext2</a>
@@ -139,9 +150,13 @@ $(function() {
 <li>setComplete()
 : <a class="el" href="classav_1_1FrameCommon.html#a220616a3f7f3037b48a59fb8b3f69a8e">av::FrameCommon</a>
 , <a class="el" href="classav_1_1Packet.html#a3f308ad90efa1f2f83b5f3e1d6a7049d">av::Packet</a>
+, <a class="el" href="classav_1_1SubtitleFrame.html#a65602aafb1cfb700adcda418a392148f">av::SubtitleFrame</a>
 </li>
 <li>setData()
 : <a class="el" href="classav_1_1Packet.html#ad46c9c0fe60ecda547a8e0a1cc08af54">av::Packet</a>
+</li>
+<li>setDefaultSubtitleHeader()
+: <a class="el" href="classav_1_1SubtitleCodecContext.html#a71e2f2c400bb692527214edd6781dea7">av::SubtitleCodecContext&lt; Clazz, _direction &gt;</a>
 </li>
 <li>setDenominator()
 : <a class="el" href="classav_1_1Rational.html#afed8b76a3114e33c286af130d268f40a">av::Rational</a>
@@ -152,12 +167,21 @@ $(function() {
 <li>setDuration()
 : <a class="el" href="classav_1_1Packet.html#ab2da9d7d8e6bbc54c094a39da8c0f352">av::Packet</a>
 </li>
+<li>setEndDisplayTime()
+: <a class="el" href="classav_1_1SubtitleFrame.html#a60d098a6a54b5cffb94054dd21c22f53">av::SubtitleFrame</a>
+</li>
 <li>setFlags()
 : <a class="el" href="classav_1_1CodecContext2.html#adf6fa411c7363da3235f6fb1c6004047">av::CodecContext2</a>
 , <a class="el" href="classav_1_1Packet.html#aefeb8fa911364bbdced8c0666b0236a3">av::Packet</a>
 </li>
 <li>setFlags2()
 : <a class="el" href="classav_1_1CodecContext2.html#aadced37ec1d3509cf80409ae4ee9990c">av::CodecContext2</a>
+</li>
+<li>setForced()
+: <a class="el" href="classav_1_1SubtitleRect.html#a65a22e2231b6164c745e6b50f9824566">av::SubtitleRect</a>
+</li>
+<li>setFormat()
+: <a class="el" href="classav_1_1SubtitleFrame.html#aeaaa8b4efbe49d8b3a623dff56dd5f92">av::SubtitleFrame</a>
 </li>
 <li>setGlobalQuality()
 : <a class="el" href="classav_1_1VideoCodecContext.html#a4cae279979886ee044c84876b21b6b6b">av::VideoCodecContext&lt; Clazz, _direction &gt;</a>
@@ -184,15 +208,22 @@ $(function() {
 <li>setOption()
 : <a class="el" href="classav_1_1CodecContext2.html#a458b3d3a0a4e7d72ca75001c067aab26">av::CodecContext2</a>
 </li>
+<li>setPalette()
+: <a class="el" href="classav_1_1SubtitleRect.html#ac148269ec3697d303b3bdb97ae413129">av::SubtitleRect</a>
+</li>
 <li>setPictureType()
 : <a class="el" href="classav_1_1VideoFrame.html#ac9e8fea8e035920a08ea92b45b605549">av::VideoFrame</a>
 </li>
 <li>setPixelFormat()
 : <a class="el" href="classav_1_1VideoCodecContext.html#a5539c0e6843aec2871c7f0d42ca0481e">av::VideoCodecContext&lt; Clazz, _direction &gt;</a>
 </li>
+<li>setPktTimeBase()
+: <a class="el" href="classav_1_1SubtitleCodecContext.html#a31bd126dbcf1557c428539dd9f95591d">av::SubtitleCodecContext&lt; Clazz, _direction &gt;</a>
+</li>
 <li>setPts()
 : <a class="el" href="classav_1_1FrameCommon.html#a49e44bea3b14b00f6668fbd1803f8064">av::FrameCommon</a>
 , <a class="el" href="classav_1_1Packet.html#aabf0d60044775bd4d0d4a9825d2c8657">av::Packet</a>
+, <a class="el" href="classav_1_1SubtitleFrame.html#a3eace182d7e50d2f6b96486fc07914ca">av::SubtitleFrame</a>
 </li>
 <li>setQuality()
 : <a class="el" href="classav_1_1VideoFrame.html#a484cf09acf0a091d6e6bcf9d7953f5ab">av::VideoFrame</a>
@@ -213,17 +244,31 @@ $(function() {
 <li>setSilence()
 : <a class="el" href="classav_1_1SampleFormat.html#a0e26dcb685e3eb1627ed0b1aaf944dba">av::SampleFormat</a>
 </li>
+<li>setStartDisplayTime()
+: <a class="el" href="classav_1_1SubtitleFrame.html#ac460d72d687774021087b9fd314613c5">av::SubtitleFrame</a>
+</li>
 <li>setStreamIndex()
 : <a class="el" href="classav_1_1FrameCommon.html#ac86796fdba67988d9ec1435b632a8eff">av::FrameCommon</a>
 , <a class="el" href="classav_1_1Packet.html#acad6417ec90f7f47d4ad619a6c3bd788">av::Packet</a>
+, <a class="el" href="classav_1_1SubtitleFrame.html#ace85ec16113300c1cba86bf47d2fd750">av::SubtitleFrame</a>
 </li>
 <li>setStrict()
 : <a class="el" href="classav_1_1CodecContext2.html#ac086752b69c13896c210cc56e8cba26f">av::CodecContext2</a>
+</li>
+<li>setSubtitleHeader()
+: <a class="el" href="classav_1_1SubtitleCodecContext.html#a563940bad2327447a308dad621308516">av::SubtitleCodecContext&lt; Clazz, _direction &gt;</a>
+</li>
+<li>setText()
+: <a class="el" href="classav_1_1SubtitleRect.html#a9ef6c63cd9764b5dac69e798776a68a1">av::SubtitleRect</a>
 </li>
 <li>setTimeBase()
 : <a class="el" href="classav_1_1CodecContext2.html#ad222c935436b3aed0ede07b193a50e77">av::CodecContext2</a>
 , <a class="el" href="classav_1_1FrameCommon.html#abc5b0f5e812ae95da4cbc1a536df87ca">av::FrameCommon</a>
 , <a class="el" href="classav_1_1Packet.html#ac7d08ea3fd74a9feed0b591cf71e1c1c">av::Packet</a>
+, <a class="el" href="classav_1_1SubtitleFrame.html#a1140e8d2b9db9e39ecc361352864a4cc">av::SubtitleFrame</a>
+</li>
+<li>setType()
+: <a class="el" href="classav_1_1SubtitleRect.html#ae01d221faca1d68e8aef66a39ad3d709">av::SubtitleRect</a>
 </li>
 <li>setValue()
 : <a class="el" href="classav_1_1Rational.html#ab5210ae6f12c64e67578e4ab39b8dd07">av::Rational</a>
@@ -266,12 +311,34 @@ $(function() {
 <li>srcWidth()
 : <a class="el" href="classav_1_1VideoRescaler.html#a9bc22ba2ed89fe5007e2ecc0067cfd22">av::VideoRescaler</a>
 </li>
+<li>startDisplayTime()
+: <a class="el" href="classav_1_1SubtitleFrame.html#ad65f168b7b8e2274023e29f93362d41b">av::SubtitleFrame</a>
+</li>
+<li>startTime()
+: <a class="el" href="classav_1_1SubtitleFrame.html#a1390afaeae3121fb5e97e18b3cc3bd8b">av::SubtitleFrame</a>
+</li>
 <li>streamIndex()
 : <a class="el" href="classav_1_1FrameCommon.html#a5a8101334c3796f4928c6829d0a275d3">av::FrameCommon</a>
 , <a class="el" href="classav_1_1Packet.html#a5e6b26e6b0235aac02952ae37ef136fe">av::Packet</a>
+, <a class="el" href="classav_1_1SubtitleFrame.html#ad29593f1cf3c69790ee2f7a0e6a6a53f">av::SubtitleFrame</a>
 </li>
 <li>strict()
 : <a class="el" href="classav_1_1CodecContext2.html#aa953de3f1c4adc91e3f3e13f05732c44">av::CodecContext2</a>
+</li>
+<li>SubtitleDecoderContext()
+: <a class="el" href="classav_1_1SubtitleDecoderContext.html#a8d4b5e3d0a6d3d611d84368ba15d6cd8">av::SubtitleDecoderContext</a>
+</li>
+<li>SubtitleEncoderContext()
+: <a class="el" href="classav_1_1SubtitleEncoderContext.html#a230cbbcbb818e96be275d06f13f40b83">av::SubtitleEncoderContext</a>
+</li>
+<li>SubtitleFrame()
+: <a class="el" href="classav_1_1SubtitleFrame.html#aff1dfd6e7307b2f55dfbba726f9dec60">av::SubtitleFrame</a>
+</li>
+<li>subtitleHeader()
+: <a class="el" href="classav_1_1SubtitleCodecContext.html#ad7aab9d9c6ac06b03ae1e1856f16754f">av::SubtitleCodecContext&lt; Clazz, _direction &gt;</a>
+</li>
+<li>SubtitleRect()
+: <a class="el" href="classav_1_1SubtitleRect.html#a4f00478cad58632ceb6fe59d6138c5cd">av::SubtitleRect</a>
 </li>
 <li>supportedChannelLayouts()
 : <a class="el" href="classav_1_1Codec.html#a2ee55251be368b384127b7d5a960b9ab">av::Codec</a>
