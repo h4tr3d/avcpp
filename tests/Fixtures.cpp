@@ -5,15 +5,21 @@
 #if AVCPP_HAS_AVFORMAT && defined(AVCPP_TEST_DATA_DIR)
 
 #include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <string>
 
+#include <utility>
+#include <vector>
+
 #include "avcpp/formatcontext.h"
 #include "avcpp/codeccontext.h"
 #include "avcpp/packet.h"
 #include "avcpp/stream.h"
+#include "avcpp/subtitle.h"
 
 namespace {
 
@@ -211,6 +217,61 @@ AudioStats decodeAudio(const std::string &file)
     return stats;
 }
 
+struct SubtitleStats
+{
+    long packets = 0;
+    long frames = 0;
+    std::vector<av::SubtitleFrame> subtitles;
+};
+
+SubtitleStats decodeSubtitles(const std::string &file)
+{
+    std::error_code ec;
+
+    av::FormatContext ictx;
+    ictx.openInput(fixturePath(file).string(), ec);
+    REQUIRE_FALSE(ec);
+    ictx.findStreamInfo(ec);
+    REQUIRE_FALSE(ec);
+
+    av::Stream sst;
+    for (auto &&st : ictx.streams()) {
+        if (st.mediaType() == AVMEDIA_TYPE_SUBTITLE) {
+            sst = st;
+            break;
+        }
+    }
+    REQUIRE(sst.isValid());
+
+    av::SubtitleDecoderContext dec{sst};
+    dec.open(ec);
+    REQUIRE_FALSE(ec);
+
+    SubtitleStats stats;
+    av::Packet pkt;
+    while ((pkt = ictx.readPacket(ec))) {
+        if (pkt.streamIndex() != sst.index())
+            continue;
+
+        ++stats.packets;
+
+        size_t decodedBytes = 0;
+        auto frame = dec.decode(pkt, 0, decodedBytes, ec);
+        REQUIRE_FALSE(ec);
+        CHECK(decodedBytes == pkt.size());
+
+        if (!frame.isValid())
+            continue;
+
+        CHECK(frame.isComplete());
+        ++stats.frames;
+        stats.subtitles.emplace_back(std::move(frame));
+    }
+    REQUIRE_FALSE(ec);
+
+    return stats;
+}
+
 } // namespace
 
 TEST_CASE("Send/receive fixtures: h264 without B-frames")
@@ -254,6 +315,119 @@ TEST_CASE("Send/receive fixtures: PCM without decoder delay")
     // decoded sample count is the only stable property of this fixture.
     CHECK(stats.samples == 96000); // 2 s at 48 kHz
     CHECK(stats.eof);
+}
+
+TEST_CASE("Subtitle fixtures: SRT subtitles")
+{
+    auto const expected = fixtureCounts("media/subrip-sample.mkv");
+    auto const stats = decodeSubtitles("media/subrip-sample.mkv");
+
+    CHECK(stats.packets == expected.packets);
+    CHECK(stats.frames == expected.frames);
+    REQUIRE(stats.subtitles.size() == 2);
+
+    CHECK(stats.subtitles[0].pts().timestamp(av::Rational(1, 1000)) == 500);
+    CHECK(stats.subtitles[1].pts().timestamp(av::Rational(1, 1000)) == 1500);
+    CHECK(stats.subtitles[0].ass().find("Hello, avcpp!") != std::string_view::npos);
+    CHECK(stats.subtitles[0].numRects() == 1);
+    CHECK(stats.subtitles[0].rect(0).type() == SUBTITLE_ASS);
+}
+
+TEST_CASE("Subtitle fixtures: ASS subtitles")
+{
+    auto const expected = fixtureCounts("media/ass-sample.mkv");
+    auto const stats = decodeSubtitles("media/ass-sample.mkv");
+
+    CHECK(stats.packets == expected.packets);
+    CHECK(stats.frames == expected.frames);
+    REQUIRE(stats.subtitles.size() == 2);
+
+    CHECK(stats.subtitles[0].pts().timestamp(av::Rational(1, 1000)) == 500);
+    CHECK(stats.subtitles[1].pts().timestamp(av::Rational(1, 1000)) == 1500);
+    CHECK(stats.subtitles[0].ass().find("Hello, avcpp!") != std::string_view::npos);
+}
+
+TEST_CASE("Subtitle fixtures: DVD bitmap subtitles")
+{
+    auto const expected = fixtureCounts("media/dvdsub-sample.mkv");
+    auto const stats = decodeSubtitles("media/dvdsub-sample.mkv");
+
+    CHECK(stats.packets == expected.packets);
+    CHECK(stats.frames == expected.frames);
+    REQUIRE(stats.subtitles.size() == 2);
+
+    auto const &frame = stats.subtitles[0];
+    CHECK(frame.pts().timestamp(av::Rational(1, 1000)) == 500);
+    CHECK(frame.endDisplayTime() == 989);
+    REQUIRE(frame.numRects() == 1);
+
+    auto const rect = frame.rect(0);
+    CHECK(rect.type() == SUBTITLE_BITMAP);
+    CHECK(rect.width() == 64);
+    CHECK(rect.height() == 32);
+    CHECK(rect.nbColors() == 4);
+    REQUIRE(rect.data(0) != nullptr);
+    REQUIRE(rect.data(1) != nullptr);
+
+    static const std::uint32_t expectedPalette[] = {
+        0x00000000, 0xFFFFFFFF, 0xFF000000, 0xFFFFFF00,
+    };
+    CHECK(std::memcmp(rect.data(1), expectedPalette, sizeof(expectedPalette)) == 0);
+}
+
+TEST_CASE("Subtitle fixtures: DVD bitmap encode round trip")
+{
+    auto const stats = decodeSubtitles("media/dvdsub-sample.mkv");
+    REQUIRE(stats.subtitles.size() == 2);
+
+    auto const source = stats.subtitles[0].clone();
+
+    auto encCodec = av::findEncodingCodec(AV_CODEC_ID_DVD_SUBTITLE);
+    REQUIRE_FALSE(encCodec.isNull());
+
+    av::SubtitleEncoderContext enc{encCodec};
+    enc.setTimeBase(av::Rational(1, 1000));
+
+    std::error_code ec;
+    enc.open(ec);
+    REQUIRE_FALSE(ec);
+
+    auto packet = enc.encode(source, ec);
+    REQUIRE_FALSE(ec);
+    REQUIRE(packet.size() > 0);
+
+    auto decCodec = av::findDecodingCodec(AV_CODEC_ID_DVD_SUBTITLE);
+    REQUIRE_FALSE(decCodec.isNull());
+
+    av::SubtitleDecoderContext dec{decCodec};
+    // DVD bitmap subtitles carry the palette in the extradata, so the decoder
+    // must inherit it from the encoder to interpret the packet correctly.
+    dec.copyContextFrom(enc, ec);
+    REQUIRE_FALSE(ec);
+    dec.setPktTimeBase(av::Rational(1, 1000));
+    dec.open(ec);
+    REQUIRE_FALSE(ec);
+
+    auto decoded = dec.decode(packet, ec);
+    REQUIRE_FALSE(ec);
+    REQUIRE(decoded.isValid());
+    REQUIRE(decoded.numRects() == 1);
+
+    auto const sourceRect = source.rect(0);
+    auto const decodedRect = decoded.rect(0);
+
+    CHECK(decodedRect.nbColors() == sourceRect.nbColors());
+    REQUIRE(decodedRect.data(0) != nullptr);
+    REQUIRE(decodedRect.data(1) != nullptr);
+
+    auto const sourceBitmapSize = static_cast<size_t>(sourceRect.linesize(0))
+                                  * static_cast<size_t>(sourceRect.height());
+    auto const decodedBitmapSize = static_cast<size_t>(decodedRect.linesize(0))
+                                   * static_cast<size_t>(decodedRect.height());
+    REQUIRE(sourceBitmapSize == decodedBitmapSize);
+    CHECK(std::memcmp(decodedRect.data(0), sourceRect.data(0), sourceBitmapSize) == 0);
+    CHECK(std::memcmp(decodedRect.data(1), sourceRect.data(1),
+                      static_cast<size_t>(sourceRect.nbColors()) * sizeof(std::uint32_t)) == 0);
 }
 
 #endif // AVCPP_HAS_AVFORMAT && defined(AVCPP_TEST_DATA_DIR)

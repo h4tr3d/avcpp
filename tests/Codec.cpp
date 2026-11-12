@@ -27,3 +27,18 @@ TEST_CASE("Codec", "[Codec]")
     }
 #endif
 }
+
+TEST_CASE("Codec: subtitle codecs report their direction", "[Codec]")
+{
+    // Before FFmpeg 5.1 subtitle encoders provide only the legacy encode_sub
+    // callback, so it must count as encoding support.
+    auto encoder = av::findEncodingCodec("subrip");
+    REQUIRE_FALSE(encoder.isNull());
+    CHECK(encoder.canEncode());
+    CHECK_FALSE(encoder.canDecode());
+
+    auto decoder = av::findDecodingCodec("subrip");
+    REQUIRE_FALSE(decoder.isNull());
+    CHECK(decoder.canDecode());
+    CHECK_FALSE(decoder.canEncode());
+}

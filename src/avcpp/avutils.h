@@ -4,6 +4,7 @@
 
 #include <ranges>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <deque>
 #include <memory>
@@ -20,6 +21,11 @@
 
 #include "ffmpeg.h"
 #include "avtime.h"
+
+extern "C" {
+#include <libavutil/avstring.h>
+#include <libavutil/mem.h>
+}
 
 #if AVCPP_HAS_AVFORMAT
 extern "C" {
@@ -98,6 +104,14 @@ void dumpBinaryBuffer(uint8_t *buffer, int buffer_size, int width = 16);
  */
 std::string error2string(int error);
 
+/**
+ * Wraps a nullable C string into a string_view without copying.
+ */
+inline std::string_view wrap2sview(const char *value) noexcept
+{
+    return value ? std::string_view(value) : std::string_view();
+}
+
 }
 
 
@@ -163,6 +177,28 @@ template<typename T>
 std::unique_ptr<T, void(*)(void*)> memdup(const void *p, size_t size)
 {
     return {static_cast<T*>(av_memdup(p, size)), av_free};
+}
+
+/**
+ * Duplicates a string using the FFmpeg allocator.
+ * Returns nullptr for an empty input.
+ */
+inline std::unique_ptr<char, void(*)(void*)> strdup(std::string_view value)
+{
+    if (value.empty())
+        return {nullptr, av_free};
+
+    return {av_strndup(value.data(), value.size()), av_free};
+}
+
+/**
+ * Frees a buffer allocated by the FFmpeg allocator and resets the pointer.
+ * The pointer must come from av_malloc() or a compatible FFmpeg allocation.
+ */
+template<typename T>
+void freep(T *&ptr) noexcept
+{
+    ::av_freep(&ptr);
 }
 
 /**

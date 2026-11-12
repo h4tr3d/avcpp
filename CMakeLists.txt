@@ -93,6 +93,20 @@ if (AVCPP_ENABLE_TESTS)
     set(CATCH_INSTALL_EXTRAS On CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(Catch2)
 
+    # Catch2 declares StringMaker<std::string_view> only when its own sources
+    # are compiled as C++17 or newer. AppleClang defaults to an older standard,
+    # which leaves that specialization undefined for tests built as C++17.
+    if (TARGET Catch2)
+        set_target_properties(Catch2 PROPERTIES
+            CXX_STANDARD 17
+            CXX_STANDARD_REQUIRED ON)
+    endif()
+    if (TARGET Catch2WithMain)
+        set_target_properties(Catch2WithMain PROPERTIES
+            CXX_STANDARD 17
+            CXX_STANDARD_REQUIRED ON)
+    endif()
+
     list(APPEND CMAKE_MODULE_PATH "${catch2_SOURCE_DIR}/extras")
     add_subdirectory(tests)
 endif()

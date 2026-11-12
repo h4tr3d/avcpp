@@ -36,7 +36,8 @@ tests = [
     'Packet',
     'PixelSampleFormat',
     'Rational',
-    'Timestamp'
+    'Timestamp',
+    'Subtitle'
 ]
 
 if get_option('test_data')

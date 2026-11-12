@@ -46,6 +46,15 @@ TEST_CASE("Packet define", "[Packet][Construct]")
     }
 #endif
 
+    SECTION("Construct from data: zeroed padding") {
+        av::Packet pkt{pkt_data, sizeof(pkt_data)};
+        REQUIRE(pkt.size() == sizeof(pkt_data));
+        // Some muxers read past the payload (for example the ASS muxer treats
+        // it as a C string), so FFmpeg requires the padding to be zeroed.
+        for (size_t i = 0; i < AV_INPUT_BUFFER_PADDING_SIZE; ++i)
+            CHECK(pkt.data()[pkt.size() + i] == 0);
+    }
+
     SECTION("initFromAVPacket") {
         av::Packet in_pkt{pkt_data, sizeof(pkt_data)};
 

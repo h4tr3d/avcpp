@@ -61,6 +61,7 @@ std::string AvcppCategory::message(int ev) const
         case Errors::IncorrectBufferSinkMediaType: return "Incorrect frame media type provided for BufferSink filter";
         case Errors::MixBufferSinkAccess: return "Mix getFrame() and getSamples() calls on BufferSink";
         case Errors::BufferReadonly: return "AVBufferRef is readonly but write access requested";
+        case Errors::CodecUnsupportedOperation: return "Operation is not supported by this codec type";
     }
 
     return "Uknown AvCpp error";

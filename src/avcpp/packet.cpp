@@ -1,6 +1,9 @@
 #include "packet.h"
 #include "avcpp/buffer.h"
 
+#include <climits>
+#include <cstring>
+
 using namespace std;
 
 namespace av {
@@ -58,15 +61,27 @@ Packet::Packet(const vector<uint8_t> &data)
 {
 }
 
-Packet::Packet(const uint8_t *data, size_t size, bool /*doAllign*/)
+Packet::Packet(const uint8_t *data, size_t size, bool doAllign)
     : Packet()
 {
-    auto pkt_data = av::memdup<uint8_t>(data, size);
-    if (!pkt_data) {
+    // av_packet_from_data() requires the buffer to include
+    // AV_INPUT_BUFFER_PADDING_SIZE bytes past the payload. Some readers (for
+    // example the ASS muxer) treat the payload as a C string, so the padding
+    // must be zeroed to keep them from reading uninitialized memory.
+    size_t const padding = doAllign ? AV_INPUT_BUFFER_PADDING_SIZE : 0;
+    if (size > static_cast<size_t>(INT_MAX) - padding)
         return;
-    }
 
-    auto sts = av_packet_from_data(raw(), pkt_data.get(), size);
+    auto pkt_data = av::malloc<uint8_t>(size + padding);
+    if (!pkt_data)
+        return;
+
+    if (size)
+        memcpy(pkt_data.get(), data, size);
+    if (padding)
+        memset(pkt_data.get() + size, 0, padding);
+
+    auto sts = av_packet_from_data(raw(), pkt_data.get(), static_cast<int>(size));
     if (sts < 0)
         return;
 

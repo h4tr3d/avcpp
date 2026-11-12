@@ -27,6 +27,8 @@ set(TARGETS
   api2-hw-encode
   api2-decode-raw-h264
   api2-send-receive
+  api2-subtitles
+  api2-generate-subtitles
 )
 
 if (AV_DISABLE_AVFORMAT)
@@ -42,6 +44,8 @@ if (AV_DISABLE_AVFORMAT)
     api2-decode-rasample-audio
     api2-demux-seek
     api2-send-receive
+    api2-subtitles
+    api2-generate-subtitles
   )
 endif()
 
