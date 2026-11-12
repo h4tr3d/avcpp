@@ -27,8 +27,10 @@ bool Codec::canEncode() const
     if (m_raw)
         return m_raw->encode2;
 #elif AVCPP_AVCODEC_VERSION_INT < AV_VERSION_INT(59,37,100) // <5.1
+    // Before FFmpeg 5.1 subtitle encoders provide only the legacy encode_sub
+    // callback, so excluding it hides every subtitle encoder.
     if (m_raw)
-        return (m_raw->receive_packet || m_raw->encode2);
+        return (m_raw->receive_packet || m_raw->encode2 || m_raw->encode_sub);
 #else
     return av_codec_is_encoder(m_raw);
 #endif
