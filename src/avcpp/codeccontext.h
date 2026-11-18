@@ -15,6 +15,7 @@
 #include "subtitle.h"
 #include "codec.h"
 #include "channellayout.h"
+#include "hwcontext.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -118,6 +119,15 @@ public:
     Rational timeBase() const noexcept;
     void setTimeBase(const Rational &value) noexcept;
 
+    /**
+     * @brief Frame rate advertised by the codec.
+     *
+     * Hardware encoders (for example h264_qsv) read this value and need it to
+     * be set before open().
+     */
+    Rational frameRate() const noexcept;
+    void setFrameRate(const Rational &value) noexcept;
+
 #if AVCPP_NEW_CODEC_API
     /**
      * @brief Returns true if the codec has been flushed and all output is drained.
@@ -194,6 +204,13 @@ protected:
 
     void open(const Codec &codec, AVDictionary **options, OptionalErrorCode ec);
 
+    // Hardware codec state. The device and frames contexts are reference
+    // counted, copying the wrappers is cheap.
+    hw::DeviceContext m_hwDevice;
+    hw::FramesContext m_hwFrames;
+    bool              m_hwTransferToSystem = false;
+    bool              m_hwAutoUpload       = true;
+    hw::EncodingMode  m_hwEncodingMode     = hw::EncodingMode::Auto;
 
     std::pair<int, const std::error_category*>
     decodeCommon(AVFrame *outFrame, const class Packet &inPacket, size_t offset, int &frameFinished,
@@ -591,6 +608,55 @@ public:
     VideoFrame receive(OptionalErrorCode ec = throws(), bool autoAllocateFrame = true);
 #endif
 
+    /**
+     * @brief Configures a hardware device for decoding.
+     *
+     * Must be called after the codec is set and before open(). The decoder uses
+     * the device to choose the output pixel format; there is no silent software
+     * fallback. If the codec has no hardware configuration for the device type,
+     * open() fails with Errors::HardwareConfigNotFound.
+     *
+     * The function installs an internal get_format() callback. It does not use
+     * AVCodecContext::opaque.
+     */
+    void setHwDeviceContext(const hw::DeviceContext& device,
+                            OptionalErrorCode ec = throws());
+
+    /**
+     * @brief Removes the hardware device and restores the default get_format().
+     */
+    void clearHwDeviceContext() noexcept;
+
+    /**
+     * @brief Device context set with setHwDeviceContext().
+     */
+    hw::DeviceContext hwDeviceContext() const noexcept;
+
+    /**
+     * @brief Frames context of decoded hardware frames.
+     *
+     * Returns the frames context owned by the decoder, if any. It exists when
+     * the codec needs one (avcpp derives it for codecs that advertise only
+     * AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX, for example QSV in FFmpeg 4.x)
+     * or when FFmpeg creates it for a hardware accelerated decoder while
+     * decoding the first packet.
+     *
+     * The method may return an invalid context before that point, and for
+     * decoders that keep the context only inside the decoded frames.
+     * VideoFrame::hwFramesContext() always returns the context of a produced
+     * frame.
+     */
+    hw::FramesContext hwFramesContext() const noexcept;
+
+    /**
+     * @brief Transfer decoded hardware frames to system memory automatically.
+     *
+     * Disabled by default. When enabled, decode() and receive() return software
+     * frames. Keep it disabled for zero-copy processing.
+     */
+    void setHwTransferToSystem(bool enabled) noexcept;
+    bool isHwTransferToSystem() const noexcept;
+
 private:
     VideoFrame decodeVideo(OptionalErrorCode ec,
                            const Packet &packet,
@@ -656,6 +722,74 @@ public:
     Packet receive(OptionalErrorCode ec = throws());
 
 #endif
+
+    /**
+     * @brief Sets AVCodecContext::hw_device_ctx before open().
+     */
+    void setHwDeviceContext(const hw::DeviceContext& device,
+                            OptionalErrorCode ec = throws());
+
+    /**
+     * @brief Removes the hardware device context.
+     */
+    void clearHwDeviceContext() noexcept;
+
+    /**
+     * @brief Sets AVCodecContext::hw_frames_ctx before open().
+     *
+     * The encoder will expect hardware frames. Use this for the zero-copy path:
+     * pass the frames context obtained from a decoded VideoFrame.
+     */
+    void setHwFramesContext(const hw::FramesContext& frames,
+                            OptionalErrorCode ec = throws());
+
+    /**
+     * @brief Removes the hardware frames context.
+     */
+    void clearHwFramesContext() noexcept;
+
+    hw::DeviceContext hwDeviceContext() const noexcept;
+    hw::FramesContext hwFramesContext() const noexcept;
+
+    /**
+     * @brief Configures hardware encoding for the given device.
+     *
+     * @param device    hardware device. It must match the encoder.
+     * @param mode      Auto prefers a frames context, Frames requires it,
+     *                  Device uses AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX.
+     * @param swFormat  software pixel format for a frames context. When
+     *                  AV_PIX_FMT_NONE, the current pixel format or the first
+     *                  format from FrameConstraints::swFormats() is used.
+     *
+     * Auto creates a frames context when the codec has a frames configuration.
+     * It falls back to a device context when frames creation fails and a device
+     * configuration exists. Otherwise it reports HardwareConfigNotFound.
+     */
+    void configureHwEncoding(const hw::DeviceContext& device,
+                             hw::EncodingMode mode = hw::EncodingMode::Auto,
+                             PixelFormat swFormat = AV_PIX_FMT_NONE,
+                             OptionalErrorCode ec = throws());
+
+    /**
+     * @brief Uses an existing frames context (zero-copy).
+     *
+     * Sets hw_frames_ctx and the hardware pixel format, and disables automatic
+     * upload. The encoder expects hardware frames from this context.
+     */
+    void configureHwEncoding(const hw::FramesContext& frames,
+                             OptionalErrorCode ec = throws());
+
+    hw::EncodingMode hwEncodingMode() const noexcept;
+    bool isHwEncoding() const noexcept;
+
+    /**
+     * @brief Upload software frames automatically before encoding.
+     *
+     * Enabled by default. The function is used only when a hardware frames
+     * context is configured and the incoming frame is a software frame.
+     */
+    void setHwAutoUpload(bool enabled) noexcept;
+    bool isHwAutoUpload() const noexcept;
 
 };
 

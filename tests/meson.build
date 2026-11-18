@@ -33,6 +33,7 @@ tests = [
     'Format',
     'FormatCustomIO_test',
     'Frame',
+    'Hardware',
     'Packet',
     'PixelSampleFormat',
     'Rational',

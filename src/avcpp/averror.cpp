@@ -62,6 +62,12 @@ std::string AvcppCategory::message(int ev) const
         case Errors::MixBufferSinkAccess: return "Mix getFrame() and getSamples() calls on BufferSink";
         case Errors::BufferReadonly: return "AVBufferRef is readonly but write access requested";
         case Errors::CodecUnsupportedOperation: return "Operation is not supported by this codec type";
+        case Errors::HardwareDeviceUnavailable: return "Hardware device is not available";
+        case Errors::HardwareDeviceInvalid: return "Hardware device context is invalid";
+        case Errors::HardwareConfigNotFound: return "Codec has no hardware configuration for the device type";
+        case Errors::HardwareFramesInvalid: return "Hardware frames context is invalid";
+        case Errors::HardwareTransferUnsupported: return "Hardware frame transfer is not supported";
+        case Errors::HardwareCodecNotFound: return "Codec with hardware support not found";
     }
 
     return "Uknown AvCpp error";

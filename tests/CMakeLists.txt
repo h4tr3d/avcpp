@@ -27,6 +27,7 @@ add_executable(test_executor
     FormatCustomIO_test.cpp
     CodecContext.cpp
     CodecContextSendReceive.cpp
+    Hardware.cpp
     Fixtures.cpp
     Patterns.cpp)
 target_link_libraries(test_executor PRIVATE Catch2::Catch2WithMain avcpp::avcpp)
