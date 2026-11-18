@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Video scaling and pixel format conversion with libswscale.
+ *
+ * @file
+ * @ingroup frame
+ */
+
 #include <iostream>
 #include <memory>
 

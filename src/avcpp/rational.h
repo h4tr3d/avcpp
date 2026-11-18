@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Rational numbers, time bases and arithmetic on them.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include <utility>
 #include <iostream>
 #include <memory>

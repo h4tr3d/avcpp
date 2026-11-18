@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Reference counted buffers: BufferRef and Buffer over AVBufferRef.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include "avcpp/averror.h"
 #include "ffmpeg.h"
 

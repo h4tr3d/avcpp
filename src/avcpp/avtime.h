@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Conversions between time units and FFmpeg time bases.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include "ffmpeg.h"
 
 namespace av {

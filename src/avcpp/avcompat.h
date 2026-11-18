@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * FFmpeg version and API compatibility switches.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include <avcpp/avconfig.h>
 
 extern "C" {

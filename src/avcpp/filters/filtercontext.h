@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Source and sink filter contexts.
+ *
+ * @file
+ * @ingroup filter
+ */
+
 #include <memory>
 
 #include "avcpp/ffmpeg.h"

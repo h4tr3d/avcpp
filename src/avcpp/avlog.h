@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Bridge to the FFmpeg logging system.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include <stdarg.h>
 
 #include "ffmpeg.h"

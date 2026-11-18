@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Filter pads and the links between them.
+ *
+ * @file
+ * @ingroup filter
+ */
+
 #include <iterator>
 #include <memory>
 #include <type_traits>

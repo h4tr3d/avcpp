@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Video frames, audio samples and their common frame interface.
+ *
+ * @file
+ * @ingroup frame
+ */
+
 #include <vector>
 
 #include "avcompat.h"

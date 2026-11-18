@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Rectangles and geometry helpers.
+ *
+ * @file
+ * @ingroup core
+ */
+
 namespace av {
 
 class Rect

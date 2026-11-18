@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * A single filter instance and its pads.
+ *
+ * @file
+ * @ingroup filter
+ */
+
 #include <memory>
 
 #include "avcpp/ffmpeg.h"

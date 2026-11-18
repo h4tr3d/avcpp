@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Audio channel layouts.
+ *
+ * @file
+ * @ingroup frame
+ */
+
 #include <string>
 #include <string_view>
 #include <bitset>

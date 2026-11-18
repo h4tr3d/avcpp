@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Subtitle frames: text and ASS payloads, bitmap rectangles.
+ *
+ * @file
+ * @ingroup subtitle
+ */
+
 #include <string_view>
 #include <vector>
 

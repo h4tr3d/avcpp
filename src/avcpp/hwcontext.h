@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Hardware devices, hardware frames and hardware codec configuration.
+ *
+ * @file
+ * @ingroup hw
+ */
+
 #include <cstddef>
 #include <iterator>
 #include <memory>

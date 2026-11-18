@@ -111,3 +111,54 @@ if (AVCPP_ENABLE_TESTS)
     add_subdirectory(tests)
 endif()
 
+# ---------------------------------------------------------------------------
+# Documentation
+# ---------------------------------------------------------------------------
+#
+# Opt-in: the default `cmake --build` stays exactly as it was. The targets call
+# the shell scripts in docs/ so that contributors and CI run the same commands.
+# See docs/plan/documentation.md, section 9.
+
+option(AVCPP_ENABLE_DOCS "Add the docs, docs-check and docs-serve targets" Off)
+
+if (AVCPP_ENABLE_DOCS)
+    find_program(DOXYGEN_EXECUTABLE NAMES doxygen)
+    if (NOT DOXYGEN_EXECUTABLE)
+        message(FATAL_ERROR "AVCPP_ENABLE_DOCS is ON, but doxygen was not found in PATH")
+    endif()
+
+    set(AVCPP_DOCS_OUTPUT_DIR "${CMAKE_BINARY_DIR}/docs/site" CACHE PATH
+        "Directory the documentation site is written to")
+
+    add_custom_target(docs
+        COMMAND ${CMAKE_COMMAND} -E env
+                "AVCPP_VERSION=${AVCPP_VERSION}"
+                "DOXYGEN=${DOXYGEN_EXECUTABLE}"
+                "${CMAKE_CURRENT_SOURCE_DIR}/docs/build.sh" --out "${AVCPP_DOCS_OUTPUT_DIR}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "Building the documentation into ${AVCPP_DOCS_OUTPUT_DIR}"
+        USES_TERMINAL
+        VERBATIM)
+
+    add_custom_target(docs-check
+        COMMAND ${CMAKE_COMMAND} -E env
+                "AVCPP_VERSION=${AVCPP_VERSION}"
+                "DOXYGEN=${DOXYGEN_EXECUTABLE}"
+                "${CMAKE_CURRENT_SOURCE_DIR}/docs/check-warnings.sh"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "Checking doxygen warnings against docs/doxygen-baseline.txt"
+        USES_TERMINAL
+        VERBATIM)
+
+    add_custom_target(docs-serve
+        COMMAND ${CMAKE_COMMAND} -E env
+                "AVCPP_VERSION=${AVCPP_VERSION}"
+                "DOXYGEN=${DOXYGEN_EXECUTABLE}"
+                "${CMAKE_CURRENT_SOURCE_DIR}/docs/build.sh"
+                --out "${AVCPP_DOCS_OUTPUT_DIR}" --serve
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "Serving the documentation on http://localhost:8000/"
+        USES_TERMINAL
+        VERBATIM)
+endif()
+

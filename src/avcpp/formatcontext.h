@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Container format contexts: opening, demuxing, muxing and seeking.
+ *
+ * @file
+ * @ingroup avformat
+ */
+
 #include <memory>
 #include <chrono>
 #include <functional>
@@ -163,6 +170,16 @@ public:
     size_t streamsCount() const;
     Stream stream(size_t idx);
     Stream stream(size_t idx, OptionalErrorCode ec);
+    /**
+     * Add a stream for the given codec.
+     *
+     * @deprecated The codec argument is not used by the FFmpeg API. Use addStream() without a
+     *             codec and attach the configured codec context to the returned stream.
+     *
+     * @param codec  codec the stream is created for
+     * @param ec     holder for the error code; when it is not `throws()` an error is reported
+     *               through it instead of an exception
+     */
     [[deprecated("Codec is not used by the FFmpeg API. Use addStream() without codec and point configured codec context after")]]
     Stream addStream(const Codec &codec, OptionalErrorCode ec = throws());
     Stream addStream(OptionalErrorCode ec = throws());
@@ -269,37 +286,74 @@ public:
 
     /// @{
     /**
-     * Open Output with Custom IO
+     * Open output on a custom IO object.
      *
-     * Variants with @ref formatOptions internally calls @ref initOutput() with same return value meaning.
+     * The output format is deduced from the file name, from OutputFormat set on the context,
+     * or from the muxer passed explicitly in the overloads below.
      *
-     * @param io
-     * @param formatOptions
-     * @param format
-     * @param ec
-     * @param internalBufferSize
+     * @param io                  custom IO object that receives the output
+     * @param ec                  holder for the error code; when it is not `throws()` an error
+     *                            is reported through it instead of an exception
+     * @param internalBufferSize  size of the buffer allocated around the custom IO object
      */
     void openOutput(CustomIO *io, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+
+    /**
+     * Open output on a custom IO object with explicit muxer options.
+     *
+     * The options are passed to @ref initOutput(), so `writeHeader()` must not be called with
+     * the same dictionary.
+     *
+     * @param io                  custom IO object that receives the output
+     * @param formatOptions       muxer options
+     * @param ec                  holder for the error code
+     * @param internalBufferSize  size of the buffer allocated around the custom IO object
+     *
+     * @retval true   the format was initialized during the call
+     * @retval false  the format will be initialized by writeHeader()
+     */
     bool openOutput(CustomIO *io, Dictionary &formatOptions, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
     bool openOutput(CustomIO *io, Dictionary &&formatOptions, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
 
+    /**
+     * Open output on a custom IO object with an explicit output format.
+     *
+     * @param io                  custom IO object that receives the output
+     * @param format              muxer to use instead of deducing it from the name
+     * @param ec                  holder for the error code
+     * @param internalBufferSize  size of the buffer allocated around the custom IO object
+     */
     void openOutput(CustomIO *io, OutputFormat format, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
+
+    /**
+     * Open output on a custom IO object with an explicit output format and muxer options.
+     *
+     * @param io                  custom IO object that receives the output
+     * @param formatOptions       muxer options, passed to @ref initOutput()
+     * @param format              muxer to use
+     * @param ec                  holder for the error code
+     * @param internalBufferSize  size of the buffer allocated around the custom IO object
+     *
+     * @retval true   the format was initialized during the call
+     * @retval false  the format will be initialized by writeHeader()
+     */
     bool openOutput(CustomIO *io, Dictionary &formatOptions, OutputFormat format, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
     bool openOutput(CustomIO *io, Dictionary &&formatOptions, OutputFormat format, OptionalErrorCode ec = throws(), size_t internalBufferSize = CUSTOM_IO_DEFAULT_BUFFER_SIZE);
     /// @}
 
     /// @{
     /**
-     * Init output without header writing
+     * Init output without writing the header.
      *
-     * If dictionary passed, writeHeader() should not be called with the same dictioary.
+     * All overloads accept the output options as a dictionary, or use the ones set on the
+     * context. If a dictionary is passed here, writeHeader() must not be called with the same
+     * dictionary.
      *
-     * @param options format options in the dictionary form
-     * @param ec      holder for the error code. If not-null and error code set return value has not matter
+     * @param ec  holder for the error code; when it is not `throws()` an error is reported
+     *            through it instead of an exception
      *
-     * @retval true   format inited in avformat_init_output, @see AVSTREAM_INIT_IN_INIT_OUTPUT
-     * @retval false  format inited (will be) in avformat_write_header(), @see AVSTREAM_INIT_IN_WRITE_HEADER
-     *
+     * @retval true   format initialized in avformat_init_output(), @see AVSTREAM_INIT_IN_INIT_OUTPUT
+     * @retval false  format will be initialized in avformat_write_header(), @see AVSTREAM_INIT_IN_WRITE_HEADER
      */
     bool initOutput(OptionalErrorCode ec = throws());
     bool initOutput(Dictionary &options, OptionalErrorCode ec = throws());

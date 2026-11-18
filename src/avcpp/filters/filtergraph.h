@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Filter graph construction and configuration.
+ *
+ * @file
+ * @ingroup filter
+ */
+
 #include <map>
 #include <memory>
 

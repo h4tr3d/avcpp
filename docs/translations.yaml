@@ -1,0 +1,27 @@
+# Translation state for the hand-written documentation.
+#
+# English (docs/en) is the source of truth; Russian (docs/ru) mirrors it.
+# The API reference is not translated: it is generated once, in English.
+#
+# Fields:
+#   en            path of the English page, relative to docs/
+#   ru            path of the Russian page, relative to docs/
+#   source_sha    commit of the English page this translation was made from
+#   translated_at date of that commit, YYYY-MM-DD
+#   status        complete | partial | stale
+#
+# docs/check-warnings.sh does not read this file yet; docs/check-translations.sh
+# (M2) will report pages whose English source changed after source_sha.
+# A pair is never a build failure: stale translations are a warning.
+
+version: 1
+
+pages:
+  - en: en/index.md
+    ru: ru/index.md
+    source_sha: e4feca087c88bf5bd419054fc1aebcdc88a5028e
+    translated_at: 2026-11-18
+    status: partial
+
+untranslated:
+  - en/building.md

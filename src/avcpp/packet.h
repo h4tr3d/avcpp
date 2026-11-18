@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Compressed packets and their side data.
+ *
+ * @file
+ * @ingroup avformat
+ */
+
 #include "avcompat.h"
 
 #include <vector>

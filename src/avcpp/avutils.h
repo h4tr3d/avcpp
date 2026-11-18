@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Common helpers: comparisons, value lookup, non-copyable base, string utilities.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include "avcpp/avconfig.h"
 
 #include <ranges>
@@ -546,7 +553,6 @@ auto make_array_view_until(auto* ptr, auto value)
  *
  * @param value           value to set
  * @param list            list of allowed values
- * @param endOfListValue  end of list value, like
  * @return value if list null or if it present in list, or more appropriate value from list
  */
 template<typename T, typename L>
@@ -605,7 +611,7 @@ struct EqualComparator
  *
  * @param value           value to set
  * @param list            list of allowed values
- * @param endOfListValue  end of list value, like
+ * @param endListComparator  predicate that tells whether the element ends the list
  * @return value if list null or if it present in list, or more appropriate value from list
  */
 template<typename T, typename L, typename C>

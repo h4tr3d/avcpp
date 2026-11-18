@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Streams inside a container: parameters, time base and disposition.
+ *
+ * @file
+ * @ingroup avformat
+ */
+
 #include <memory>
 
 #include "averror.h"
@@ -33,6 +40,14 @@ public:
     Timestamp   startTime()          const;
     Timestamp   duration()           const;
 
+    /**
+     * Decoding timestamp of the packet currently being processed by this stream.
+     *
+     * @deprecated For FFmpeg 5.0 and newer this returns NO_PTS: take the DTS from the packet
+     *             instead.
+     *
+     * @return the decoding timestamp, or NO_PTS when the stream does not provide one
+     */
     [[deprecated("For FFmpeg 5.0+ return NO_PTS")]]
     Timestamp   currentDts()         const;
     AVMediaType mediaType()          const;

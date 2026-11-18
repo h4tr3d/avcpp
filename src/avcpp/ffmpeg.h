@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * FFmpeg types re-exported for the public API and small value wrappers.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include <iostream>
 
 #include "avcompat.h"

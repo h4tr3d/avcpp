@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Buffersrc filter: frames enter the graph here.
+ *
+ * @file
+ * @ingroup filter
+ */
+
 #include "avcpp/avconfig.h"
 
 #if AVCPP_HAS_AVFILTER

@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Codec contexts: opening, configuring, encoding and decoding.
+ *
+ * @file
+ * @ingroup codec
+ */
+
 #include <cstring>
 
 #include "avcompat.h"
@@ -99,6 +106,16 @@ public:
     void open(class Dictionary &options, const Codec &codec, OptionalErrorCode ec = throws());
     void open(class Dictionary &&options, const Codec &codec, OptionalErrorCode ec = throws());
 
+    /**
+     * Close the codec context.
+     *
+     * @deprecated Since FFmpeg 4.0 the recommendation is to destroy and recreate the context
+     *             instead of closing it: close() does not free the context and leaves it in a
+     *             half-initialized state.
+     *
+     * @param ec  holder for the error code; when it is not `throws()` an error is reported
+     *            through it instead of an exception
+     */
     [[deprecated("Start from FFmpeg 4.0 it is recommended to destroy and recreate codec context insted of close")]]
     void close(OptionalErrorCode ec = throws());
 

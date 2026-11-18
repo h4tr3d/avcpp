@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Codec descriptors and lookup by name or id.
+ *
+ * @file
+ * @ingroup codec
+ */
+
 #include <list>
 #include <deque>
 #include <memory>

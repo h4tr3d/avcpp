@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Iteration helpers for FFmpeg intrusive linked lists.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include <iterator>
 
 namespace av {

@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Audio sample formats.
+ *
+ * @file
+ * @ingroup frame
+ */
+
 #include <iostream>
 #include <string>
 

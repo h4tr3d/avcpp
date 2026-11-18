@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Pixel formats.
+ *
+ * @file
+ * @ingroup frame
+ */
+
 #include <string>
 #include <iostream>
 

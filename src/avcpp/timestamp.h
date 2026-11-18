@@ -1,4 +1,11 @@
-﻿#pragma once
+#pragma once
+
+/**
+ * Frame timestamps and their arithmetic.
+ *
+ * @file
+ * @ingroup core
+ */
 
 #include <chrono>
 

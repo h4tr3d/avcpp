@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Buffersink filter: frames leave the graph here.
+ *
+ * @file
+ * @ingroup filter
+ */
+
 #include "avcpp/avconfig.h"
 
 #if AVCPP_HAS_AVFILTER

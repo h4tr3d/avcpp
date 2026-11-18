@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Codec parameters shared between streams and contexts.
+ *
+ * @file
+ * @ingroup codec
+ */
+
 #include "averror.h"
 #include "ffmpeg.h"
 #include "avutils.h"

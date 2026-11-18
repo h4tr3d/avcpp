@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * AVDictionary wrappers: Dictionary and DictionaryArray.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include <tuple>
 #include <memory>
 #include <iterator>
@@ -352,7 +359,6 @@ public:
      * New dictionary owning resources. Old dictionary destroes (resource freed if owning)
      *
      * @param list   init list
-     * @param flags  see @ref Flags
      */
     Dictionary& operator=(std::initializer_list<std::pair<const char*, const char*>> list);
 
@@ -475,7 +481,6 @@ public:
      * @param flags     See Flags. All flags that omit strdups ignores.
      * @param[in,out] ec     this represents the error status on exit, if this is pre-initialized to
      *                       av#throws the function will throw on error instead
-     * @return 0 on success, <0 on fail
      */
     template<typename Str, typename Sep1, typename Sep2>
     void parseString(const Str& str, const Sep1& keyValSep, const Sep2& pairsSep, int flags = 0, OptionalErrorCode ec = throws())

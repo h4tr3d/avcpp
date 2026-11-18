@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Input and output format descriptors.
+ *
+ * @file
+ * @ingroup avformat
+ */
+
 #include <memory>
 #include <string>
 

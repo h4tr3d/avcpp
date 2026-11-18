@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Error codes, error categories and the OptionalErrorCode convention.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include <system_error>
 #include <exception>
 

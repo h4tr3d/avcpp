@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * Audio resampling with libswresample.
+ *
+ * @file
+ * @ingroup frame
+ */
+
 #include <functional>
 
 #include "ffmpeg.h"
