@@ -299,12 +299,17 @@ Acceptance: `cmake -DAVCPP_ENABLE_DOCS=ON && cmake --build build --target docs` 
 locally; the PR CI job fails on a deliberately introduced undocumented member and passes without
 it; the landing page and the group tree are visible; the version shown is the one in `VERSION.txt`.
 
-### M1 — first real article (2–3 days)
+### M1 — first real article (2–3 days) — done
 
-- [ ] translate the hardware brief to `docs/en/guide/hw_codecs.md`, move the Russian original to
-      `docs/ru/guide/hw_codecs.md`, diagrams to `docs/img/`
-- [ ] register the pair in `docs/translations.yaml`
-- [ ] link it from the landing page and from the `hw` group page
+- [x] translated the hardware brief to `docs/en/guide/hw_codecs.md`, moved the Russian original to
+      `docs/ru/guide/hw_codecs.md`, diagrams (`svg` plus their `dot`/`puml` sources) to
+      `docs/img/hw-*.{svg,dot,puml}` and referenced them with `@image html`
+- [x] registered the pair in `docs/translations.yaml` as `complete`
+- [x] linked it from both landing pages and from the `@ref hw` group page
+
+Outcome: the same page id (`guide_hw_codecs`) serves both builds, so the URL is
+`/<version>/guide_hw_codecs.html` in English and `/<version>/ru/guide_hw_codecs.html` in Russian,
+and each language page links to the group page of its own build.
 
 Acceptance: both language builds show the article with diagrams; the RU page links into the
 English `hw` group without dead links; the translation checker reports the pair as current.

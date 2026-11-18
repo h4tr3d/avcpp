@@ -65,6 +65,9 @@
  * between hardware and system memory that zero-copy pipelines are built on.
  * See av::hw::DeviceContext, av::hw::FramesContext and
  * av::hw::DeviceProbeRange.
+ *
+ * The @ref guide_hw_codecs page walks through the whole pipeline: decoding,
+ * encoding, zero copy, scaling and per-platform limitations.
  */
 
 /**

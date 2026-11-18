@@ -1,0 +1,39 @@
+digraph ownership {
+    graph [
+        rankdir=LR,
+        fontname="DejaVu Sans",
+        fontsize=12,
+        nodesep=0.5,
+        ranksep=0.8,
+        bgcolor="white"
+    ];
+    node [
+        shape=box,
+        style="rounded,filled",
+        fontname="DejaVu Sans",
+        fontsize=11,
+        fillcolor="#eef3fb",
+        color="#4a6fa5"
+    ];
+    edge [
+        fontname="DejaVu Sans",
+        fontsize=9,
+        color="#4a6fa5"
+    ];
+
+    device   [label="av::hw::DeviceContext\nвладелец"];
+    frames   [label="av::hw::FramesContext\nвладелец"];
+    bref_dev [label="BufferRef\nAVBufferRef*", fillcolor="#fdf3e7", color="#b07d3a"];
+    bref_frm [label="BufferRef\nAVBufferRef*", fillcolor="#fdf3e7", color="#b07d3a"];
+    hw_dev   [label="AVHWDeviceContext\nrefcount = 1..N", fillcolor="#fdf3e7", color="#b07d3a"];
+    hw_frm   [label="AVHWFramesContext\nrefcount = 1..N", fillcolor="#fdf3e7", color="#b07d3a"];
+    frame    [label="VideoFrame\nне владеет устройством"];
+
+    device -> bref_dev [label="содержит"];
+    frames -> bref_frm [label="содержит"];
+    bref_dev -> hw_dev [label="одна ссылка"];
+    bref_frm -> hw_frm [label="одна ссылка"];
+    hw_frm -> hw_dev [label="device_ref"];
+    frame -> hw_frm [label="hw_frames_ctx\nодна ссылка"];
+    frames -> device [label="device()\nкопия владельца", style=dashed];
+}

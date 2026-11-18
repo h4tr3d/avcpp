@@ -1,0 +1,46 @@
+@startuml decode
+skinparam backgroundColor white
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam sequenceMessageAlign left
+skinparam responseMessageBelowArrow true
+
+actor "Клиент" as App
+participant "av::hw::DeviceContext" as Dev
+participant "av::VideoDecoderContext" as Dec
+participant "FFmpeg" as FF
+participant "av::VideoFrame" as Frm
+
+App -> Dev : create(type, device)
+Dev --> App : device
+
+App -> Dec : setHwDeviceContext(device)
+App -> Dec : setHwTransferToSystem(false)
+App -> Dec : open()
+Dec -> FF : avcodec_open2()
+note right of FF
+  get_format() берёт тип
+  из hw_device_ctx
+end note
+
+loop Каждый пакет
+    App -> Dec : send(packet) + receive()
+    Dec -> FF : avcodec_send_packet()
+    Dec -> FF : avcodec_receive_frame()
+    FF --> Dec : AVFrame с hw_frames_ctx
+    alt Автоперенос включён
+        Dec -> Frm : toSystemMemory()
+        Frm --> Dec : кадр в памяти системы
+    else Автоперенос выключен
+        Dec -> Frm : обёртка без копирования
+    end
+    Frm --> App : кадр
+    App -> App : isHwFrame()\nпроверка пути
+end
+
+App -> Dec : flush() + receive()
+note right of App
+  flush() забирает
+  задержанные кадры
+end note
+@enduml

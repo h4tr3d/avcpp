@@ -23,5 +23,11 @@ pages:
     translated_at: 2026-11-18
     status: partial
 
+  - en: en/guide/hw_codecs.md
+    ru: ru/guide/hw_codecs.md
+    source_sha: cd7d979
+    translated_at: 2026-11-18
+    status: complete
+
 untranslated:
   - en/building.md

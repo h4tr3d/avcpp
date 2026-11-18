@@ -51,6 +51,7 @@ Call `av::init()` once before using anything else, then link against
 ## Where to go next
 
 - @ref guide_building — installing, integrating and configuring the build.
+- @ref guide_hw_codecs — hardware decoding, encoding and zero-copy pipelines.
 - @ref core — errors, logging, time bases, buffers, dictionaries and helpers.
 - @ref avformat — containers, streams and packets.
 - @ref codec — codecs and codec contexts.
