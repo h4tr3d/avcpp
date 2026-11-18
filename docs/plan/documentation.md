@@ -334,20 +334,39 @@ current, or is explicitly listed as untranslated in `translations.yaml`.
 
 ### M3 — API coverage (3–4 weeks, rolling PRs) — in progress
 
-Order: `hwcontext` (162), `codeccontext` (123), `frame` (70), `dictionary` (59), `subtitle` (50),
-`packet` (45), `linkedlistutils` (39), `rational` (34), `avutils` (26), `ffmpeg` (24), then the
-remaining 18 headers, then the 17 namespaces (including `av` itself).
+Baseline: 1499 warnings at the start of M3, now **1011**.
 
-The per-file counts above were measured with the current configuration (headers only,
-`WARN_NO_PARAMDOC` on); they are larger than the numbers in §2 because that first baseline predates
-the switch to header-only parsing and the group annotations.
+Done:
 
-Progress:
+- `hwcontext.h` — 162 warnings to 0. Every public member, field, free function and iterator typedef
+  is documented, with `@param`/`@return` and notes on ownership and lifetime.
+- `codeccontext.h` — 305 warnings to 0. `CodecContext2`, `GenericCodecContext`,
+  `CodecContextBase`, the video/audio/subtitle variants and their protected plumbing. The
+  send/receive contract, hardware configuration and the subtitle legacy path are described where
+  they are declared, not only in the guide.
 
-- `hwcontext.h` — done. 162 warnings to 0: every public member, field, free function and iterator
-  typedef is documented, with `@param`/`@return` and notes on ownership and lifetime. The baseline
-  went from 1499 to 1337 warnings.
-- next: `codeccontext.h`.
+Next, by current weight:
+
+| header | warnings |
+| --- | --- |
+| `ffmpeg.h` | 126 |
+| `frame.h` | 121 |
+| `avutils.h` | 86 |
+| `formatcontext.h` | 74 |
+| `subtitle.h` | 63 |
+| `packet.h` | 62 |
+| `dictionary.h` | 58 |
+| `linkedlistutils.h` | 41 |
+| `channellayout.h` | 35 |
+| `format.h` | 33 |
+| `rational.h` | 30 |
+| `timestamp.h` | 28 |
+| `stream.h` | 26 |
+| `audioresampler.h` | 22 |
+
+The order changed since the first estimate: `codeccontext.h` was the largest, and `ffmpeg.h` and
+`avutils.h` are now bigger than `frame.h` because their members were counted per template
+instantiation before.
 
 Notes from the first header:
 
@@ -359,6 +378,17 @@ Notes from the first header:
 - The `[[deprecated]]` attributes need a doc block above the attribute, otherwise doxygen invents a
   member at a bogus `<name>:1` location (this is how `close`, `addStream` and `currentDts` were
   fixed in M0).
+- `@internal` is a trap: it ends the public description and swallows every following `@param` and
+  `@return`, so the member is reported as undocumented. Mark internal helpers with prose, or keep
+  them out of the reference with `EXCLUDE_SYMBOLS`.
+- The compatibility shims in `av::codec_context::audio` and `av::codec_context::internal` are now
+  excluded from the reference: they exist to bridge FFmpeg API generations and are not API.
+- Protected plumbing of `CodecContext2` is documented rather than hidden: doxygen has no switch to
+  omit protected members, `@cond` would leave real code undocumented, and the helpers are what a
+  subclass author reads.
+- doxygen 1.18 misnames the non-alphabetic bucket of the member index (`functions__.html` linked,
+  `functions_~.html` written). `docs/build.sh` rewrites those links after the build; remove the
+  workaround when the pinned release contains the fix.
 
 Rules: one header per PR, baseline shrinks in the same PR, §6 definition of done applies, no
 behavioural changes in the same commit.

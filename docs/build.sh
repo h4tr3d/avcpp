@@ -113,6 +113,25 @@ build_language "$ROOT/Doxyfile" "$EN_DIR"
 echo "==> Russian guides -> $RU_DIR"
 build_language "$ROOT/docs/ru.doxyfile" "$RU_DIR"
 
+# doxygen 1.18 links the non-alphabetic bucket of the member index as
+# functions__.html but writes the page as functions_~.html, which leaves a dead
+# link on every index page. Rewrite it here until the pinned doxygen release
+# contains the upstream fix.
+fix_member_index_links()
+{
+    for page in "$1"/functions*.html; do
+        [ -f "$page" ] || continue
+        sed -i \
+            -e 's/functions__\.html#index__/functions_~.html#index__/g' \
+            -e 's/functions_func__\.html#index__/functions_func_~.html#index__/g' \
+            "$page"
+    done
+}
+
+echo "==> member index links"
+fix_member_index_links "$EN_DIR"
+fix_member_index_links "$RU_DIR"
+
 if [ "$MAKE_LATEST" = 1 ]; then
     echo "==> latest/"
     rm -rf "$OUT/latest"

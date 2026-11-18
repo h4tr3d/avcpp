@@ -141,7 +141,12 @@ EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = */avconfig.h \
                          */avconfig.meson.h
-EXCLUDE_SYMBOLS        =
+# The audio helpers and the internal samplerate lookup are compatibility
+# shims between FFmpeg API generations, not public API: they live in headers
+# because the templates need them at compile time. Keeping them out of the
+# reference avoids documenting plumbing that only exists to bridge versions.
+EXCLUDE_SYMBOLS        = av::codec_context::audio \
+                         av::codec_context::internal
 EXAMPLE_PATH           = example/api2-samples
 EXAMPLE_PATTERNS       = *.cpp \
                          *.c

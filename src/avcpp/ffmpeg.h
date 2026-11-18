@@ -36,11 +36,24 @@ struct FFWrapperPtr
     void     reset(T *raw = nullptr) { m_raw = raw; }
     bool     isNull() const          { return (m_raw == nullptr); }
 
+    /**
+     * Log through the FFmpeg log system, using this wrapper as the context.
+     *
+     * @param level an `AV_LOG_*` level
+     * @param fmt   printf-style format string without arguments
+     */
     void _log(int level, const char *fmt) const
     {
         av_log(m_raw, level, fmt);
     }
 
+    /**
+     * Log through the FFmpeg log system with arguments.
+     *
+     * @param level an `AV_LOG_*` level
+     * @param fmt   printf-style format string
+     * @param args  arguments for the format string
+     */
     template<typename... Args>
     void _log(int level, const char* fmt, const Args&... args) const
     {
