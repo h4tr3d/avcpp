@@ -95,6 +95,25 @@ inline bool isLibmfxQsv() noexcept
 }
 
 /**
+ * @brief Reports whether a manually created frames context is unsupported.
+ *
+ * FFmpeg 4.x VideoToolbox does not implement frames_get_constraints() and
+ * does not create a CVPixelBufferPool for a frames context allocated by
+ * av_hwframe_ctx_alloc(). The pool is provided by the codec there, so a
+ * generic frames context can neither report constraints nor allocate or
+ * transfer frames. Codec driven paths still work.
+ */
+inline bool isVideoToolboxFramesUnsupported(av::hw::DeviceType type) noexcept
+{
+#if AVCPP_HAS_HWCONTEXT && (AVCPP_AVUTIL_VERSION_MAJOR < 57) // FFmpeg < 5.0
+    return type.get() == AV_HWDEVICE_TYPE_VIDEOTOOLBOX;
+#else
+    (void)type;
+    return false;
+#endif
+}
+
+/**
  * @brief Reports whether QSV frame transfer is known to hang.
  *
  * FFmpeg 4.x uploads and downloads frames through libmfx. With the Ubuntu

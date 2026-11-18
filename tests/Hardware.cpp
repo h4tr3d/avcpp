@@ -178,6 +178,7 @@ TEST_CASE("Hardware: device and frames contexts", "[hw][device]")
         anyAvailable = true;
 
         DYNAMIC_SECTION("device " << name) {
+            CAPTURE(name);
             std::error_code ec;
             av::hw::DeviceContext device = av::hw::DeviceContext::create(type, nullptr, {}, ec);
             REQUIRE(device.isValid());
@@ -186,16 +187,24 @@ TEST_CASE("Hardware: device and frames contexts", "[hw][device]")
             CHECK(device.bufferRef() != nullptr);
 
             av::hw::FrameConstraints constraints = av::hw::frameConstraints(device, ec);
-            REQUIRE(constraints.isValid());
-            CHECK_FALSE(constraints.hwFormats().empty());
-            CHECK_FALSE(constraints.swFormats().empty());
+
+            // Some backends and FFmpeg versions do not report constraints.
+            // VideoToolbox in FFmpeg 4.x is the known case; the device and the
+            // codec paths still work there.
+            const bool haveConstraints = constraints.isValid();
+            if (haveConstraints) {
+                CHECK_FALSE(constraints.hwFormats().empty());
+                CHECK_FALSE(constraints.swFormats().empty());
+            } else {
+                WARN("No frame constraints for " << name << ": " << ec.message());
+            }
 
             const av::PixelFormat hwFormat = av::hw::hwPixelFormat(type);
-            CHECK(hwFormat.get() != AV_PIX_FMT_NONE);
+            REQUIRE(hwFormat.get() != AV_PIX_FMT_NONE);
 
             // NV12 keeps fillNV12() correct for every backend that supports it.
             av::PixelFormat swFormat(AV_PIX_FMT_NV12);
-            if (!constraints.swFormats().empty()) {
+            if (haveConstraints && !constraints.swFormats().empty()) {
                 swFormat = constraints.swFormats()[0];
                 for (av::PixelFormat format : constraints.swFormats()) {
                     if (format.get() == AV_PIX_FMT_NV12) {
@@ -217,11 +226,17 @@ TEST_CASE("Hardware: device and frames contexts", "[hw][device]")
 
             av::hw::PixelFormatList transfer =
                 frames.transferFormats(AV_HWFRAME_TRANSFER_DIRECTION_FROM, ec);
+            INFO("transferFormats: " << ec.message());
             REQUIRE_FALSE(ec);
             CHECK_FALSE(transfer.empty());
 
             if (avtest::isQsvTransferBroken(type)) {
                 WARN("Skipping frame transfer: broken with this FFmpeg and libmfx runtime");
+                continue;
+            }
+            if (avtest::isVideoToolboxFramesUnsupported(type)) {
+                WARN("Skipping frame transfer: VideoToolbox in this FFmpeg "
+                     "does not support manually created frames contexts");
                 continue;
             }
 
@@ -232,6 +247,7 @@ TEST_CASE("Hardware: device and frames contexts", "[hw][device]")
             fillNV12(software);
 
             av::VideoFrame hardware = software.toHwFrame(frames, ec);
+            INFO("toHwFrame: " << ec.message());
             REQUIRE(hardware.isHwFrame());
             CHECK(hardware.hwFramesContext().isValid());
             CHECK(hardware.hwDeviceContext().isValid());
@@ -244,6 +260,7 @@ TEST_CASE("Hardware: device and frames contexts", "[hw][device]")
             CHECK(cloneEc == av::make_error_code(av::Errors::HardwareTransferUnsupported));
 
             av::VideoFrame systemMemory = hardware.toSystemMemory(AV_PIX_FMT_NONE, ec);
+            INFO("toSystemMemory: " << ec.message());
             REQUIRE_FALSE(systemMemory.isHwFrame());
             CHECK(systemMemory.width() == 320);
             CHECK(systemMemory.height() == 240);
