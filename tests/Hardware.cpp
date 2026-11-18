@@ -91,6 +91,21 @@ TEST_CASE("Hardware: range views are non-owning", "[hw][range]")
         CHECK_FALSE(type.isNone());
 }
 
+TEST_CASE("Hardware: device pixel formats", "[hw][format]")
+{
+    // Every device type compiled into FFmpeg has a hardware pixel format, so a
+    // wrong name in hwPixelFormat() must not go unnoticed. The check needs no
+    // device, only the FFmpeg build.
+    for (const std::string& name : avtest::curatedDevices()) {
+        av::hw::DeviceType type = av::hw::DeviceType::fromName(name);
+        if (type.isNone())
+            continue;
+
+        CAPTURE(name);
+        CHECK(av::hw::hwPixelFormat(type).get() != AV_PIX_FMT_NONE);
+    }
+}
+
 TEST_CASE("Hardware: codec configurations", "[hw][codec]")
 {
     av::Codec h264 = av::findDecodingCodec(AV_CODEC_ID_H264);

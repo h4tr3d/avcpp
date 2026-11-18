@@ -517,7 +517,8 @@ PixelFormat hwPixelFormat(DeviceType type) noexcept
         { "dxva2",        "dxva2_vld"    },
         { "d3d11va",      "d3d11"        },
         { "d3d12va",      "d3d12"        },
-        { "videotoolbox", "videotoolbox" },
+        // FFmpeg names the VideoToolbox pixel format "videotoolbox_vld".
+        { "videotoolbox", "videotoolbox_vld" },
         { "mediacodec",   "mediacodec"   },
         { "vulkan",       "vulkan"       },
         { "opencl",       "opencl"       },
