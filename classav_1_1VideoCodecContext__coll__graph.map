@@ -1,7 +1,9 @@
 <map id="av::VideoCodecContext&lt; Clazz, _direction &gt;" name="av::VideoCodecContext&lt; Clazz, _direction &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="150,259,323,300"/>
-<area shape="rect" id="node2" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="143,155,331,211"/>
-<area shape="rect" id="node3" href="$classav_1_1CodecContext2.html" title="Base class for audio and video codec contexts." alt="" coords="165,80,309,107"/>
+<area shape="rect" id="node1" title=" " alt="" coords="825,74,999,115"/>
+<area shape="rect" id="node2" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="588,67,776,123"/>
+<area shape="rect" id="node3" href="$classav_1_1CodecContext2.html" title="Base class for audio and video codec contexts." alt="" coords="395,81,539,108"/>
 <area shape="rect" id="node4" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,5,255,32"/>
-<area shape="rect" id="node5" href="$classav_1_1noncopyable.html" title=" " alt="" coords="279,5,407,32"/>
+<area shape="rect" id="node5" href="$classav_1_1noncopyable.html" title=" " alt="" coords="66,56,194,83"/>
+<area shape="rect" id="node6" href="$classav_1_1hw_1_1DeviceContext.html" title="Owner of an AVHWDeviceContext." alt="" coords="47,107,213,133"/>
+<area shape="rect" id="node7" href="$classav_1_1hw_1_1FramesContext.html" title="Owner of an AVHWFramesContext." alt="" coords="45,157,215,184"/>
 </map>

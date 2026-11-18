@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['operator_21_3d_1325',['operator!=',['../classav_1_1Dictionary_1_1Entry.html#aa24457a2565020796d2396b2f1aef4a5',1,'av::Dictionary::Entry::operator!=()'],['../classav_1_1Dictionary_1_1DictionaryIterator.html#a87a0b5a68fdb0ac3069f8ab78fed6adf',1,'av::Dictionary::DictionaryIterator::operator!=()']]],
-  ['operator_3c_3c_1326',['operator&lt;&lt;',['../structPixSampleFmtWrapper.html#a2d21b12250cfadab4c7abefad0ef715d',1,'PixSampleFmtWrapper']]],
-  ['operator_3d_3d_1327',['operator==',['../classav_1_1Dictionary_1_1Entry.html#a9ec5943371b12d404ed56e9c8eabd49e',1,'av::Dictionary::Entry::operator==()'],['../classav_1_1Dictionary_1_1DictionaryIterator.html#af075ca97c41a59f053191ca027146731',1,'av::Dictionary::DictionaryIterator::operator==()']]]
+  ['framescontext_1501',['FramesContext',['../classav_1_1hw_1_1DeviceContext.html#a960bd2d537a3d62650f86934436ffffe',1,'av::hw::DeviceContext']]]
 ];

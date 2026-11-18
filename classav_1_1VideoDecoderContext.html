@@ -95,12 +95,14 @@ Collaboration diagram for av::VideoDecoderContext:</div>
 <div class="dyncontent">
 <div class="center"><img src="classav_1_1VideoDecoderContext__coll__graph.png" border="0" usemap="#aav_1_1VideoDecoderContext_coll__map" alt="Collaboration graph"/></div>
 <map name="aav_1_1VideoDecoderContext_coll__map" id="aav_1_1VideoDecoderContext_coll__map">
-<area shape="rect" title=" " alt="" coords="143,363,330,389"/>
-<area shape="rect" href="classav_1_1VideoCodecContext.html" title=" " alt="" coords="145,259,328,315"/>
-<area shape="rect" href="classav_1_1CodecContextBase.html" title=" " alt="" coords="153,155,321,211"/>
-<area shape="rect" href="classav_1_1CodecContext2.html" title="Base class for audio and video codec contexts." alt="" coords="165,80,309,107"/>
+<area shape="rect" title=" " alt="" coords="1037,81,1224,108"/>
+<area shape="rect" href="classav_1_1VideoCodecContext.html" title=" " alt="" coords="805,67,988,123"/>
+<area shape="rect" href="classav_1_1CodecContextBase.html" title=" " alt="" coords="588,67,756,123"/>
+<area shape="rect" href="classav_1_1CodecContext2.html" title="Base class for audio and video codec contexts." alt="" coords="395,81,539,108"/>
 <area shape="rect" href="structFFWrapperPtr.html" title=" " alt="" coords="5,5,255,32"/>
-<area shape="rect" href="classav_1_1noncopyable.html" title=" " alt="" coords="279,5,407,32"/>
+<area shape="rect" href="classav_1_1noncopyable.html" title=" " alt="" coords="66,56,194,83"/>
+<area shape="rect" href="classav_1_1hw_1_1DeviceContext.html" title="Owner of an AVHWDeviceContext." alt="" coords="47,107,213,133"/>
+<area shape="rect" href="classav_1_1hw_1_1FramesContext.html" title="Owner of an AVHWFramesContext." alt="" coords="45,157,215,184"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -132,6 +134,23 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4c335d5ab090e2e3ca52e25e78c9e63d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1VideoFrame.html">VideoFrame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1VideoDecoderContext.html#a4c335d5ab090e2e3ca52e25e78c9e63d">receive</a> (<a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>(), bool autoAllocateFrame=true)</td></tr>
 <tr class="memdesc:a4c335d5ab090e2e3ca52e25e78c9e63d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives one decoded frame.  <a href="classav_1_1VideoDecoderContext.html#a4c335d5ab090e2e3ca52e25e78c9e63d">More...</a><br /></td></tr>
 <tr class="separator:a4c335d5ab090e2e3ca52e25e78c9e63d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab302ec3e196069179b0da0b155487d54"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1VideoDecoderContext.html#ab302ec3e196069179b0da0b155487d54">setHwDeviceContext</a> (const <a class="el" href="classav_1_1hw_1_1DeviceContext.html">hw::DeviceContext</a> &amp;device, <a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a> ec=<a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>())</td></tr>
+<tr class="memdesc:ab302ec3e196069179b0da0b155487d54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures a hardware device for decoding.  <a href="classav_1_1VideoDecoderContext.html#ab302ec3e196069179b0da0b155487d54">More...</a><br /></td></tr>
+<tr class="separator:ab302ec3e196069179b0da0b155487d54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40713645918cc5cd19280c2c2a9a7efa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1VideoDecoderContext.html#a40713645918cc5cd19280c2c2a9a7efa">clearHwDeviceContext</a> () noexcept</td></tr>
+<tr class="memdesc:a40713645918cc5cd19280c2c2a9a7efa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the hardware device and restores the default get_format().  <a href="classav_1_1VideoDecoderContext.html#a40713645918cc5cd19280c2c2a9a7efa">More...</a><br /></td></tr>
+<tr class="separator:a40713645918cc5cd19280c2c2a9a7efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ab47c792c600c8ae640b77d1a81c49d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1hw_1_1DeviceContext.html">hw::DeviceContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1VideoDecoderContext.html#a4ab47c792c600c8ae640b77d1a81c49d">hwDeviceContext</a> () const noexcept</td></tr>
+<tr class="memdesc:a4ab47c792c600c8ae640b77d1a81c49d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device context set with <a class="el" href="classav_1_1VideoDecoderContext.html#ab302ec3e196069179b0da0b155487d54" title="Configures a hardware device for decoding.">setHwDeviceContext()</a>.  <a href="classav_1_1VideoDecoderContext.html#a4ab47c792c600c8ae640b77d1a81c49d">More...</a><br /></td></tr>
+<tr class="separator:a4ab47c792c600c8ae640b77d1a81c49d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9be78ef86b9587bf64f38c804168630"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1hw_1_1FramesContext.html">hw::FramesContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1VideoDecoderContext.html#ac9be78ef86b9587bf64f38c804168630">hwFramesContext</a> () const noexcept</td></tr>
+<tr class="memdesc:ac9be78ef86b9587bf64f38c804168630"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frames context of decoded hardware frames.  <a href="classav_1_1VideoDecoderContext.html#ac9be78ef86b9587bf64f38c804168630">More...</a><br /></td></tr>
+<tr class="separator:ac9be78ef86b9587bf64f38c804168630"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefb80c296f156e957d32532624b97358"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1VideoDecoderContext.html#aefb80c296f156e957d32532624b97358">setHwTransferToSystem</a> (bool enabled) noexcept</td></tr>
+<tr class="memdesc:aefb80c296f156e957d32532624b97358"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer decoded hardware frames to system memory automatically.  <a href="classav_1_1VideoDecoderContext.html#aefb80c296f156e957d32532624b97358">More...</a><br /></td></tr>
+<tr class="separator:aefb80c296f156e957d32532624b97358"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b8092d8b5402603f7f2868ce6fb6972"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1VideoDecoderContext.html#a0b8092d8b5402603f7f2868ce6fb6972">isHwTransferToSystem</a> () const noexcept</td></tr>
+<tr class="separator:a0b8092d8b5402603f7f2868ce6fb6972"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classav_1_1VideoCodecContext"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classav_1_1VideoCodecContext')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classav_1_1VideoCodecContext.html">av::VideoCodecContext&lt; VideoDecoderContext, Direction::Decoding &gt;</a></td></tr>
 <tr class="memitem:afc6a61377c0409d56883921ba804028b inherit pub_methods_classav_1_1VideoCodecContext"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1VideoCodecContext.html#afc6a61377c0409d56883921ba804028b">width</a> () const</td></tr>
 <tr class="separator:afc6a61377c0409d56883921ba804028b inherit pub_methods_classav_1_1VideoCodecContext"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,6 +231,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a56d2c9c413cea407afddc39e463b1269 inherit pub_methods_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad222c935436b3aed0ede07b193a50e77 inherit pub_methods_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#ad222c935436b3aed0ede07b193a50e77">setTimeBase</a> (const <a class="el" href="classav_1_1Rational.html">Rational</a> &amp;value) noexcept</td></tr>
 <tr class="separator:ad222c935436b3aed0ede07b193a50e77 inherit pub_methods_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f5605dfdcf184663fab8fdd14ab90b3 inherit pub_methods_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Rational.html">Rational</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#a3f5605dfdcf184663fab8fdd14ab90b3">frameRate</a> () const noexcept</td></tr>
+<tr class="memdesc:a3f5605dfdcf184663fab8fdd14ab90b3 inherit pub_methods_classav_1_1CodecContext2"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classav_1_1Frame.html">Frame</a> rate advertised by the codec.  <a href="classav_1_1CodecContext2.html#a3f5605dfdcf184663fab8fdd14ab90b3">More...</a><br /></td></tr>
+<tr class="separator:a3f5605dfdcf184663fab8fdd14ab90b3 inherit pub_methods_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a344bf77408f96008f3e78660cbb8ee44 inherit pub_methods_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#a344bf77408f96008f3e78660cbb8ee44">setFrameRate</a> (const <a class="el" href="classav_1_1Rational.html">Rational</a> &amp;value) noexcept</td></tr>
+<tr class="separator:a344bf77408f96008f3e78660cbb8ee44 inherit pub_methods_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6a52d307645715c6f401f0eed2121d4 inherit pub_methods_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#aa6a52d307645715c6f401f0eed2121d4">isEof</a> () const noexcept</td></tr>
 <tr class="memdesc:aa6a52d307645715c6f401f0eed2121d4 inherit pub_methods_classav_1_1CodecContext2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the codec has been flushed and all output is drained.  <a href="classav_1_1CodecContext2.html#aa6a52d307645715c6f401f0eed2121d4">More...</a><br /></td></tr>
 <tr class="separator:aa6a52d307645715c6f401f0eed2121d4 inherit pub_methods_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -354,6 +378,17 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:aee24c6f1efd6f6ecb05be17f80a54078 inherit pro_methods_classav_1_1noncopyable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71deb856e7abd7d1e7a8f89e718196ad inherit pro_methods_classav_1_1noncopyable"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1noncopyable.html#a71deb856e7abd7d1e7a8f89e718196ad">operator=</a> (const <a class="el" href="classav_1_1noncopyable.html">noncopyable</a> &amp;)=delete</td></tr>
 <tr class="separator:a71deb856e7abd7d1e7a8f89e718196ad inherit pro_methods_classav_1_1noncopyable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classav_1_1CodecContext2"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classav_1_1CodecContext2')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classav_1_1CodecContext2.html">av::CodecContext2</a></td></tr>
+<tr class="memitem:a155ac5ae06e4bdb4987ef74c5f7aafb3 inherit pro_attribs_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1hw_1_1DeviceContext.html">hw::DeviceContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#a155ac5ae06e4bdb4987ef74c5f7aafb3">m_hwDevice</a></td></tr>
+<tr class="separator:a155ac5ae06e4bdb4987ef74c5f7aafb3 inherit pro_attribs_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a463933a2af1821623995d72ee680e18c inherit pro_attribs_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1hw_1_1FramesContext.html">hw::FramesContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#a463933a2af1821623995d72ee680e18c">m_hwFrames</a></td></tr>
+<tr class="separator:a463933a2af1821623995d72ee680e18c inherit pro_attribs_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadcde55e3af565303eb7654b427c1be1 inherit pro_attribs_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#aadcde55e3af565303eb7654b427c1be1">m_hwTransferToSystem</a> = false</td></tr>
+<tr class="separator:aadcde55e3af565303eb7654b427c1be1 inherit pro_attribs_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf85b55d1ddafb8ae9414018a606a17d inherit pro_attribs_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#abf85b55d1ddafb8ae9414018a606a17d">m_hwAutoUpload</a> = true</td></tr>
+<tr class="separator:abf85b55d1ddafb8ae9414018a606a17d inherit pro_attribs_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45a134074a9702174132d28287222c4c inherit pro_attribs_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceav_1_1hw.html#ab24c880d8bdad19b620de28636ba1254">hw::EncodingMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#a45a134074a9702174132d28287222c4c">m_hwEncodingMode</a> = <a class="el" href="namespaceav_1_1hw.html#ab24c880d8bdad19b620de28636ba1254a06b9281e396db002010bde1de57262eb">hw::EncodingMode::Auto</a></td></tr>
+<tr class="separator:a45a134074a9702174132d28287222c4c inherit pro_attribs_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_structFFWrapperPtr"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_structFFWrapperPtr')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="structFFWrapperPtr.html">FFWrapperPtr&lt; AVCodecContext &gt;</a></td></tr>
 <tr class="memitem:a5965838ceb4eeae6d752187b914a2899 inherit pro_attribs_structFFWrapperPtr"><td class="memItemLeft" align="right" valign="top">AVCodecContext *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structFFWrapperPtr.html#a5965838ceb4eeae6d752187b914a2899">m_raw</a></td></tr>
 <tr class="separator:a5965838ceb4eeae6d752187b914a2899 inherit pro_attribs_structFFWrapperPtr"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -418,6 +453,33 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a40713645918cc5cd19280c2c2a9a7efa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40713645918cc5cd19280c2c2a9a7efa">&#9670;&nbsp;</a></span>clearHwDeviceContext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void av::VideoDecoderContext::clearHwDeviceContext </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes the hardware device and restores the default get_format(). </p>
+
+</div>
+</div>
 <a id="adf26054e948cc24f6c0b4e70422531bd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adf26054e948cc24f6c0b4e70422531bd">&#9670;&nbsp;</a></span>decode() <span class="overload">[1/2]</span></h2>
 
@@ -522,6 +584,87 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a4ab47c792c600c8ae640b77d1a81c49d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ab47c792c600c8ae640b77d1a81c49d">&#9670;&nbsp;</a></span>hwDeviceContext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classav_1_1hw_1_1DeviceContext.html">hw::DeviceContext</a> av::VideoDecoderContext::hwDeviceContext </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Device context set with <a class="el" href="classav_1_1VideoDecoderContext.html#ab302ec3e196069179b0da0b155487d54" title="Configures a hardware device for decoding.">setHwDeviceContext()</a>. </p>
+
+</div>
+</div>
+<a id="ac9be78ef86b9587bf64f38c804168630"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9be78ef86b9587bf64f38c804168630">&#9670;&nbsp;</a></span>hwFramesContext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classav_1_1hw_1_1FramesContext.html">hw::FramesContext</a> av::VideoDecoderContext::hwFramesContext </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Frames context of decoded hardware frames. </p>
+<p>Returns the frames context owned by the decoder, if any. It exists when the codec needs one (avcpp derives it for codecs that advertise only AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX, for example QSV in FFmpeg 4.x) or when FFmpeg creates it for a hardware accelerated decoder while decoding the first packet.</p>
+<p>The method may return an invalid context before that point, and for decoders that keep the context only inside the decoded frames. <a class="el" href="classav_1_1VideoFrame.html#a425e7cadde23005d302112340e482955" title="Frames context of this hardware frame, or an invalid context.">VideoFrame::hwFramesContext()</a> always returns the context of a produced frame. </p>
+
+</div>
+</div>
+<a id="a0b8092d8b5402603f7f2868ce6fb6972"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b8092d8b5402603f7f2868ce6fb6972">&#9670;&nbsp;</a></span>isHwTransferToSystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool av::VideoDecoderContext::isHwTransferToSystem </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="af8624957b9a55431ff63e6bd7cb0f574"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af8624957b9a55431ff63e6bd7cb0f574">&#9670;&nbsp;</a></span>operator=()</h2>
 
@@ -600,6 +743,67 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sends a packet to the decoder. </p>
 <dl class="section return"><dt>Returns</dt><dd>false if the decoder cannot accept more input until <a class="el" href="classav_1_1VideoDecoderContext.html#a4c335d5ab090e2e3ca52e25e78c9e63d" title="Receives one decoded frame.">receive()</a> is called. This EAGAIN condition is not an error. </dd></dl>
+
+</div>
+</div>
+<a id="ab302ec3e196069179b0da0b155487d54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab302ec3e196069179b0da0b155487d54">&#9670;&nbsp;</a></span>setHwDeviceContext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void av::VideoDecoderContext::setHwDeviceContext </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classav_1_1hw_1_1DeviceContext.html">hw::DeviceContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>device</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classav_1_1OptionalErrorCode.html">OptionalErrorCode</a>&#160;</td>
+          <td class="paramname"><em>ec</em> = <code><a class="el" href="namespaceav.html#a5d16a15494ca4d7b5af474ac1150e41b">throws</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures a hardware device for decoding. </p>
+<p>Must be called after the codec is set and before <a class="el" href="classav_1_1CodecContext2.html#a8f9efb4936b61b20f8c8d80cf2479a24">open()</a>. The decoder uses the device to choose the output pixel format; there is no silent software fallback. If the codec has no hardware configuration for the device type, <a class="el" href="classav_1_1CodecContext2.html#a8f9efb4936b61b20f8c8d80cf2479a24">open()</a> fails with <a class="el" href="namespaceav.html#aa0be1141896ec64853346d02dbf2d905a9ecfb245da5494a2eb2d019847fa1fcd">Errors::HardwareConfigNotFound</a>.</p>
+<p>The function installs an internal get_format() callback. It does not use AVCodecContext::opaque. </p>
+
+</div>
+</div>
+<a id="aefb80c296f156e957d32532624b97358"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefb80c296f156e957d32532624b97358">&#9670;&nbsp;</a></span>setHwTransferToSystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void av::VideoDecoderContext::setHwTransferToSystem </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer decoded hardware frames to system memory automatically. </p>
+<p>Disabled by default. When enabled, <a class="el" href="classav_1_1VideoDecoderContext.html#adf26054e948cc24f6c0b4e70422531bd" title="decodeVideo - decode video packet">decode()</a> and <a class="el" href="classav_1_1VideoDecoderContext.html#a4c335d5ab090e2e3ca52e25e78c9e63d" title="Receives one decoded frame.">receive()</a> return software frames. Keep it disabled for zero-copy processing. </p>
 
 </div>
 </div>

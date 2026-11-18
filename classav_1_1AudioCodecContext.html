@@ -94,11 +94,13 @@ Collaboration diagram for av::AudioCodecContext&lt; Clazz, _direction &gt;:</div
 <div class="dyncontent">
 <div class="center"><img src="classav_1_1AudioCodecContext__coll__graph.png" border="0" usemap="#aav_1_1AudioCodecContext_3_01Clazz_00_01__direction_01_4_coll__map" alt="Collaboration graph"/></div>
 <map name="aav_1_1AudioCodecContext_3_01Clazz_00_01__direction_01_4_coll__map" id="aav_1_1AudioCodecContext_3_01Clazz_00_01__direction_01_4_coll__map">
-<area shape="rect" title=" " alt="" coords="150,259,323,300"/>
-<area shape="rect" href="classav_1_1CodecContextBase.html" title=" " alt="" coords="141,155,332,211"/>
-<area shape="rect" href="classav_1_1CodecContext2.html" title="Base class for audio and video codec contexts." alt="" coords="165,80,309,107"/>
+<area shape="rect" title=" " alt="" coords="828,74,1001,115"/>
+<area shape="rect" href="classav_1_1CodecContextBase.html" title=" " alt="" coords="588,67,779,123"/>
+<area shape="rect" href="classav_1_1CodecContext2.html" title="Base class for audio and video codec contexts." alt="" coords="395,81,539,108"/>
 <area shape="rect" href="structFFWrapperPtr.html" title=" " alt="" coords="5,5,255,32"/>
-<area shape="rect" href="classav_1_1noncopyable.html" title=" " alt="" coords="279,5,407,32"/>
+<area shape="rect" href="classav_1_1noncopyable.html" title=" " alt="" coords="66,56,194,83"/>
+<area shape="rect" href="classav_1_1hw_1_1DeviceContext.html" title="Owner of an AVHWDeviceContext." alt="" coords="47,107,213,133"/>
+<area shape="rect" href="classav_1_1hw_1_1FramesContext.html" title="Owner of an AVHWFramesContext." alt="" coords="45,157,215,184"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -164,6 +166,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a56d2c9c413cea407afddc39e463b1269 inherit pub_methods_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad222c935436b3aed0ede07b193a50e77 inherit pub_methods_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#ad222c935436b3aed0ede07b193a50e77">setTimeBase</a> (const <a class="el" href="classav_1_1Rational.html">Rational</a> &amp;value) noexcept</td></tr>
 <tr class="separator:ad222c935436b3aed0ede07b193a50e77 inherit pub_methods_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f5605dfdcf184663fab8fdd14ab90b3 inherit pub_methods_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1Rational.html">Rational</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#a3f5605dfdcf184663fab8fdd14ab90b3">frameRate</a> () const noexcept</td></tr>
+<tr class="memdesc:a3f5605dfdcf184663fab8fdd14ab90b3 inherit pub_methods_classav_1_1CodecContext2"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classav_1_1Frame.html">Frame</a> rate advertised by the codec.  <a href="classav_1_1CodecContext2.html#a3f5605dfdcf184663fab8fdd14ab90b3">More...</a><br /></td></tr>
+<tr class="separator:a3f5605dfdcf184663fab8fdd14ab90b3 inherit pub_methods_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a344bf77408f96008f3e78660cbb8ee44 inherit pub_methods_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#a344bf77408f96008f3e78660cbb8ee44">setFrameRate</a> (const <a class="el" href="classav_1_1Rational.html">Rational</a> &amp;value) noexcept</td></tr>
+<tr class="separator:a344bf77408f96008f3e78660cbb8ee44 inherit pub_methods_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6a52d307645715c6f401f0eed2121d4 inherit pub_methods_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#aa6a52d307645715c6f401f0eed2121d4">isEof</a> () const noexcept</td></tr>
 <tr class="memdesc:aa6a52d307645715c6f401f0eed2121d4 inherit pub_methods_classav_1_1CodecContext2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the codec has been flushed and all output is drained.  <a href="classav_1_1CodecContext2.html#aa6a52d307645715c6f401f0eed2121d4">More...</a><br /></td></tr>
 <tr class="separator:aa6a52d307645715c6f401f0eed2121d4 inherit pub_methods_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -306,6 +313,17 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:aee24c6f1efd6f6ecb05be17f80a54078 inherit pro_methods_classav_1_1noncopyable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71deb856e7abd7d1e7a8f89e718196ad inherit pro_methods_classav_1_1noncopyable"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1noncopyable.html#a71deb856e7abd7d1e7a8f89e718196ad">operator=</a> (const <a class="el" href="classav_1_1noncopyable.html">noncopyable</a> &amp;)=delete</td></tr>
 <tr class="separator:a71deb856e7abd7d1e7a8f89e718196ad inherit pro_methods_classav_1_1noncopyable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classav_1_1CodecContext2"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classav_1_1CodecContext2')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classav_1_1CodecContext2.html">av::CodecContext2</a></td></tr>
+<tr class="memitem:a155ac5ae06e4bdb4987ef74c5f7aafb3 inherit pro_attribs_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1hw_1_1DeviceContext.html">hw::DeviceContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#a155ac5ae06e4bdb4987ef74c5f7aafb3">m_hwDevice</a></td></tr>
+<tr class="separator:a155ac5ae06e4bdb4987ef74c5f7aafb3 inherit pro_attribs_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a463933a2af1821623995d72ee680e18c inherit pro_attribs_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classav_1_1hw_1_1FramesContext.html">hw::FramesContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#a463933a2af1821623995d72ee680e18c">m_hwFrames</a></td></tr>
+<tr class="separator:a463933a2af1821623995d72ee680e18c inherit pro_attribs_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadcde55e3af565303eb7654b427c1be1 inherit pro_attribs_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#aadcde55e3af565303eb7654b427c1be1">m_hwTransferToSystem</a> = false</td></tr>
+<tr class="separator:aadcde55e3af565303eb7654b427c1be1 inherit pro_attribs_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf85b55d1ddafb8ae9414018a606a17d inherit pro_attribs_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#abf85b55d1ddafb8ae9414018a606a17d">m_hwAutoUpload</a> = true</td></tr>
+<tr class="separator:abf85b55d1ddafb8ae9414018a606a17d inherit pro_attribs_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45a134074a9702174132d28287222c4c inherit pro_attribs_classav_1_1CodecContext2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceav_1_1hw.html#ab24c880d8bdad19b620de28636ba1254">hw::EncodingMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classav_1_1CodecContext2.html#a45a134074a9702174132d28287222c4c">m_hwEncodingMode</a> = <a class="el" href="namespaceav_1_1hw.html#ab24c880d8bdad19b620de28636ba1254a06b9281e396db002010bde1de57262eb">hw::EncodingMode::Auto</a></td></tr>
+<tr class="separator:a45a134074a9702174132d28287222c4c inherit pro_attribs_classav_1_1CodecContext2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_structFFWrapperPtr"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_structFFWrapperPtr')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="structFFWrapperPtr.html">FFWrapperPtr&lt; AVCodecContext &gt;</a></td></tr>
 <tr class="memitem:a5965838ceb4eeae6d752187b914a2899 inherit pro_attribs_structFFWrapperPtr"><td class="memItemLeft" align="right" valign="top">AVCodecContext *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structFFWrapperPtr.html#a5965838ceb4eeae6d752187b914a2899">m_raw</a></td></tr>
 <tr class="separator:a5965838ceb4eeae6d752187b914a2899 inherit pro_attribs_structFFWrapperPtr"><td class="memSeparator" colspan="2">&#160;</td></tr>

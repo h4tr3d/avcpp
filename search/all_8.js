@@ -1,8 +1,21 @@
 var searchData=
 [
-  ['height_300',['height',['../classav_1_1VideoCodecContext.html#a4959a3b30392d5c324c5c93c9e529b35',1,'av::VideoCodecContext::height()'],['../classav_1_1VideoFrame.html#ac55bd4755df9388fc8e9ab4e9a81c0f6',1,'av::VideoFrame::height()'],['../classav_1_1SubtitleRect.html#ace062aefb074e3d2d731aedad4e3e303',1,'av::SubtitleRect::height()']]],
-  ['hex_5fdump_301',['hex_dump',['../namespaceav.html#ac217d8262789b8cd7e88f1f46eaaaccb',1,'av']]],
-  ['hex_5fdump_5finternal_302',['hex_dump_internal',['../namespaceav.html#a9f7be9cabbd069acba11b5e96d1776bd',1,'av']]],
-  ['hex_5fdump_5flog_303',['hex_dump_log',['../namespaceav.html#aa7359f0398a53dab81ed2d59bfa73ac2',1,'av']]],
-  ['hexdump_5fprint_304',['HEXDUMP_PRINT',['../avutils_8cpp.html#a7841150887c783705015a63ed10d88d0',1,'avutils.cpp']]]
+  ['hardwarecodecnotfound_336',['HardwareCodecNotFound',['../namespaceav.html#aa0be1141896ec64853346d02dbf2d905af3b9071b0854971b838520add2a2f7cc',1,'av']]],
+  ['hardwareconfignotfound_337',['HardwareConfigNotFound',['../namespaceav.html#aa0be1141896ec64853346d02dbf2d905a9ecfb245da5494a2eb2d019847fa1fcd',1,'av']]],
+  ['hardwaredeviceinvalid_338',['HardwareDeviceInvalid',['../namespaceav.html#aa0be1141896ec64853346d02dbf2d905a525f1dbc06ac980a3e0ae941f7c47464',1,'av']]],
+  ['hardwaredeviceunavailable_339',['HardwareDeviceUnavailable',['../namespaceav.html#aa0be1141896ec64853346d02dbf2d905a2dc24185cf9349520cf42eaf95adb8a0',1,'av']]],
+  ['hardwareframesinvalid_340',['HardwareFramesInvalid',['../namespaceav.html#aa0be1141896ec64853346d02dbf2d905a68166d62de8a4a141619940c17d18362',1,'av']]],
+  ['hardwaretransferunsupported_341',['HardwareTransferUnsupported',['../namespaceav.html#aa0be1141896ec64853346d02dbf2d905ae77fd89ff6a68b5f999d164e9aea04d2',1,'av']]],
+  ['height_342',['height',['../classav_1_1VideoCodecContext.html#a4959a3b30392d5c324c5c93c9e529b35',1,'av::VideoCodecContext::height()'],['../classav_1_1VideoFrame.html#ac55bd4755df9388fc8e9ab4e9a81c0f6',1,'av::VideoFrame::height()'],['../classav_1_1hw_1_1FramesContext.html#aea967a1619e4d554548946c08124017a',1,'av::hw::FramesContext::height()'],['../classav_1_1SubtitleRect.html#ace062aefb074e3d2d731aedad4e3e303',1,'av::SubtitleRect::height()']]],
+  ['hex_5fdump_343',['hex_dump',['../namespaceav.html#ac217d8262789b8cd7e88f1f46eaaaccb',1,'av']]],
+  ['hex_5fdump_5finternal_344',['hex_dump_internal',['../namespaceav.html#a9f7be9cabbd069acba11b5e96d1776bd',1,'av']]],
+  ['hex_5fdump_5flog_345',['hex_dump_log',['../namespaceav.html#aa7359f0398a53dab81ed2d59bfa73ac2',1,'av']]],
+  ['hexdump_5fprint_346',['HEXDUMP_PRINT',['../avutils_8cpp.html#a7841150887c783705015a63ed10d88d0',1,'avutils.cpp']]],
+  ['hwcontext_2ecpp_347',['hwcontext.cpp',['../hwcontext_8cpp.html',1,'']]],
+  ['hwcontext_2eh_348',['hwcontext.h',['../hwcontext_8h.html',1,'']]],
+  ['hwdevicecontext_349',['hwDeviceContext',['../classav_1_1VideoFrame.html#a348b3624e10c5d14f3cd21e3eae4b106',1,'av::VideoFrame::hwDeviceContext()'],['../classav_1_1VideoEncoderContext.html#a0243a4a39035e58d37213df4183cd83b',1,'av::VideoEncoderContext::hwDeviceContext()'],['../classav_1_1VideoDecoderContext.html#a4ab47c792c600c8ae640b77d1a81c49d',1,'av::VideoDecoderContext::hwDeviceContext()']]],
+  ['hwencodingmode_350',['hwEncodingMode',['../classav_1_1VideoEncoderContext.html#ad41e791735d56661f95d9b07c81a3d21',1,'av::VideoEncoderContext']]],
+  ['hwformats_351',['hwFormats',['../classav_1_1hw_1_1FrameConstraints.html#a488ad591bfec4318a202b091f6e4ce1d',1,'av::hw::FrameConstraints']]],
+  ['hwframescontext_352',['hwFramesContext',['../classav_1_1VideoEncoderContext.html#aa8facc13feb1ddc33f9164db35340666',1,'av::VideoEncoderContext::hwFramesContext()'],['../classav_1_1VideoFrame.html#a425e7cadde23005d302112340e482955',1,'av::VideoFrame::hwFramesContext()'],['../classav_1_1VideoDecoderContext.html#ac9be78ef86b9587bf64f38c804168630',1,'av::VideoDecoderContext::hwFramesContext()']]],
+  ['hwpixelformat_353',['hwPixelFormat',['../namespaceav_1_1hw.html#adb55472e098ef7c1a2ccb9d543f9e1cc',1,'av::hw']]]
 ];
