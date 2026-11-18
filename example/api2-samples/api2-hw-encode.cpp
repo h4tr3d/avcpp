@@ -1,280 +1,191 @@
-/**
- * Smoke sample for the HW encoding with current AvCpp API state.
- *
- * Thanks to https://github.com/mojie126, for more-less complete sample.
- *
- */
-
+// Hardware encoder sample with synthetic frames.
+//
+// Usage: api2-hw-encode <device> <output> [frame count]
+//
+// The sample configures hardware encoding in Auto mode. Software frames are
+// uploaded automatically before they reach the encoder.
 
 #include <iostream>
-#include <set>
-#include <map>
-#include <memory>
-#include <functional>
+#include <string>
 
 #include "avcpp/av.h"
-#include "avcpp/ffmpeg.h"
-#include "avcpp/codec.h"
-#include "avcpp/packet.h"
-#include "avcpp/videorescaler.h"
-#include "avcpp/audioresampler.h"
-#include "avcpp/avutils.h"
-
-// API2
+#include "avcpp/codeccontext.h"
 #include "avcpp/format.h"
 #include "avcpp/formatcontext.h"
-#include "avcpp/codec.h"
-#include "avcpp/codeccontext.h"
+#include "avcpp/frame.h"
+#include "avcpp/hwcontext.h"
+#include "avcpp/packet.h"
 
-using namespace std;
-using namespace av;
+namespace {
 
-
-// check CUDA accessibility
-bool isCudaAvailable()
+void fillFrame(av::VideoFrame& frame, int index)
 {
-    AVHWDeviceType type = av_hwdevice_find_type_by_name("cuda");
-    return type != AV_HWDEVICE_TYPE_NONE;
-}
+    AVFrame* raw = frame.raw();
+    const AVPixFmtDescriptor* desc =
+        av_pix_fmt_desc_get(static_cast<AVPixelFormat>(raw->format));
+    if (!desc)
+        return;
 
-// check QSV accessibility
-bool isQsvAvailable()
-{
-    AVHWDeviceType type = av_hwdevice_find_type_by_name("qsv");
-    return type != AV_HWDEVICE_TYPE_NONE;
-}
+    const int planes = av_pix_fmt_count_planes(static_cast<AVPixelFormat>(raw->format));
+    for (int plane = 0; plane < planes; ++plane) {
+        if (!raw->data[plane] || raw->linesize[plane] <= 0)
+            continue;
 
-// Get ecnoder
-const av::Codec getEncoder(bool use_cuda, bool use_qsv)
-{
-    if (use_cuda) {
-        auto enc = av::findEncodingCodec("h264_nvenc");
-        if (!enc.isNull())
-            return enc;
+        int height = raw->height;
+        // The second and third planes are chroma planes in most YUV formats.
+        if (plane == 1 || plane == 2)
+            height >>= desc->log2_chroma_h;
+
+        const uint8_t value = static_cast<uint8_t>((index * 3 + plane * 40) & 0xFF);
+        for (int row = 0; row < height; ++row) {
+            uint8_t* line = raw->data[plane] + row * raw->linesize[plane];
+            for (int x = 0; x < raw->linesize[plane]; ++x)
+                line[x] = value;
+        }
     }
-    if (use_qsv) {
-        auto enc = av::findEncodingCodec("h264_qsv");
-        if (!enc.isNull())
-            return enc;
-    }
-    return av::findEncodingCodec("libx264"); // Fall-back to SW one
 }
 
-// HW context
-AVHWDeviceType getHwDeviceType(bool use_cuda, bool use_qsv)
+} // namespace
+
+int main(int argc, char** argv)
 {
-    if (use_cuda)
-        return av_hwdevice_find_type_by_name("cuda");
-    if (use_qsv)
-        return av_hwdevice_find_type_by_name("qsv");
-    return AV_HWDEVICE_TYPE_NONE;
-}
-
-int main(int argc, char **argv) {
-    if (argc < 3)
+    if (argc < 3) {
+        std::cerr << "Usage: " << argv[0] << " <device> <output> [frame count]\n";
         return 1;
+    }
 
     av::init();
-    av::setFFmpegLoggingLevel(AV_LOG_DEBUG);
 
-    string uri{argv[1]};
-    string out{argv[2]};
-
-    error_code ec;
-
-    //
-    // INPUT
-    //
-    FormatContext ictx;
-    ssize_t videoStream = -1;
-    // VideoDecoderContext vdec;
-    Stream vst;
-
-    // int count = 0;
-
-    ictx.openInput(uri, ec);
-    if (ec) {
-        cerr << "Can't open input\n";
+    const av::hw::DeviceType type = av::hw::DeviceType::fromName(argv[1]);
+    if (type.isNone()) {
+        std::cerr << "Unknown device type: " << argv[1] << '\n';
         return 1;
     }
 
-    ictx.findStreamInfo();
+    const int width = 320;
+    const int height = 240;
+    const int frameCount = argc > 3 ? std::stoi(argv[3]) : 50;
 
-    for (size_t i = 0; i < ictx.streamsCount(); ++i) {
-        auto st = ictx.stream(i);
-        if (st.mediaType() == AVMEDIA_TYPE_VIDEO) {
-            videoStream = i;
-            vst = st;
-            break;
-        }
-    }
-    bool use_cuda = isCudaAvailable();
-    bool use_qsv = isQsvAvailable();
-    // Get encoder and hardware context
-    auto _encoder = getEncoder(use_cuda, use_qsv);
-    AVHWDeviceType hw_type = getHwDeviceType(use_cuda, use_qsv); // --htrd: never use
-    clog << "test hw: " << av_hwdevice_get_type_name(hw_type) << endl;
-    //av::VideoDecoderContext vdec(vst, _encoder);
-    av::VideoDecoderContext vdec;
+    std::error_code ec;
 
-    if (vst.isNull()) {
-        cerr << "Video stream not found\n";
-        return 1;
+    av::hw::DeviceContext device = av::hw::DeviceContext::create(type, nullptr, {}, ec);
+    if (!device.isValid()) {
+        std::cerr << "Can't create device: " << ec.message() << '\n';
+        return 2;
     }
 
-    if (vst.isValid()) {
-        vdec = VideoDecoderContext(vst);
-        vdec.setRefCountedFrames(true);
-
-        vdec.open(Codec(), ec);
-        if (ec) {
-            cerr << "Can't open codec\n";
-            return 1;
-        }
+    av::Codec codec = av::hw::findEncoder(AV_CODEC_ID_H264, type);
+    if (!codec.raw()) {
+        std::cerr << "No hardware H.264 encoder for this device\n";
+        return 2;
     }
 
-    //
-    // OUTPUT
-    //
-    OutputFormat ofrmt;
-    FormatContext octx;
-
-    ofrmt.setFormat(string(), out);
+    av::OutputFormat ofrmt;
+    ofrmt.setFormat(std::string(), argv[2]);
+    av::FormatContext octx;
     octx.setFormat(ofrmt);
 
-    //Codec ocodec = findEncodingCodec(ofrmt);
-    VideoEncoderContext encoder{_encoder};
-
-    // Settings
-    encoder.setWidth(vdec.width());
-    encoder.setHeight(vdec.height());
-    if (vdec.pixelFormat() > -1)
-        encoder.setPixelFormat(vdec.pixelFormat());
-    encoder.setTimeBase(Rational{1, 1000});
-    encoder.setBitRate(vdec.bitRate());
-
-    // MKV format wants global header, so
-    // this fixes the issue with MKV container
-    if (ofrmt.flags() & AVFMT_GLOBALHEADER)
+    av::VideoEncoderContext encoder(codec);
+    encoder.setWidth(width);
+    encoder.setHeight(height);
+    encoder.setTimeBase(av::Rational{1, 25});
+    encoder.setFrameRate(av::Rational{25, 1});
+    encoder.setBitRate(1'000'000);
+    if (octx.outputFormat().isFlags(AVFMT_GLOBALHEADER))
         encoder.addFlags(AV_CODEC_FLAG_GLOBAL_HEADER);
 
-    encoder.open(Codec(), ec);
+    encoder.configureHwEncoding(device, av::hw::EncodingMode::Auto,
+                                AV_PIX_FMT_NONE, ec);
     if (ec) {
-        cerr << "Can't opent encodec\n";
+        std::cerr << "Can't configure hardware encoding: " << ec.message() << '\n';
         return 1;
     }
 
-    Stream ost = octx.addStream(encoder);
-    ost.setFrameRate(vst.frameRate());
-    ost.setTimeBase(vst.timeBase());
-    ost.setAverageFrameRate(vst.averageFrameRate());
+    av::PixelFormat softwareFormat(AV_PIX_FMT_NV12);
+    const av::hw::FramesContext frames = encoder.hwFramesContext();
+    if (frames.isValid())
+        softwareFormat = frames.swFormat();
 
-    octx.openOutput(out, ec);
+    encoder.open(codec, ec);
     if (ec) {
-        cerr << "Can't open output\n";
+        std::cerr << "Can't open encoder: " << ec.message() << '\n';
         return 1;
     }
 
-    octx.dump();
-    octx.writeHeader();
+    av::Stream ost = octx.addStream(encoder);
+    ost.setFrameRate(encoder.frameRate());
+    ost.setAverageFrameRate(encoder.frameRate());
+    ost.setTimeBase(encoder.timeBase());
+
+    octx.openOutput(argv[2], ec);
+    if (ec) {
+        std::cerr << "Can't open output: " << ec.message() << '\n';
+        return 1;
+    }
+    octx.writeHeader(ec);
     octx.flush();
-
-
-    //
-    // PROCESS
-    //
-    for (int64_t opkt_index = 0;;) {
-        // READING
-        Packet pkt = ictx.readPacket(ec);
-        if (ec) {
-            clog << "Packet reading error: " << ec << ", " << ec.message() << endl;
-            break;
-        }
-
-        bool flushDecoder = false;
-        // !EOF
-        if (pkt) {
-            if (pkt.streamIndex() != videoStream) {
-                continue;
-            }
-
-            clog << "Read packet: pts=" << pkt.pts() << ", dts=" << pkt.dts() << " / " << pkt.pts().seconds() << " / " << pkt.timeBase() << " / st: " << pkt.streamIndex() << endl;
-        } else {
-            flushDecoder = true;
-        }
-
-        do {
-            // DECODING
-            auto frame = vdec.decode(pkt, ec);
-
-            //count++;
-            //if (count > 200)
-            //    break;
-
-            bool flushEncoder = false;
-
-            if (ec) {
-                cerr << "Decoding error: " << ec << endl;
-                return 1;
-            } else if (!frame) {
-                //cerr << "Empty frame\n";
-                //flushDecoder = false;
-                //continue;
-
-                if (flushDecoder) {
-                    flushEncoder = true;
-                }
-            }
-
-            if (frame) {
-                clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType() << endl;
-
-                // Change timebase
-                frame.setTimeBase(encoder.timeBase());
-                frame.setStreamIndex(0);
-                frame.setPictureType();
-
-                clog << "Frame: pts=" << frame.pts() << " / " << frame.pts().seconds() << " / " << frame.timeBase() << ", " << frame.width() << "x" << frame.height() << ", size=" << frame.size() << ", ref=" << frame.isReferenced() << ":" << frame.refCount() << " / type: " << frame.pictureType() << endl;
-            }
-
-            if (frame || flushEncoder) {
-                do {
-                    // Encode
-                    Packet opkt = frame ? encoder.encode(frame, ec) : encoder.encode(ec);
-                    if (ec) {
-                        cerr << "Encoding error: " << ec << endl;
-                        return 1;
-                    } else if (!opkt) {
-                        //cerr << "Empty packet\n";
-                        //continue;
-                        break;
-                    }
-
-                    // Only one output stream
-                    opkt.setStreamIndex(0);
-                    opkt.setTimeBase(1 / ost.frameRate());
-                    // Trick: when timeBase is a 1/FPS, PTS value - just an index of the packet
-                    // CUDA encoder provides wrong PTS
-                    opkt.setPts({opkt_index++, 1 / ost.frameRate()});
-                    opkt.setDts(opkt.pts());
-
-                    clog << "Write packet: pts=" << opkt.pts() << ", dts=" << opkt.dts() << " / " << opkt.pts().seconds() << " / " << opkt.timeBase() << " / st: " << opkt.streamIndex() << endl;
-
-                    octx.writePacket(opkt, ec);
-                    if (ec) {
-                        cerr << "Error write packet: " << ec << ", " << ec.message() << endl;
-                        return 1;
-                    }
-                } while (flushEncoder);
-            }
-
-            if (flushEncoder)
-                break;
-        } while (flushDecoder);
-
-        if (flushDecoder)
-            break;
+    if (ec) {
+        std::cerr << "Can't write header: " << ec.message() << '\n';
+        return 1;
     }
 
-    octx.writeTrailer();
+    std::cout << "encoder: " << codec.name()
+              << ", software format: " << softwareFormat.name()
+              << ", frames: " << frameCount << '\n';
+
+    int written = 0;
+    for (int index = 0; index < frameCount; ++index) {
+        av::VideoFrame frame(softwareFormat, width, height, 32);
+        if (!frame.isValid()) {
+            std::cerr << "Can't allocate a frame\n";
+            return 1;
+        }
+        fillFrame(frame, index);
+
+        frame.setPts(av::Timestamp(index, encoder.timeBase()));
+        frame.setTimeBase(encoder.timeBase());
+        frame.setStreamIndex(0);
+
+        av::Packet packet = encoder.encode(frame, ec);
+        if (ec) {
+            std::cerr << "Encode error: " << ec.message() << '\n';
+            return 1;
+        }
+        if (!packet)
+            continue;
+
+        packet.setStreamIndex(0);
+        octx.writePacket(packet, ec);
+        if (ec) {
+            std::cerr << "Write error: " << ec.message() << '\n';
+            return 1;
+        }
+        ++written;
+    }
+
+    for (;;) {
+        av::Packet packet = encoder.encode(ec);
+        if (ec) {
+            std::cerr << "Encoder flush error: " << ec.message() << '\n';
+            return 1;
+        }
+        if (!packet)
+            break;
+        packet.setStreamIndex(0);
+        octx.writePacket(packet, ec);
+        if (ec) {
+            std::cerr << "Write error: " << ec.message() << '\n';
+            return 1;
+        }
+        ++written;
+    }
+
+    octx.writeTrailer(ec);
+    if (ec) {
+        std::cerr << "Can't write trailer: " << ec.message() << '\n';
+        return 1;
+    }
+
+    std::cout << "packets: " << written << '\n';
+    return 0;
 }

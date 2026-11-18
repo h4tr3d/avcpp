@@ -1,4 +1,5 @@
 #include "frame.h"
+#include "hwcontext.h"
 
 using namespace std;
 
@@ -354,6 +355,160 @@ bool VideoFrame::copyToBuffer(std::vector<uint8_t> &dst, int align, OptionalErro
     return copyToBuffer(dst.data(), dst.size(), align, ec);
 }
 
+VideoFrame VideoFrame::clone(size_t align, OptionalErrorCode ec) const
+{
+    clear_if(ec);
+
+    if (!isValid())
+        return {};
+
+    if (isHwFrame()) {
+        throws_if(ec, Errors::HardwareTransferUnsupported);
+        return {};
+    }
+
+    VideoFrame result;
+    FrameCommon::clone(result, align);
+    return result;
+}
+
+namespace {
+bool sameHwFramesContext(const AVFrame* frame, const hw::FramesContext& frames) noexcept
+{
+    return frame && frame->hw_frames_ctx && frames.isValid() &&
+           frame->hw_frames_ctx->buffer == frames.bufferRef()->buffer;
+}
+} // namespace
+
+VideoFrame VideoFrame::toSystemMemory(PixelFormat format, OptionalErrorCode ec) const
+{
+    clear_if(ec);
+
+    if (!isValid()) {
+        throws_if(ec, Errors::FrameInvalid);
+        return {};
+    }
+
+    if (!isHwFrame()) {
+        if (format.get() != AV_PIX_FMT_NONE && format.get() != pixelFormat().get()) {
+            throws_if(ec, Errors::HardwareTransferUnsupported);
+            return {};
+        }
+        return *this;
+    }
+
+    VideoFrame dst;
+    if (format.get() != AV_PIX_FMT_NONE)
+        dst.m_raw->format = format.get();
+
+    int ret = av_hwframe_transfer_data(dst.m_raw, m_raw, 0);
+    if (ret < 0) {
+        throws_if(ec, ret, ffmpeg_category());
+        return {};
+    }
+
+    av_frame_copy_props(dst.m_raw, m_raw);
+    dst.copyInfoFrom(*this);
+    dst.setComplete(true);
+    return dst;
+}
+
+VideoFrame VideoFrame::toHwFrame(const hw::FramesContext& frames, OptionalErrorCode ec) const
+{
+    clear_if(ec);
+
+    if (!isValid()) {
+        throws_if(ec, Errors::FrameInvalid);
+        return {};
+    }
+    if (!frames.isValid()) {
+        throws_if(ec, Errors::HardwareFramesInvalid);
+        return {};
+    }
+
+    if (isHwFrame()) {
+        if (sameHwFramesContext(m_raw, frames))
+            return *this;
+        throws_if(ec, Errors::HardwareTransferUnsupported);
+        return {};
+    }
+
+    VideoFrame dst;
+    int ret = av_hwframe_get_buffer(frames.bufferRef(), dst.m_raw, 0);
+    if (ret < 0) {
+        throws_if(ec, ret, ffmpeg_category());
+        return {};
+    }
+
+    ret = av_hwframe_transfer_data(dst.m_raw, m_raw, 0);
+    if (ret < 0) {
+        throws_if(ec, ret, ffmpeg_category());
+        return {};
+    }
+
+    av_frame_copy_props(dst.m_raw, m_raw);
+    dst.copyInfoFrom(*this);
+    dst.setComplete(true);
+    return dst;
+}
+
+VideoFrame VideoFrame::mapTo(const hw::FramesContext& frames, int flags, OptionalErrorCode ec) const
+{
+    clear_if(ec);
+
+    if (!isValid()) {
+        throws_if(ec, Errors::FrameInvalid);
+        return {};
+    }
+    if (!frames.isValid()) {
+        throws_if(ec, Errors::HardwareFramesInvalid);
+        return {};
+    }
+    if (!isHwFrame()) {
+        // Mapping requires a hardware source; a software frame can only be
+        // uploaded with toHwFrame().
+        throws_if(ec, Errors::HardwareTransferUnsupported);
+        return {};
+    }
+
+    VideoFrame dst;
+    dst.m_raw->format = frames.format().get();
+    dst.m_raw->hw_frames_ctx = av_buffer_ref(frames.bufferRef());
+    if (!dst.m_raw->hw_frames_ctx) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return {};
+    }
+
+    int ret = av_hwframe_map(dst.m_raw, m_raw, flags);
+    if (ret < 0) {
+        throws_if(ec, ret, ffmpeg_category());
+        return {};
+    }
+
+    av_frame_copy_props(dst.m_raw, m_raw);
+    dst.copyInfoFrom(*this);
+    dst.setComplete(true);
+    return dst;
+}
+
+hw::FramesContext VideoFrame::hwFramesContext() const noexcept
+{
+    if (!m_raw || !m_raw->hw_frames_ctx)
+        return {};
+    return hw::FramesContext::wrap(m_raw->hw_frames_ctx);
+}
+
+hw::DeviceContext VideoFrame::hwDeviceContext() const noexcept
+{
+    if (!m_raw || !m_raw->hw_frames_ctx)
+        return {};
+
+    AVHWFramesContext* ctx = reinterpret_cast<AVHWFramesContext*>(m_raw->hw_frames_ctx->data);
+    if (!ctx->device_ref)
+        return {};
+    return hw::DeviceContext::wrap(ctx->device_ref);
+}
+
 namespace {
 VideoFrame _wrap(const void *data, size_t size, PixelFormat pixelFormat, int width, int height, int align,
                  void (*deleter)(void *opaque, uint8_t *data), void *opaque)
@@ -646,7 +801,7 @@ bool FrameCommon::isComplete() const { return m_isComplete; }
 bool FrameCommon::isValid() const {
     return (!isNull() &&
             ((m_raw->data[0] && m_raw->linesize[0]) ||
-             ((m_raw->hw_frames_ctx) && ((intptr_t)m_raw->data[3] > 0))));
+             m_raw->hw_frames_ctx));
 }
 
 FrameCommon::operator bool() const { return isValid() && isComplete(); }

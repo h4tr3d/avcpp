@@ -13,12 +13,14 @@
 #endif
 
 #include "ffmpeg.h"
+#include "hwcontext.h"
 #include "rational.h"
 #include "timestamp.h"
 #include "pixelformat.h"
 #include "sampleformat.h"
 
 extern "C" {
+#include <libavutil/hwcontext.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/attributes.h>
 }
@@ -312,6 +314,60 @@ public:
     size_t                 bufferSize(int align = 1, OptionalErrorCode ec = throws()) const;
     bool                   copyToBuffer(uint8_t *dst, size_t size, int align = 1, OptionalErrorCode ec = throws());
     bool                   copyToBuffer(std::vector<uint8_t>& dst, int align = 1, OptionalErrorCode ec = throws());
+
+    /**
+     * @brief Deep copy of a software frame.
+     *
+     * Hardware frames cannot be copied implicitly: the function reports
+     * Errors::HardwareTransferUnsupported. Use toSystemMemory() to transfer a
+     * hardware frame into system memory first. An invalid frame produces an
+     * invalid copy without an error.
+     */
+    VideoFrame clone(size_t align = 1, OptionalErrorCode ec = throws()) const;
+
+    /**
+     * @brief Transfer a hardware frame into system memory.
+     *
+     * The function allocates a software frame and copies the hardware surface
+     * into it. When @p format is not AV_PIX_FMT_NONE, the transfer requests
+     * that format. The format must be supported by the hardware backend; see
+     * FramesContext::transferFormats().
+     *
+     * A software frame is returned as a reference copy when no format
+     * conversion is requested.
+     */
+    VideoFrame toSystemMemory(PixelFormat format = AV_PIX_FMT_NONE,
+                              OptionalErrorCode ec = throws()) const;
+
+    /**
+     * @brief Upload a software frame into hardware memory.
+     *
+     * The destination buffer is allocated with av_hwframe_get_buffer() and then
+     * filled with av_hwframe_transfer_data(). A hardware frame that already
+     * belongs to @p frames is returned as a reference copy.
+     */
+    VideoFrame toHwFrame(const hw::FramesContext& frames,
+                         OptionalErrorCode ec = throws()) const;
+
+    /**
+     * @brief Map this hardware frame into another hardware frames context.
+     *
+     * Uses av_hwframe_map(). The operation depends on the backend and may fail
+     * with ENOSYS. Use toHwFrame() with a transfer for a portable path.
+     */
+    VideoFrame mapTo(const hw::FramesContext& frames,
+                     int flags = AV_HWFRAME_MAP_READ,
+                     OptionalErrorCode ec = throws()) const;
+
+    /**
+     * @brief Frames context of this hardware frame, or an invalid context.
+     */
+    hw::FramesContext hwFramesContext() const noexcept;
+
+    /**
+     * @brief Device context used by this hardware frame, or an invalid context.
+     */
+    hw::DeviceContext hwDeviceContext() const noexcept;
 
 
     /**

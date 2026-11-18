@@ -52,6 +52,11 @@ extern "C" {
 // AVSideDataDescriptor exisits
 #define AVCPP_API_HAS_AVSIDEDATADESCRIPTOR (AVCPP_AVUTIL_VERSION_INT >= AV_VERSION_INT(59, 10, 100))
 
+// Hardware device and frames contexts (libavutil/hwcontext.h)
+#define AVCPP_HAS_HWCONTEXT AVCPP_HAS_AVUTIL
+// av_hwdevice_ctx_create_derived_opts() was added in FFmpeg 4.3
+#define AVCPP_API_HWDEVICE_DERIVED_OPTS (AVCPP_AVUTIL_VERSION_INT >= AV_VERSION_INT(56, 48, 100))
+
 // Send/Receive API for the Codecs
 #define AVCPP_NEW_CODEC_API (AVCPP_AVCODEC_VERSION_INT >= AV_VERSION_INT(57,37,100))
 

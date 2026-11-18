@@ -17,9 +17,12 @@
 
 #include "avcpp/formatcontext.h"
 #include "avcpp/codeccontext.h"
+#include "avcpp/hwcontext.h"
 #include "avcpp/packet.h"
 #include "avcpp/stream.h"
 #include "avcpp/subtitle.h"
+
+#include "HardwareCompat.h"
 
 namespace {
 
@@ -130,6 +133,9 @@ VideoStats decodeVideo(const std::string &file)
                     break;
 
                 CHECK(frame.isComplete());
+                // Transfer to system memory must not lose the frame metadata.
+                CHECK(frame.streamIndex() == vst.index());
+                CHECK(frame.timeBase() != av::Rational());
                 ++stats.frames;
             }
 
@@ -270,6 +276,165 @@ SubtitleStats decodeSubtitles(const std::string &file)
     REQUIRE_FALSE(ec);
 
     return stats;
+}
+
+struct HwVideoStats
+{
+    long packets = 0;
+    long frames = 0;
+    long hardwareFrames = 0;
+    long softwareFrames = 0;
+    bool eof = false;
+};
+
+av::Stream firstVideoStream(av::FormatContext &ictx)
+{
+    for (auto &&st : ictx.streams()) {
+        if (st.mediaType() == AVMEDIA_TYPE_VIDEO)
+            return st;
+    }
+    return {};
+}
+
+HwVideoStats decodeVideoHardware(const std::string &file,
+                                 av::hw::DeviceType type,
+                                 bool transferToSystem)
+{
+    std::error_code ec;
+
+    av::FormatContext ictx;
+    ictx.openInput(fixturePath(file).string(), ec);
+    REQUIRE_FALSE(ec);
+    ictx.findStreamInfo(ec);
+    REQUIRE_FALSE(ec);
+
+    av::Stream vst = firstVideoStream(ictx);
+    REQUIRE(vst.isValid());
+
+    av::Codec codec = av::hw::findDecoder(vst.codecParameters().codecId(), type);
+    REQUIRE(codec.raw());
+
+    av::hw::DeviceContext device = av::hw::DeviceContext::create(type, nullptr, {}, ec);
+    REQUIRE(device.isValid());
+
+    av::VideoDecoderContext dec{vst, codec};
+    dec.setHwDeviceContext(device, ec);
+    REQUIRE_FALSE(ec);
+    dec.setHwTransferToSystem(transferToSystem);
+    dec.open(av::Codec(), ec);
+    REQUIRE_FALSE(ec);
+
+    HwVideoStats stats;
+    av::Packet pkt;
+    while ((pkt = ictx.readPacket(ec))) {
+        if (pkt.streamIndex() != vst.index())
+            continue;
+
+        ++stats.packets;
+        for (;;) {
+            bool accepted = dec.send(pkt, ec);
+            REQUIRE_FALSE(ec);
+
+            for (;;) {
+                auto frame = dec.receive(ec);
+                REQUIRE_FALSE(ec);
+                if (!frame.isValid())
+                    break;
+
+                CHECK(frame.isComplete());
+                // Transfer to system memory must not lose the frame metadata.
+                CHECK(frame.streamIndex() == vst.index());
+                CHECK(frame.timeBase() != av::Rational());
+                ++stats.frames;
+                if (frame.isHwFrame())
+                    ++stats.hardwareFrames;
+                else
+                    ++stats.softwareFrames;
+            }
+
+            if (accepted)
+                break;
+        }
+    }
+    REQUIRE_FALSE(ec);
+
+    REQUIRE(dec.flush(ec));
+    for (;;) {
+        auto frame = dec.receive(ec);
+        REQUIRE_FALSE(ec);
+        if (!frame.isValid())
+            break;
+        ++stats.frames;
+        if (frame.isHwFrame())
+            ++stats.hardwareFrames;
+        else
+            ++stats.softwareFrames;
+    }
+
+    stats.eof = dec.isEof();
+    return stats;
+}
+
+av::VideoFrame decodeFirstHardwareFrame(const std::string &file,
+                                        av::hw::DeviceType type)
+{
+    std::error_code ec;
+
+    av::FormatContext ictx;
+    ictx.openInput(fixturePath(file).string(), ec);
+    REQUIRE_FALSE(ec);
+    ictx.findStreamInfo(ec);
+    REQUIRE_FALSE(ec);
+
+    av::Stream vst = firstVideoStream(ictx);
+    REQUIRE(vst.isValid());
+
+    av::Codec codec = av::hw::findDecoder(vst.codecParameters().codecId(), type);
+    REQUIRE(codec.raw());
+
+    av::hw::DeviceContext device = av::hw::DeviceContext::create(type, nullptr, {}, ec);
+    REQUIRE(device.isValid());
+
+    av::VideoDecoderContext dec{vst, codec};
+    dec.setHwDeviceContext(device, ec);
+    REQUIRE_FALSE(ec);
+    dec.open(av::Codec(), ec);
+    REQUIRE_FALSE(ec);
+
+    // Only the first frame is needed. Keeping every hardware frame alive
+    // exhausts the decoder surface pool on FFmpeg 4.x CUDA.
+    auto firstHardwareFrame = [&]() -> av::VideoFrame {
+        for (;;) {
+            auto frame = dec.receive(ec);
+            REQUIRE_FALSE(ec);
+            if (!frame.isValid())
+                return {};
+            if (frame.isHwFrame())
+                return frame;
+        }
+    };
+
+    av::Packet pkt;
+    while ((pkt = ictx.readPacket(ec))) {
+        if (pkt.streamIndex() != vst.index())
+            continue;
+
+        for (;;) {
+            bool accepted = dec.send(pkt, ec);
+            REQUIRE_FALSE(ec);
+
+            av::VideoFrame frame = firstHardwareFrame();
+            if (frame.isValid())
+                return frame;
+
+            if (accepted)
+                break;
+        }
+    }
+    REQUIRE_FALSE(ec);
+
+    REQUIRE(dec.flush(ec));
+    return firstHardwareFrame();
 }
 
 } // namespace
@@ -428,6 +593,124 @@ TEST_CASE("Subtitle fixtures: DVD bitmap encode round trip")
     CHECK(std::memcmp(decodedRect.data(0), sourceRect.data(0), sourceBitmapSize) == 0);
     CHECK(std::memcmp(decodedRect.data(1), sourceRect.data(1),
                       static_cast<size_t>(sourceRect.nbColors()) * sizeof(std::uint32_t)) == 0);
+}
+
+TEST_CASE("Hardware fixtures: H.264 decoding")
+{
+    auto const expected = fixtureCounts("media/h264-baseline-320x240-25fps.mp4");
+    bool anyDevice = false;
+
+    for (const std::string &name : avtest::selectedDevices()) {
+        av::hw::DeviceType type = av::hw::DeviceType::fromName(name);
+        if (type.isNone() || !av::hw::isDeviceAvailable(type))
+            continue;
+        if (!av::hw::findDecoder(AV_CODEC_ID_H264, type).raw())
+            continue;
+
+        anyDevice = true;
+
+        if (avtest::isQsvHwDecodeUnavailable(type)) {
+            WARN("Skipping " << name << " decoding: frames stay in system memory in this FFmpeg runtime");
+            continue;
+        }
+
+        DYNAMIC_SECTION("device " << name) {
+            // By default a hardware decoder keeps frames on the device.
+            auto const hardware = decodeVideoHardware(
+                "media/h264-baseline-320x240-25fps.mp4", type, false);
+            CHECK(hardware.packets == expected.packets);
+            CHECK(hardware.frames == expected.frames);
+            CHECK(hardware.hardwareFrames == expected.frames);
+            CHECK(hardware.softwareFrames == 0);
+            CHECK(hardware.eof);
+
+            // Enabling the transfer must return system memory frames only.
+            if (avtest::isQsvTransferBroken(type)) {
+                WARN("Skipping system memory transfer: broken with this FFmpeg and libmfx runtime");
+            } else {
+                auto const software = decodeVideoHardware(
+                    "media/h264-baseline-320x240-25fps.mp4", type, true);
+                CHECK(software.packets == expected.packets);
+                CHECK(software.frames == expected.frames);
+                CHECK(software.hardwareFrames == 0);
+                CHECK(software.softwareFrames == expected.frames);
+                CHECK(software.eof);
+            }
+        }
+    }
+
+    if (!anyDevice)
+        SKIP("No hardware H.264 decoder is available");
+}
+
+TEST_CASE("Hardware fixtures: zero-copy H.264 encoding")
+{
+    bool anyDevice = false;
+
+    for (const std::string &name : avtest::selectedDevices()) {
+        av::hw::DeviceType type = av::hw::DeviceType::fromName(name);
+        if (type.isNone() || !av::hw::isDeviceAvailable(type))
+            continue;
+
+        av::Codec encoderCodec = av::hw::findEncoder(AV_CODEC_ID_H264, type);
+        if (!encoderCodec.raw())
+            continue;
+
+        anyDevice = true;
+
+        if (avtest::isQsvEncoderUnavailable(type)) {
+            WARN("Skipping " << name << " zero-copy encoding: encoder unavailable in this FFmpeg runtime");
+            continue;
+        }
+
+        DYNAMIC_SECTION("device " << name) {
+            av::VideoFrame frame = decodeFirstHardwareFrame(
+                "media/h264-baseline-320x240-25fps.mp4", type);
+            REQUIRE(frame.isHwFrame());
+
+            std::error_code ec;
+            av::hw::FramesContext hwFrames = frame.hwFramesContext();
+            REQUIRE(hwFrames.isValid());
+
+            av::VideoEncoderContext enc{encoderCodec};
+            enc.setWidth(hwFrames.width());
+            enc.setHeight(hwFrames.height());
+            enc.setTimeBase(av::Rational{1, 25});
+            enc.setFrameRate(av::Rational{25, 1});
+            enc.setBitRate(500'000);
+
+            // Reuse the decoder frames context: no upload or copy happens.
+            enc.configureHwEncoding(hwFrames, ec);
+            REQUIRE_FALSE(ec);
+            REQUIRE(enc.isHwEncoding());
+            REQUIRE_FALSE(enc.isHwAutoUpload());
+
+            enc.open(av::Codec(), ec);
+            REQUIRE_FALSE(ec);
+
+            frame.setTimeBase(enc.timeBase());
+            frame.setPts(av::Timestamp(0, enc.timeBase()));
+
+            std::size_t packets = 0;
+            av::Packet packet = enc.encode(frame, ec);
+            REQUIRE_FALSE(ec);
+            if (packet)
+                ++packets;
+
+            for (;;) {
+                packet = enc.encode(ec);
+                REQUIRE_FALSE(ec);
+                if (!packet)
+                    break;
+                ++packets;
+            }
+
+            CHECK(packets > 0);
+        }
+    }
+
+    if (!anyDevice)
+        SKIP("No hardware H.264 decoder and encoder pair is available");
 }
 
 #endif // AVCPP_HAS_AVFORMAT && defined(AVCPP_TEST_DATA_DIR)

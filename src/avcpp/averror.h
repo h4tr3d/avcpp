@@ -62,6 +62,13 @@ enum class Errors
     MixBufferSinkAccess,
 
     CodecUnsupportedOperation,
+
+    HardwareDeviceUnavailable,
+    HardwareDeviceInvalid,
+    HardwareConfigNotFound,
+    HardwareFramesInvalid,
+    HardwareTransferUnsupported,
+    HardwareCodecNotFound,
 };
 
 class OptionalErrorCode

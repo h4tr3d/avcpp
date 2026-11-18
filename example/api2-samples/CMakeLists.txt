@@ -25,6 +25,10 @@ set(TARGETS
   api2-demux-seek
   api2-remux
   api2-hw-encode
+  api2-hw-probe
+  api2-hw-decode
+  api2-hw-transcode
+  api2-hw-scale
   api2-decode-raw-h264
   api2-send-receive
   api2-subtitles
@@ -38,6 +42,9 @@ if (AV_DISABLE_AVFORMAT)
     api2-decode-encode-audio
     api2-decode-filter-encode
     api2-hw-encode
+    api2-hw-decode
+    api2-hw-transcode
+    api2-hw-scale
     api2-decode-audio
     api2-remux
     api2-scale-video

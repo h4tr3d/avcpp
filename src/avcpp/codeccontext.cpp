@@ -33,7 +33,160 @@ make_error_pair(int status)
     return make_pair(status, nullptr);
 }
 
+/**
+ * @brief Decoder get_format() callback for hardware decoding.
+ *
+ * The device type comes from hw_device_ctx, so the callback does not depend on
+ * AVCodecContext::opaque. The callback returns the hardware format advertised
+ * by the codec and the device. When no format matches, it returns
+ * AV_PIX_FMT_NONE and avcodec_open2() fails. There is no software fallback.
+ */
+enum AVPixelFormat hwGetFormat(AVCodecContext* ctx, const enum AVPixelFormat* formats)
+{
+    if (!ctx || !ctx->hw_device_ctx || !ctx->codec)
+        return AV_PIX_FMT_NONE;
+
+    const AVHWDeviceContext* device =
+        reinterpret_cast<const AVHWDeviceContext*>(ctx->hw_device_ctx->data);
+
+    for (int index = 0;; ++index) {
+        const AVCodecHWConfig* cfg = avcodec_get_hw_config(ctx->codec, index);
+        if (!cfg)
+            break;
+        if (cfg->device_type != device->type)
+            continue;
+        // FFmpeg 4.4 QSV advertises only HW_FRAMES_CTX even though its decoder
+        // accepts hw_device_ctx and allocates frames from it. Accept both
+        // methods: the device context is the only requirement here.
+        if (!(cfg->methods & (AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX |
+                              AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX)))
+            continue;
+
+        for (const AVPixelFormat* fmt = formats; *fmt != AV_PIX_FMT_NONE; ++fmt) {
+            if (*fmt == cfg->pix_fmt)
+                return *fmt;
+        }
+    }
+
+    return AV_PIX_FMT_NONE;
 }
+
+/**
+ * @brief Chooses a software pixel format for a hardware frames context.
+ *
+ * The requested format wins. Otherwise the format of the codec context is used
+ * when the device advertises it, then NV12, then YUV420P, then the first format
+ * advertised by the device. NV12 and YUV420P are preferred explicitly because
+ * they cover most hardware upload and decode paths.
+ */
+PixelFormat chooseHwSwFormat(const AVCodecContext* ctx,
+                             PixelFormat requested,
+                             const hw::DeviceContext& device)
+{
+    if (requested.get() != AV_PIX_FMT_NONE)
+        return requested;
+
+    std::error_code ec;
+    hw::FrameConstraints constraints = hw::FrameConstraints::query(device, ec);
+
+    auto advertised = [&constraints](AVPixelFormat format) {
+        for (PixelFormat candidate : constraints.swFormats()) {
+            if (candidate.get() == format)
+                return true;
+        }
+        return false;
+    };
+
+    if (ctx && ctx->pix_fmt != AV_PIX_FMT_NONE && advertised(ctx->pix_fmt))
+        return PixelFormat(ctx->pix_fmt);
+    if (advertised(AV_PIX_FMT_NV12))
+        return PixelFormat(AV_PIX_FMT_NV12);
+    if (advertised(AV_PIX_FMT_YUV420P))
+        return PixelFormat(AV_PIX_FMT_YUV420P);
+    for (PixelFormat format : constraints.swFormats())
+        return format;
+
+    // No list from the device: keep the codec format, if any.
+    if (ctx && ctx->pix_fmt != AV_PIX_FMT_NONE)
+        return PixelFormat(ctx->pix_fmt);
+
+    return PixelFormat(AV_PIX_FMT_NONE);
+}
+
+/**
+ * @brief Derives a hardware frames context for decoders that require one.
+ *
+ * Some decoders advertise hardware decoding only through
+ * AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX; FFmpeg 4.x QSV is the main example.
+ * The public avcpp API takes a device context only, so the frames context is
+ * derived here. Without it FFmpeg 4.x silently falls back to software decoding
+ * inside avcodec_open2().
+ *
+ * @return An empty error code when the device context is not used, an error
+ *         otherwise.
+ */
+std::error_code prepareHwDecoderFrames(AVCodecContext* ctx, const AVCodec* codec)
+{
+    if (!ctx || !ctx->hw_device_ctx || ctx->hw_frames_ctx || !codec)
+        return {};
+
+    const AVHWDeviceContext* device =
+        reinterpret_cast<const AVHWDeviceContext*>(ctx->hw_device_ctx->data);
+
+    const AVCodecHWConfig* framesOnly = nullptr;
+    for (int index = 0;; ++index) {
+        const AVCodecHWConfig* cfg = avcodec_get_hw_config(codec, index);
+        if (!cfg)
+            break;
+        if (cfg->device_type != device->type)
+            continue;
+        // The codec allocates the frames itself, a device context is enough.
+        if (cfg->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX)
+            return {};
+        if (!framesOnly && cfg->pix_fmt != AV_PIX_FMT_NONE &&
+            (cfg->methods & AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX))
+            framesOnly = cfg;
+    }
+
+    if (!framesOnly) {
+        // No configuration for this device type: fail now instead of letting
+        // FFmpeg report the problem on the first decoded packet.
+        return make_error_code(Errors::HardwareConfigNotFound);
+    }
+
+    const int width  = ctx->coded_width  > 0 ? ctx->coded_width  : ctx->width;
+    const int height = ctx->coded_height > 0 ? ctx->coded_height : ctx->height;
+    if (width <= 0 || height <= 0)
+        return make_error_code(Errors::HardwareFramesInvalid);
+
+    const PixelFormat swFormat =
+        chooseHwSwFormat(ctx, PixelFormat(AV_PIX_FMT_NONE),
+                         hw::DeviceContext::wrap(ctx->hw_device_ctx));
+    if (swFormat.get() == AV_PIX_FMT_NONE)
+        return make_ffmpeg_error(AVERROR(EINVAL));
+
+    std::error_code ec;
+    hw::FramesContext frames = hw::FramesContext::create(
+        hw::DeviceContext::wrap(ctx->hw_device_ctx),
+        PixelFormat(framesOnly->pix_fmt), swFormat, width, height, 0, ec);
+    if (!frames.isValid())
+        return ec ? ec : make_ffmpeg_error(AVERROR(EINVAL));
+
+    AVBufferRef* ref = av_buffer_ref(frames.bufferRef());
+    if (!ref)
+        return make_ffmpeg_error(AVERROR(ENOMEM));
+
+    ctx->hw_frames_ctx = ref;
+    return {};
+}
+
+bool sameHwFramesContext(const AVFrame* frame, const AVBufferRef* frames) noexcept
+{
+    return frame && frame->hw_frames_ctx && frames &&
+           frame->hw_frames_ctx->buffer == frames->buffer;
+}
+
+} // namespace
 
 #if AVCPP_HAS_AVFORMAT
 GenericCodecContext::GenericCodecContext(Stream st)
@@ -240,6 +393,66 @@ VideoDecoderContext &VideoDecoderContext::operator=(VideoDecoderContext&& other)
     return moveOperator(std::move(other));
 }
 
+void VideoDecoderContext::setHwDeviceContext(const hw::DeviceContext& device, OptionalErrorCode ec)
+{
+    clear_if(ec);
+
+    if (!isValid()) {
+        throws_if(ec, Errors::CodecInvalid);
+        return;
+    }
+    if (isOpened()) {
+        throws_if(ec, Errors::CodecAlreadyOpened);
+        return;
+    }
+    if (!device.isValid()) {
+        throws_if(ec, Errors::HardwareDeviceInvalid);
+        return;
+    }
+
+    AVBufferRef* ref = av_buffer_ref(device.bufferRef());
+    if (!ref) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return;
+    }
+
+    av_buffer_unref(&m_raw->hw_device_ctx);
+    m_raw->hw_device_ctx = ref;
+    m_raw->get_format    = hwGetFormat;
+    m_hwDevice           = device;
+}
+
+void VideoDecoderContext::clearHwDeviceContext() noexcept
+{
+    if (isValid()) {
+        av_buffer_unref(&m_raw->hw_device_ctx);
+        m_raw->get_format = avcodec_default_get_format;
+    }
+    m_hwDevice = {};
+}
+
+hw::DeviceContext VideoDecoderContext::hwDeviceContext() const noexcept
+{
+    return m_hwDevice;
+}
+
+hw::FramesContext VideoDecoderContext::hwFramesContext() const noexcept
+{
+    if (!isValid() || !m_raw->hw_frames_ctx)
+        return m_hwFrames;
+    return hw::FramesContext::wrap(m_raw->hw_frames_ctx);
+}
+
+void VideoDecoderContext::setHwTransferToSystem(bool enabled) noexcept
+{
+    m_hwTransferToSystem = enabled;
+}
+
+bool VideoDecoderContext::isHwTransferToSystem() const noexcept
+{
+    return m_hwTransferToSystem;
+}
+
 VideoFrame VideoDecoderContext::decode(const Packet &packet, OptionalErrorCode ec, bool autoAllocateFrame)
 {
     return decodeVideo(ec, packet, 0, nullptr, autoAllocateFrame);
@@ -262,6 +475,11 @@ VideoFrame VideoDecoderContext::receive(OptionalErrorCode ec, bool autoAllocateF
 
     VideoFrame outFrame;
     if (!autoAllocateFrame) {
+        if (isValid() && (m_raw->hw_device_ctx || m_raw->hw_frames_ctx)) {
+            // A hardware pixel format cannot be allocated in system memory.
+            throws_if(ec, Errors::HardwareTransferUnsupported);
+            return VideoFrame();
+        }
         outFrame = {pixelFormat(), width(), height(), 32};
         if (!outFrame.isValid()) {
             throws_if(ec, Errors::FrameInvalid);
@@ -273,6 +491,12 @@ VideoFrame VideoDecoderContext::receive(OptionalErrorCode ec, bool autoAllocateF
     if (st) {
         throws_if(ec, st);
         return VideoFrame();
+    }
+
+    if (m_hwTransferToSystem && outFrame.isHwFrame()) {
+        outFrame = outFrame.toSystemMemory(AV_PIX_FMT_NONE, ec);
+        if (ec && *ec)
+            return VideoFrame();
     }
 
     if (outFrame && outFrame.pictureType() == AV_PICTURE_TYPE_NONE && outFrame.isKeyFrame()) {
@@ -290,6 +514,11 @@ VideoFrame VideoDecoderContext::decodeVideo(OptionalErrorCode ec, const Packet &
     VideoFrame outFrame;
     if (!autoAllocateFrame)
     {
+        if (isValid() && (m_raw->hw_device_ctx || m_raw->hw_frames_ctx)) {
+            // A hardware pixel format cannot be allocated in system memory.
+            throws_if(ec, Errors::HardwareTransferUnsupported);
+            return VideoFrame();
+        }
         outFrame = {pixelFormat(), width(), height(), 32};
 
         if (!outFrame.isValid())
@@ -310,6 +539,12 @@ VideoFrame VideoDecoderContext::decodeVideo(OptionalErrorCode ec, const Packet &
     if (!gotFrame)
         return VideoFrame();
 
+    if (m_hwTransferToSystem && outFrame.isHwFrame()) {
+        outFrame = outFrame.toSystemMemory(AV_PIX_FMT_NONE, ec);
+        if (ec && *ec)
+            return VideoFrame();
+    }
+
     outFrame.setPictureType(AV_PICTURE_TYPE_I);
 
     if (decodedBytes)
@@ -328,6 +563,227 @@ VideoEncoderContext &VideoEncoderContext::operator=(VideoEncoderContext&& other)
     return moveOperator(std::move(other));
 }
 
+void VideoEncoderContext::setHwDeviceContext(const hw::DeviceContext& device, OptionalErrorCode ec)
+{
+    clear_if(ec);
+
+    if (!isValid()) {
+        throws_if(ec, Errors::CodecInvalid);
+        return;
+    }
+    if (isOpened()) {
+        throws_if(ec, Errors::CodecAlreadyOpened);
+        return;
+    }
+    if (!device.isValid()) {
+        throws_if(ec, Errors::HardwareDeviceInvalid);
+        return;
+    }
+
+    AVBufferRef* ref = av_buffer_ref(device.bufferRef());
+    if (!ref) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return;
+    }
+
+    av_buffer_unref(&m_raw->hw_device_ctx);
+    m_raw->hw_device_ctx = ref;
+    m_hwDevice           = device;
+}
+
+void VideoEncoderContext::clearHwDeviceContext() noexcept
+{
+    if (isValid())
+        av_buffer_unref(&m_raw->hw_device_ctx);
+    m_hwDevice = {};
+}
+
+void VideoEncoderContext::setHwFramesContext(const hw::FramesContext& frames, OptionalErrorCode ec)
+{
+    clear_if(ec);
+
+    if (!isValid()) {
+        throws_if(ec, Errors::CodecInvalid);
+        return;
+    }
+    if (isOpened()) {
+        throws_if(ec, Errors::CodecAlreadyOpened);
+        return;
+    }
+    if (!frames.isValid()) {
+        throws_if(ec, Errors::HardwareFramesInvalid);
+        return;
+    }
+
+    AVBufferRef* ref = av_buffer_ref(frames.bufferRef());
+    if (!ref) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return;
+    }
+
+    av_buffer_unref(&m_raw->hw_frames_ctx);
+    av_buffer_unref(&m_raw->hw_device_ctx);
+    m_raw->hw_frames_ctx = ref;
+    m_raw->pix_fmt       = frames.format();
+    m_hwFrames           = frames;
+    m_hwDevice           = frames.device();
+}
+
+void VideoEncoderContext::clearHwFramesContext() noexcept
+{
+    if (isValid())
+        av_buffer_unref(&m_raw->hw_frames_ctx);
+    m_hwFrames = {};
+}
+
+hw::DeviceContext VideoEncoderContext::hwDeviceContext() const noexcept
+{
+    return m_hwDevice;
+}
+
+hw::FramesContext VideoEncoderContext::hwFramesContext() const noexcept
+{
+    return m_hwFrames;
+}
+
+void VideoEncoderContext::configureHwEncoding(const hw::DeviceContext& device,
+                                              hw::EncodingMode mode,
+                                              PixelFormat swFormat,
+                                              OptionalErrorCode ec)
+{
+    clear_if(ec);
+
+    if (!isValid()) {
+        throws_if(ec, Errors::CodecInvalid);
+        return;
+    }
+    if (isOpened()) {
+        throws_if(ec, Errors::CodecAlreadyOpened);
+        return;
+    }
+    if (!device.isValid()) {
+        throws_if(ec, Errors::HardwareDeviceInvalid);
+        return;
+    }
+
+    Codec c = codec();
+    if (!c.raw()) {
+        throws_if(ec, Errors::HardwareCodecNotFound);
+        return;
+    }
+
+    std::optional<AVCodecHWConfig> framesCfg =
+        hw::findCodecConfig(c, device.type(), AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX);
+    if (framesCfg && framesCfg->pix_fmt == AV_PIX_FMT_NONE)
+        framesCfg.reset();
+
+    const bool framesRequired = (mode == hw::EncodingMode::Frames);
+
+    if (mode != hw::EncodingMode::Device && framesCfg) {
+        PixelFormat sw = chooseHwSwFormat(m_raw, swFormat, device);
+        if (sw.get() != AV_PIX_FMT_NONE && width() > 0 && height() > 0) {
+            std::error_code framesEc;
+            hw::FramesContext frames =
+                hw::FramesContext::create(device,
+                                          PixelFormat(framesCfg->pix_fmt),
+                                          sw,
+                                          width(),
+                                          height(),
+                                          0,
+                                          framesEc);
+            if (frames.isValid()) {
+                AVBufferRef* ref = av_buffer_ref(frames.bufferRef());
+                if (!ref) {
+                    throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+                    return;
+                }
+                av_buffer_unref(&m_raw->hw_frames_ctx);
+                // The frames context already carries the device: keep only it,
+                // as the device mode below does.
+                av_buffer_unref(&m_raw->hw_device_ctx);
+                m_raw->hw_frames_ctx = ref;
+                m_raw->pix_fmt       = frames.format();
+                m_hwFrames           = frames;
+                m_hwDevice           = device;
+                m_hwEncodingMode     = hw::EncodingMode::Frames;
+                return;
+            }
+
+            if (framesRequired) {
+                throws_if(ec, framesEc ? framesEc
+                                       : make_error_code(Errors::HardwareFramesInvalid));
+                return;
+            }
+
+            fflog(AV_LOG_WARNING,
+                  "Cannot create a hardware frames context: %s, "
+                  "falling back to the device context\n",
+                  framesEc.message().c_str());
+        } else if (framesRequired) {
+            throws_if(ec, Errors::HardwareFramesInvalid);
+            return;
+        }
+    } else if (framesRequired) {
+        throws_if(ec, Errors::HardwareConfigNotFound);
+        return;
+    }
+
+    // Device context mode: used as a direct fallback or when the codec has no
+    // frames configuration.
+    std::optional<AVCodecHWConfig> deviceCfg =
+        hw::findCodecConfig(c, device.type(), AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX);
+    if (!deviceCfg) {
+        throws_if(ec, Errors::HardwareConfigNotFound);
+        return;
+    }
+
+    AVBufferRef* ref = av_buffer_ref(device.bufferRef());
+    if (!ref) {
+        throws_if(ec, AVERROR(ENOMEM), ffmpeg_category());
+        return;
+    }
+
+    av_buffer_unref(&m_raw->hw_device_ctx);
+    m_raw->hw_device_ctx = ref;
+    av_buffer_unref(&m_raw->hw_frames_ctx);
+    m_hwFrames = {};
+    if (deviceCfg->pix_fmt != AV_PIX_FMT_NONE)
+        m_raw->pix_fmt = deviceCfg->pix_fmt;
+    m_hwDevice       = device;
+    m_hwEncodingMode = hw::EncodingMode::Device;
+}
+
+void VideoEncoderContext::configureHwEncoding(const hw::FramesContext& frames,
+                                              OptionalErrorCode ec)
+{
+    setHwFramesContext(frames, ec);
+    if (ec && *ec)
+        return;
+
+    m_hwEncodingMode = hw::EncodingMode::Frames;
+    m_hwAutoUpload   = false;
+}
+
+hw::EncodingMode VideoEncoderContext::hwEncodingMode() const noexcept
+{
+    return m_hwEncodingMode;
+}
+
+bool VideoEncoderContext::isHwEncoding() const noexcept
+{
+    return isValid() && (m_raw->hw_frames_ctx || m_raw->hw_device_ctx);
+}
+
+void VideoEncoderContext::setHwAutoUpload(bool enabled) noexcept
+{
+    m_hwAutoUpload = enabled;
+}
+
+bool VideoEncoderContext::isHwAutoUpload() const noexcept
+{
+    return m_hwAutoUpload;
+}
+
 Packet VideoEncoderContext::encode(OptionalErrorCode ec)
 {
     return encode(VideoFrame(nullptr), ec);
@@ -337,9 +793,23 @@ Packet VideoEncoderContext::encode(const VideoFrame &inFrame, OptionalErrorCode 
 {
     clear_if(ec);
 
+    VideoFrame uploaded;
+    const VideoFrame* frame = &inFrame;
+
+    if (inFrame.isValid() && !inFrame.isHwFrame() && m_hwAutoUpload && m_hwFrames.isValid()) {
+        uploaded = inFrame.toHwFrame(m_hwFrames, ec);
+        if (ec && *ec)
+            return Packet();
+        frame = &uploaded;
+    } else if (inFrame.isHwFrame() && isValid() && m_raw->hw_frames_ctx &&
+               !sameHwFramesContext(inFrame.raw(), m_raw->hw_frames_ctx)) {
+        throws_if(ec, Errors::HardwareTransferUnsupported);
+        return Packet();
+    }
+
     int gotPacket = 0;
     Packet packet;
-    auto st = encodeCommon(packet, inFrame, gotPacket, avcodec_encode_video_legacy);
+    auto st = encodeCommon(packet, *frame, gotPacket, avcodec_encode_video_legacy);
 
     if (get<1>(st)) {
         throws_if(ec, get<0>(st), *get<1>(st));
@@ -365,7 +835,21 @@ bool VideoEncoderContext::send(const VideoFrame &frame, OptionalErrorCode ec)
 {
     clear_if(ec);
 
-    auto st = sendCommon(frame);
+    VideoFrame uploaded;
+    const VideoFrame* inFrame = &frame;
+
+    if (frame.isValid() && !frame.isHwFrame() && m_hwAutoUpload && m_hwFrames.isValid()) {
+        uploaded = frame.toHwFrame(m_hwFrames, ec);
+        if (ec && *ec)
+            return false;
+        inFrame = &uploaded;
+    } else if (frame.isHwFrame() && isValid() && m_raw->hw_frames_ctx &&
+               !sameHwFramesContext(frame.raw(), m_raw->hw_frames_ctx)) {
+        throws_if(ec, Errors::HardwareTransferUnsupported);
+        return false;
+    }
+
+    auto st = sendCommon(*inFrame);
     if (st) {
         // not an error in common
         if (st == make_ffmpeg_condition(AVERROR(EAGAIN)))
@@ -394,6 +878,11 @@ void CodecContext2::swap(CodecContext2 &other)
     swap(m_eof, other.m_eof);
 #endif
     swap(m_direction, other.m_direction);
+    swap(m_hwDevice, other.m_hwDevice);
+    swap(m_hwFrames, other.m_hwFrames);
+    swap(m_hwTransferToSystem, other.m_hwTransferToSystem);
+    swap(m_hwAutoUpload, other.m_hwAutoUpload);
+    swap(m_hwEncodingMode, other.m_hwEncodingMode);
     swap(m_raw, other.m_raw);
 }
 
@@ -736,6 +1225,16 @@ void CodecContext2::setTimeBase(const Rational &value) noexcept
     RAW_SET2(isValid() && !isOpened(), time_base, value.getValue());
 }
 
+Rational CodecContext2::frameRate() const noexcept
+{
+    return RAW_GET(framerate, AVRational());
+}
+
+void CodecContext2::setFrameRate(const Rational &value) noexcept
+{
+    RAW_SET2(isValid() && !isOpened(), framerate, value.getValue());
+}
+
 #if AVCPP_HAS_AVFORMAT
 const Stream &CodecContext2::stream() const noexcept
 {
@@ -976,6 +1475,15 @@ void CodecContext2::open(const Codec &codec, AVDictionary **options, OptionalErr
     if (isOpened() || !isValid()) {
         throws_if(ec, isOpened() ? Errors::CodecAlreadyOpened : Errors::CodecInvalid);
         return;
+    }
+
+    if (m_direction == Direction::Decoding) {
+        const AVCodec* hwCodec = codec.raw() ? codec.raw() : m_raw->codec;
+        std::error_code hwEc = prepareHwDecoderFrames(m_raw, hwCodec);
+        if (hwEc) {
+            throws_if(ec, hwEc);
+            return;
+        }
     }
 
     int stat = avcodec_open2(m_raw, codec.raw(), options);
