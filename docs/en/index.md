@@ -51,14 +51,18 @@ Call `av::init()` once before using anything else, then link against
 ## Where to go next
 
 - @ref guide_building — installing, integrating and configuring the build.
+- @ref guide_getting_started — the smallest program that decodes a file.
+- @ref guide_decode — packets to frames, flushing and timestamps.
+- @ref guide_encode — frames to packets, and writing a container.
+- @ref guide_remux — changing containers without re-encoding.
+- @ref guide_filters — filter graphs between the decoder and the encoder.
+- @ref guide_subtitles — text, ASS and bitmap subtitles.
 - @ref guide_hw_codecs — hardware decoding, encoding and zero-copy pipelines.
-- @ref core — errors, logging, time bases, buffers, dictionaries and helpers.
-- @ref avformat — containers, streams and packets.
-- @ref codec — codecs and codec contexts.
-- @ref frame — frames, pixel and sample formats, rescalers.
-- @ref filter — filter graphs.
-- @ref hw — hardware devices and zero-copy pipelines.
-- @ref subtitle — subtitle frames and their payloads.
+- @ref guide_errors — the `OptionalErrorCode` convention and the error categories.
+- @ref api_map — which type does which job, in one table.
+
+The groups of the API reference: @ref core, @ref avformat, @ref codec, @ref frame, @ref filter,
+@ref hw, @ref subtitle.
 
 Example programs live in `example/api2-samples/` in the repository; each one is a
 self-contained `.cpp` file that can be built and run on its own.

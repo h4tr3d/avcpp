@@ -88,7 +88,7 @@ CI uses Ubuntu's doxygen 1.9.1; local work uses 1.18.0.
 | D9 | `/avcpp/{version}/` is the English site (flat, as doxygen emits it: `classav_1_1X.html`, `guide_*.html`), `/avcpp/{version}/ru/` holds Russian guides only | `/avcpp/{lang}/{version}/`; `/avcpp/{version}/{lang}/`; a hand-built `api/` and `guide/` split |
 | D10 | Pin doxygen 1.18.x from the official release tarball; `EXTRACT_ALL = NO`; warning **ratchet** against a checked-in per-file baseline; docs build on PRs, deploy on `master` and on tags into `gh-pages` | `WARN_AS_ERROR = YES` today; keep `EXTRACT_ALL = YES`; `actions/deploy-pages` |
 | D11 | All 21 samples get `@example`; about six are quoted in guides via `@snippet`; each sample gains a header comment | `@example` only; separate Markdown copies of the code |
-| D12 | Translation state lives in `docs/translations.yaml` (`source_sha`, `date` per page pair) | front matter in the page; `@htmlonly` metadata alias; existence-only check |
+| D12 | `docs/translations.yaml` declares only the page pairs and how complete each is; staleness is derived from git by comparing the last commit on each side | front matter in the page; `@htmlonly` metadata alias; a hand-maintained `source_sha` (it is stale the moment the pair is committed) |
 | D13 | First-line summary is the brief (`JAVADOC_AUTOBRIEF` is already `YES` in the tracked config); `@` tags; `///` for one-line docs, `/** ... */` when tags are present | `@brief` everywhere; all `///`; all block comments |
 | D14 | Authoritative `doxygen` build is a CMake target behind `AVCPP_ENABLE_DOCS` (default OFF) | shell script only; CI only |
 
@@ -111,6 +111,7 @@ docs/
   ru.doxyfile                # includes Doxyfile, overrides INPUT/OUTPUT_LANGUAGE/HTML_OUTPUT
   build.sh                   # builds <out>/<major.minor>/, <out>/<major.minor>/ru/, latest/
   check-warnings.sh          # ratchet against docs/doxygen-baseline.txt (--update regenerates)
+  check-translations.sh      # reports pairs whose English side moved ahead
   site-index.sh              # regenerates the version chooser and 404.html for a site tree
   translations.yaml          # en/ru pairing and staleness metadata
   doxygen-baseline.txt       # accepted warning counts per file
@@ -120,12 +121,13 @@ docs/
   en/
     index.md                 # @mainpage: what, why, three-line install, where to go
     building.md              # full build matrix, moved out of the landing page
-    guide/*.md               # M2
-    api-map.md               # M2: "which type do I need for which job"
+    guide/*.md               # getting_started, decode, encode, remux, filters, subtitles,
+                             # errors, hw_codecs
+    api-map.md               # "which type do I need for which job"
   ru/
     index.md                 # @mainpage for the Russian build
-    api-nav.md               # M2: Russian navigator over the English reference
-    guide/*.md               # M1, M2
+    api-nav.md               # Russian navigator over the English reference
+    guide/*.md               # mirrors of the English guides
 example/api2-samples/*.cpp   # M2, M4: @example + header comment per sample
 doc/                         # generated output of a bare `doxygen`, git-ignored
 build/docs/site/             # generated site of docs/build.sh, git-ignored
@@ -219,20 +221,19 @@ Each guide exists as `docs/en/guide/<name>.md` and `docs/ru/guide/<name>.md`, jo
 with `@page`/`@subpage` and `@tableofcontents`, named with a stable page id (`guide_decode`) so
 anchors survive retitling.
 
-| page id | content |
-| --- | --- |
-| `index` | landing: what avcpp is, the one-paragraph pitch, install in three lines, five links |
-| `building` | current `README.md` build matrix, verbatim, plus the `AVCPP_ENABLE_DOCS` section |
-| `getting_started` | first program: open a file, read one frame, print its properties, close |
-| `decode` | demux → decode → frame, `@snippet` from `api2-decode.cpp` |
-| `encode` | encoder setup, timestamps, `@snippet` from `api2-decode-encode-video.cpp` |
-| `remux` | packet copy without re-encoding, `@snippet` from `api2-remux.cpp` |
-| `filters` | graph construction, buffer source/sink, `@snippet` from `api2-decode-filter-encode.cpp` |
-| `subtitles` | text and bitmap subtitles, the legacy codec path, `@snippet` from `api2-subtitles.cpp` |
-| `errors` | `OptionalErrorCode`, `throws()`, the `ec` convention across the API |
-| `hw_codecs` | the existing Russian brief, translated, diagrams from `docs/img/` (M1) |
-| `api_map` | "which type for which job", one screen, English only |
-| `api_nav` | Russian navigator: tasks → English reference pages (D2) |
+| page id | content | en | ru |
+| --- | --- | --- | --- |
+| `index` | landing: what avcpp is, the pitch, install in three lines, links | yes | yes (partial) |
+| `building` | the build matrix, the integration recipes, the docs targets | yes | no |
+| `getting_started` | first program: open a file, decode it, print frames | yes | yes |
+| `decode` | packets → frames, the send/receive contract, flushing, timestamps | yes | yes |
+| `encode` | encoder setup, time bases, draining, `writeTrailer()` | yes | yes |
+| `remux` | copying streams without re-encoding, what cannot be remuxed | yes | yes |
+| `filters` | graph construction, buffer source/sink, pushing and pulling | yes | yes |
+| `subtitles` | the legacy codec path, rect kinds, encoder requirements | yes | yes |
+| `errors` | `OptionalErrorCode`, categories, the full list of frequent codes | yes | yes |
+| `hw_codecs` | hardware decoding, encoding, zero copy, platform limits | yes | yes |
+| `api_map` / `api_nav` | "which type for which job" | yes | yes (navigator over the English reference) |
 
 ## 8. Examples
 
@@ -314,11 +315,18 @@ and each language page links to the group page of its own build.
 Acceptance: both language builds show the article with diagrams; the RU page links into the
 English `hw` group without dead links; the translation checker reports the pair as current.
 
-### M2 — beginner guides (about a week)
+### M2 — beginner guides (about a week) — done
 
-- [ ] `getting_started`, `decode`, `encode`, `remux`, `filters`, `subtitles`, `errors` in en and ru
-- [ ] snippet markers in the six corresponding samples
-- [ ] `api_map` (en) and `api_nav` (ru)
+- [x] `getting_started`, `decode`, `encode`, `remux`, `filters`, `subtitles`, `errors` in en and ru
+- [x] snippet markers in six samples (`send_receive_*`, `encoder_setup`/`encode_loop`,
+      `remux_streams`/`remux_loop`, `filter_graph`/`filter_pump`, `subtitle_decode`,
+      `legacy_decode_loop`)
+- [x] `api_map` (en) and `api_nav` (ru)
+- [x] `docs/check-translations.sh` plus the `docs-translations` target and a CI step
+
+Outcome: every guide exists in both languages, every code block is a `@snippet` from
+`example/api2-samples/`, and the Russian pages link to the English reference by relative URL —
+`@ref av::...` cannot resolve in the Russian build, which has no API pages.
 
 Acceptance: a reader with FFmpeg installed but no avcpp experience can build and run the
 `getting_started` program by following the page; every guide has a Russian counterpart listed as

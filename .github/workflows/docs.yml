@@ -65,6 +65,9 @@ jobs:
       - name: Check warnings against the baseline
         run: ./docs/check-warnings.sh
 
+      - name: Report the translation state
+        run: ./docs/check-translations.sh
+
       - name: Build the site
         run: ./docs/build.sh
 

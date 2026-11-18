@@ -150,6 +150,13 @@ if (AVCPP_ENABLE_DOCS)
         USES_TERMINAL
         VERBATIM)
 
+    add_custom_target(docs-translations
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/docs/check-translations.sh"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "Reporting the state of the Russian translations"
+        USES_TERMINAL
+        VERBATIM)
+
     add_custom_target(docs-serve
         COMMAND ${CMAKE_COMMAND} -E env
                 "AVCPP_VERSION=${AVCPP_VERSION}"

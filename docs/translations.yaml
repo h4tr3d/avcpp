@@ -3,31 +3,61 @@
 # English (docs/en) is the source of truth; Russian (docs/ru) mirrors it.
 # The API reference is not translated: it is generated once, in English.
 #
-# Fields:
-#   en            path of the English page, relative to docs/
-#   ru            path of the Russian page, relative to docs/
-#   source_sha    commit of the English page this translation was made from
-#   translated_at date of that commit, YYYY-MM-DD
-#   status        complete | partial | stale
+# This file declares which pages form a pair and how complete the translation
+# is. Staleness is NOT stored here: docs/check-translations.sh derives it from
+# git history by comparing the last commit that touched the English page with
+# the last commit that touched the Russian one. A pair created in one commit is
+# therefore current, and a pair edited only on the English side is reported.
 #
-# docs/check-warnings.sh does not read this file yet; docs/check-translations.sh
-# (M2) will report pages whose English source changed after source_sha.
-# A pair is never a build failure: stale translations are a warning.
+# status:
+#   complete  the Russian page covers the English page
+#   partial   the Russian page is deliberately shorter (landing pages, api-nav)
+#
+# Every page under docs/en/ must either appear in `pages` or be listed in
+# `untranslated`; the checker reports anything else as an untracked page.
 
-version: 1
+version: 2
 
 pages:
   - en: en/index.md
     ru: ru/index.md
-    source_sha: e4feca087c88bf5bd419054fc1aebcdc88a5028e
-    translated_at: 2026-11-18
     status: partial
+
+  - en: en/guide/getting_started.md
+    ru: ru/guide/getting_started.md
+    status: complete
+
+  - en: en/guide/decode.md
+    ru: ru/guide/decode.md
+    status: complete
+
+  - en: en/guide/encode.md
+    ru: ru/guide/encode.md
+    status: complete
+
+  - en: en/guide/remux.md
+    ru: ru/guide/remux.md
+    status: complete
+
+  - en: en/guide/filters.md
+    ru: ru/guide/filters.md
+    status: complete
+
+  - en: en/guide/subtitles.md
+    ru: ru/guide/subtitles.md
+    status: complete
 
   - en: en/guide/hw_codecs.md
     ru: ru/guide/hw_codecs.md
-    source_sha: cd7d979
-    translated_at: 2026-11-18
     status: complete
+
+  - en: en/guide/errors.md
+    ru: ru/guide/errors.md
+    status: complete
+
+  - en: en/api-map.md
+    ru: ru/api-nav.md
+    status: partial
 
 untranslated:
   - en/building.md

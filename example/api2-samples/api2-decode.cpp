@@ -89,6 +89,7 @@ int main(int argc, char **argv)
         }
 
 
+    //! [legacy_decode_loop]
         while (Packet pkt = ictx.readPacket(ec)) {
             if (ec) {
                 clog << "Packet reading error: " << ec << ", " << ec.message() << endl;
@@ -143,6 +144,7 @@ int main(int argc, char **argv)
 
         }
 
+    //! [legacy_decode_loop]
         clog << "Flush frames;\n";
         while (true) {
             VideoFrame frame = vdec.decode(Packet(), ec);
