@@ -5,7 +5,7 @@
 # warning, regenerate it and commit the smaller numbers with the same PR.
 #
 # Format: <path> <TAB> <number of warnings>
-# Total: 1499 warnings
+# Total: 1337 warnings
 src/avcpp/audioresampler.h	22
 src/avcpp/avcompat.h	18
 src/avcpp/averror.h	21
@@ -28,7 +28,6 @@ src/avcpp/filters/filterpad.h	5
 src/avcpp/formatcontext.h	74
 src/avcpp/format.h	33
 src/avcpp/frame.h	121
-src/avcpp/hwcontext.h	162
 src/avcpp/linkedlistutils.h	41
 src/avcpp/packet.h	62
 src/avcpp/pixelformat.h	9

@@ -332,11 +332,33 @@ Acceptance: a reader with FFmpeg installed but no avcpp experience can build and
 `getting_started` program by following the page; every guide has a Russian counterpart listed as
 current, or is explicitly listed as untranslated in `translations.yaml`.
 
-### M3 — API coverage (3–4 weeks, rolling PRs)
+### M3 — API coverage (3–4 weeks, rolling PRs) — in progress
 
-Order: `hwcontext` (151), `codeccontext` (123), `frame` (70), `dictionary` (59), `subtitle` (50),
+Order: `hwcontext` (162), `codeccontext` (123), `frame` (70), `dictionary` (59), `subtitle` (50),
 `packet` (45), `linkedlistutils` (39), `rational` (34), `avutils` (26), `ffmpeg` (24), then the
 remaining 18 headers, then the 17 namespaces (including `av` itself).
+
+The per-file counts above were measured with the current configuration (headers only,
+`WARN_NO_PARAMDOC` on); they are larger than the numbers in §2 because that first baseline predates
+the switch to header-only parsing and the group annotations.
+
+Progress:
+
+- `hwcontext.h` — done. 162 warnings to 0: every public member, field, free function and iterator
+  typedef is documented, with `@param`/`@return` and notes on ownership and lifetime. The baseline
+  went from 1499 to 1337 warnings.
+- next: `codeccontext.h`.
+
+Notes from the first header:
+
+- Iterator boilerplate (`iterator_category`, `value_type`, `difference_type`, `pointer`,
+  `reference`) has to be documented too: doxygen reports each typedef, and hiding them with `@cond`
+  would contradict "every public member is documented".
+- Deleted copy operations cannot carry `@param`: their parameter is unnamed, so doxygen reports the
+  documented name as missing. A brief without `@param` is the correct form.
+- The `[[deprecated]]` attributes need a doc block above the attribute, otherwise doxygen invents a
+  member at a bogus `<name>:1` location (this is how `close`, `addStream` and `currentDts` were
+  fixed in M0).
 
 Rules: one header per PR, baseline shrinks in the same PR, §6 definition of done applies, no
 behavioural changes in the same commit.
