@@ -334,7 +334,7 @@ current, or is explicitly listed as untranslated in `translations.yaml`.
 
 ### M3 — API coverage (3–4 weeks, rolling PRs) — in progress
 
-Baseline: 1499 warnings at the start of M3, now **1011**.
+Baseline: 1499 warnings at the start of M3, now **885**.
 
 Done:
 
@@ -344,12 +344,14 @@ Done:
   `CodecContextBase`, the video/audio/subtitle variants and their protected plumbing. The
   send/receive contract, hardware configuration and the subtitle legacy path are described where
   they are declared, not only in the guide.
+- `ffmpeg.h` — 126 warnings to 0. `FFWrapperPtr`, `FFWrapperRef`, `PixSampleFmtWrapper`, the
+  `_log` helpers and the eight `RAW_*`/`IF_*` macros. Documenting the templates once covered 21
+  instantiations each, which is why the count collapsed.
 
 Next, by current weight:
 
 | header | warnings |
 | --- | --- |
-| `ffmpeg.h` | 126 |
 | `frame.h` | 121 |
 | `avutils.h` | 86 |
 | `formatcontext.h` | 74 |
