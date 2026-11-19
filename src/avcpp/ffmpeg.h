@@ -90,7 +90,7 @@ struct FFWrapperRef
     bool     isNull() const            {
         static const T empty = T();
         auto res = memcmp(&m_raw, &empty, sizeof(empty));
-        return (res != 0);
+        return (res == 0);
     }
 
     void _log(int level, const char *fmt) const
