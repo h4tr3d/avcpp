@@ -38,7 +38,17 @@ public:
      */
     BufferRefView() = default;
 
+    /**
+     * View an owning buffer.
+     *
+     * @param ref the buffer to view; the view borrows its pointer
+     */
     explicit BufferRefView(BufferRef& ref);
+    /**
+     * View an owning buffer, read-only.
+     *
+     * @param ref the buffer to view
+     */
     explicit BufferRefView(const BufferRef& ref);
 
     /**
@@ -168,10 +178,11 @@ public:
      *
      * Can be used to wrap static constant data with av::buffer::null_deleter.
      *
-     * @param data
-     * @param size
-     * @param opaque
-     * @param flags
+     * @param data   data buffer to wrap, not copied
+     * @param size   size of the data buffer
+     * @param free   deleter for the data; receives the opaque pointer and the data
+     * @param opaque optional argument for the deleter, may be null
+     * @param flags  AV_BUFFER_FLAG_* flags
      */
     BufferRef(const uint8_t *data, size_t size, void (*free)(void *opaque, uint8_t *data), void *opaque, int flags = 0) noexcept;
 

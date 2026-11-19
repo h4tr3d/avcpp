@@ -31,40 +31,82 @@ extern "C" {
 
 
 // Codec parameters interface
+/**
+ * Whether FFmpeg has AVCodecParameters (FFmpeg 5.0 and newer).
+ */
 #define AVCPP_USE_CODECPAR ((AVCPP_AVCODEC_VERSION_MAJOR) >= 59) // FFmpeg 5.0
 
 // New Audio Channel Layout API
+/**
+ * Whether FFmpeg has the AVChannelLayout API (libavutil 57.28 and newer).
+ */
 #define AVCPP_API_NEW_CHANNEL_LAYOUT ((AVCPP_AVUTIL_VERSION_MAJOR > 57) || (AVCPP_AVUTIL_VERSION_MAJOR == 57 && (AVCPP_AVUTIL_VERSION_MINOR >= 24)))
 // `int64_t frame_num` has been added in the 60.2, in the 61.0 it should be removed
+/**
+ * Whether AVFrame carries frame_num (libavcodec 60.2 and newer).
+ */
 #define AVCPP_API_FRAME_NUM          ((AVCPP_AVCODEC_VERSION_MAJOR > 60) || (AVCPP_AVCODEC_VERSION_MAJOR == 60 && AVCPP_AVCODEC_VERSION_MINOR >= 2))
 // use AVFormatContext::url
 #if AVCPP_HAS_AVFORMAT
+/**
+ * Whether AVFormatContext exposes its URL through the url field.
+ */
 #  define AVCPP_API_AVFORMAT_URL       ((AVCPP_AVFORMAT_VERSION_MAJOR > 58) || (AVCPP_AVFORMAT_VERSION_MAJOR == 58 && AVCPP_AVFORMAT_VERSION_MINOR >= 7))
 #endif // if AVCPP_HAS_AVFORMAT
 // net key frame flags: AV_FRAME_FLAG_KEY (FFmpeg 6.1)
+/**
+ * Whether AV_FRAME_FLAG_KEY exists for marking key frames.
+ */
 #define AVCPP_API_FRAME_KEY          ((AVCPP_AVUTIL_VERSION_MAJOR > 58) || (AVCPP_AVUTIL_VERSION_MAJOR == 58 && AVCPP_AVUTIL_VERSION_MINOR >= 29))
 // avcodec_close() support
+/**
+ * Whether avcodec_close() is still available.
+ */
 #define AVCPP_API_AVCODEC_CLOSE      (AVCPP_AVCODEC_VERSION_MAJOR < 61)
 
 // sizeof(AVPacket) is no part of the public ABI, packet must be allocated in heap
+/**
+ * Whether packets must be allocated on the heap before initialization.
+ */
 #define AVCPP_API_AVCODEC_NEW_INIT_PACKET (AVCPP_AVCODEC_VERSION_MAJOR >= 58)
 // some fields in the AVCodec structure deprecard and replaced by the call of avcodec_get_supported_config()
+/**
+ * Whether avcodec_get_supported_config() replaces the deprecated AVCodec fields.
+ */
 #define AVCPP_API_AVCODEC_GET_SUPPORTED_CONFIG (AVCPP_AVCODEC_VERSION_INT >= AV_VERSION_INT(61, 13, 100))
 #if AVCPP_HAS_AVFORMAT
 // av_stream_get_codec_timebase() deprecard now without replacement
+/**
+ * Whether av_stream_get_codec_timebase() is still available.
+ */
 #  define AVCPP_API_AVFORMAT_AV_STREAM_GET_CODEC_TIMEBASE (AVCPP_AVFORMAT_VERSION_INT < AV_VERSION_INT(61, 5, 101))
 #endif // if AVCPP_HAS_AVFORMAT
 // AVBuffer API switch to size_t
+/**
+ * Whether AVBuffer uses size_t for sizes.
+ */
 #define AVCPP_API_AVBUFFER_SIZE_T (AVCPP_AVUTIL_VERSION_MAJOR >= 57)
 // AVSideDataDescriptor exisits
+/**
+ * Whether AVSideDataDescriptor exists.
+ */
 #define AVCPP_API_HAS_AVSIDEDATADESCRIPTOR (AVCPP_AVUTIL_VERSION_INT >= AV_VERSION_INT(59, 10, 100))
 
 // Hardware device and frames contexts (libavutil/hwcontext.h)
+/**
+ * Whether the hardware context API is available in this build.
+ */
 #define AVCPP_HAS_HWCONTEXT AVCPP_HAS_AVUTIL
 // av_hwdevice_ctx_create_derived_opts() was added in FFmpeg 4.3
+/**
+ * Whether av_hwdevice_ctx_create_derived_opts() exists (FFmpeg 4.3 and newer).
+ */
 #define AVCPP_API_HWDEVICE_DERIVED_OPTS (AVCPP_AVUTIL_VERSION_INT >= AV_VERSION_INT(56, 48, 100))
 
 // Send/Receive API for the Codecs
+/**
+ * Whether the codec send/receive API is available.
+ */
 #define AVCPP_NEW_CODEC_API (AVCPP_AVCODEC_VERSION_INT >= AV_VERSION_INT(57,37,100))
 
 #if defined(__ICL) || defined (__INTEL_COMPILER)
@@ -82,6 +124,9 @@ extern "C" {
 #endif
 
 // Allow to use spece-ship operator, whem possible
+/**
+ * Whether the compiler supports operator<=> and it may be used in the public headers.
+ */
 #define AVCPP_USE_SPACESHIP_OPERATOR 0
 #if __has_include(<compare>)
 #  include <compare>
@@ -117,6 +162,12 @@ inline AVMediaType avfilter_pad_get_type(AVFilterPad *pads, int pad_idx)
 
 // Wrapper around av_free_packet()/av_packet_unref()
 #if AVCPP_AVCODEC_VERSION_INT < AV_VERSION_INT(58,8,100) // < 3.0
+/**
+ * Release a packet allocated by an older FFmpeg, where AVPacket had no unref helper.
+ */
+/**
+ * Release a packet allocated by an older FFmpeg, where AVPacket had no unref helper.
+ */
 #define avpacket_unref(p) av_free_packet(p)
 #else
 #define avpacket_unref(p) av_packet_unref(p)

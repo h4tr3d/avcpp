@@ -332,7 +332,7 @@ Acceptance: a reader with FFmpeg installed but no avcpp experience can build and
 `getting_started` program by following the page; every guide has a Russian counterpart listed as
 current, or is explicitly listed as untranslated in `translations.yaml`.
 
-### M3 — API coverage (3–4 weeks, rolling PRs) — in progress
+### M3 — API coverage (3–4 weeks, rolling PRs) — done
 
 Baseline: 1499 warnings at the start of M3, now **258**.
 
@@ -431,6 +431,20 @@ behavioural changes in the same commit.
 
 Acceptance: `WARN_IF_UNDOCUMENTED` reports zero undocumented public members across `src/avcpp`;
 `docs/doxygen-baseline.txt` is empty of member warnings; `EXTRACT_ALL = NO` stays.
+
+Outcome: zero. `docs/doxygen-baseline.txt` holds only its header, the ratchet still runs and now
+fails on the first new warning. The reference covers 149 class pages; the classes that were missing
+from the published site in M0 are present and documented.
+
+What the pass changed beyond prose:
+
+- One real bug: `FFWrapperRef::isNull()` compared with `!=` where `memcmp` returns zero on equality,
+  so it reported true for every non-empty value. Fixed in a separate commit before touching the
+  docs.
+- Two documentation blocks were placed between `template<...>` and the declaration, and several
+  inside parameter lists; the style rule and the insertion scripts now prevent both.
+- `@internal` turned out to be unusable for hiding helpers (it swallows the following tags), so the
+  FFmpeg compatibility shims are excluded from the reference by symbol instead.
 
 ### M4 — examples and polish (3–5 days)
 

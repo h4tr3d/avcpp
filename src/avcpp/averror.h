@@ -13,6 +13,12 @@
 namespace av
 {
 
+/**
+ * Errors the library raises itself, as opposed to FFmpeg's return codes.
+ *
+ * The values are carried by `avcpp_category()`, so they compare directly with an
+ * `std::error_code` obtained from any avcpp call.
+ */
 enum class Errors
 {
     NoError = 0,
@@ -78,17 +84,45 @@ enum class Errors
     HardwareCodecNotFound,
 };
 
+/**
+ * Carries the caller's choice between exceptions and error codes.
+ *
+ * A function that can fail takes an `OptionalErrorCode` as its last parameter.
+ * The default is throws(), which makes the function throw av::Exception; passing
+ * a std::error_code& makes it store the code instead. The object is a
+ * non-owning pointer to that variable, so the variable must outlive the call.
+ */
 class OptionalErrorCode
 {
     OptionalErrorCode() {}
 
 public:
+    /**
+     * Report errors through the given variable.
+     *
+     * @param ec the variable that receives the error; it must outlive the call
+     */
     OptionalErrorCode(std::error_code &ec);
 
+    /**
+     * The value that means "the caller wants no error code".
+     *
+     * @return an empty holder; used by throws() as the default argument
+     */
     static OptionalErrorCode null();
 
+    /**
+     * Whether the caller supplied an error code variable.
+     *
+     * @return `true` when a variable was passed
+     */
     operator bool() const;
 
+    /**
+     * The caller's variable.
+     *
+     * @return the variable the holder points at
+     */
     std::error_code& operator*();
 
 private:
@@ -115,8 +149,25 @@ class AvcppCategory : public std::error_category
 {
 public:
 
-    virtual const char *name() const noexcept override;
-    virtual std::string message(int ev) const override;
+    virtual     /**
+     * Name of the category.
+     *
+     * @return the category name as a static string
+     */
+    /**
+     * Name of the category.
+     *
+     * @return the category name as a static string
+     */
+const char *name() const noexcept override;
+    virtual     /**
+     * Text for an error value.
+     *
+     * @param ev the error value
+     *
+     * @return a human-readable description
+     */
+std::string message(int ev) const override;
 };
 
 /**
@@ -130,12 +181,22 @@ class FfmpegCategory : public std::error_category
 };
 
 inline
+/**
+ * Error category of the library's own errors.
+ *
+ * @return the category, a process-wide singleton
+ */
 const AvcppCategory& avcpp_category()
 {
     static AvcppCategory res;
     return res;
 }
 
+/**
+ * Error category that wraps FFmpeg return codes.
+ *
+ * @return the category, a process-wide singleton
+ */
 inline FfmpegCategory& ffmpeg_category()
 {
     static FfmpegCategory res;
@@ -143,48 +204,104 @@ inline FfmpegCategory& ffmpeg_category()
 }
 
 inline
+/**
+ * Build an error condition from an avcpp error.
+ *
+ * @param errc the error
+ *
+ * @return the condition in the avcpp category
+ */
 std::error_condition make_error_condition(av::Errors errc) noexcept
 {
     return std::error_condition(static_cast<int>(errc), av::avcpp_category());
 }
 
 inline
+/**
+ * Build an error code from an avcpp error.
+ *
+ * @param errc the error
+ *
+ * @return the code in the avcpp category
+ */
 std::error_code make_error_code(av::Errors errc) noexcept
 {
     return std::error_code(static_cast<int>(errc), av::avcpp_category());
 }
 
 inline
+/**
+ * Build an error code from an avcpp error.
+ *
+ * @param code the error
+ *
+ * @return the code in the avcpp category
+ */
 std::error_code make_avcpp_error(Errors code)
 {
     return std::error_code(static_cast<int>(code), avcpp_category());
 }
 
 inline
+/**
+ * Build an error condition from an avcpp error.
+ *
+ * @param code the error
+ *
+ * @return the condition in the avcpp category
+ */
 std::error_condition make_avcpp_condition(Errors code)
 {
     return std::error_condition(static_cast<int>(code), avcpp_category());
 }
 
 inline
+/**
+ * Build an error code from an FFmpeg return value.
+ *
+ * @param code the negative AVERROR value
+ *
+ * @return the code in the FFmpeg category
+ */
 std::error_code make_ffmpeg_error(int code)
 {
     return std::error_code(code, ffmpeg_category());
 }
 
 inline
+/**
+ * Build an error condition from an FFmpeg return value.
+ *
+ * @param code the negative AVERROR value
+ *
+ * @return the condition in the FFmpeg category
+ */
 std::error_condition make_ffmpeg_condition(int code)
 {
     return std::error_condition(code, ffmpeg_category());
 }
 
 template<typename Exception = av::Exception>
+/**
+ * Throw an exception carrying the given error code.
+ *
+ * @tparam Exception exception type to throw
+ *
+ * @param ec the error to throw
+ */
 void throw_error_code(const std::error_code& ec)
 {
     throw Exception(ec);
 }
 
 template<typename Exception = av::Exception>
+/**
+ * Throw an exception carrying an avcpp error.
+ *
+ * @tparam Exception exception type to throw
+ *
+ * @param errc the error to throw
+ */
 void throw_error_code(Errors errc)
 {
     throw Exception(make_error_code(errc));
@@ -200,7 +317,11 @@ inline OptionalErrorCode throws()
 }
 
 /**
- * @brief Throws exception if ec is av::throws() or fill error code
+ * Throw or store an error, depending on what the caller passed.
+ *
+ * @param ec      the caller's choice between exceptions and error codes
+ * @param errcode the raw error value
+ * @param cat     the category the value belongs to
  */
 template<typename Category, typename Exception = av::Exception>
 void throws_if(OptionalErrorCode ec, int errcode, const Category &cat)
@@ -212,6 +333,14 @@ void throws_if(OptionalErrorCode ec, int errcode, const Category &cat)
 }
 
 template<typename T, typename Exception = av::Exception>
+/**
+ * Throw or store an error code, depending on the caller's choice.
+ *
+ * @tparam T error type with an std::error_code adapter
+ *
+ * @param ec      the caller's choice between exceptions and error codes
+ * @param errcode the error value
+ */
 void throws_if(OptionalErrorCode ec, T errcode)
 {
     if (ec)
@@ -220,6 +349,12 @@ void throws_if(OptionalErrorCode ec, T errcode)
         throw Exception(make_error_code(errcode));
 }
 
+/**
+ * Throw or store an error code, depending on the caller's choice.
+ *
+ * @param ec      the caller's choice between exceptions and error codes
+ * @param errcode the error value
+ */
 static inline void throws_if(OptionalErrorCode ec, const std::error_code& errcode)
 {
     if (ec)
@@ -241,6 +376,13 @@ void clear_if(OptionalErrorCode ec)
 }
 
 inline
+/**
+ * Whether an error was stored in the caller's variable.
+ *
+ * @param ec the holder to inspect
+ *
+ * @return `true` when a variable was passed and it holds an error
+ */
 bool is_error(OptionalErrorCode ec)
 {
     if (ec)

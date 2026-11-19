@@ -146,7 +146,10 @@ EXCLUDE_PATTERNS       = */avconfig.h \
 # because the templates need them at compile time. Keeping them out of the
 # reference avoids documenting plumbing that only exists to bridge versions.
 EXCLUDE_SYMBOLS        = av::codec_context::audio \
-                         av::codec_context::internal
+                         av::codec_context::internal \
+                         FF_DISABLE_DEPRECATION_WARNINGS \
+                         FF_ENABLE_DEPRECATION_WARNINGS \
+                         avpacket_unref
 EXAMPLE_PATH           = example/api2-samples
 EXAMPLE_PATTERNS       = *.cpp \
                          *.c
