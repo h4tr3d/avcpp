@@ -5,19 +5,15 @@
 # warning, regenerate it and commit the smaller numbers with the same PR.
 #
 # Format: <path> <TAB> <number of warnings>
-# Total: 169 warnings
+# Total: 111 warnings
 src/avcpp/avcompat.h	18
 src/avcpp/averror.h	21
 src/avcpp/avlog.h	1
 src/avcpp/avtime.h	1
 src/avcpp/buffer.h	3
-src/avcpp/codec.h	21
 src/avcpp/filters/buffersink.h	12
 src/avcpp/filters/buffersrc.h	12
 src/avcpp/filters/filtercontext.h	10
 src/avcpp/filters/filtergraph.h	15
 src/avcpp/filters/filter.h	13
 src/avcpp/filters/filterpad.h	5
-src/avcpp/pixelformat.h	9
-src/avcpp/rect.h	11
-src/avcpp/sampleformat.h	17
