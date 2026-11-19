@@ -25,6 +25,12 @@ class Timestamp
 {
 public:
     Timestamp() noexcept;
+    /**
+     * Create a timestamp from a value and its time base.
+     *
+     * @param timestamp the value in `timebase` units
+     * @param timebase  the time base that gives the value its meaning
+     */
     Timestamp(int64_t timestamp, const Rational &timebase) noexcept;
 
     /**
@@ -33,6 +39,7 @@ public:
      * Duration class must not be a floating point to avoid lost precision: Timestamp in the FFmpeg internally are
      * int64_t with integer AVRAtional as timebase that also uses int64_t internally to store numerator and denominator.
      *
+     * @param duration the duration to convert
      */
     template<typename Duration,
               typename = typename Duration::period,
@@ -55,6 +62,7 @@ public:
      *
      * PrecisionPeriod defines holded TimeBase
      *
+     * @param duration the duration to convert
      */
     template<typename Duration,
               typename PrecisionPeriod,
@@ -74,6 +82,8 @@ public:
      * @brief Create AvCpp/FFmpeg compatible timestamp value from the floating point
      * std::chrono::duration/boost::chrono::duration with given precision.
      *
+     * @param duration the duration to convert
+     * @param timebase the time base to store with the timestamp
      */
     template<typename Duration,
               typename = typename Duration::period,
@@ -96,15 +106,57 @@ public:
     }
 
 
+    /**
+     * The raw timestamp value.
+     *
+     * @return the value in timebase() units, or NoPts when unset
+     */
     int64_t         timestamp() const noexcept;
+    /**
+     * The timestamp converted to another time base.
+     *
+     * @param timebase the time base to convert to
+     *
+     * @return the value in `timebase` units
+     */
     int64_t         timestamp(const Rational &timebase) const noexcept;
+    /**
+     * The time base of the timestamp.
+     *
+     * @return timestamp units per second
+     */
     const Rational& timebase() const noexcept;
 
+    /**
+     * Whether the timestamp carries a value.
+     *
+     * @return `true` when it is not NoPts
+     */
     operator bool() const noexcept;
+    /**
+     * Whether the timestamp is usable.
+     *
+     * @return `true` when the value is set and the time base is valid
+     */
     bool isValid() const noexcept;
+    /**
+     * Whether the timestamp means "no timestamp".
+     *
+     * @return `true` when the value is NoPts
+     */
     bool isNoPts() const noexcept;
 
+    /**
+     * The timestamp in seconds.
+     *
+     * @return the time in seconds as a floating point value
+     */
     operator double() const noexcept;
+    /**
+     * The timestamp in seconds.
+     *
+     * @return the time in seconds as a floating point value
+     */
     double seconds() const noexcept;
 
     /**
@@ -116,6 +168,14 @@ public:
     template<typename Duration,
               typename = typename Duration::period,
               typename = typename Duration::rep>
+    /**
+     * Convert to a std::chrono duration.
+     *
+     * @tparam Duration the duration type to produce
+     *
+     * @return the timestamp as that duration; integral durations are rescaled,
+     *         floating point ones are computed directly
+     */
     constexpr Duration toDuration() const
     {
         using ValueType = typename Duration::rep;
@@ -139,9 +199,37 @@ public:
         }
     }
 
+    /**
+     * Add another timestamp, aligning the time bases.
+     *
+     * @param other the timestamp to add
+     *
+     * @return this timestamp
+     */
     Timestamp& operator+=(const Timestamp &other);
+    /**
+     * Subtract another timestamp, aligning the time bases.
+     *
+     * @param other the timestamp to subtract
+     *
+     * @return this timestamp
+     */
     Timestamp& operator-=(const Timestamp &other);
+    /**
+     * Multiply by another timestamp.
+     *
+     * @param other the factor
+     *
+     * @return this timestamp
+     */
     Timestamp& operator*=(const Timestamp &other);
+    /**
+     * Divide by another timestamp.
+     *
+     * @param other the divisor
+     *
+     * @return this timestamp
+     */
     Timestamp& operator/=(const Timestamp &other);
 
 private:
@@ -155,6 +243,14 @@ private:
 //
 
 inline
+/**
+ * Compare two timestamps, taking their time bases into account.
+ *
+ * @param left  the left timestamp
+ * @param right the right timestamp
+ *
+ * @return `true` when the left one is later
+ */
 bool operator>(const Timestamp& left, const Timestamp &right) noexcept
 {
     return av_compare_ts(left.timestamp(), left.timebase(),
@@ -163,6 +259,14 @@ bool operator>(const Timestamp& left, const Timestamp &right) noexcept
 
 
 inline
+/**
+ * Compare two timestamps, taking their time bases into account.
+ *
+ * @param left  the left timestamp
+ * @param right the right timestamp
+ *
+ * @return `true` when the left one is earlier
+ */
 bool operator<(const Timestamp& left, const Timestamp &right) noexcept
 {
     return av_compare_ts(left.timestamp(), left.timebase(),
@@ -171,6 +275,14 @@ bool operator<(const Timestamp& left, const Timestamp &right) noexcept
 
 
 inline
+/**
+ * Compare two timestamps, taking their time bases into account.
+ *
+ * @param left  the left timestamp
+ * @param right the right timestamp
+ *
+ * @return `true` when both denote the same moment
+ */
 bool operator==(const Timestamp& left, const Timestamp &right) noexcept
 {
     return av_compare_ts(left.timestamp(), left.timebase(),
@@ -178,12 +290,28 @@ bool operator==(const Timestamp& left, const Timestamp &right) noexcept
 }
 
 inline
+/**
+ * Compare two timestamps.
+ *
+ * @param left  the left timestamp
+ * @param right the right timestamp
+ *
+ * @return `true` when the moments differ
+ */
 bool operator!=(const Timestamp& left, const Timestamp &right) noexcept
 {
     return !operator==(left, right);
 }
 
 inline
+/**
+ * Compare two timestamps.
+ *
+ * @param left  the left timestamp
+ * @param right the right timestamp
+ *
+ * @return `true` when the left one is not earlier
+ */
 bool operator>=(const Timestamp& left, const Timestamp& right) noexcept
 {
     return av_compare_ts(left.timestamp(), left.timebase(),
@@ -191,6 +319,14 @@ bool operator>=(const Timestamp& left, const Timestamp& right) noexcept
 }
 
 inline
+/**
+ * Compare two timestamps.
+ *
+ * @param left  the left timestamp
+ * @param right the right timestamp
+ *
+ * @return `true` when the left one is not later
+ */
 bool operator<=(const Timestamp& left, const Timestamp& right) noexcept
 {
     return av_compare_ts(left.timestamp(), left.timebase(),
@@ -201,15 +337,55 @@ bool operator<=(const Timestamp& left, const Timestamp& right) noexcept
 // Math operations
 //
 
+/**
+ * Add two timestamps, aligning the time bases.
+ *
+ * @param left  the left operand
+ * @param right the right operand
+ *
+ * @return the sum
+ */
 Timestamp operator+(const Timestamp& left, const Timestamp &right) noexcept;
+/**
+ * Subtract two timestamps, aligning the time bases.
+ *
+ * @param left  the left operand
+ * @param right the right operand
+ *
+ * @return the difference
+ */
 Timestamp operator-(const Timestamp& left, const Timestamp &right) noexcept;
+/**
+ * Multiply two timestamps.
+ *
+ * @param left  the left operand
+ * @param right the right operand
+ *
+ * @return the product
+ */
 Timestamp operator*(const Timestamp& left, const Timestamp &right) noexcept;
+/**
+ * Divide two timestamps.
+ *
+ * @param left  the left operand
+ * @param right the right operand
+ *
+ * @return the quotient
+ */
 Timestamp operator/(const Timestamp& left, const Timestamp &right) noexcept;
 
 //
 // Output
 //
 inline
+/**
+ * Print the timestamp as "value*timebase", or NO_PTS.
+ *
+ * @param ost the stream to write to
+ * @param ts  the timestamp to print
+ *
+ * @return the stream, for chaining
+ */
 std::ostream& operator<<(std::ostream &ost, const Timestamp &ts)
 {
     if (ts.isNoPts()) {

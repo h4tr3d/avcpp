@@ -334,7 +334,7 @@ current, or is explicitly listed as untranslated in `translations.yaml`.
 
 ### M3 — API coverage (3–4 weeks, rolling PRs) — in progress
 
-Baseline: 1499 warnings at the start of M3, now **312**.
+Baseline: 1499 warnings at the start of M3, now **258**.
 
 Done:
 
@@ -347,6 +347,11 @@ Done:
 - `ffmpeg.h` — 126 warnings to 0. `FFWrapperPtr`, `FFWrapperRef`, `PixSampleFmtWrapper`, the
   `_log` helpers and the eight `RAW_*`/`IF_*` macros. Documenting the templates once covered 21
   instantiations each, which is why the count collapsed.
+- `rational.h` — 30 warnings to 0. Rational arithmetic that compares by value rather than by
+  representation, the preserved zero denominator, rescaling, and the streaming operators.
+- `timestamp.h` — 28 warnings to 0. The fixed-point model (value times time base), the chrono
+  constructors including the precision-preserving integral path, comparison and arithmetic that
+  align time bases through av_compare_ts, and toDuration().
 - `format.h` — 33 warnings to 0. The shared Format<T> interface (name, flags, codec support),
   InputFormat and OutputFormat lookups by name/URL/MIME, the default codec ids a muxer falls back
   to, and the const/non-const alias that keeps one code path compiling against both FFmpeg header
@@ -387,8 +392,6 @@ Next, by current weight:
 | header | warnings |
 | --- | --- |
 | `linkedlistutils.h` | 41 |
-| `rational.h` | 30 |
-| `timestamp.h` | 28 |
 | `stream.h` | 26 |
 | `audioresampler.h` | 22 |
 
