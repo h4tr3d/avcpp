@@ -334,7 +334,7 @@ current, or is explicitly listed as untranslated in `translations.yaml`.
 
 ### M3 — API coverage (3–4 weeks, rolling PRs) — in progress
 
-Baseline: 1499 warnings at the start of M3, now **541**.
+Baseline: 1499 warnings at the start of M3, now **479**.
 
 Done:
 
@@ -347,6 +347,12 @@ Done:
 - `ffmpeg.h` — 126 warnings to 0. `FFWrapperPtr`, `FFWrapperRef`, `PixSampleFmtWrapper`, the
   `_log` helpers and the eight `RAW_*`/`IF_*` macros. Documenting the templates once covered 21
   instantiations each, which is why the count collapsed.
+- `packet.h` — 62 warnings to 0. The packet model (one stream, timestamps, duration, flags),
+  every constructor: copy, reference, deep copy, wrap with and without ownership, the span
+  variants, the data replacement methods, side data access, reference counting, makeRef/clone and
+  the assignment operators. The padding requirement is stated where buffers are created: the
+  zeroed AV_INPUT_BUFFER_PADDING_SIZE bytes after the payload are part of the contract, because
+  the ASS muxer reads payloads as C strings.
 - `subtitle.h` — 63 warnings to 0. `SubtitleRect` (payload kinds, geometry, text/ASS storage,
   bitmap and palette planes) and `SubtitleFrame` (move-only ownership without reference counting,
   display interval relative to pts, stream bookkeeping, rectangle access, and the fromText/fromAss
@@ -368,7 +374,6 @@ Next, by current weight:
 
 | header | warnings |
 | --- | --- |
-| `packet.h` | 62 |
 | `dictionary.h` | 58 |
 | `linkedlistutils.h` | 41 |
 | `channellayout.h` | 35 |
