@@ -347,6 +347,12 @@ Done:
 - `ffmpeg.h` — 126 warnings to 0. `FFWrapperPtr`, `FFWrapperRef`, `PixSampleFmtWrapper`, the
   `_log` helpers and the eight `RAW_*`/`IF_*` macros. Documenting the templates once covered 21
   instantiations each, which is why the count collapsed.
+- `stream.h` — 26 warnings to 0. Streams as views into the container, why every value needs
+  findStreamInfo() first, the id/index distinction, the timing accessors, the media-type predicates,
+  codec parameters in both directions and the event flags.
+- `codecparameters.h` — 20 warnings to 0. The non-owning view versus the owning CodecParameters,
+  the four copy directions between views and codec contexts, and Direction as part of the context
+  type.
 - `rational.h` — 30 warnings to 0. Rational arithmetic that compares by value rather than by
   representation, the preserved zero denominator, rescaling, and the streaming operators.
 - `timestamp.h` — 28 warnings to 0. The fixed-point model (value times time base), the chrono
@@ -392,7 +398,6 @@ Next, by current weight:
 | header | warnings |
 | --- | --- |
 | `linkedlistutils.h` | 41 |
-| `stream.h` | 26 |
 | `audioresampler.h` | 22 |
 
 The order changed since the first estimate: `codeccontext.h` was the largest, and `ffmpeg.h` and
