@@ -334,7 +334,7 @@ current, or is explicitly listed as untranslated in `translations.yaml`.
 
 ### M3 — API coverage (3–4 weeks, rolling PRs) — in progress
 
-Baseline: 1499 warnings at the start of M3, now **421**.
+Baseline: 1499 warnings at the start of M3, now **345**.
 
 Done:
 
@@ -347,6 +347,9 @@ Done:
 - `ffmpeg.h` — 126 warnings to 0. `FFWrapperPtr`, `FFWrapperRef`, `PixSampleFmtWrapper`, the
   `_log` helpers and the eight `RAW_*`/`IF_*` macros. Documenting the templates once covered 21
   instantiations each, which is why the count collapsed.
+- `channellayout.h` — 35 warnings to 0. The view/owner split: a view shares the FFmpeg
+  descriptor and is enough for queries, while ChannelLayout owns the description, duplicates it on
+  copy and releases it on destruction, with release() for the hand-over case.
 - `dictionary.h` — 58 warnings to 0. The dictionary as an FFmpeg linked list (so key lookup is
   O(n) while index access is O(1)), ownership and the takeOwning flag, both access interfaces
   (by index and by key), iteration with the two iterator flavours, entry value assignment, the
@@ -380,7 +383,6 @@ Next, by current weight:
 | header | warnings |
 | --- | --- |
 | `linkedlistutils.h` | 41 |
-| `channellayout.h` | 35 |
 | `format.h` | 33 |
 | `rational.h` | 30 |
 | `timestamp.h` | 28 |
