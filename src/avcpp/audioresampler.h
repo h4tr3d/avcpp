@@ -20,20 +20,71 @@ namespace av {
 
 // TODO: support New Channel Layout directly
 
+/**
+ * Converts audio between sample rates, sample formats and channel layouts.
+ *
+ * The typical use is a decode-transform-encode pipeline: the decoder produces
+ * whatever the stream contains, the encoder accepts one specific layout, and
+ * this is the component in between. Construct it with both layouts, or call
+ * init() later; push() feeds samples in and pop() takes them out.
+ *
+ * A single push can produce several output buffers, and the resampler holds an
+ * internal delay, so popping until it returns nothing is part of the contract.
+ */
 class AudioResampler : public FFWrapperPtr<SwrContext>, public noncopyable
 {
 public:
+    /**
+     * Create an uninitialised resampler.
+     *
+     * Nothing can be pushed until init() succeeds.
+     */
     AudioResampler();
 
+    /**
+     * Create and initialise a resampler.
+     *
+     * @param dstChannelsLayout channel layout to produce, as an `AV_CH_LAYOUT_*` mask
+     * @param dstRate           sample rate to produce, in hertz
+     * @param dstFormat         sample format to produce
+     * @param srcChannelsLayout channel layout of the input
+     * @param srcRate           sample rate of the input, in hertz
+     * @param srcFormat         sample format of the input
+     * @param ec                holder for the error code
+     */
     AudioResampler(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                    uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    OptionalErrorCode ec = throws());
 
+    /**
+     * Create and initialise a resampler with options.
+     *
+     * @param dstChannelsLayout channel layout to produce
+     * @param dstRate           sample rate to produce
+     * @param dstFormat         sample format to produce
+     * @param srcChannelsLayout channel layout of the input
+     * @param srcRate           sample rate of the input
+     * @param srcFormat         sample format of the input
+     * @param options           resampler options; not consumed
+     * @param ec                holder for the error code
+     */
     AudioResampler(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                    uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    Dictionary &options,
                    OptionalErrorCode ec = throws());
 
+    /**
+     * Create and initialise a resampler with options, moving the dictionary.
+     *
+     * @param dstChannelsLayout channel layout to produce
+     * @param dstRate           sample rate to produce
+     * @param dstFormat         sample format to produce
+     * @param srcChannelsLayout channel layout of the input
+     * @param srcRate           sample rate of the input
+     * @param srcFormat         sample format of the input
+     * @param options           resampler options, moved into the call
+     * @param ec                holder for the error code
+     */
     AudioResampler(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
                    uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
                    Dictionary &&options,
@@ -41,19 +92,76 @@ public:
 
     ~AudioResampler();
 
+    /**
+     * Move a resampler.
+     *
+     * @param other the resampler to move from; left uninitialised
+     */
     AudioResampler(AudioResampler &&other);
+    /**
+     * Move assignment.
+     *
+     * @param rhs the resampler to move from; left uninitialised
+     *
+     * @return this resampler
+     */
     AudioResampler& operator=(AudioResampler &&rhs);
 
+    /**
+     * Exchange the state of two resamplers.
+     *
+     * @param other the resampler to swap with
+     */
     void swap(AudioResampler& other);
 
+    /**
+     * Channel layout the resampler produces.
+     *
+     * @return an `AV_CH_LAYOUT_*` mask
+     */
     uint64_t       dstChannelLayout() const;
+    /**
+     * Number of channels the resampler produces.
+     *
+     * @return the channel count
+     */
     int            dstChannels()      const;
+    /**
+     * Sample rate the resampler produces.
+     *
+     * @return samples per second
+     */
     int            dstSampleRate()    const;
+    /**
+     * Sample format the resampler produces.
+     *
+     * @return the format
+     */
     SampleFormat   dstSampleFormat()  const;
 
+    /**
+     * Channel layout the resampler expects.
+     *
+     * @return an `AV_CH_LAYOUT_*` mask
+     */
     uint64_t       srcChannelLayout() const;
+    /**
+     * Number of channels the resampler expects.
+     *
+     * @return the channel count
+     */
     int            srcChannels()      const;
+    /**
+     * Sample rate the resampler expects.
+     *
+     * @return samples per second
+     */
     int            srcSampleRate()    const;
+    /**
+     * Sample format the resampler expects.
+     *
+     * @return the format
+     */
     SampleFormat   srcSampleFormat()  const;
 
     /**
@@ -96,26 +204,91 @@ public:
      */
     AudioSamples pop(size_t samplesCount, OptionalErrorCode ec = throws());
 
+    /**
+     * Whether the resampler is initialised.
+     *
+     * @return `true` after a successful init()
+     */
     bool isValid() const;
+    /**
+     * Whether the resampler is initialised.
+     *
+     * @return `true` after a successful init()
+     */
     operator bool() const { return isValid(); }
 
+    /**
+     * Samples still buffered inside the resampler.
+     *
+     * @return the delay in output samples
+     */
     int64_t delay() const;
 
+    /**
+     * Initialise the resampler.
+     *
+     * @param dstChannelsLayout channel layout to produce, as an `AV_CH_LAYOUT_*` mask
+     * @param dstRate           sample rate to produce, in hertz
+     * @param dstFormat         sample format to produce
+     * @param srcChannelsLayout channel layout of the input
+     * @param srcRate           sample rate of the input, in hertz
+     * @param srcFormat         sample format of the input
+     * @param ec                holder for the error code
+     *
+     * @return `true` when the resampler is ready
+     */
     bool init(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
               uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               OptionalErrorCode ec = throws());
 
+    /**
+     * Initialise the resampler with options.
+     *
+     * @param dstChannelsLayout channel layout to produce
+     * @param dstRate           sample rate to produce
+     * @param dstFormat         sample format to produce
+     * @param srcChannelsLayout channel layout of the input
+     * @param srcRate           sample rate of the input
+     * @param srcFormat         sample format of the input
+     * @param options           resampler options; not consumed
+     * @param ec                holder for the error code
+     *
+     * @return `true` when the resampler is ready
+     */
     bool init(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
               uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               Dictionary &options,
               OptionalErrorCode ec = throws());
 
+    /**
+     * Initialise the resampler with options, moving the dictionary.
+     *
+     * @param dstChannelsLayout channel layout to produce
+     * @param dstRate           sample rate to produce
+     * @param dstFormat         sample format to produce
+     * @param srcChannelsLayout channel layout of the input
+     * @param srcRate           sample rate of the input
+     * @param srcFormat         sample format of the input
+     * @param options           resampler options, moved into the call
+     * @param ec                holder for the error code
+     *
+     * @return `true` when the resampler is ready
+     */
     bool init(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
               uint64_t srcChannelsLayout, int srcRate, SampleFormat srcFormat,
               Dictionary &&options,
               OptionalErrorCode ec = throws());
 
     static
+    /**
+     * Whether the output parameters are usable before the input is known.
+     *
+     * @param dstChannelsLayout channel layout to produce
+     * @param dstRate           sample rate to produce
+     * @param dstFormat         sample format to produce
+     *
+     * @return `true` when the resampler initialises and accepts these values
+     */
     bool validate(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat);
 
 private:
