@@ -66,6 +66,11 @@ public:
      */
     struct AvStringDeleter
     {
+            /**
+             * Free a string allocated by FFmpeg.
+             *
+             * @param ptr the string to free; it is reset to null through av_freep()
+             */
         void operator()(char *ptr)
         {
             av_freep(&ptr);
@@ -82,6 +87,7 @@ public:
      */
     struct AvStringPtr : public std::unique_ptr<char, AvStringDeleter>
     {
+                /// The unique_ptr instantiation this holder builds on.
         using base_class = std::unique_ptr<char, AvStringDeleter>;
         using base_class::unique_ptr;
 
@@ -162,7 +168,19 @@ public:
          * @param flags access flags, FlagDontStrdupVal only accepted, other flags ignored
          */
         /// @{
+            /**
+             * Change the value of this entry.
+             *
+             * @param value the new value
+             * @param flags `AV_DICT_DONT_STRDUP_VAL` is the only flag that applies here
+             */
         void set(const char *value, int flags = 0) noexcept;
+            /**
+             * Change the value of this entry.
+             *
+             * @param value the new value
+             * @param flags `AV_DICT_DONT_STRDUP_VAL` is the only flag that applies here
+             */
         void set(const std::string& value, int flags = 0) noexcept;
         /// @}
 
@@ -173,7 +191,21 @@ public:
          * @return referenct to this
          */
         /// @{
+            /**
+             * Assign a value through the entry holder.
+             *
+             * @param value the new value; it is copied
+             *
+             * @return this entry holder
+             */
         Entry& operator=(const char *value) noexcept;
+            /**
+             * Assign a value through the entry holder.
+             *
+             * @param value the new value; it is copied
+             *
+             * @return this entry holder
+             */
         Entry& operator=(const std::string &value) noexcept;
         /// @}
 
@@ -188,7 +220,23 @@ public:
          */
         bool isNull() const;
 
+        /**
+         * Compare two entries.
+         *
+         * @param lhs the left entry
+         * @param rhs the right entry
+         *
+         * @return `true` when both refer to the same dictionary element
+         */
         friend bool operator==(const Entry& lhs, const Entry& rhs);
+        /**
+         * Compare two entries.
+         *
+         * @param lhs the left entry
+         * @param rhs the right entry
+         *
+         * @return `true` when they refer to different elements
+         */
         friend bool operator!=(const Entry& lhs, const Entry& rhs);
 
     private:
@@ -204,10 +252,15 @@ public:
     {
     public:
         // Iterator interface
+                /// Standard iterator category tag.
         using iterator_category = std::forward_iterator_tag;
+                /// Type produced by dereferencing.
         using value_type = typename std::conditional<constIterator, const Entry, Entry>::type;
+                /// Distance type required by the iterator traits.
         using difference_type = ptrdiff_t;
+                /// Pointer to the entry.
         using pointer = value_type*;
+                /// Reference to the entry.
         using reference = value_type&;
 
     private:
@@ -218,24 +271,45 @@ public:
         Entry     m_entry;
 
     public:
+                /**
+                 * Continue the iteration from the given entry.
+                 *
+                 * @param dict  the dictionary being iterated
+                 * @param entry the entry to continue from
+                 */
         DictionaryIterator(DictType &dict, const Entry& entry) noexcept
             : m_dict(dict),
               m_entry(entry)
         {
         }
 
+                /**
+                 * Start the iteration at the first entry.
+                 *
+                 * @param dict the dictionary to iterate
+                 */
         DictionaryIterator(DictType &dict) noexcept
             : m_dict(dict)
         {
             operator++();
         }
 
+                /**
+                 * Advance to the next entry.
+                 *
+                 * @return this iterator
+                 */
         DictionaryIterator& operator++() noexcept
         {
             m_entry.m_entry = av_dict_get(m_dict.raw(), "", m_entry.m_entry, FlagIgnoreSuffix);
             return *this;
         }
 
+                /**
+                 * Advance, returning the previous position.
+                 *
+                 * @return a copy of the iterator before advancing
+                 */
         DictionaryIterator operator++(int) noexcept
         {
             DictionaryIterator tmp(*this);
@@ -243,21 +317,47 @@ public:
             return tmp;
         }
 
+                /**
+                 * Compare two iterators.
+                 *
+                 * @param lhs the left iterator
+                 * @param rhs the right iterator
+                 *
+                 * @return `true` when both point at the same entry
+                 */
         friend bool operator==(const DictionaryIterator& lhs, const DictionaryIterator& rhs) noexcept
         {
             return lhs.m_entry == rhs.m_entry;
         }
 
+                /**
+                 * Compare two iterators.
+                 *
+                 * @param lhs the left iterator
+                 * @param rhs the right iterator
+                 *
+                 * @return `true` when they point at different entries
+                 */
         friend bool operator!=(const DictionaryIterator& lhs, const DictionaryIterator& rhs) noexcept
         {
             return lhs.m_entry != rhs.m_entry;
         }
 
+                /**
+                 * Entry at the current position.
+                 *
+                 * @return the entry; modifying its value changes the dictionary
+                 */
         EntryType& operator*() noexcept
         {
             return m_entry;
         }
 
+                /**
+                 * Entry at the current position.
+                 *
+                 * @return a pointer to the entry
+                 */
         EntryType* operator->() noexcept
         {
             return &m_entry;
@@ -306,8 +406,9 @@ public:
      * @brief Copy assign operator
      * Make deep copy of dictionary. Takes ownershipping on newly created dict. Old dict destroyed
      * (resouces freed if there is ownershipping)
-     * @param rhs
-     * @return
+     * @param rhs the dictionary to copy
+     *
+     * @return this dictionary
      */
     Dictionary& operator=(const Dictionary &rhs);
 
@@ -322,8 +423,9 @@ public:
      * @brief Move assign operator
      * Takes resources. Rhs dictionary moves to uninited state. Ownershpping same to rhs. Old
      * dict destroyed (resouces freed if there is ownershipping)
-     * @param rhs
-     * @return
+     * @param rhs the dictionary to move from
+     *
+     * @return this dictionary
      */
     Dictionary& operator=(Dictionary&& rhs);
 
@@ -359,6 +461,8 @@ public:
      * New dictionary owning resources. Old dictionary destroes (resource freed if owning)
      *
      * @param list   init list
+     *
+     * @return this dictionary
      */
     Dictionary& operator=(std::initializer_list<std::pair<const char*, const char*>> list);
 
@@ -366,11 +470,42 @@ public:
      * @name Iterator interface
      */
     ///@{
+        /**
+         * First entry.
+         *
+         * @return an iterator at the first entry, or end() when the dictionary is
+         *         empty
+         */
     Iterator      begin();
+        /**
+         * End of the iteration.
+         *
+         * @return the past-the-end iterator
+         */
     Iterator      end();
+        /**
+         * First entry, read-only.
+         *
+         * @return a const iterator at the first entry
+         */
     ConstIterator begin() const;
+        /**
+         * End of the read-only iteration.
+         *
+         * @return the past-the-end const iterator
+         */
     ConstIterator end() const;
+        /**
+         * First entry, read-only, for explicit const traversal.
+         *
+         * @return a const iterator at the first entry
+         */
     ConstIterator cbegin() const;
+        /**
+         * End of the read-only traversal.
+         *
+         * @return the past-the-end const iterator
+         */
     ConstIterator cend() const;
     ///@}
 
@@ -397,7 +532,25 @@ public:
      * @return
      */
     /// @{
+        /**
+         * Entry value by position.
+         *
+         * @param index zero-based position; the order is the dictionary order
+         *
+         * @return the value, or nullptr when the index is out of range
+         *
+         * @note O(1): the entries are counted from the head of the list.
+         */
     const char* operator[](size_t index) const;
+        /**
+         * Entry holder by position, for assignment.
+         *
+         * @param index zero-based position
+         *
+         * @return an entry holder; assigning to it changes the value
+         *
+         * @note O(1).
+         */
     Entry       operator[](size_t index);
     /// @}
 
@@ -409,7 +562,25 @@ public:
      * @return
      */
     /// @{
+        /**
+         * Entry value by key.
+         *
+         * @param key the key to look up
+         *
+         * @return the value, or nullptr when the key is absent
+         *
+         * @note O(n): the dictionary is a linked list.
+         */
     const char* operator[](const char* key) const;
+        /**
+         * Entry holder by key, for assignment.
+         *
+         * @param key the key to look up
+         *
+         * @return an entry holder; assigning to it sets the value
+         *
+         * @note O(n).
+         */
     Entry       operator[](const char* key) noexcept;
     /// @}
 
@@ -420,7 +591,19 @@ public:
      * @return
      */
     /// @{
+        /**
+         * Number of entries.
+         *
+         * @return the entry count
+         *
+         * @note O(1).
+         */
     size_t      count() const noexcept;
+        /**
+         * Number of entries.
+         *
+         * @return the entry count
+         */
     size_t      size() const noexcept;
     /// @}
 
@@ -433,7 +616,23 @@ public:
      * @return nullptr if key does not present
      */
     /// @{
+        /**
+         * Value for a key.
+         *
+         * @param key   the key to look up
+         * @param flags a combination of `AV_DICT_*` lookup flags
+         *
+         * @return the value, or nullptr when the key is absent
+         */
     const char *get(const char* key, int flags = 0) const noexcept;
+        /**
+         * Value for a key.
+         *
+         * @param key   the key to look up
+         * @param flags a combination of `AV_DICT_*` lookup flags
+         *
+         * @return the value, or nullptr when the key is absent
+         */
     const char *get(const std::string& key, int flags = 0) const noexcept;
     /// @}
 
@@ -448,6 +647,7 @@ public:
      *                       av#throws the function will throw on error instead
      * @param[in]     flags  see @ref Flags
      *
+     * @return nothing; errors are reported through `ec` or an exception
      */
     template<typename Key, typename Value = Key>
     auto set(const Key& key, const Value& value, OptionalErrorCode ec = throws(), int flags = 0) ->
@@ -549,9 +749,23 @@ public:
      * @brief release - drops ownershipping
      * @return
      */
+        /**
+         * Give up ownership of the dictionary.
+         *
+         * @return the raw dictionary, which the caller must free; the wrapper is
+         *         left empty and no longer owning
+         */
     AVDictionary* release();
 
 
+        /**
+         * Address of the internal pointer, for FFmpeg calls that take `AVDictionary**`.
+         *
+         * @return a pointer to the stored pointer
+         *
+         * @note Pass it to functions such as av_dict_set() and av_dict_copy(); they
+         *       may allocate a dictionary when the stored pointer is null.
+         */
     AVDictionary **rawPtr() noexcept;
 
 private:
@@ -595,33 +809,149 @@ class DictionaryArray
 public:
 
     DictionaryArray() = default;
+        /**
+         * Build an array from a list of dictionaries.
+         *
+         * @param dicts the dictionaries; they are copied into the array
+         */
     DictionaryArray(std::initializer_list<Dictionary> dicts);
+        /**
+         * Wrap an array of raw dictionaries.
+         *
+         * @param dicts      the array; it is copied, the dictionaries are not
+         * @param count      number of elements
+         * @param takeOwning `true` frees the dictionaries on destruction
+         */
     DictionaryArray(AVDictionary **dicts, size_t count, bool takeOwning = true);
 
+        /**
+         * Copy the array; each dictionary is copied deeply.
+         *
+         * @param rhs the array to copy
+         */
     DictionaryArray(const DictionaryArray& rhs);
+        /**
+         * Assign from another array; each dictionary is copied deeply.
+         *
+         * @param rhs the array to copy
+         *
+         * @return this array
+         */
     DictionaryArray& operator=(const DictionaryArray& rhs);
 
+    /**
+     * Move the array; the source is left empty.
+     */
     DictionaryArray(DictionaryArray&&) = default;
+    /**
+     * Move assignment; the source is left empty.
+     *
+     * @return this array
+     */
     DictionaryArray& operator=(DictionaryArray&&) = default;
 
+        /**
+         * Replace the contents with an array of raw dictionaries.
+         *
+         * @param dicts      the array to wrap; existing contents are released
+         * @param count      number of elements
+         * @param takeOwning `true` frees the dictionaries on destruction
+         */
     void assign(AVDictionary **dicts, size_t count, bool takeOwning = true);
+        /**
+         * Reserve storage for the given number of dictionaries.
+         *
+         * @param size expected element count
+         */
     void reserve(size_t size);
+        /**
+         * Resize the array, adding empty dictionaries at the end.
+         *
+         * @param size the new element count
+         */
     void resize(size_t size);
 
+        /**
+         * Number of dictionaries in the array.
+         *
+         * @return the element count
+         */
     size_t size() const;
 
+        /**
+         * Append a copy of a dictionary.
+         *
+         * @param dict the dictionary to copy into the array
+         */
     void pushBack(const Dictionary &dict);
+        /**
+         * Append a dictionary, moving it.
+         *
+         * @param dict the dictionary to move into the array
+         */
     void pushBack(Dictionary &&dict);
 
+        /**
+         * Dictionary by index.
+         *
+         * @param index zero-based index
+         *
+         * @return the dictionary; the array owns it
+         */
     const Dictionary& operator[](size_t index) const;
+        /**
+         * Dictionary by index, mutable.
+         *
+         * @param index zero-based index
+         *
+         * @return the dictionary; the array owns it
+         */
     Dictionary&       operator[](size_t index);
+        /**
+         * Dictionary by index with bounds checking.
+         *
+         * @param index zero-based index; must be less than size()
+         *
+         * @return the dictionary
+         */
     const Dictionary& at(size_t index) const;
+        /**
+         * Dictionary by index with bounds checking.
+         *
+         * @param index zero-based index; must be less than size()
+         *
+         * @return the dictionary
+         */
     Dictionary&       at(size_t index);
 
+        /**
+         * The raw array, read-only.
+         *
+         * @return a pointer to the internal array of dictionaries
+         *
+         * @note Valid until the array is modified.
+         */
     const AVDictionary* const* raws() const;
+        /**
+         * The raw array, mutable.
+         *
+         * @return a pointer to the internal array of dictionaries
+         *
+         * @note Valid until the array is modified.
+         */
     AVDictionary**             raws();
 
+        /**
+         * Give up ownership of the dictionaries.
+         *
+         * @return the raw array, which the caller must free
+         */
     AVDictionary** release();
+        /**
+         * Exchange the contents of two arrays.
+         *
+         * @param rhs the array to swap with
+         */
     void swap(DictionaryArray &rhs);
 private:
     std::vector<AVDictionary*> m_raws;

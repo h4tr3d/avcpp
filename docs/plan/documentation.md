@@ -334,7 +334,7 @@ current, or is explicitly listed as untranslated in `translations.yaml`.
 
 ### M3 — API coverage (3–4 weeks, rolling PRs) — in progress
 
-Baseline: 1499 warnings at the start of M3, now **479**.
+Baseline: 1499 warnings at the start of M3, now **421**.
 
 Done:
 
@@ -347,6 +347,11 @@ Done:
 - `ffmpeg.h` — 126 warnings to 0. `FFWrapperPtr`, `FFWrapperRef`, `PixSampleFmtWrapper`, the
   `_log` helpers and the eight `RAW_*`/`IF_*` macros. Documenting the templates once covered 21
   instantiations each, which is why the count collapsed.
+- `dictionary.h` — 58 warnings to 0. The dictionary as an FFmpeg linked list (so key lookup is
+  O(n) while index access is O(1)), ownership and the takeOwning flag, both access interfaces
+  (by index and by key), iteration with the two iterator flavours, entry value assignment, the
+  raw-pointer escape hatches without which av_dict_* cannot be called, and DictionaryArray with
+  its raw array handling.
 - `packet.h` — 62 warnings to 0. The packet model (one stream, timestamps, duration, flags),
   every constructor: copy, reference, deep copy, wrap with and without ownership, the span
   variants, the data replacement methods, side data access, reference counting, makeRef/clone and
@@ -374,7 +379,6 @@ Next, by current weight:
 
 | header | warnings |
 | --- | --- |
-| `dictionary.h` | 58 |
 | `linkedlistutils.h` | 41 |
 | `channellayout.h` | 35 |
 | `format.h` | 33 |
