@@ -568,7 +568,6 @@ protected:
      * @return an FFmpeg error code, empty on success
      */
     std::error_code receiveCommon(AVFrame *frame);
-    template<typename T>
     /**
      * Read one typed output object from a decode context.
      *
@@ -576,6 +575,7 @@ protected:
      * @param frame
      * @return an FFmpeg error code, empty on success
      */
+    template<typename T>
     std::error_code receiveCommon(T &frame);
 
     // Encode
@@ -595,7 +595,6 @@ protected:
      * @return an FFmpeg error code, empty on success
      */
     std::error_code receiveCommon(class Packet& pkt);
-    template<typename T>
     /**
      * Submit a typed frame to an encoder.
      *
@@ -603,6 +602,7 @@ protected:
      * @param frame
      * @return an FFmpeg error code, empty on success
      */
+    template<typename T>
     std::error_code sendCommon(const T& frame);
 #endif
 
@@ -733,13 +733,13 @@ public:
 };
 
 
-template<typename Clazz, Direction _direction, AVMediaType _type>
 /**
  * Base class that fixes the direction and media type of a codec context.
  *
  * It supplies the constructors, setCodec() and flush() with the direction and
  * media type already bound, so the concrete contexts are thin.
  */
+template<typename Clazz, Direction _direction, AVMediaType _type>
 class CodecContextBase : public CodecContext2
 {
 protected:
@@ -905,7 +905,6 @@ public:
 };
 
 
-template<typename Clazz, Direction _direction>
 /**
  * Video-specific parameters shared by video encoders and decoders.
  *
@@ -913,6 +912,7 @@ template<typename Clazz, Direction _direction>
  * AVCodecContext fields: they do no I/O, and they are ignored once the codec is
  * open where FFmpeg does not allow changes.
  */
+template<typename Clazz, Direction _direction>
 class VideoCodecContext : public CodecContextBase<Clazz, _direction, AVMEDIA_TYPE_VIDEO>
 {
 public:
@@ -1522,13 +1522,13 @@ public:
 };
 
 
-template<typename Clazz, Direction _direction>
 /**
  * Audio-specific parameters shared by audio encoders and decoders.
  *
  * Sample rate, channel count, sample format and channel layout, including the
  * bridge between the old bit-mask layout API and the newer AVChannelLayout one.
  */
+template<typename Clazz, Direction _direction>
 class AudioCodecContext : public CodecContextBase<Clazz, _direction, AVMEDIA_TYPE_AUDIO>
 {
 public:

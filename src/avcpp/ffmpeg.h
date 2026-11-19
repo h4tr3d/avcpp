@@ -24,7 +24,6 @@ extern "C"
 }
 
 
-template<typename T>
 /**
  * Base for wrappers that own a pointer to an FFmpeg object.
  *
@@ -34,6 +33,7 @@ template<typename T>
  *
  * @tparam T the FFmpeg type being wrapped
  */
+template<typename T>
 struct FFWrapperPtr
 {
     /**
@@ -174,7 +174,6 @@ protected:
 #define IF_SET2(cond, ptr, field, val) (if(ptr && (cond)) ptr->field = (val))
 
 #if !DEPRECATED_INIT_PACKET
-template<typename T>
 /**
  * Base for wrappers that hold a small FFmpeg structure by value.
  *
@@ -185,6 +184,7 @@ template<typename T>
  *
  * @tparam T the FFmpeg type being held
  */
+template<typename T>
 struct FFWrapperRef
 {
     /**
@@ -258,7 +258,6 @@ protected:
 };
 #endif
 
-template<typename WrapperClass, typename T, T NoneValue = static_cast<T>(-1)>
 /**
  * Strongly typed enum-like wrapper over an FFmpeg pixel or sample format.
  *
@@ -270,6 +269,7 @@ template<typename WrapperClass, typename T, T NoneValue = static_cast<T>(-1)>
  * @tparam T            the FFmpeg enum type
  * @tparam NoneValue     the value meaning "unset", usually -1
  */
+template<typename WrapperClass, typename T, T NoneValue = static_cast<T>(-1)>
 struct PixSampleFmtWrapper
 {
     /**
