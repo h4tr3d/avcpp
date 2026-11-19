@@ -334,7 +334,7 @@ current, or is explicitly listed as untranslated in `translations.yaml`.
 
 ### M3 — API coverage (3–4 weeks, rolling PRs) — in progress
 
-Baseline: 1499 warnings at the start of M3, now **678**.
+Baseline: 1499 warnings at the start of M3, now **604**.
 
 Done:
 
@@ -347,6 +347,10 @@ Done:
 - `ffmpeg.h` — 126 warnings to 0. `FFWrapperPtr`, `FFWrapperRef`, `PixSampleFmtWrapper`, the
   `_log` helpers and the eight `RAW_*`/`IF_*` macros. Documenting the templates once covered 21
   instantiations each, which is why the count collapsed.
+- `formatcontext.h` — 74 warnings to 0. The container lifecycle (open, probe, close), the
+  three ways to add a stream, seeking (five overloads, including the raw FFmpeg one), container
+  metadata and event flags, the twelve openInput and twelve openOutput overloads, header and
+  trailer writing, packet flushing, and the raw-frame paths that some muxers accept.
 - `avutils.h` — 86 warnings to 0. Allocation helpers with the FFmpeg allocator, the deleters
   (`EmptyDeleter`, `v1::AvDeleter`, `v2::SmartDeleter`), scope guards, the C++20 sentinel and
   array-view machinery with its iterator, `EqualComparator`, `array_to_container`, the hex dump
@@ -360,7 +364,6 @@ Next, by current weight:
 
 | header | warnings |
 | --- | --- |
-| `formatcontext.h` | 74 |
 | `subtitle.h` | 63 |
 | `packet.h` | 62 |
 | `dictionary.h` | 58 |
