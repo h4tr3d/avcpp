@@ -1,3 +1,10 @@
+// Exercises the dictionary API without touching any media.
+//
+// Shows: creating dictionaries, setting and reading keys, iteration, copying,
+// serialising to a string and parsing one back.
+//
+// Usage: api2-dict-basic
+
 #include <iostream>
 
 #include "avcpp/av.h"

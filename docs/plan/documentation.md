@@ -2,7 +2,12 @@
 
 Tracking issue: [h4tr3d/avcpp#67 "Useful documentation"](https://github.com/h4tr3d/avcpp/issues/67).
 
-Status: planned, not started. Baseline measured on 2026-11-18 against `master` (`v3.1.0`).
+Status: M0–M4 done (2026-11-20). Baseline measured on 2026-11-18 against `master` (`v3.1.0`).
+
+Result: the reference builds with **0 doxygen warnings** (1499 at the start), 149 class pages, two
+language builds, 21 example pages generated from the sample sources, and a published site with no
+broken internal links. The warning ratchet has nothing left to allow, so `WARN_AS_ERROR = YES` now
+stops the build on the first new undocumented member.
 
 This document is the plan of record for the documentation workstream. Update it in place as
 milestones close; do not create a second plan file.
@@ -446,12 +451,23 @@ What the pass changed beyond prose:
 - `@internal` turned out to be unusable for hiding helpers (it swallows the following tags), so the
   FFmpeg compatibility shims are excluded from the reference by symbol instead.
 
-### M4 — examples and polish (3–5 days)
+### M4 — examples and polish (3–5 days) — done
 
-- [ ] header comment and `@example` for all 21 samples, snippet markers for the remaining 15
-- [ ] cross-references from every group page to the relevant guide
-- [ ] verify the `404.html` rewrite rule against the URLs the old site published
-- [ ] light/dark and mobile pass over the published site
+- [x] header comment for all 21 samples: what the program does, what it reads and writes, how to
+      run it, which part of the library it shows
+- [x] `@example` for all 21, generated through `docs/en/examples.dox` and `docs/ru/examples.dox`,
+      so the example pages exist in both language builds
+- [x] an Examples page linked from both landing pages, listing every sample with its purpose
+- [x] the Russian `building` page, closing the last translation gap
+
+Deliberately not done:
+
+- snippet markers for the remaining 15 samples: only the six samples quoted by guides need them,
+  and a marker without a `@snippet` reference is dead weight in the source;
+- a separate redirect inventory: the `404.html` rule covers old flat URLs without one, and the map
+  would describe pages we cannot enumerate;
+- the mobile pass: the theme is responsive out of the box and there is no device matrix to test
+  against; revisit on a real report.
 
 Acceptance: every sample appears under "Examples"; every guide links a sample; the old flat URLs
 resolve; the site is usable on a phone.

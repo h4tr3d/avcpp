@@ -1,3 +1,10 @@
+// Decodes audio and resamples it to a different rate, format and layout.
+//
+// Shows: AudioResampler configuration and the push/pop loop, including the
+// buffered tail that has to be drained after the input ends.
+//
+// Usage: api2-decode-rasample-audio <input file>
+
 #include <iostream>
 #include <set>
 #include <map>

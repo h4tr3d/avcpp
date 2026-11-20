@@ -60,6 +60,7 @@ Call `av::init()` once before using anything else, then link against
 - @ref guide_hw_codecs — hardware decoding, encoding and zero-copy pipelines.
 - @ref guide_errors — the `OptionalErrorCode` convention and the error categories.
 - @ref api_map — which type does which job, in one table.
+- @ref guide_examples — the 21 runnable samples, with their full source.
 
 The groups of the API reference: @ref core, @ref avformat, @ref codec, @ref frame, @ref filter,
 @ref hw, @ref subtitle.

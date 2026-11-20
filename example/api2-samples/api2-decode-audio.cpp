@@ -1,3 +1,11 @@
+// Decodes the first audio stream and prints the parameters of every buffer.
+//
+// Shows: demuxing, audio decoding with the legacy decode() path, sample layout
+// accessors.
+//
+// Usage: api2-decode-audio <input file> [format]
+//   format  optional demuxer name, for example "wav"
+
 #include <iostream>
 #include <set>
 #include <map>

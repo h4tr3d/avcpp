@@ -42,10 +42,12 @@ FFmpeg — это набор C-библиотек с ручным управле
 - @ref guide_errors — договоренность `OptionalErrorCode` и категории ошибок.
 - @ref api_nav — какой тип для какой задачи, одной таблицей.
 
+- @ref guide_building — сборка, параметры конфигурации и интеграция.
+- @ref guide_examples — те же примеры, что и в английской версии, с исходным кодом.
+
 Группы справочника API (на английском): [core](../group__core.html),
 [avformat](../group__avformat.html), [codec](../group__codec.html),
 [frame](../group__frame.html), [filter](../group__filter.html), [hw](../group__hw.html),
 [subtitle](../group__subtitle.html).
 
-Руководства по сборке на русском пока нет — доступно
-[английское](../guide_building.html).
+Остальные страницы справочника — только на английском: комментарии в коде не переводятся.

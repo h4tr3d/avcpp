@@ -1,3 +1,13 @@
+// Copies streams from one container to another without re-encoding.
+//
+// Shows: copying codec parameters, mapping input streams to output ones,
+// rewriting packet stream indices and flushing the muxer before the trailer.
+//
+// Usage: api2-remux [options] <input> <output>
+//   -f format  force the input format
+//   -o format  force the output format
+//   -d seconds stop after the given duration
+
 #include <signal.h>
 
 #include <iostream>

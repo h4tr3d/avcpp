@@ -59,5 +59,12 @@ pages:
     ru: ru/api-nav.md
     status: partial
 
-untranslated:
-  - en/building.md
+  - en: en/building.md
+    ru: ru/guide/building.md
+    status: complete
+
+  - en: en/examples.dox
+    ru: ru/examples.dox
+    status: complete
+
+untranslated: []

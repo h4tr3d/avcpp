@@ -1,3 +1,10 @@
+// Decodes a video, filters it and encodes the result.
+//
+// Shows: filter graph construction from a string, buffer source and sink,
+// pushing one frame and pulling many, and the EAGAIN case of a starved sink.
+//
+// Usage: api2-decode-filter-encode <input file> <output file> [filter chain]
+
 #include <functional>
 #include <iostream>
 #include <map>

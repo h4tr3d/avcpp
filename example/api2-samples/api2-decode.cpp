@@ -1,3 +1,10 @@
+// Decodes the first video stream and prints the parameters of every frame.
+//
+// Shows: demuxing, video decoding with the legacy decode() path, packet side
+// data, frame timestamps and pixel formats.
+//
+// Usage: api2-decode <input file>
+
 #include <iostream>
 #include <set>
 #include <map>
