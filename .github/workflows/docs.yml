@@ -132,6 +132,28 @@ jobs:
 
           cd "$RUNNER_TEMP/pages"
 
+          # One-time migration away from the flat 2.x site. GitHub Pages serves
+          # an existing file instead of returning 404, so while those pages sit
+          # in the root the redirect in 404.html can never fire for them.
+          if [ -n "$(find . -maxdepth 1 -name 'classav_1_1*.html' -print -quit)" ]; then
+              echo "removing the legacy flat site from the branch root"
+              for entry in * .*; do
+                  case "$entry" in
+                      .|..|.git|.nojekyll|index.html|404.html|CNAME|latest)
+                          continue
+                          ;;
+                  esac
+                  if [ -d "$entry" ]; then
+                      case "$entry" in
+                          [0-9]*.[0-9]*)
+                              continue
+                              ;;
+                      esac
+                  fi
+                  rm -rf -- "$entry"
+              done
+          fi
+
           # Only the version being published is replaced; older version
           # directories are left alone, so the archive survives.
           rm -rf "$doc_version"
