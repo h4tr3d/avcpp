@@ -17,6 +17,14 @@
 
 set -eu
 
+cleanup()
+{
+    if [ -n "${CONFIG_TMP:-}" ]; then
+        rm -f "$CONFIG_TMP"
+    fi
+}
+trap cleanup EXIT INT TERM
+
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 CALLER_PWD=$PWD
 VERSION=$(tr -d '[:space:]' < "$ROOT/VERSION.txt")
@@ -94,21 +102,23 @@ build_language()
 {
     include=$1
     out_dir=$2
-    config=$(mktemp)
+    CONFIG_TMP=$(mktemp)
 
     {
         echo "@INCLUDE = $include"
         echo "OUTPUT_DIRECTORY = $out_dir"
         echo "HTML_OUTPUT = ."
-    } > "$config"
+    } > "$CONFIG_TMP"
 
     mkdir -p "$out_dir"
-    ( cd "$ROOT" && AVCPP_VERSION="$VERSION" "$DOXYGEN" "$config" )
-    rm -f "$config"
+    ( cd "$ROOT" && AVCPP_VERSION="$VERSION" "$DOXYGEN" "$CONFIG_TMP" )
+    rm -f "$CONFIG_TMP"
+    CONFIG_TMP=
 }
 
 echo "==> English reference and guides -> $EN_DIR"
 build_language "$ROOT/Doxyfile" "$EN_DIR"
+printf '%s\n' "$VERSION" > "$EN_DIR/version.txt"
 
 echo "==> Russian guides -> $RU_DIR"
 build_language "$ROOT/docs/ru.doxyfile" "$RU_DIR"
@@ -121,10 +131,12 @@ fix_member_index_links()
 {
     for page in "$1"/functions*.html; do
         [ -f "$page" ] || continue
-        sed -i \
+        # Rewrite through a temporary file: sed -i is not portable.
+        sed \
             -e 's/functions__\.html#index__/functions_~.html#index__/g' \
             -e 's/functions_func__\.html#index__/functions_func_~.html#index__/g' \
-            "$page"
+            "$page" > "$page.tmp.$$"
+        mv "$page.tmp.$$" "$page"
     done
 }
 

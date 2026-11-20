@@ -441,7 +441,7 @@ public:
      * Open an input with demuxer options.
      *
      * @param uri           resource name
-     * @param formatOptions demuxer options; not consumed
+     * @param formatOptions demuxer options; the object stays usable, but FFmpeg removes the options it recognized
      * @param ec            holder for the error code
      */
     void openInput(const std::string& uri, Dictionary &formatOptions, OptionalErrorCode ec = throws());
@@ -466,7 +466,7 @@ public:
      * Open an input with an explicit demuxer and options.
      *
      * @param uri           resource name
-     * @param formatOptions demuxer options; not consumed
+     * @param formatOptions demuxer options; the object stays usable, but FFmpeg removes the options it recognized
      * @param format        the demuxer to use
      * @param ec            holder for the error code
      */
@@ -501,7 +501,7 @@ public:
      * Open an input on a custom IO object with demuxer options.
      *
      * @param io                  the source of the bytes; it must outlive the context
-     * @param formatOptions       demuxer options; not consumed
+     * @param formatOptions       demuxer options; the object stays usable, but FFmpeg removes the options it recognized
      * @param ec                  holder for the error code
      * @param internalBufferSize  size of the IO buffer avcpp allocates
      */
@@ -544,7 +544,7 @@ public:
      * Open an input on a custom IO object with an explicit demuxer and options.
      *
      * @param io                  the source of the bytes; it must outlive the context
-     * @param formatOptions       demuxer options; not consumed
+     * @param formatOptions       demuxer options; the object stays usable, but FFmpeg removes the options it recognized
      * @param format              the demuxer to use
      * @param ec                  holder for the error code
      * @param internalBufferSize  size of the IO buffer avcpp allocates
@@ -582,7 +582,7 @@ public:
     /**
      * Read the stream parameters with per-stream options.
      *
-     * @param streamsOptions one dictionary per stream; not consumed
+     * @param streamsOptions one dictionary per stream; FFmpeg removes the options it recognizes
      * @param ec             holder for the error code
      */
     void findStreamInfo(DictionaryArray &streamsOptions, OptionalErrorCode ec = throws());
@@ -620,7 +620,7 @@ public:
      * Open an output with muxer options.
      *
      * @param uri     resource name
-     * @param options muxer options; not consumed
+     * @param options muxer options; the object stays usable, but FFmpeg removes the options it recognized
      * @param ec      holder for the error code
      */
     void openOutput(const std::string& uri, Dictionary &options, OptionalErrorCode ec = throws());
@@ -645,7 +645,7 @@ public:
      * Open an output with an explicit muxer and options.
      *
      * @param uri     resource name
-     * @param options muxer options; not consumed
+     * @param options muxer options; the object stays usable, but FFmpeg removes the options it recognized
      * @param format  the muxer to use
      * @param ec      holder for the error code
      */
@@ -765,7 +765,7 @@ public:
     /**
      * Init the output with muxer options instead of writing the header.
      *
-     * @param options muxer options; not consumed
+     * @param options muxer options; the object stays usable, but FFmpeg removes the options it recognized
      * @param ec      holder for the error code
      *
      * @return `true` when the format was initialized here, `false` when it will be initialized by
@@ -796,7 +796,7 @@ public:
     /**
      * Write the container header with muxer options.
      *
-     * @param options muxer options; not consumed
+     * @param options muxer options; the object stays usable, but FFmpeg removes the options it recognized
      * @param ec      holder for the error code
      */
     void writeHeader(Dictionary &options, OptionalErrorCode ec = throws());

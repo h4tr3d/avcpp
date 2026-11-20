@@ -82,7 +82,9 @@ while IFS='	' read -r en ru; do
     ru_time=$(last_commit_time "docs/$ru")
 
     if [ "$en_time" -gt "$ru_time" ]; then
-        behind=$(git -C "$ROOT" log --oneline -n 20 --format=%h "$ru_time.." -- "docs/$en" 2>/dev/null | wc -l | tr -d ' ')
+        # git log needs a revision, not the timestamp used for the comparison.
+        ru_commit=$(git -C "$ROOT" log -1 --format=%H -- "docs/$ru")
+        behind=$(git -C "$ROOT" rev-list --count "$ru_commit..HEAD" -- "docs/$en" 2>/dev/null || echo '?')
         stale="$stale
   docs/$ru  (English changed in $behind commit(s) after the translation)"
     elif [ "$VERBOSE" = 1 ]; then

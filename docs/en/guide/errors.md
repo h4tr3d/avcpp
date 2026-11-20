@@ -20,8 +20,8 @@ if (ec) {
 }
 ```
 
-`av::throws()` is the default argument. It is an `OptionalErrorCode` that is not a null pointer, so
-the library knows the caller wants an exception. Passing a `std::error_code&` gives you a
+`av::throws()` is the default argument, and it is an *empty* holder: no variable was passed, so the
+library throws `av::Exception` instead of storing a code. Passing a `std::error_code&` gives you a
 non-owning view of it: the variable must outlive the call, which it does in every normal pattern.
 
 The two styles are exclusive inside one call. Mixing them in one program is fine — pick the style

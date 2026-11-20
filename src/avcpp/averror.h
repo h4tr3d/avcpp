@@ -149,25 +149,21 @@ class AvcppCategory : public std::error_category
 {
 public:
 
-    virtual     /**
-     * Name of the category.
-     *
-     * @return the category name as a static string
-     */
     /**
      * Name of the category.
      *
      * @return the category name as a static string
      */
-const char *name() const noexcept override;
-    virtual     /**
+    const char *name() const noexcept override;
+
+    /**
      * Text for an error value.
      *
      * @param ev the error value
      *
      * @return a human-readable description
      */
-std::string message(int ev) const override;
+    std::string message(int ev) const override;
 };
 
 /**
@@ -180,12 +176,12 @@ class FfmpegCategory : public std::error_category
     virtual std::string message(int ev) const override;
 };
 
-inline
 /**
  * Error category of the library's own errors.
  *
  * @return the category, a process-wide singleton
  */
+inline
 const AvcppCategory& avcpp_category()
 {
     static AvcppCategory res;

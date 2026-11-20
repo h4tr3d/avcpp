@@ -172,20 +172,20 @@ public:
 
     InputFormat() = default;
 
-/**
- * Look a demuxer up by name.
- *
- * @param name the demuxer name, for example "matroska"
- */
+    /**
+     * Look a demuxer up by name.
+     *
+     * @param name the demuxer name, for example "matroska"
+     */
     InputFormat(const std::string& name) noexcept;
 
-/**
- * Look a demuxer up by name and point the descriptor at it.
- *
- * @param name the demuxer name
- *
- * @return `true` when the name was found
- */
+    /**
+     * Look a demuxer up by name and point the descriptor at it.
+     *
+     * @param name the demuxer name
+     *
+     * @return `true` when the name was found
+     */
     bool setFormat(const std::string& name) noexcept;
 
 };
@@ -206,41 +206,41 @@ public:
 
     OutputFormat() = default;
 
-/**
- * Look a muxer up by name, URL or MIME type.
- *
- * @param name muxer name, for example "mp4"
- * @param url  URL that hints at the format; may be empty
- * @param mime MIME type that hints at the format; may be empty
- */
+    /**
+     * Look a muxer up by name, URL or MIME type.
+     *
+     * @param name muxer name, for example "mp4"
+     * @param url  URL that hints at the format; may be empty
+     * @param mime MIME type that hints at the format; may be empty
+     */
     OutputFormat(const std::string& name,
                  const std::string& url  = std::string(),
                  const std::string& mime = std::string()) noexcept;
 
-/**
- * Look a muxer up and point the descriptor at it.
- *
- * @param name muxer name
- * @param url  URL that hints at the format; may be empty
- * @param mime MIME type that hints at the format; may be empty
- *
- * @return `true` when a muxer was found
- */
+    /**
+     * Look a muxer up and point the descriptor at it.
+     *
+     * @param name muxer name
+     * @param url  URL that hints at the format; may be empty
+     * @param mime MIME type that hints at the format; may be empty
+     *
+     * @return `true` when a muxer was found
+     */
     bool        setFormat(const std::string& name,
                           const std::string& url  = std::string(),
                           const std::string& mime = std::string()) noexcept;
 
-/**
- * Video codec the muxer uses when the caller does not choose one.
- *
- * @return the `AV_CODEC_ID_*` value, or `AV_CODEC_ID_NONE`
- */
+    /**
+     * Video codec the muxer uses when the caller does not choose one.
+     *
+     * @return the `AV_CODEC_ID_*` value, or `AV_CODEC_ID_NONE`
+     */
     AVCodecID   defaultVideoCodecId() const noexcept;
-/**
- * Audio codec the muxer uses when the caller does not choose one.
- *
- * @return the `AV_CODEC_ID_*` value, or `AV_CODEC_ID_NONE`
- */
+    /**
+     * Audio codec the muxer uses when the caller does not choose one.
+     *
+     * @return the `AV_CODEC_ID_*` value, or `AV_CODEC_ID_NONE`
+     */
     AVCodecID   defaultAudioCodecId() const noexcept;
 };
 

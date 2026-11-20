@@ -65,7 +65,7 @@ public:
      * @param srcChannelsLayout channel layout of the input
      * @param srcRate           sample rate of the input
      * @param srcFormat         sample format of the input
-     * @param options           resampler options; not consumed
+     * @param options           resampler options; the object stays usable, but FFmpeg removes the options it recognized
      * @param ec                holder for the error code
      */
     AudioResampler(uint64_t dstChannelsLayout, int dstRate, SampleFormat dstFormat,
@@ -250,7 +250,7 @@ public:
      * @param srcChannelsLayout channel layout of the input
      * @param srcRate           sample rate of the input
      * @param srcFormat         sample format of the input
-     * @param options           resampler options; not consumed
+     * @param options           resampler options; the object stays usable, but FFmpeg removes the options it recognized
      * @param ec                holder for the error code
      *
      * @return `true` when the resampler is ready

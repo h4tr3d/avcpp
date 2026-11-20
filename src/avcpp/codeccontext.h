@@ -165,7 +165,7 @@ public:
      * Open the codec with options.
      *
      * @param options codec options, for example {"threads", "4"}; the
-     *                dictionary is not consumed and stays usable
+     *                dictionary stays usable, but FFmpeg removes the options it recognized
      * @param ec      holder for the error code
      */
     void open(class Dictionary &options, OptionalErrorCode ec = throws());
@@ -179,7 +179,7 @@ public:
     /**
      * Open an explicitly chosen codec with options.
      *
-     * @param options codec options; not consumed
+     * @param options codec options; the object stays usable, but FFmpeg removes the options it recognized
      * @param codec   the codec to open
      * @param ec      holder for the error code
      */

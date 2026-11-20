@@ -162,14 +162,14 @@ public:
     typedef I iterator_category;
 
     template<bool constIterator = false>
-            /**
-             * Iterator over the list.
-             *
-             * Holds the raw element pointer plus a wrapper that is updated on every
-             * step, so dereferencing yields a wrapper without allocating.
-             *
-             * @tparam constIterator `true` for the read-only flavour
-             */
+    /**
+     * Iterator over the list.
+     *
+     * Holds the raw element pointer plus a wrapper that is updated on every
+     * step, so dereferencing yields a wrapper without allocating.
+     *
+     * @tparam constIterator `true` for the read-only flavour
+     */
     class base_iterator
     {
     public:
@@ -198,11 +198,11 @@ public:
         wrapper_reset_type    resetPtr;
 
     public:
-                /**
-                 * Point the iterator at an element.
-                 *
-                 * @param ptr the element to start from; null makes an end iterator
-                 */
+        /**
+         * Point the iterator at an element.
+         *
+         * @param ptr the element to start from; null makes an end iterator
+         */
         base_iterator(element_type *ptr) :
             ptr(ptr)
         {
@@ -212,11 +212,11 @@ public:
         ~base_iterator() {}
 
         // prefix++
-                /**
-                 * Advance to the next element.
-                 *
-                 * @return this iterator
-                 */
+        /**
+         * Advance to the next element.
+         *
+         * @return this iterator
+         */
         base_iterator& operator++()
         {
             ptr = getNextPtr(ptr);
@@ -225,11 +225,11 @@ public:
         }
 
         // postfix++
-                /**
-                 * Advance, returning the previous position.
-                 *
-                 * @return a copy of the iterator before advancing
-                 */
+        /**
+         * Advance, returning the previous position.
+         *
+         * @return a copy of the iterator before advancing
+         */
         base_iterator operator++(int)
         {
             base_iterator tmp = *this;
@@ -237,38 +237,38 @@ public:
             return tmp;
         }
 
-                /**
-                 * Compare positions.
-                 *
-                 * @param rhs the iterator to compare with
-                 *
-                 * @return `true` when both point at the same element
-                 */
+        /**
+         * Compare positions.
+         *
+         * @param rhs the iterator to compare with
+         *
+         * @return `true` when both point at the same element
+         */
         bool  operator==(const base_iterator& rhs) const {return ptr == rhs.ptr;}
-                /**
-                 * Compare positions.
-                 *
-                 * @param rhs the iterator to compare with
-                 *
-                 * @return `true` when the iterators point at different elements
-                 */
+        /**
+         * Compare positions.
+         *
+         * @param rhs the iterator to compare with
+         *
+         * @return `true` when the iterators point at different elements
+         */
         bool  operator!=(const base_iterator& rhs) const {return !(ptr == rhs.ptr);}
 
-                /**
-                 * Element at the current position.
-                 *
-                 * @return the wrapper of the element
-                 */
+        /**
+         * Element at the current position.
+         *
+         * @return the wrapper of the element
+         */
         WrapperType& operator*() noexcept
         {
             return wrapper;
         }
 
-                /**
-                 * Element at the current position.
-                 *
-                 * @return a pointer to the wrapper of the element
-                 */
+        /**
+         * Element at the current position.
+         *
+         * @return a pointer to the wrapper of the element
+         */
         WrapperType* operator->() noexcept
         {
             return &wrapper;
@@ -281,21 +281,21 @@ public:
         /// Read-only iterator over the list.
     using const_iterator = base_iterator<true>;
 
-        /**
-         * Create an empty wrapper that owns nothing.
-         */
+    /**
+     * Create an empty wrapper that owns nothing.
+     */
     LinkedListWrapper()
         : m_begin(0),
           m_end(0)
     {
     }
 
-        /**
-         * Take ownership of a list.
-         *
-         * @param begin the first element; the deleter is called on it by the
-         *              destructor, so pass a list you own
-         */
+    /**
+     * Take ownership of a list.
+     *
+     * @param begin the first element; the deleter is called on it by the
+     *              destructor, so pass a list you own
+     */
     explicit LinkedListWrapper(element_type * begin)
         : m_begin(begin),
           m_end(begin)
@@ -310,74 +310,74 @@ public:
     }
 
 
-        /**
-         * Whether the wrapper holds a list.
-         *
-         * @return `true` when the first element is not null
-         */
+    /**
+     * Whether the wrapper holds a list.
+     *
+     * @return `true` when the first element is not null
+     */
     bool isValid()
     {
         return !!m_begin;
     }
 
-        /**
-         * The first element of the list.
-         *
-         * @return the raw pointer passed to the constructor, or nullptr
-         */
+    /**
+     * The first element of the list.
+     *
+     * @return the raw pointer passed to the constructor, or nullptr
+     */
     element_type *raw()
     {
         return m_begin;
     }
 
-        /**
-         * The first element of the list, read-only.
-         *
-         * @return the raw pointer passed to the constructor, or nullptr
-         */
+    /**
+     * The first element of the list, read-only.
+     *
+     * @return the raw pointer passed to the constructor, or nullptr
+     */
     const element_type *raw() const
     {
         return m_begin;
     }
 
-        /**
-         * First element.
-         *
-         * @return an iterator at the head of the list
-         */
+    /**
+     * First element.
+     *
+     * @return an iterator at the head of the list
+     */
     iterator begin()
     {
         return iterator(m_begin);
     }
 
 
-        /**
-         * End of the list.
-         *
-         * @return the past-the-end iterator
-         */
+    /**
+     * End of the list.
+     *
+     * @return the past-the-end iterator
+     */
     iterator end()
     {
         return iterator(0);
     }
 
 
-        /**
-         * First element, read-only.
-         *
-         * @return a const iterator at the head of the list
-         */
+    /**
+     * First element, read-only.
+     *
+     * @return a const iterator at the head of the list
+     */
     const_iterator begin() const
     {
         return const_iterator(m_begin);
     }
 
 
-        /**
-         * End of the list, read-only.
-         *
-         * @return the past-the-end const iterator
-         */
+    /**
+     * End of the list, read-only.
+     *
+     * @return the past-the-end const iterator
+     */
     const_iterator end() const
     {
         return const_iterator(0);

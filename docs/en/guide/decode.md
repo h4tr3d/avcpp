@@ -47,7 +47,8 @@ Two settings are worth knowing before `open()`:
 @snippet api2-send-receive.cpp send_receive_flush
 
 `flush()` returns `false` when the output queue has to be drained before the switch to draining
-mode can complete; retrying it after `drain()` is the correct response, and it is idempotent.
+mode can complete; retrying it after the `drain()` lambda of the example is the correct response,
+and it is idempotent.
 Skipping the flush silently loses the last frames of every file, which is easy to miss because the
 count is usually small.
 

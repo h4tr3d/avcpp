@@ -24,8 +24,7 @@ if [ ! -d "$SITE" ]; then
     exit 1
 fi
 
-links=""
-for dir in "$SITE"/*; do
+versions=$(for dir in "$SITE"/*; do
     [ -d "$dir" ] || continue
     name=$(basename "$dir")
     case "$name" in
@@ -33,10 +32,15 @@ for dir in "$SITE"/*; do
             continue
             ;;
         [0-9]*.[0-9]*|[0-9]*.[0-9]*.[0-9]*)
-            links="$links    <li><a href=\"$name/\">avcpp $name</a> &middot; <a href=\"$name/ru/\">русский</a></li>
-"
+            printf '%s\n' "$name"
             ;;
     esac
+done | sort -V)
+
+links=""
+for name in $versions; do
+    links="$links    <li><a href=\"$name/\">avcpp $name</a> &middot; <a href=\"$name/ru/\">русский</a></li>
+"
 done
 
 if [ -d "$SITE/latest" ]; then
@@ -76,4 +80,8 @@ EOF
 
 cp "$ROOT/docs/theme/404.html" "$SITE/404.html"
 
-echo "index.html and 404.html written to $SITE"
+# GitHub Pages runs Jekyll unless this file exists, and Jekyll drops paths that
+# start with an underscore or a front-matter-looking line.
+: > "$SITE/.nojekyll"
+
+echo "index.html, 404.html and .nojekyll written to $SITE"

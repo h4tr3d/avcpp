@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: documentation-${{ github.ref }}
@@ -93,6 +93,8 @@ jobs:
   deploy:
     name: publish
     needs: build
+    permissions:
+      contents: write
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-24.04
     steps:
@@ -117,6 +119,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+              # actions/checkout fetches only the ref being built, so the target
+              # branch has to be fetched explicitly before it can be used.
+              git fetch --no-tags --depth=1 origin \
+                  "+refs/heads/gh-pages:refs/remotes/origin/gh-pages"
               git worktree add --detach "$RUNNER_TEMP/pages" origin/gh-pages
           else
               git worktree add --detach "$RUNNER_TEMP/pages"
@@ -131,8 +137,21 @@ jobs:
           rm -rf "$doc_version"
           cp -a "$RUNNER_TEMP/site/$doc_version" "$doc_version"
 
-          rm -rf latest
-          cp -a "$doc_version" latest
+          # latest points at the newest release: republishing an older tag must
+          # not move it backwards.
+          update_latest=1
+          if [ -f latest/version.txt ]; then
+              newest=$(cat latest/version.txt)
+              if [ "$(printf '%s\n%s\n' "$newest" "$version" | sort -V | tail -1)" != "$version" ]; then
+                  update_latest=0
+              fi
+          fi
+          if [ "$update_latest" = 1 ]; then
+              rm -rf latest
+              cp -a "$doc_version" latest
+          else
+              echo "keeping latest at $newest, publishing $version"
+          fi
 
           "$GITHUB_WORKSPACE/docs/site-index.sh" .
 

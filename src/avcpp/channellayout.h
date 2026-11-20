@@ -67,31 +67,31 @@ class ChannelLayout;
 class ChannelLayoutView
 {
 public:
-        /**
-         * Create an empty, invalid view.
-         */
+    /**
+     * Create an empty, invalid view.
+     */
     ChannelLayoutView() noexcept;
     // implicit by design
-        /**
-         * Wrap an FFmpeg channel layout.
-         *
-         * The conversion is implicit on purpose, so an `AVChannelLayout` can be
-         * passed where a view is expected.
-         *
-         * @param layout the layout to view; it must outlive the view
-         */
+    /**
+     * Wrap an FFmpeg channel layout.
+     *
+     * The conversion is implicit on purpose, so an `AVChannelLayout` can be
+     * passed where a view is expected.
+     *
+     * @param layout the layout to view; it must outlive the view
+     */
     ChannelLayoutView(const AVChannelLayout &layout) noexcept;
 
     // ???
     //+ const AVChannelLayout *av_channel_layout_standard(void **opaque);
-        /**
-         * Iterate the standard layouts FFmpeg knows about.
-         *
-         * @tparam Callable callable taking a `ChannelLayoutView` and returning
-         *                  `true` to stop the iteration
-         *
-         * @param callable invoked once per standard layout
-         */
+    /**
+     * Iterate the standard layouts FFmpeg knows about.
+     *
+     * @tparam Callable callable taking a `ChannelLayoutView` and returning
+     *                  `true` to stop the iteration
+     *
+     * @param callable invoked once per standard layout
+     */
     template<typename Callable>
     static void iterate(Callable callable) {
         void *iter = nullptr;
@@ -102,9 +102,9 @@ public:
         }
     }
 
-        /**
-         * Print every standard layout through the FFmpeg log system.
-         */
+    /**
+     * Print every standard layout through the FFmpeg log system.
+     */
     static void dumpLayouts();
 
     //+ int av_channel_layout_describe(const AVChannelLayout *channel_layout, char *buf, size_t buf_size);
@@ -116,109 +116,109 @@ public:
     //+ int av_channel_layout_check(const AVChannelLayout *channel_layout);
     //+ int av_channel_layout_compare(const AVChannelLayout *chl, const AVChannelLayout *chl1);
 
-        /**
-         * The underlying FFmpeg layout, mutable.
-         *
-         * @return a pointer to the layout; valid while the owner lives
-         */
+    /**
+     * The underlying FFmpeg layout, mutable.
+     *
+     * @return a pointer to the layout; valid while the owner lives
+     */
     AVChannelLayout       *raw();
-        /**
-         * The underlying FFmpeg layout, read-only.
-         *
-         * @return a pointer to the layout; valid while the owner lives
-         */
+    /**
+     * The underlying FFmpeg layout, read-only.
+     *
+     * @return a pointer to the layout; valid while the owner lives
+     */
     const AVChannelLayout *raw() const;
 
-        /**
-         * Number of channels in the layout.
-         *
-         * @return the channel count, or zero for an invalid layout
-         */
+    /**
+     * Number of channels in the layout.
+     *
+     * @return the channel count, or zero for an invalid layout
+     */
     int         channels() const noexcept;
-        /**
-         * The layout as a bit mask when it can be expressed as one.
-         *
-         * @return the `AV_CH_LAYOUT_*` mask, or zero for a custom layout that has
-         *         no mask representation
-         */
+    /**
+     * The layout as a bit mask when it can be expressed as one.
+     *
+     * @return the `AV_CH_LAYOUT_*` mask, or zero for a custom layout that has
+     *         no mask representation
+     */
     uint64_t    layout() const noexcept;
-        /**
-         * Intersection of the layout with a mask.
-         *
-         * @param mask the `AV_CH_*` bits to keep
-         *
-         * @return the selected channels as a mask
-         */
+    /**
+     * Intersection of the layout with a mask.
+     *
+     * @param mask the `AV_CH_*` bits to keep
+     *
+     * @return the selected channels as a mask
+     */
     uint64_t    subset(uint64_t mask) const noexcept;
-        /**
-         * Whether the view refers to a usable layout.
-         *
-         * @return `true` when the order or the mask is set
-         */
+    /**
+     * Whether the view refers to a usable layout.
+     *
+     * @return `true` when the order or the mask is set
+     */
     bool        isValid() const noexcept;
-        /**
-         * Text description of the layout.
-         *
-         * @return a string such as "stereo" or "5.1"
-         */
+    /**
+     * Text description of the layout.
+     *
+     * @return a string such as "stereo" or "5.1"
+     */
     std::string describe() const;
-        /**
-         * Text description of the layout into an existing string.
-         *
-         * @param desc the string that receives the description
-         */
+    /**
+     * Text description of the layout into an existing string.
+     *
+     * @param desc the string that receives the description
+     */
     void        describe(std::string &desc) const;
 
-        /**
-         * Position of a speaker in the layout.
-         *
-         * @param channel the `AV_CHAN_*` value to look for
-         *
-         * @return the zero-based index, or -1 when the channel is not present
-         */
+    /**
+     * Position of a speaker in the layout.
+     *
+     * @param channel the `AV_CHAN_*` value to look for
+     *
+     * @return the zero-based index, or -1 when the channel is not present
+     */
     int index(AVChannel channel) const;
-        /**
-         * Position of a speaker in the layout, by name.
-         *
-         * @param name the channel name to look for
-         *
-         * @return the zero-based index, or -1 when the channel is not present
-         */
+    /**
+     * Position of a speaker in the layout, by name.
+     *
+     * @param name the channel name to look for
+     *
+     * @return the zero-based index, or -1 when the channel is not present
+     */
     int index(const char *name) const;
 
-        /**
-         * Speaker at a position.
-         *
-         * @param index zero-based position
-         *
-         * @return the `AV_CHAN_*` value, or `AV_CHAN_NONE` when the index is out of
-         *         range
-         */
+    /**
+     * Speaker at a position.
+     *
+     * @param index zero-based position
+     *
+     * @return the `AV_CHAN_*` value, or `AV_CHAN_NONE` when the index is out of
+     *         range
+     */
     AVChannel channel(unsigned int index) const;
-        /**
-         * Speaker by name.
-         *
-         * @param name the channel name
-         *
-         * @return the `AV_CHAN_*` value, or `AV_CHAN_NONE` when the layout does not
-         *         contain it
-         */
+    /**
+     * Speaker by name.
+     *
+     * @param name the channel name
+     *
+     * @return the `AV_CHAN_*` value, or `AV_CHAN_NONE` when the layout does not
+     *         contain it
+     */
     AVChannel channel(const char *name) const;
 
-        /**
-         * Compare two layouts.
-         *
-         * @param other the layout to compare with
-         *
-         * @return `true` when both describe the same channels in the same order
-         */
+    /**
+     * Compare two layouts.
+     *
+     * @param other the layout to compare with
+     *
+     * @return `true` when both describe the same channels in the same order
+     */
     bool operator==(const ChannelLayoutView &other) const noexcept;
 
-        /**
-         * Deep copy of the layout.
-         *
-         * @return an owning copy that can outlive this view
-         */
+    /**
+     * Deep copy of the layout.
+     *
+     * @return an owning copy that can outlive this view
+     */
     ChannelLayout clone() const;
 
 protected:
@@ -239,53 +239,53 @@ protected:
 class ChannelLayout : public ChannelLayoutView
 {
 public:
-        /**
-         * Create an empty layout that owns nothing.
-         */
+    /**
+     * Create an empty layout that owns nothing.
+     */
     ChannelLayout() = default;
     //explicit ChannelLayout(ChannelLayoutView &&view);
-        /**
-         * Copy a view into an owning layout.
-         *
-         * @param view the layout to copy
-         */
+    /**
+     * Copy a view into an owning layout.
+     *
+     * @param view the layout to copy
+     */
     explicit ChannelLayout(const ChannelLayoutView &view);
 
     using ChannelLayoutView::ChannelLayoutView;
 
-        /**
-         * Deep copy of a layout.
-         *
-         * @param other the layout to copy
-         */
+    /**
+     * Deep copy of a layout.
+     *
+     * @param other the layout to copy
+     */
     ChannelLayout(const ChannelLayout& other);
-        /**
-         * Deep copy assignment; the previous contents are released.
-         *
-         * @param other the layout to copy
-         *
-         * @return this layout
-         */
+    /**
+     * Deep copy assignment; the previous contents are released.
+     *
+     * @param other the layout to copy
+     *
+     * @return this layout
+     */
     ChannelLayout& operator=(const ChannelLayout& other);
 
-        /**
-         * Move a layout.
-         *
-         * @param other the layout to move from; left empty
-         */
+    /**
+     * Move a layout.
+     *
+     * @param other the layout to move from; left empty
+     */
     ChannelLayout(ChannelLayout&& other);
-        /**
-         * Move assignment; the previous contents are released.
-         *
-         * @param other the layout to move from; left empty
-         *
-         * @return this layout
-         */
+    /**
+     * Move assignment; the previous contents are released.
+     *
+     * @param other the layout to move from; left empty
+     *
+     * @return this layout
+     */
     ChannelLayout& operator=(ChannelLayout&& other);
 
-        /**
-         * Release the owned description.
-         */
+    /**
+     * Release the owned description.
+     */
     ~ChannelLayout();
 
     //+ void av_channel_layout_uninit(AVChannelLayout *channel_layout);
@@ -296,41 +296,41 @@ public:
     //+ int av_channel_layout_copy(AVChannelLayout *dst, const AVChannelLayout *src);
 
     //explicit ChannelLayout(uint64_t mask);
-        /**
-         * Build a layout from a bit mask.
-         *
-         * @param mask the `AV_CH_*` bits that are present
-         */
+    /**
+     * Build a layout from a bit mask.
+     *
+     * @param mask the `AV_CH_*` bits that are present
+     */
     explicit ChannelLayout(std::bitset<64> mask);
-        /**
-         * Build a layout from its textual form.
-         *
-         * @param str a description such as "stereo" or "FL+FR+FC"; invalid input
-         *            leaves the layout empty
-         */
+    /**
+     * Build a layout from its textual form.
+     *
+     * @param str a description such as "stereo" or "FL+FR+FC"; invalid input
+     *            leaves the layout empty
+     */
     explicit ChannelLayout(const char *str);
-        /**
-         * Build the default layout for a channel count.
-         *
-         * @param channels number of channels, for example 2 for stereo
-         */
+    /**
+     * Build the default layout for a channel count.
+     *
+     * @param channels number of channels, for example 2 for stereo
+     */
     explicit ChannelLayout(int channels);
 
     // Stop control AVChannelLayout
-        /**
-         * Give up control of the owned description.
-         *
-         * Used after the layout has been moved into an FFmpeg structure that now
-         * owns it, so the destructor does not free it twice.
-         */
+    /**
+     * Give up control of the owned description.
+     *
+     * Used after the layout has been moved into an FFmpeg structure that now
+     * owns it, so the destructor does not free it twice.
+     */
     void release();
 
 private:
-        /**
-         * Exchange the contents of two layouts.
-         *
-         * @param other the layout to swap with
-         */
+    /**
+     * Exchange the contents of two layouts.
+     *
+     * @param other the layout to swap with
+     */
     void swap(ChannelLayout &other);
 
 };

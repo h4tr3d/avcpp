@@ -517,13 +517,13 @@ struct SentinelEndPolicy
     using value_type = std::remove_reference_t<T>;
         /// Pointer that marks the end of the range.
     value_type* end{};
-        /**
-         * Whether the iterator reached the end pointer.
-         *
-         * @param it the iterator to test
-         *
-         * @return `true` when it equals the stored end
-         */
+    /**
+     * Whether the iterator reached the end pointer.
+     *
+     * @param it the iterator to test
+     *
+     * @return `true` when it equals the stored end
+     */
     constexpr bool isEnd(T* it) const noexcept {
         return it == end;
     }
@@ -539,13 +539,13 @@ struct SentinelUntilPolicy
     using value_type = std::remove_cvref_t<T>;
         /// Value that terminates the sequence, for example '\0' or a null pointer.
     value_type value{};
-        /**
-         * Whether the iterator reached the terminating value.
-         *
-         * @param it the iterator to test
-         *
-         * @return `true` when it is null or points at the terminator
-         */
+    /**
+     * Whether the iterator reached the terminating value.
+     *
+     * @param it the iterator to test
+     *
+     * @return `true` when it is null or points at the terminator
+     */
     constexpr bool isEnd(T* it) const noexcept {
         return it == nullptr || *it == value;
     }
@@ -631,18 +631,18 @@ struct ArrayIterator
             std::contiguous_iterator_tag>;
 
     ArrayIterator() noexcept = default; // semiregular
-        /**
-         * Point the iterator at an array element.
-         *
-         * @param ptr position in the array
-         */
+    /**
+     * Point the iterator at an array element.
+     *
+     * @param ptr position in the array
+     */
     ArrayIterator(pointer ptr) noexcept : m_ptr(ptr) {}
 
-        /**
-         * Element at the current position.
-         *
-         * @return a wrapped view or a reference, depending on the proxy mode
-         */
+    /**
+     * Element at the current position.
+     *
+     * @return a wrapped view or a reference, depending on the proxy mode
+     */
     reference operator*() const noexcept {
         if constexpr (UseProxy)
             return reference{*m_ptr};
@@ -650,70 +650,70 @@ struct ArrayIterator
             return *m_ptr;
     }
 
-        /**
-         * Advance to the next element.
-         *
-         * @return this iterator
-         */
+    /**
+     * Advance to the next element.
+     *
+     * @return this iterator
+     */
     ArrayIterator& operator++()      noexcept { m_ptr++; return *this; }
-        /**
-         * Advance, returning the previous position.
-         *
-         * @return a copy of the iterator before advancing
-         */
+    /**
+     * Advance, returning the previous position.
+     *
+     * @return a copy of the iterator before advancing
+     */
     ArrayIterator  operator++(int)   noexcept { ArrayIterator tmp = *this; ++(*this); return tmp; }
 
-        /**
-         * Step back to the previous element.
-         *
-         * @return this iterator
-         */
+    /**
+     * Step back to the previous element.
+     *
+     * @return this iterator
+     */
     ArrayIterator& operator--()      noexcept { m_ptr--; return *this; }
-        /**
-         * Step back, returning the previous position.
-         *
-         * @return a copy of the iterator before stepping back
-         */
+    /**
+     * Step back, returning the previous position.
+     *
+     * @return a copy of the iterator before stepping back
+     */
     ArrayIterator  operator--(int)   noexcept { ArrayIterator tmp = *this; --(*this); return tmp; }
 
-        /**
-         * Advance by several elements.
-         *
-         * @param n number of elements to skip; may be negative
-         *
-         * @return this iterator
-         */
+    /**
+     * Advance by several elements.
+     *
+     * @param n number of elements to skip; may be negative
+     *
+     * @return this iterator
+     */
     ArrayIterator& operator+=(int n) noexcept { m_ptr+=n; return *this; }
-        /**
-         * Step back by several elements.
-         *
-         * @param n number of elements to go back; may be negative
-         *
-         * @return this iterator
-         */
+    /**
+     * Step back by several elements.
+     *
+     * @param n number of elements to go back; may be negative
+     *
+     * @return this iterator
+     */
     ArrayIterator& operator-=(int n) noexcept { m_ptr-=n; return *this; }
 
     // i[n]
-        /**
-         * Element at an offset from the current position.
-         *
-         * @param n offset in elements
-         *
-         * @return the element, wrapped or referenced
-         */
+    /**
+     * Element at an offset from the current position.
+     *
+     * @param n offset in elements
+     *
+     * @return the element, wrapped or referenced
+     */
     reference operator[](int n) noexcept {
         if constexpr (UseProxy)
             return reference{m_ptr[n]};
         else
             return m_ptr[n];
     }
-        /**
-         * Element at an offset, read-only.
-         *
-         * @param n offset in elements
-         *
-         * @return the element, wrapped or referenced
-         */
+    /**
+     * Element at an offset, read-only.
+     *
+     * @param n offset in elements
+     *
+     * @return the element, wrapped or referenced
+     */
     const reference operator[](int n) const noexcept {
         if constexpr (UseProxy)
             return reference{m_ptr[n]};
@@ -862,33 +862,33 @@ class ArrayView : public std::ranges::view_interface<ArrayView<T, U, Policy>>
 {
 public:
     constexpr ArrayView() = default;
-        /**
-         * Wrap an array with a policy that defines where it ends.
-         *
-         * @param ptr    first element; may be null
-         * @param policy either an element count or a sentinel policy
-         *
-         * @note Non-owning: the array must outlive the view.
-         */
+    /**
+     * Wrap an array with a policy that defines where it ends.
+     *
+     * @param ptr    first element; may be null
+     * @param policy either an element count or a sentinel policy
+     *
+     * @note Non-owning: the array must outlive the view.
+     */
     constexpr ArrayView(T *ptr, Policy policy)
         : m_ptr(ptr), m_policy(std::move(policy))
     {}
 
-        /**
-         * First element.
-         *
-         * @return an iterator at the beginning of the range
-         */
+    /**
+     * First element.
+     *
+     * @return an iterator at the beginning of the range
+     */
     auto constexpr begin() const noexcept
     {
         return ArrayIterator<T, U>{m_ptr};
     }
 
-        /**
-         * End of the range.
-         *
-         * @return an iterator or a sentinel, depending on the policy
-         */
+    /**
+     * End of the range.
+     *
+     * @return an iterator or a sentinel, depending on the policy
+     */
     auto constexpr end() const noexcept
     {
         // special case to allow back()/size()/etc method for well-defined sizes
@@ -977,22 +977,22 @@ T guessValue(const T& value, L list)
 template<typename T>
 struct EqualComparator
 {
-        /**
-         * Remember the value to compare against.
-         *
-         * @param value the value that ends the list
-         */
+    /**
+     * Remember the value to compare against.
+     *
+     * @param value the value that ends the list
+     */
     EqualComparator(const T& value)
         : value(value)
     {}
 
-        /**
-         * Compare an element with the stored value.
-         *
-         * @param value the element to test
-         *
-         * @return `true` when the element equals the stored value
-         */
+    /**
+     * Compare an element with the stored value.
+     *
+     * @param value the element to test
+     *
+     * @return `true` when the element equals the stored value
+     */
     bool operator() (const T& value) const
     {
         if (this->value == value)
