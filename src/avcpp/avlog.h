@@ -1,13 +1,27 @@
 #pragma once
 
+/**
+ * Bridge to the FFmpeg logging system.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include <stdarg.h>
 
 #include "ffmpeg.h"
 
 #ifdef __PRETTY_FUNCTION__
+/**
+ * Name used to prefix library log messages.
+ */
 #define LOGGED_NAME __PRETTY_FUNCTION__
 #else
 // should exist on C++11 compiler
+/**
+ * Name used to prefix library log messages when the compiler has no
+ * __PRETTY_FUNCTION__.
+ */
 #define LOGGED_NAME __func__
 #endif
 

@@ -1,0 +1,46 @@
+@startuml encode
+skinparam backgroundColor white
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam sequenceMessageAlign left
+skinparam responseMessageBelowArrow true
+
+actor "Клиент" as App
+participant "av::hw::DeviceContext" as Dev
+participant "av::VideoEncoderContext" as Enc
+participant "av::hw::FramesContext" as Frm
+participant "FFmpeg" as FF
+
+alt Режим Auto или Device
+    App -> Enc : configureHwEncoding(device, mode)
+    Enc -> Frm : create(hwFormat, swFormat)
+    Frm --> Enc : frames
+else Готовый пул кадров
+    App -> Enc : configureHwEncoding(frames)
+    note right of Enc
+      Автозагрузка выключена.
+      Работает только нулевое копирование.
+    end note
+end
+
+App -> Enc : open()
+Enc -> FF : avcodec_open2()
+
+loop Каждый кадр
+    App -> Enc : encode(frame)
+    alt Кадр в памяти системы и автозагрузка включена
+        Enc -> Frm : toHwFrame(frame)
+        Frm --> Enc : кадр на устройстве
+    end
+    Enc -> FF : avcodec_send_frame()
+    Enc -> FF : avcodec_receive_packet()
+    FF --> Enc : AVPacket
+    Enc --> App : Packet
+end
+
+App -> Enc : encode() без кадра
+note right of App
+  Пустой кадр запускает
+  слив кодировщика.
+end note
+@enduml

@@ -1,0 +1,223 @@
+/**
+ * @page guide_examples Примеры
+ *
+ * Каждый пример — самостоятельная программа в `example/api2-samples/`.
+ * Её можно собрать вместе с библиотекой и запустить отдельно; страницы ниже
+ * содержат полный исходный код.
+ *
+ * | Пример | Что показывает |
+ * | --- | --- |
+ * | @ref api2-decode-audio.cpp | Декодирование аудио |
+ * | @ref api2-decode-encode-audio.cpp | Перекодирование аудио |
+ * | @ref api2-decode-encode-video.cpp | Перекодирование видео |
+ * | @ref api2-decode-filter-encode.cpp | Фильтрация и кодирование |
+ * | @ref api2-decode-overlay-encode.cpp | Наложение изображения и кодирование |
+ * | @ref api2-decode-rasample-audio.cpp | Ресемплинг аудио |
+ * | @ref api2-decode-raw-h264.cpp | Декодирование сырого H.264 |
+ * | @ref api2-decode.cpp | Декодирование видео |
+ * | @ref api2-demux-seek.cpp | Демуксинг и позиционирование |
+ * | @ref api2-dict-basic.cpp | Основы Dictionary |
+ * | @ref api2-generate-subtitles.cpp | Генерация субтитров |
+ * | @ref api2-hw-decode.cpp | Аппаратное декодирование |
+ * | @ref api2-hw-encode.cpp | Аппаратное кодирование |
+ * | @ref api2-hw-probe.cpp | Проверка аппаратных устройств |
+ * | @ref api2-hw-scale.cpp | Аппаратный конвейер с масштабированием |
+ * | @ref api2-hw-transcode.cpp | Аппаратное транскодирование |
+ * | @ref api2-remux.cpp | Ремиксинг |
+ * | @ref api2-scale-video.cpp | Масштабирование видео |
+ * | @ref api2-send-receive.cpp | Декодирование через send/receive |
+ * | @ref api2-subtitles.cpp | Декодирование субтитров |
+ * | @ref api2-timestamp.cpp | Арифметика Timestamp |
+ *
+ * Собрать все: `cmake -B build -DAV_BUILD_EXAMPLES=ON`, запуск:
+ * `build/example/api2-samples/<имя>`.
+ */
+
+/**
+ * @example api2-decode-audio.cpp
+ * Декодирование аудио.
+ *
+ * @code{.sh}
+ * api2-decode-audio <входной файл> [формат]
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-encode-audio.cpp
+ * Перекодирование аудио.
+ *
+ * @code{.sh}
+ * api2-decode-encode-audio <входной файл> <выходной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-encode-video.cpp
+ * Перекодирование видео.
+ *
+ * @code{.sh}
+ * api2-decode-encode-video <входной файл> <выходной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-filter-encode.cpp
+ * Фильтрация и кодирование.
+ *
+ * @code{.sh}
+ * api2-decode-filter-encode <входной файл> <выходной файл> [цепочка фильтров]
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-overlay-encode.cpp
+ * Наложение изображения и кодирование.
+ *
+ * @code{.sh}
+ * api2-decode-overlay-encode <видео> <изображение> <выходной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-rasample-audio.cpp
+ * Ресемплинг аудио.
+ *
+ * @code{.sh}
+ * api2-decode-rasample-audio <входной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-raw-h264.cpp
+ * Декодирование сырого H.264.
+ *
+ * @code{.sh}
+ * api2-decode-raw-h264 <файл.h264>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode.cpp
+ * Декодирование видео.
+ *
+ * @code{.sh}
+ * api2-decode <входной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-demux-seek.cpp
+ * Демуксинг и позиционирование.
+ *
+ * @code{.sh}
+ * api2-demux-seek <входной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-dict-basic.cpp
+ * Основы Dictionary.
+ *
+ * @code{.sh}
+ * api2-dict-basic
+ * @endcode
+ */
+
+/**
+ * @example api2-generate-subtitles.cpp
+ * Генерация субтитров.
+ *
+ * @code{.sh}
+ * api2-generate-subtitles <видео> <выходной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-hw-decode.cpp
+ * Аппаратное декодирование.
+ *
+ * @code{.sh}
+ * api2-hw-decode <тип устройства> <входной файл> [--to-system]
+ * @endcode
+ */
+
+/**
+ * @example api2-hw-encode.cpp
+ * Аппаратное кодирование.
+ *
+ * @code{.sh}
+ * api2-hw-encode <тип устройства> <выходной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-hw-probe.cpp
+ * Проверка аппаратных устройств.
+ *
+ * @code{.sh}
+ * api2-hw-probe
+ * @endcode
+ */
+
+/**
+ * @example api2-hw-scale.cpp
+ * Аппаратный конвейер с масштабированием.
+ *
+ * @code{.sh}
+ * api2-hw-scale <тип устройства> <входной файл> <выходной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-hw-transcode.cpp
+ * Аппаратное транскодирование.
+ *
+ * @code{.sh}
+ * api2-hw-transcode <тип устройства> <входной файл> <выходной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-remux.cpp
+ * Ремиксинг.
+ *
+ * @code{.sh}
+ * api2-remux [параметры] <вход> <выход>
+ * @endcode
+ */
+
+/**
+ * @example api2-scale-video.cpp
+ * Масштабирование видео.
+ *
+ * @code{.sh}
+ * api2-scale-video <входной файл> <выходной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-send-receive.cpp
+ * Декодирование через send/receive.
+ *
+ * @code{.sh}
+ * api2-send-receive <входной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-subtitles.cpp
+ * Декодирование субтитров.
+ *
+ * @code{.sh}
+ * api2-subtitles <входной файл>
+ * @endcode
+ */
+
+/**
+ * @example api2-timestamp.cpp
+ * Арифметика Timestamp.
+ *
+ * @code{.sh}
+ * api2-timestamp
+ * @endcode
+ */

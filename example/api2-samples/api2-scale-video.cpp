@@ -1,3 +1,10 @@
+// Scales and re-encodes a video.
+//
+// Shows: VideoRescaler between two geometries, pixel format conversion and
+// feeding the encoder with the rescaled frames.
+//
+// Usage: api2-scale-video <input file> <output file>
+
 #include <signal.h>
 
 #include <iostream>

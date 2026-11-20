@@ -1,3 +1,10 @@
+// Seeks in a container and prints the packets around the new position.
+//
+// Shows: seeking to a timestamp in a chosen stream, the key-frame/any-frame
+// distinction and how the first packets after a seek carry the flag.
+//
+// Usage: api2-demux-seek <input file>
+
 #include <iostream>
 #include <set>
 #include <map>

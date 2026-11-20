@@ -1,0 +1,49 @@
+@startuml transcode-zero-copy
+skinparam backgroundColor white
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam sequenceMessageAlign left
+skinparam responseMessageBelowArrow true
+
+actor "Клиент" as App
+participant "VideoDecoderContext" as Dec
+participant "VideoEncoderContext" as Enc
+participant "FramesContext\n(из первого кадра)" as Frm
+participant "FFmpeg" as FF
+
+App -> Dec : open() с hw_device_ctx
+App -> Dec : send(packet) + receive()
+Dec --> App : VideoFrame (hw)
+App -> Frm : frame.hwFramesContext()
+Frm --> App : frames
+
+App -> Enc : configureHwEncoding(frames)
+note right of Enc
+  Тот же пул поверхностей.
+  Копирования нет.
+  Автозагрузка выключена.
+end note
+App -> Enc : open()
+
+loop Каждый кадр
+    App -> Enc : encode(frame)
+    Enc -> FF : avcodec_send_frame()
+    note right of FF
+      Поверхность VAAPI, QSV
+      или CUDA передаётся
+      без копирования.
+    end note
+    FF --> Enc : AVPacket
+    Enc --> App : packet
+end
+
+alt Нулевое копирование недоступно
+    App -> App : configureHwEncoding(device)
+    App -> App : toSystemMemory() перед encode()
+    note right of App
+      Запасной путь:
+      чтение в память системы
+      и новая загрузка на устройство.
+    end note
+end
+@enduml

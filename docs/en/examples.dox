@@ -1,0 +1,223 @@
+/**
+ * @page guide_examples Examples
+ *
+ * Every sample is a single self-contained program in
+ * `example/api2-samples/`. Each one builds with the library and can be run
+ * on its own; the pages below contain the full source.
+ *
+ * | Example | Shows |
+ * | --- | --- |
+ * | @ref api2-decode-audio.cpp | Decode audio |
+ * | @ref api2-decode-encode-audio.cpp | Transcode audio |
+ * | @ref api2-decode-encode-video.cpp | Transcode video |
+ * | @ref api2-decode-filter-encode.cpp | Filter and encode |
+ * | @ref api2-decode-overlay-encode.cpp | Overlay and encode |
+ * | @ref api2-decode-rasample-audio.cpp | Resample audio |
+ * | @ref api2-decode-raw-h264.cpp | Decode a raw H.264 stream |
+ * | @ref api2-decode.cpp | Decode video |
+ * | @ref api2-demux-seek.cpp | Demux and seek |
+ * | @ref api2-dict-basic.cpp | Dictionary basics |
+ * | @ref api2-generate-subtitles.cpp | Generate subtitles |
+ * | @ref api2-hw-decode.cpp | Hardware decoding |
+ * | @ref api2-hw-encode.cpp | Hardware encoding |
+ * | @ref api2-hw-probe.cpp | Probe hardware devices |
+ * | @ref api2-hw-scale.cpp | Hardware scaling pipeline |
+ * | @ref api2-hw-transcode.cpp | Hardware transcode |
+ * | @ref api2-remux.cpp | Remux |
+ * | @ref api2-scale-video.cpp | Scale video |
+ * | @ref api2-send-receive.cpp | Decode with send/receive |
+ * | @ref api2-subtitles.cpp | Decode subtitles |
+ * | @ref api2-timestamp.cpp | Timestamp arithmetic |
+ *
+ * Build them all with `cmake -B build -DAV_BUILD_EXAMPLES=ON` and run
+ * `build/example/api2-samples/<name>`.
+ */
+
+/**
+ * @example api2-decode-audio.cpp
+ * Decode audio.
+ *
+ * @code{.sh}
+ * api2-decode-audio <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-encode-audio.cpp
+ * Transcode audio.
+ *
+ * @code{.sh}
+ * api2-decode-encode-audio <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-encode-video.cpp
+ * Transcode video.
+ *
+ * @code{.sh}
+ * api2-decode-encode-video <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-filter-encode.cpp
+ * Filter and encode.
+ *
+ * @code{.sh}
+ * api2-decode-filter-encode <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-overlay-encode.cpp
+ * Overlay and encode.
+ *
+ * @code{.sh}
+ * api2-decode-overlay-encode <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-rasample-audio.cpp
+ * Resample audio.
+ *
+ * @code{.sh}
+ * api2-decode-rasample-audio <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode-raw-h264.cpp
+ * Decode a raw H.264 stream.
+ *
+ * @code{.sh}
+ * api2-decode-raw-h264 <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-decode.cpp
+ * Decode video.
+ *
+ * @code{.sh}
+ * api2-decode <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-demux-seek.cpp
+ * Demux and seek.
+ *
+ * @code{.sh}
+ * api2-demux-seek <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-dict-basic.cpp
+ * Dictionary basics.
+ *
+ * @code{.sh}
+ * api2-dict-basic <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-generate-subtitles.cpp
+ * Generate subtitles.
+ *
+ * @code{.sh}
+ * api2-generate-subtitles <video> <output.mkv>
+ * @endcode
+ */
+
+/**
+ * @example api2-hw-decode.cpp
+ * Hardware decoding.
+ *
+ * @code{.sh}
+ * api2-hw-decode <device type> <input file> [--to-system]
+ * @endcode
+ */
+
+/**
+ * @example api2-hw-encode.cpp
+ * Hardware encoding.
+ *
+ * @code{.sh}
+ * api2-hw-encode <device type> <output file>
+ * @endcode
+ */
+
+/**
+ * @example api2-hw-probe.cpp
+ * Probe hardware devices.
+ *
+ * @code{.sh}
+ * api2-hw-probe
+ * @endcode
+ */
+
+/**
+ * @example api2-hw-scale.cpp
+ * Hardware scaling pipeline.
+ *
+ * @code{.sh}
+ * api2-hw-scale <device type> <input file> <output file>
+ * @endcode
+ */
+
+/**
+ * @example api2-hw-transcode.cpp
+ * Hardware transcode.
+ *
+ * @code{.sh}
+ * api2-hw-transcode <device type> <input file> <output file>
+ * @endcode
+ */
+
+/**
+ * @example api2-remux.cpp
+ * Remux.
+ *
+ * @code{.sh}
+ * api2-remux <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-scale-video.cpp
+ * Scale video.
+ *
+ * @code{.sh}
+ * api2-scale-video <args>
+ * @endcode
+ */
+
+/**
+ * @example api2-send-receive.cpp
+ * Decode with send/receive.
+ *
+ * @code{.sh}
+ * api2-send-receive <input file>
+ * @endcode
+ */
+
+/**
+ * @example api2-subtitles.cpp
+ * Decode subtitles.
+ *
+ * @code{.sh}
+ * api2-subtitles <input file>
+ * @endcode
+ */
+
+/**
+ * @example api2-timestamp.cpp
+ * Timestamp arithmetic.
+ *
+ * @code{.sh}
+ * api2-timestamp <args>
+ * @endcode
+ */

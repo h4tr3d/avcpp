@@ -1,3 +1,10 @@
+// Decodes a raw H.264 elementary stream without a container.
+//
+// Shows: opening a stream that has no demuxer metadata, building codec
+// parameters by hand and feeding the decoder packet by packet.
+//
+// Usage: api2-decode-raw-h264 <input file.h264>
+
 #include <cstdio>
 #include <iostream>
 #include <filesystem>

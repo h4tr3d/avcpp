@@ -1,3 +1,10 @@
+// Exercises Timestamp and Rational arithmetic without touching any media.
+//
+// Shows: constructing timestamps from time bases and chrono durations,
+// converting between time bases, comparing and printing them.
+//
+// Usage: api2-timestamp
+
 #include <iostream>
 #include <chrono>
 #include <cassert>

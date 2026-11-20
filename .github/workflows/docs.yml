@@ -1,23 +1,186 @@
-name: build documentation
+name: documentation
+
+# Builds the reference and the guides on every pull request, so documentation
+# regressions are visible before merge, and republishes the site from master and
+# from release tags. See docs/plan/documentation.md, section 9.
 
 on:
   push:
     branches:
       - master
+    tags:
+      - 'v*'
+  pull_request:
+  # Weekly documentation sync: the same checks, but enforcing. Debt accumulated
+  # during the week shows up here instead of blocking every pull request.
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: documentation-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned on purpose: docs/doxygen-baseline.txt is only meaningful when the
+  # warning output comes from a known doxygen version.
+  DOXYGEN_VERSION: 1.18.0
+  DOXYGEN_SHA256: 14fa81bdc34171edb5f1f02b1d60e74802f0439b77fa44e592565d517d72df90
+  DOXYGEN_URL: https://github.com/doxygen/doxygen/releases/download/Release_1_18_0/doxygen-1.18.0.linux.bin.tar.gz
 
 jobs:
-  doxygen:
-    runs-on: ubuntu-22.04
+  build:
+    name: build and check
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v1
-    - name: install dependencies
-      run: sudo apt-get install doxygen graphviz
-    - name: generate docs
-      run: doxygen
-    - name: Deploy docs to gh-pages
-      uses: s0/git-publish-subdir-action@master
-      env:
-        REPO: self
-        BRANCH: gh-pages
-        FOLDER: doc/html
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+
+      - name: Install graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends graphviz
+
+      - name: Restore doxygen
+        id: doxygen-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/doxygen-${{ env.DOXYGEN_VERSION }}
+          key: doxygen-${{ env.DOXYGEN_VERSION }}-${{ env.DOXYGEN_SHA256 }}
+
+      - name: Download doxygen
+        if: steps.doxygen-cache.outputs.cache-hit != 'true'
+        run: |
+          set -eu
+          curl -fsSL -o "$RUNNER_TEMP/doxygen.tar.gz" "$DOXYGEN_URL"
+          echo "$DOXYGEN_SHA256  $RUNNER_TEMP/doxygen.tar.gz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/doxygen-$DOXYGEN_VERSION"
+          tar -xzf "$RUNNER_TEMP/doxygen.tar.gz" \
+              -C "$RUNNER_TEMP/doxygen-$DOXYGEN_VERSION" --strip-components=1
+
+      - name: Put doxygen on PATH
+        run: echo "$RUNNER_TEMP/doxygen-$DOXYGEN_VERSION/bin" >> "$GITHUB_PATH"
+
+      - name: Show doxygen version
+        run: doxygen --version
+
+      - name: Report new doxygen warnings
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+              ./docs/check-warnings.sh --strict
+          else
+              ./docs/check-warnings.sh
+          fi
+
+      - name: Report the translation state
+        run: ./docs/check-translations.sh
+
+      - name: Build the site
+        run: ./docs/build.sh
+
+      # A local `act` run fails here: the action needs ACTIONS_RUNTIME_TOKEN,
+      # which only real Actions provides. Everything before this step is
+      # meaningful locally, this one is not.
+      - name: Upload the site
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-site
+          path: build/docs/site
+          retention-days: 7
+
+  deploy:
+    name: publish
+    needs: build
+    permissions:
+      contents: write
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the built site
+        uses: actions/download-artifact@v4
+        with:
+          name: documentation-site
+          path: ${{ runner.temp }}/site
+
+      - name: Publish to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+
+          version=$(tr -d '[:space:]' < VERSION.txt)
+          doc_version=${version%.*}
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+              # actions/checkout fetches only the ref being built, so the target
+              # branch has to be fetched explicitly before it can be used.
+              git fetch --no-tags --depth=1 origin \
+                  "+refs/heads/gh-pages:refs/remotes/origin/gh-pages"
+              git worktree add --detach "$RUNNER_TEMP/pages" origin/gh-pages
+          else
+              git worktree add --detach "$RUNNER_TEMP/pages"
+              git -C "$RUNNER_TEMP/pages" checkout --orphan gh-pages
+              git -C "$RUNNER_TEMP/pages" rm -rf . >/dev/null 2>&1 || true
+          fi
+
+          cd "$RUNNER_TEMP/pages"
+
+          # One-time migration away from the flat 2.x site. GitHub Pages serves
+          # an existing file instead of returning 404, so while those pages sit
+          # in the root the redirect in 404.html can never fire for them.
+          if [ -n "$(find . -maxdepth 1 -name 'classav_1_1*.html' -print -quit)" ]; then
+              echo "removing the legacy flat site from the branch root"
+              for entry in * .*; do
+                  case "$entry" in
+                      .|..|.git|.nojekyll|index.html|404.html|CNAME|latest)
+                          continue
+                          ;;
+                  esac
+                  if [ -d "$entry" ]; then
+                      case "$entry" in
+                          [0-9]*.[0-9]*)
+                              continue
+                              ;;
+                      esac
+                  fi
+                  rm -rf -- "$entry"
+              done
+          fi
+
+          # Only the version being published is replaced; older version
+          # directories are left alone, so the archive survives.
+          rm -rf "$doc_version"
+          cp -a "$RUNNER_TEMP/site/$doc_version" "$doc_version"
+
+          # latest points at the newest release: republishing an older tag must
+          # not move it backwards.
+          update_latest=1
+          if [ -f latest/version.txt ]; then
+              newest=$(cat latest/version.txt)
+              if [ "$(printf '%s\n%s\n' "$newest" "$version" | sort -V | tail -1)" != "$version" ]; then
+                  update_latest=0
+              fi
+          fi
+          if [ "$update_latest" = 1 ]; then
+              rm -rf latest
+              cp -a "$doc_version" latest
+          else
+              echo "keeping latest at $newest, publishing $version"
+          fi
+
+          "$GITHUB_WORKSPACE/docs/site-index.sh" .
+
+          git add -A
+          if git diff --cached --quiet; then
+              echo "documentation is unchanged, nothing to publish"
+              exit 0
+          fi
+          git commit -m "docs: publish $version"
+          git push origin HEAD:gh-pages

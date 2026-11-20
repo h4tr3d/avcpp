@@ -91,6 +91,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    //! [subtitle_decode]
     std::size_t packets = 0;
     std::size_t frames = 0;
 
@@ -125,6 +126,7 @@ int main(int argc, char **argv)
             printRect(frame.rect(i), i);
     }
 
+    //! [subtitle_decode]
     if (ec) {
         std::cerr << "Read error: " << ec.message() << '\n';
         return 1;

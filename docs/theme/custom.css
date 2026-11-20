@@ -1,0 +1,90 @@
+/*
+ * Project-specific overrides for doxygen-awesome-css.
+ * The vendored theme files must stay untouched so they can be replaced wholesale.
+ */
+
+html {
+    --primary-color: #3d6fa8;
+    --primary-dark-color: #2a4f7c;
+    --primary-light-color: #7ba4d0;
+    --content-maxwidth: 1200px;
+    --fragment-background: #f4f6f8;
+    --fragment-foreground: #22303d;
+}
+
+html.dark-mode {
+    --primary-color: #6ba7e0;
+    --primary-dark-color: #8fc0ea;
+    --primary-light-color: #3f719d;
+    --fragment-background: #22262b;
+    --fragment-foreground: #dbe4eb;
+}
+
+/* Guide pages read better with a slightly wider line height. */
+div.textblock p,
+div.textblock li {
+    line-height: 1.6;
+}
+
+/* Tables in the guides are common (build matrix, platform support). */
+div.textblock table {
+    border-collapse: collapse;
+    margin: 1em 0;
+}
+
+div.textblock table th,
+div.textblock table td {
+    border: 1px solid var(--separator-color);
+    padding: 0.35em 0.6em;
+    text-align: left;
+}
+
+/* Off-screen or unavailable UI injected by site-nav.js is hidden by default. */
+#avcpp-site-nav {
+    display: none;
+}
+
+#avcpp-site-nav.avcpp-ready {
+    display: flex;
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1000;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--separator-color);
+    border-radius: var(--border-radius-medium);
+    background: var(--page-background-color);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+    font-size: 0.85rem;
+}
+
+#avcpp-site-nav a,
+#avcpp-site-nav select {
+    color: var(--page-foreground-color);
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+#avcpp-site-nav a:hover {
+    text-decoration: underline;
+}
+
+#avcpp-site-nav select {
+    border: 1px solid var(--separator-color);
+    border-radius: var(--border-radius-small);
+    background: var(--page-background-color);
+    padding: 0 0.2rem;
+}
+
+#avcpp-site-nav .avcpp-sep {
+    color: var(--page-secondary-foreground-color);
+}
+
+@media (max-width: 600px) {
+    #avcpp-site-nav {
+        right: 0.5rem;
+        bottom: 0.5rem;
+    }
+}
