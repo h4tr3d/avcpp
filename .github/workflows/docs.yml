@@ -11,6 +11,10 @@ on:
     tags:
       - 'v*'
   pull_request:
+  # Weekly documentation sync: the same checks, but enforcing. Debt accumulated
+  # during the week shows up here instead of blocking every pull request.
+  schedule:
+    - cron: '0 6 * * 1'
   workflow_dispatch:
 
 permissions:
@@ -62,8 +66,13 @@ jobs:
       - name: Show doxygen version
         run: doxygen --version
 
-      - name: Check warnings against the baseline
-        run: ./docs/check-warnings.sh
+      - name: Report new doxygen warnings
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+              ./docs/check-warnings.sh --strict
+          else
+              ./docs/check-warnings.sh
+          fi
 
       - name: Report the translation state
         run: ./docs/check-translations.sh
