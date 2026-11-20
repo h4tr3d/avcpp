@@ -71,6 +71,9 @@ jobs:
       - name: Build the site
         run: ./docs/build.sh
 
+      # A local `act` run fails here: the action needs ACTIONS_RUNTIME_TOKEN,
+      # which only real Actions provides. Everything before this step is
+      # meaningful locally, this one is not.
       - name: Upload the site
         uses: actions/upload-artifact@v4
         with:

@@ -484,6 +484,7 @@ resolve; the site is usable on a phone.
 | `doxygen-awesome-css` breaks on a future doxygen | version pinned in-repo; upgrade is a separate PR that reruns the visual check |
 | Theming effort outstrips content | M0 timeboxed to 1–2 days; content milestones never wait for visual polish |
 | doxygen 1.18 output differs from Ubuntu's 1.9.1 | CI pins the same version contributors use; the tarball is cached, so no apt surprise |
+| A local `act` run cannot verify the publish path | `act` stops at `upload-artifact`, which needs `ACTIONS_RUNTIME_TOKEN`; the build, the checks and the site assembly before it *are* verified locally, and the deploy job can only be proven by a real run |
 
 ## 12. Deferred
 
