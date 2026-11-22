@@ -1,0 +1,9 @@
+<map id="av::CodecParameters" name="av::CodecParameters">
+<area shape="rect" id="Node000001" title="Owning codec parameters." alt="" coords="146,632,310,717"/>
+<area shape="rect" id="Node000002" href="$classav_1_1CodecParametersView.html" title="The CodecParametersView class." alt="" coords="41,199,234,584"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="206,596,217,631,212,633,201,598"/>
+<area shape="rect" id="Node000003" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,5,269,151"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="140,164,140,199,135,199,135,164"/>
+<area shape="rect" id="Node000004" href="$classav_1_1noncopyable.html" title="Base class that deletes copying and assignment." alt="" coords="258,339,379,444"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="300,458,244,633,239,631,295,456"/>
+</map>

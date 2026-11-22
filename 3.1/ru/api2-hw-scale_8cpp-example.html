@@ -1,0 +1,432 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: api2-hw-scale.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.1.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('api2-hw-scale_8cpp-example.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">api2-hw-scale.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<p>Аппаратный конвейер с масштабированием.</p>
+<p>Аппаратный конвейер с масштабированием.</p><div class="fragment"><div class="line">api2-hw-scale &lt;тип устройства&gt; &lt;входной файл&gt; &lt;выходной файл&gt;</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="comment">// Full hardware pipeline with a software rescale step.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Usage: api2-hw-scale &lt;device&gt; &lt;input&gt; &lt;output&gt;</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// The sample decodes on the GPU, transfers every frame to system memory,</span></div>
+<div class="line"><span class="comment">// rescales it with libswscale and uploads it back to the GPU for encoding.</span></div>
+<div class="line"><span class="comment">// The output is half the input size.</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/av.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codeccontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/format.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/formatcontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/hwcontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/packet.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/stream.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/videorescaler.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">if</span> (argc &lt; 4) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Usage: &quot;</span> &lt;&lt; argv[0] &lt;&lt; <span class="stringliteral">&quot; &lt;device&gt; &lt;input&gt; &lt;output&gt;\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::init();</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> av::hw::DeviceType type = av::hw::DeviceType::fromName(argv[1]);</div>
+<div class="line">    <span class="keywordflow">if</span> (type.isNone()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Unknown device type: &quot;</span> &lt;&lt; argv[1] &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    std::error_code ec;</div>
+<div class="line"> </div>
+<div class="line">    av::hw::DeviceContext device = av::hw::DeviceContext::create(type, <span class="keyword">nullptr</span>, {}, ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (!device.isValid()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t create device: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 2;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::FormatContext ictx;</div>
+<div class="line">    ictx.openInput(argv[2], ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open input: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line">    ictx.findStreamInfo(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t find streams: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::Stream vst;</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp;&amp; stream : ictx.streams()) {</div>
+<div class="line">        <span class="keywordflow">if</span> (stream.mediaType() == AVMEDIA_TYPE_VIDEO) {</div>
+<div class="line">            vst = stream;</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">if</span> (!vst.isValid()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Video stream not found\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> AVCodecID codecId = vst.codecParameters().codecId();</div>
+<div class="line"> </div>
+<div class="line">    av::Codec decoderCodec = av::hw::findDecoder(codecId, type);</div>
+<div class="line">    av::Codec encoderCodec = av::hw::findEncoder(codecId, type);</div>
+<div class="line">    <span class="keywordflow">if</span> (!decoderCodec.raw() || !encoderCodec.raw()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;No hardware decoder or encoder for this codec and device\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 2;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::VideoDecoderContext decoder(vst, decoderCodec);</div>
+<div class="line">    decoder.setHwDeviceContext(device, ec);</div>
+<div class="line">    decoder.open(av::Codec(), ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open decoder: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">int</span> dstWidth  = (decoder.width() / 2) &amp; ~1;</div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">int</span> dstHeight = (decoder.height() / 2) &amp; ~1;</div>
+<div class="line">    <span class="keywordflow">if</span> (dstWidth &lt;= 0 || dstHeight &lt;= 0) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Input frame is too small to rescale\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::OutputFormat ofrmt;</div>
+<div class="line">    ofrmt.setFormat(std::string(), argv[3]);</div>
+<div class="line">    av::FormatContext octx;</div>
+<div class="line">    octx.setFormat(ofrmt);</div>
+<div class="line"> </div>
+<div class="line">    av::VideoEncoderContext encoder(encoderCodec);</div>
+<div class="line">    encoder.setWidth(dstWidth);</div>
+<div class="line">    encoder.setHeight(dstHeight);</div>
+<div class="line">    encoder.setTimeBase(av::Rational{1, 1000});</div>
+<div class="line">    encoder.setFrameRate(vst.frameRate());</div>
+<div class="line">    encoder.setBitRate(decoder.bitRate());</div>
+<div class="line">    <span class="keywordflow">if</span> (octx.outputFormat().isFlags(AVFMT_GLOBALHEADER))</div>
+<div class="line">        encoder.addFlags(AV_CODEC_FLAG_GLOBAL_HEADER);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Auto mode creates a hardware frames context. Its software format is the</span></div>
+<div class="line">    <span class="comment">// format that the rescaler must produce for the upload.</span></div>
+<div class="line">    encoder.configureHwEncoding(device, av::hw::EncodingMode::Auto,</div>
+<div class="line">                                AV_PIX_FMT_NONE, ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t configure hardware encoding: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> av::hw::FramesContext hwFrames = encoder.hwFramesContext();</div>
+<div class="line">    <span class="keywordflow">if</span> (!hwFrames.isValid()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Hardware frames context is not available\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    encoder.open(encoderCodec, ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open encoder: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::Stream ost = octx.addStream(encoder);</div>
+<div class="line">    ost.setFrameRate(vst.frameRate());</div>
+<div class="line">    ost.setAverageFrameRate(vst.frameRate());</div>
+<div class="line">    ost.setTimeBase(encoder.timeBase());</div>
+<div class="line"> </div>
+<div class="line">    octx.openOutput(argv[3], ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open output: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line">    octx.writeHeader(ec);</div>
+<div class="line">    octx.flush();</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t write header: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;pipeline: &quot;</span> &lt;&lt; decoderCodec.name() &lt;&lt; <span class="stringliteral">&quot; -&gt; system memory -&gt; &quot;</span></div>
+<div class="line">              &lt;&lt; dstWidth &lt;&lt; <span class="charliteral">&#39;x&#39;</span> &lt;&lt; dstHeight &lt;&lt; <span class="stringliteral">&quot; -&gt; &quot;</span> &lt;&lt; encoderCodec.name() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"> </div>
+<div class="line">    std::unique_ptr&lt;av::VideoRescaler&gt; rescaler;</div>
+<div class="line">    std::size_t frames = 0;</div>
+<div class="line">    int64_t index = 0;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Decoded frame -&gt; system memory -&gt; rescale -&gt; hardware upload -&gt; encode.</span></div>
+<div class="line">    <span class="keyword">auto</span> process = [&amp;](av::VideoFrame hardware) -&gt; <span class="keywordtype">bool</span> {</div>
+<div class="line">        <span class="keyword">const</span> av::Timestamp sourceTimestamp = hardware.pts();</div>
+<div class="line"> </div>
+<div class="line">        av::VideoFrame software = hardware.toSystemMemory(AV_PIX_FMT_NONE, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t transfer frame to system memory: &quot;</span></div>
+<div class="line">                      &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (!rescaler) {</div>
+<div class="line">            rescaler = std::make_unique&lt;av::VideoRescaler&gt;(</div>
+<div class="line">                dstWidth, dstHeight, hwFrames.swFormat(),</div>
+<div class="line">                software.width(), software.height(), software.pixelFormat());</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        av::VideoFrame scaled = rescaler-&gt;rescale(software, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Rescale error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        av::VideoFrame uploaded = scaled.toHwFrame(hwFrames, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t upload frame to hardware: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// The transfer and rescale create new wrapper objects, so assign the</span></div>
+<div class="line">        <span class="comment">// output timing explicitly. This keeps the encoder timestamps valid.</span></div>
+<div class="line">        uploaded.setTimeBase(encoder.timeBase());</div>
+<div class="line">        uploaded.setStreamIndex(0);</div>
+<div class="line">        <span class="keywordflow">if</span> (sourceTimestamp.isValid() &amp;&amp; !sourceTimestamp.isNoPts())</div>
+<div class="line">            uploaded.setPts(sourceTimestamp);</div>
+<div class="line">        <span class="keywordflow">else</span></div>
+<div class="line">            uploaded.setPts(av::Timestamp(index, encoder.timeBase()));</div>
+<div class="line">        ++index;</div>
+<div class="line"> </div>
+<div class="line">        av::Packet output = encoder.encode(uploaded, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Encode error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">if</span> (!output)</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"> </div>
+<div class="line">        output.setStreamIndex(0);</div>
+<div class="line">        octx.writePacket(output, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Write error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        ++frames;</div>
+<div class="line">        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">    };</div>
+<div class="line"> </div>
+<div class="line">    av::Packet packet;</div>
+<div class="line">    <span class="keywordflow">while</span> ((packet = ictx.readPacket(ec))) {</div>
+<div class="line">        <span class="keywordflow">if</span> (packet.streamIndex() != vst.index())</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">for</span> (;;) {</div>
+<div class="line">            <span class="keyword">const</span> <span class="keywordtype">bool</span> accepted = decoder.send(packet, ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                std::cerr &lt;&lt; <span class="stringliteral">&quot;Send error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">for</span> (;;) {</div>
+<div class="line">                av::VideoFrame hardware = decoder.receive(ec);</div>
+<div class="line">                <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                    std::cerr &lt;&lt; <span class="stringliteral">&quot;Receive error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">                    <span class="keywordflow">return</span> 1;</div>
+<div class="line">                }</div>
+<div class="line">                <span class="keywordflow">if</span> (!hardware.isValid())</div>
+<div class="line">                    <span class="keywordflow">break</span>;</div>
+<div class="line">                <span class="keywordflow">if</span> (!process(std::move(hardware)))</div>
+<div class="line">                    <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (accepted)</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Read error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Hardware decoders delay frames, so drain them after the last packet.</span></div>
+<div class="line">    <span class="keywordflow">if</span> (!decoder.flush(ec)) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Flush error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">for</span> (;;) {</div>
+<div class="line">        av::VideoFrame hardware = decoder.receive(ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Receive error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">if</span> (!hardware.isValid())</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">        <span class="keywordflow">if</span> (!process(std::move(hardware)))</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">for</span> (;;) {</div>
+<div class="line">        av::Packet output = encoder.encode(ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Encoder flush error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">if</span> (!output)</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">        output.setStreamIndex(0);</div>
+<div class="line">        octx.writePacket(output, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Write error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">        ++frames;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    octx.writeTrailer(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t write trailer: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;frames: &quot;</span> &lt;&lt; frames &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

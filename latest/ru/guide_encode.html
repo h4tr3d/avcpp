@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: Кодирование</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.1.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_encode.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Кодирование </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>Кодирование берет кадры и выдает пакеты. Настройка длиннее, чем у декодирования, потому что выход надо описать: контейнер, кодек, разрешение, базу времени. Зато сам цикл короткий.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md18"></a>
+Настройка</h2>
+<div class="fragment"><div class="line">    OutputFormat  ofrmt;</div>
+<div class="line">    FormatContext octx;</div>
+<div class="line"> </div>
+<div class="line">    ofrmt.setFormat(<span class="keywordtype">string</span>(), out);</div>
+<div class="line">    octx.setFormat(ofrmt);</div>
+<div class="line"> </div>
+<div class="line">    Codec               ocodec  = findEncodingCodec(ofrmt);</div>
+<div class="line">    VideoEncoderContext encoder {ocodec};</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Settings</span></div>
+<div class="line">    encoder.setWidth(vdec.width());</div>
+<div class="line">    encoder.setHeight(vdec.height());</div>
+<div class="line">    <span class="keywordflow">if</span> (vdec.pixelFormat() &gt; -1)</div>
+<div class="line">        encoder.setPixelFormat(vdec.pixelFormat());</div>
+<div class="line">    encoder.setTimeBase(Rational{1, 1000});</div>
+<div class="line">    encoder.setBitRate(vdec.bitRate());</div>
+<div class="line"> </div>
+<div class="line">    encoder.open(Codec(), ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t opent encodec\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    Stream ost = octx.addStream(encoder);</div>
+<div class="line">    ost.setFrameRate(vst.frameRate());</div>
+<div class="line"> </div>
+<div class="line">    octx.openOutput(out, ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open output\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    octx.dump();</div>
+<div class="line">    octx.writeHeader();</div>
+<div class="line">    octx.flush();</div>
+<div class="line"> </div>
+<div class="line"> </div>
+</div><!-- fragment --><p>Участвуют три объекта:</p>
+<ul>
+<li><b><span class="tt">av::OutputFormat</span></b> задает контейнер. <span class="tt">setFormat(string(), out)</span> заполняет его по имени выходного файла; явное имя в конструкторе заставляет контейнер, который расширение не подразумевает.</li>
+<li><b><span class="tt">av::FormatContext</span></b> владеет выходом. <span class="tt">setFormat()</span> обязателен до <span class="tt">addStream()</span>.</li>
+<li><b><span class="tt">av::VideoEncoderContext</span></b> создается из кодека, который вернул <span class="tt">findEncodingCodec()</span>. Некоторым кодекам нужно больше, чем параметры выше: аппаратные случаи и требование частоты кадров у QSV разобраны в <a class="el" href="guide_hw_codecs.html" title="Аппаратное кодирование и декодирование">Аппаратное кодирование и декодирование</a>.</li>
+</ul>
+<p>Порядок важен. Сначала <span class="tt">open()</span> кодировщика, потом <span class="tt">addStream()</span>, а <span class="tt">openOutput()</span> — уже когда потоки существуют, потому что муксер должен их видеть. <span class="tt">writeHeader()</span> начинает контейнер; <span class="tt">dump()</span> — диагностика, печатающая раскладку потоков, ее можно убрать.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md19"></a>
+Цикл</h2>
+<div class="fragment"><div class="line">        <span class="keywordflow">do</span> {</div>
+<div class="line">            <span class="comment">// DECODING</span></div>
+<div class="line">            <span class="keyword">auto</span> frame = vdec.decode(pkt, ec);</div>
+<div class="line"> </div>
+<div class="line">            count++;</div>
+<div class="line">            <span class="comment">//if (count &gt; 200)</span></div>
+<div class="line">            <span class="comment">//    break;</span></div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordtype">bool</span> flushEncoder = <span class="keyword">false</span>;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Decoding error: &quot;</span> &lt;&lt; ec &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!frame) {</div>
+<div class="line">                <span class="comment">//cerr &lt;&lt; &quot;Empty frame\n&quot;;</span></div>
+<div class="line">                <span class="comment">//flushDecoder = false;</span></div>
+<div class="line">                <span class="comment">//continue;</span></div>
+<div class="line"> </div>
+<div class="line">                <span class="keywordflow">if</span> (flushDecoder) {</div>
+<div class="line">                    flushEncoder = <span class="keyword">true</span>;</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (frame) {</div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;Frame: pts=&quot;</span> &lt;&lt; frame.pts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; frame.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; frame.timeBase() &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; frame.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; frame.height() &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; frame.size() &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; frame.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; frame.refCount() &lt;&lt; <span class="stringliteral">&quot; / type: &quot;</span> &lt;&lt; frame.pictureType()  &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">                <span class="comment">// Change timebase</span></div>
+<div class="line">                frame.setTimeBase(encoder.timeBase());</div>
+<div class="line">                frame.setStreamIndex(0);</div>
+<div class="line">                frame.setPictureType();</div>
+<div class="line"> </div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;Frame: pts=&quot;</span> &lt;&lt; frame.pts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; frame.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; frame.timeBase() &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; frame.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; frame.height() &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; frame.size() &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; frame.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; frame.refCount() &lt;&lt; <span class="stringliteral">&quot; / type: &quot;</span> &lt;&lt; frame.pictureType()  &lt;&lt; endl;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (frame || flushEncoder) {</div>
+<div class="line">                <span class="keywordflow">do</span> {</div>
+<div class="line">                    <span class="comment">// Encode</span></div>
+<div class="line">                    Packet opkt = frame ? encoder.encode(frame, ec) : encoder.encode(ec);</div>
+<div class="line">                    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                        cerr &lt;&lt; <span class="stringliteral">&quot;Encoding error: &quot;</span> &lt;&lt; ec &lt;&lt; endl;</div>
+<div class="line">                        <span class="keywordflow">return</span> 1;</div>
+<div class="line">                    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!opkt) {</div>
+<div class="line">                        <span class="comment">//cerr &lt;&lt; &quot;Empty packet\n&quot;;</span></div>
+<div class="line">                        <span class="comment">//continue;</span></div>
+<div class="line">                        <span class="keywordflow">break</span>;</div>
+<div class="line">                    }</div>
+<div class="line"> </div>
+<div class="line">                    <span class="comment">// Only one output stream</span></div>
+<div class="line">                    opkt.setStreamIndex(0);</div>
+<div class="line"> </div>
+<div class="line">                    clog &lt;&lt; <span class="stringliteral">&quot;Write packet: pts=&quot;</span> &lt;&lt; opkt.pts() &lt;&lt; <span class="stringliteral">&quot;, dts=&quot;</span> &lt;&lt; opkt.dts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; opkt.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; opkt.timeBase() &lt;&lt; <span class="stringliteral">&quot; / st: &quot;</span> &lt;&lt; opkt.streamIndex() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">                    octx.writePacket(opkt, ec);</div>
+<div class="line">                    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                        cerr &lt;&lt; <span class="stringliteral">&quot;Error write packet: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                        <span class="keywordflow">return</span> 1;</div>
+<div class="line">                    }</div>
+<div class="line">                } <span class="keywordflow">while</span> (flushEncoder);</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (flushEncoder)</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line"> </div>
+<div class="line">        } <span class="keywordflow">while</span> (flushDecoder);</div>
+<div class="line"> </div>
+</div><!-- fragment --><p>Места, где легко ошибиться:</p>
+<ul>
+<li><b>База времени.</b> Кодировщик настроен с базой времени, и кадр должен нести ту же, прежде чем попасть в кодировщик: <span class="tt">frame.setTimeBase(encoder.timeBase())</span>. Несовпадение дает пакеты с бессмысленными метками, а не ошибку.</li>
+<li><b>Индекс потока.</b> <span class="tt">Packet::setStreamIndex()</span> выбирает выходной поток. При одном потоке это <span class="tt">0</span>.</li>
+<li><b>Слив.</b> <span class="tt">encoder.encode()</span> без кадра осушает кодировщик, и нужен <span class="tt">do</span>/<span class="tt">while</span>, потому что один вызов слива может вернуть несколько пакетов. В примере слив происходит в ветке «декодер в конце файла», где и появляются последние кадры.</li>
+<li><b>Запись.</b> <span class="tt">octx.writePacket(pkt)</span> тоже принимает код ошибки. Запись буферизуется; ничего не финально до <span class="tt">writeTrailer()</span>.</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md20"></a>
+Завершение</h2>
+<p><span class="tt">writeTrailer()</span> пишет индекс контейнера и осушает муксер. Без него MP4-файл не проигрывается, хотя размер выглядит правдоподобно. Если муксер буферизует пакеты, <span class="tt">writePacket()</span> без аргументов осушает их до трейлера.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md21"></a>
+Аудио</h2>
+<p><span class="tt">av::AudioEncoderContext</span> работает так же: задайте <span class="tt">setSampleRate()</span>, <span class="tt">setChannelsCount()</span>, <span class="tt">setSampleFormat()</span> и вызовите <span class="tt">open()</span>. Перед кодированием приведите входные сэмплы к раскладке кодировщика через <span class="tt">av::AudioResampler</span>, если они уже не совпадают.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md22"></a>
+Дальше</h2>
+<ul>
+<li><a class="el" href="guide_remux.html" title="Ремиксинг">Ремиксинг</a> — когда перекодирование вообще не нужно.</li>
+<li><a class="el" href="guide_filters.html" title="Фильтры">Фильтры</a> — изменение кадров до кодировщика.</li>
+<li><a class="el" href="guide_hw_codecs.html" title="Аппаратное кодирование и декодирование">Аппаратное кодирование и декодирование</a> — аппаратные кодировщики и пути без копирования. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

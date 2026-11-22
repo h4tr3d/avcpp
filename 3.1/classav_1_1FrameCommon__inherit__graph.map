@@ -1,0 +1,15 @@
+<map id="av::FrameCommon" name="av::FrameCommon">
+<area shape="rect" id="Node000001" title="Common interface of video frames and audio samples." alt="" coords="251,199,401,744"/>
+<area shape="rect" id="Node000003" href="$classav_1_1Frame.html" title=" " alt="" coords="5,792,207,997"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="247,629,161,793,157,791,243,626"/>
+<area shape="rect" id="Node000005" href="$classav_1_1Frame.html" title=" " alt="" coords="233,792,419,997"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="329,758,329,792,323,792,323,758"/>
+<area shape="rect" id="Node000007" href="$classav_1_1Frame.html" title="CRTP base that gives a frame type its copy and move assignment." alt="" coords="443,792,582,997"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="409,653,470,791,465,793,404,655"/>
+<area shape="rect" id="Node000002" href="$structFFWrapperPtr.html" title=" " alt="" coords="231,5,421,151"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="329,164,329,199,323,199,323,164"/>
+<area shape="rect" id="Node000004" href="$classav_1_1AudioSamples.html" title="One buffer of decoded audio samples." alt="" coords="15,1205,194,1571"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="108,1011,108,1205,102,1205,103,1011"/>
+<area shape="rect" id="Node000006" href="$classav_1_1VideoFrame.html" title="One video frame." alt="" coords="219,1045,436,1731"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="329,1011,329,1045,324,1045,324,1011"/>
+</map>

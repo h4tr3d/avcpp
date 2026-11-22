@@ -1,0 +1,5 @@
+<map id="av::ChannelLayout" name="av::ChannelLayout">
+<area shape="rect" id="Node000001" title="Owning channel layout." alt="" coords="5,459,173,764"/>
+<area shape="rect" id="Node000002" href="$classav_1_1ChannelLayoutView.html" title="Non&#45;owning view of an AVChannelLayout." alt="" coords="5,5,173,411"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="92,424,92,458,87,458,87,424"/>
+</map>

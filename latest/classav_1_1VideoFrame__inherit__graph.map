@@ -1,0 +1,7 @@
+<map id="av::VideoFrame" name="av::VideoFrame">
+<area shape="rect" id="Node000001" title="One video frame." alt="" coords="5,852,223,1537"/>
+<area shape="rect" id="Node000002" href="$classav_1_1Frame.html" title=" " alt="" coords="21,599,207,804"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="117,818,117,852,111,852,111,818"/>
+<area shape="rect" id="Node000003" href="$classav_1_1FrameCommon.html" title="Common interface of video frames and audio samples." alt="" coords="39,5,189,551"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="117,564,117,598,111,598,111,564"/>
+</map>

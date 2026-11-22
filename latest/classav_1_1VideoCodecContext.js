@@ -1,0 +1,25 @@
+var classav_1_1VideoCodecContext =
+[
+    [ "Parent", "classav_1_1VideoCodecContext.html#ab38170dd4ed515cc48f59645922635e2", null ],
+    [ "bitRateTolerance", "classav_1_1VideoCodecContext.html#a02adf9b7a52bf675d1b8260a07957fbc", null ],
+    [ "codedHeight", "classav_1_1VideoCodecContext.html#a80d8bed56ce7abb08dad135ddbd7cebd", null ],
+    [ "codedWidth", "classav_1_1VideoCodecContext.html#a95e0ec20387fa33b19b8655bfa1b7525", null ],
+    [ "globalQuality", "classav_1_1VideoCodecContext.html#ae2e7f31d76139278813884a4d9b26bf6", null ],
+    [ "gopSize", "classav_1_1VideoCodecContext.html#aeefdea97b0bd3fc725c4d5db741eff3b", null ],
+    [ "height", "classav_1_1VideoCodecContext.html#a4959a3b30392d5c324c5c93c9e529b35", null ],
+    [ "maxBFrames", "classav_1_1VideoCodecContext.html#ace4db72119e0d88be2daf396d9c2b58f", null ],
+    [ "moveOperator", "classav_1_1VideoCodecContext.html#aeb7d08b8c75a8da11061b72fbc82e8c2", null ],
+    [ "pixelFormat", "classav_1_1VideoCodecContext.html#a584d63e69bbaa66e6d9886506120144c", null ],
+    [ "sampleAspectRatio", "classav_1_1VideoCodecContext.html#aec880054273407d6971e306b486945fa", null ],
+    [ "setBitRateTolerance", "classav_1_1VideoCodecContext.html#acd13c4625df80023a874961bfe65b69a", null ],
+    [ "setCodedHeight", "classav_1_1VideoCodecContext.html#a42733e70ca6a6cd896c444905cfbabe9", null ],
+    [ "setCodedWidth", "classav_1_1VideoCodecContext.html#a8a63cc2e07521f9569e41c4be7d50172", null ],
+    [ "setGlobalQuality", "classav_1_1VideoCodecContext.html#a4cae279979886ee044c84876b21b6b6b", null ],
+    [ "setGopSize", "classav_1_1VideoCodecContext.html#a349343ec0f5ab43f121b65806090f4a6", null ],
+    [ "setHeight", "classav_1_1VideoCodecContext.html#ada9421d6ea85200b4f46466a3f424db0", null ],
+    [ "setMaxBFrames", "classav_1_1VideoCodecContext.html#acdfb1ddd8fd7ebc1228f0b31745ee894", null ],
+    [ "setPixelFormat", "classav_1_1VideoCodecContext.html#a5539c0e6843aec2871c7f0d42ca0481e", null ],
+    [ "setSampleAspectRatio", "classav_1_1VideoCodecContext.html#aa722a423d7a65fac8f3308279e1581aa", null ],
+    [ "setWidth", "classav_1_1VideoCodecContext.html#abb71e1776998aced05fc6d71d55ab38c", null ],
+    [ "width", "classav_1_1VideoCodecContext.html#afc6a61377c0409d56883921ba804028b", null ]
+];

@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: Ремиксинг</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.1.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_remux.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Ремиксинг </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>Ремиксинг переносит сжатые пакеты из одного контейнера в другой, не декодируя их. Это самый дешевый способ сменить контейнер, убрать поток или нарезать по ключевым кадрам, и лучшая первая проверка конвейера: если ремиксинг дал проигрываемый файл, значит контейнерная часть корректна.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md77"></a>
+Копирование описаний потоков</h2>
+<div class="fragment"><div class="line">    <span class="comment">// Copy streams</span></div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0, ostIdx = 0; i &lt; ictx.streamsCount(); ++i) {</div>
+<div class="line">        <span class="keyword">auto</span> ist    = ictx.stream(i);</div>
+<div class="line">        <span class="keyword">auto</span> icodecpar = ist.codecParameters();</div>
+<div class="line">        <span class="keyword">auto</span> ocodec = icodecpar.decodingCodec();</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Source codec can be unsupprted by the target format. Transcoding required or simple skip.</span></div>
+<div class="line">        <span class="keywordflow">if</span> (!octx.outputFormat().codecSupported(ocodec)) {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Input stream &quot;</span> &lt;&lt; i &lt;&lt; <span class="stringliteral">&quot; codec &#39;&quot;</span> &lt;&lt; ocodec.name() &lt;&lt;</div>
+<div class="line">                    <span class="stringliteral">&quot;&#39; does not supported by the output format &#39;&quot;</span> &lt;&lt; oformat.name() &lt;&lt; <span class="stringliteral">&quot;&#39;\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> ost = octx.addStream(ec);</div>
+<div class="line">        ost.setCodecParameters(icodecpar);</div>
+<div class="line">        ost.codecParameters().codecTag(0);</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// We can omit codec checking above and got error FormatCodecUnsupported (error code or exception)</span></div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            <span class="keywordflow">if</span> (ec == Errors::FormatCodecUnsupported) {</div>
+<div class="line">                <span class="keywordflow">continue</span>;</div>
+<div class="line">            } <span class="keywordflow">else</span> {</div>
+<div class="line">                cerr &lt;&lt; ec.category().name() &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        ost.setTimeBase(ist.timeBase());</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// setup mapping</span></div>
+<div class="line">        streamMapping[i] = ostIdx++;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+</div><!-- fragment --><p>Ключевой вызов — <span class="tt">stream.codecParameters()</span>: он возвращает переносимое описание кодека внутри потока. Копирование его в выходной поток сообщает муксеру, что будет внутри пакетов, без открытия какого-либо кодека.</p>
+<p><span class="tt">codecParameters().decodingCodec()</span> ищет кодек по идентификатору, чтобы программа могла проверить, поддерживает ли целевой контейнер этот кодек. Муксер спокойно примет поток, который не умеет хранить, и ошибка проявится при записи, а не при настройке.</p>
+<p><span class="tt">codecParameters().codecTag(0)</span> очищает тег кодека. Теги — четырехсимвольные коды, специфичные для контейнера; оставленный входной тег заставит выходной поток заявлять тег из другого контейнера.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md78"></a>
+Перенос пакетов</h2>
+<div class="fragment"><div class="line">    <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line">        <span class="keyword">auto</span> pkt = ictx.readPacket();</div>
+<div class="line">        <span class="keywordflow">if</span> (!pkt)</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> it = streamMapping.find(pkt.streamIndex());</div>
+<div class="line">        <span class="keywordtype">string</span> skip;</div>
+<div class="line">        <span class="keywordflow">if</span> (it == streamMapping.end()) {</div>
+<div class="line">            skip = <span class="stringliteral">&quot; [skip]&quot;</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;pkt[&quot;</span> &lt;&lt; pkt.streamIndex() &lt;&lt; <span class="stringliteral">&quot;]: tm=&quot;</span> &lt;&lt; pkt.pts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; pkt.pts().seconds() &lt;&lt; skip &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (it == streamMapping.end())</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">        pkt.setStreamIndex(it-&gt;second);</div>
+<div class="line"> </div>
+<div class="line">        octx.writePacket(pkt);</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (duration) {</div>
+<div class="line">            <span class="keywordflow">if</span> (pkt.pts() &gt; duration)</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+</div><!-- fragment --><p>Пакеты переписываются, а не пересчитываются: цикл только отображает индекс входного потока на выходной. Метки времени остаются в базе времени входного потока, поэтому в примере при настройке копируется <span class="tt">setTimeBase()</span> из входного потока.</p>
+<p><span class="tt">writePacket()</span> без аргументов осушает внутреннюю очередь муксера до <span class="tt">writeTrailer()</span>. Некоторые муксеры держат последние пакеты до трейлера; без слива они могут переупорядочиться или потеряться.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md79"></a>
+Что ремиксить нельзя</h2>
+<ul>
+<li>Кодек, который целевой контейнер не поддерживает. Пример пропускает такие потоки, и это законная политика: вместо аварийного завершения сообщается <span class="tt">Errors::FormatCodecUnsupported</span>.</li>
+<li>Смену разрешения или параметров кодека посреди потока. Пакеты после смены относятся к другой конфигурации и требуют нового потока.</li>
+<li>Все, что требует вмешательства в полезную нагрузку: фильтрация, масштабирование, пересчет времени.</li>
+</ul>
+<p>Для этого нужно декодировать и кодировать: <a class="el" href="guide_decode.html" title="Декодирование">Декодирование</a> и <a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md80"></a>
+Дальше</h2>
+<ul>
+<li><a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a> — когда кодек надо сменить.</li>
+<li><a class="el" href="guide_filters.html" title="Фильтры">Фильтры</a> — когда надо изменить кадры. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

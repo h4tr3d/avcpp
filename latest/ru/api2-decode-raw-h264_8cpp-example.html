@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: api2-decode-raw-h264.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.1.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('api2-decode-raw-h264_8cpp-example.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">api2-decode-raw-h264.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<p>Декодирование сырого H.264.</p>
+<p>Декодирование сырого H.264.</p><div class="fragment"><div class="line">api2-decode-raw-h264 &lt;файл.h264&gt;</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="comment">// Decodes a raw H.264 elementary stream without a container.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Shows: opening a stream that has no demuxer metadata, building codec</span></div>
+<div class="line"><span class="comment">// parameters by hand and feeding the decoder packet by packet.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Usage: api2-decode-raw-h264 &lt;input file.h264&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;cstdio&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;filesystem&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/av.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/ffmpeg.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codec.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/packet.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/videorescaler.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/audioresampler.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/avutils.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// API2</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codec.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codeccontext.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>std;</div>
+<div class="line"><span class="keyword">using namespace </span>av;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">class </span>File</div>
+<div class="line">{</div>
+<div class="line">    std::FILE *_fp = <span class="keyword">nullptr</span>;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">public</span>:</div>
+<div class="line">    File() = <span class="keywordflow">default</span>;</div>
+<div class="line"> </div>
+<div class="line">    File(std::FILE *fp)</div>
+<div class="line">        : _fp(fp)</div>
+<div class="line">    {</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    File(std::nullptr_t)</div>
+<div class="line">    {</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    ~File()</div>
+<div class="line">    {</div>
+<div class="line">        std::fclose(_fp);</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    File(<span class="keyword">const</span> File &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line">    <span class="keywordtype">void</span> operator=(<span class="keyword">const</span> File &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"> </div>
+<div class="line">    File(File &amp;&amp;rhs)</div>
+<div class="line">        : _fp(std::exchange(rhs._fp, <span class="keyword">nullptr</span>))</div>
+<div class="line">    {</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    File &amp;operator=(File &amp;&amp;rhs)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keywordflow">if</span> (<span class="keyword">this</span> != std::addressof(rhs)) {</div>
+<div class="line">            File(std::move(rhs)).swap(*<span class="keyword">this</span>);</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">void</span> swap(File &amp;rhs)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keyword">using </span>std::swap;</div>
+<div class="line">        swap(_fp, rhs._fp);</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">void</span> reset(std::FILE *fp = <span class="keyword">nullptr</span>)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keywordflow">if</span> (_fp == fp)</div>
+<div class="line">            <span class="keywordflow">return</span>;</div>
+<div class="line">        File(fp).swap(*<span class="keyword">this</span>);</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    std::FILE *get()<span class="keyword"> const</span></div>
+<div class="line"><span class="keyword">    </span>{</div>
+<div class="line">        <span class="keywordflow">return</span> _fp;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">operator</span> bool() <span class="keyword">const</span> <span class="keyword">noexcept</span></div>
+<div class="line">    {</div>
+<div class="line">        <span class="keywordflow">return</span> !!_fp;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">operator</span> std::FILE *() <span class="keyword">const</span> <span class="keyword">noexcept</span></div>
+<div class="line">    {</div>
+<div class="line">        <span class="keywordflow">return</span> _fp;</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">if</span> (argc &lt; 2)</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line"> </div>
+<div class="line">    av::init();</div>
+<div class="line">    av::setFFmpegLoggingLevel(AV_LOG_DEBUG);</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">string</span> uri {argv[1]};</div>
+<div class="line"> </div>
+<div class="line">    VideoDecoderContext vdec;</div>
+<div class="line">    error_code ec;</div>
+<div class="line"> </div>
+<div class="line">    {</div>
+<div class="line">        <span class="keywordtype">size_t</span> counter {};</div>
+<div class="line"> </div>
+<div class="line">        File in = std::fopen(uri.c_str(), <span class="stringliteral">&quot;rb+&quot;</span>);</div>
+<div class="line">        <span class="keywordflow">if</span> (!in) {</div>
+<div class="line">            cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open input\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Just open h264 codec</span></div>
+<div class="line">        {</div>
+<div class="line">            <span class="keyword">auto</span> codec = av::findDecodingCodec(<span class="stringliteral">&quot;h264&quot;</span>);</div>
+<div class="line">            vdec = VideoDecoderContext {codec};</div>
+<div class="line">            vdec.open(ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open codec\n&quot;</span>;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Load a whole raw H.264 bitstream file into memory. Assumed AnnexB format:</span></div>
+<div class="line">        <span class="comment">//  ([start code] NALU) | ( [start code] NALU) | ...</span></div>
+<div class="line">        <span class="keyword">auto</span> <span class="keyword">const</span> fsize = std::filesystem::file_size(uri);</div>
+<div class="line">        std::vector&lt;uint8_t&gt; data(fsize);</div>
+<div class="line">        std::fread(data.data(), 1, data.size(), in);</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Start code:</span></div>
+<div class="line">        <span class="comment">//   0x00 0x00 0x00 0x01</span></div>
+<div class="line">        <span class="comment">// or</span></div>
+<div class="line">        <span class="comment">//   0x00 0x00 0x01</span></div>
+<div class="line">        <span class="comment">// Select shortest and check previous</span></div>
+<div class="line">        <span class="keyword">const</span> uint8_t startCode[3] = {0x00, 0x00, 0x01};</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> start = data.begin();</div>
+<div class="line">        <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line">            <span class="comment">// Look for a start code pattern in the bitstream</span></div>
+<div class="line">            <span class="keyword">auto</span> it = std::search(start, data.end(), std::begin(startCode), std::end(startCode));</div>
+<div class="line"> </div>
+<div class="line">            <span class="keyword">auto</span> <span class="keyword">const</span> finish = (it == data.begin() || *(it - 1) != 0x00) ? it : it - 1;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (start != data.begin())</div>
+<div class="line">                start -= 1;</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">// FFmpeg expects, that start code present in the AVPacket</span></div>
+<div class="line">            <span class="keyword">auto</span> <span class="keyword">const</span> ptr = std::to_address(start);</div>
+<div class="line">            <span class="keyword">auto</span> <span class="keyword">const</span> size = size_t(finish - start);</div>
+<div class="line"> </div>
+<div class="line">            start = it + 1;</div>
+<div class="line"> </div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;  Data: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span> *)ptr &lt;&lt; <span class="stringliteral">&quot;, size: &quot;</span> &lt;&lt; size &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">// Wrap into av::Packet</span></div>
+<div class="line">            Packet pkt {ptr, size, Packet::wrap_data_static {}};</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">// ...and decode it into frame</span></div>
+<div class="line">            <span class="keyword">auto</span> frame = vdec.decode(pkt, ec);</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">// For valid Timestamp some NALU processing is needed to extract extra data</span></div>
+<div class="line">            <span class="keyword">auto</span> ts = frame.pts();</div>
+<div class="line"> </div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;  Frame: &quot;</span> &lt;&lt; frame.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; frame.height() &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; frame.size() &lt;&lt; <span class="stringliteral">&quot;, ts=&quot;</span> &lt;&lt; ts &lt;&lt; <span class="stringliteral">&quot;, tm: &quot;</span> &lt;&lt; ts.seconds() &lt;&lt; <span class="stringliteral">&quot;, tb: &quot;</span> &lt;&lt; frame.timeBase() &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; frame.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; frame.refCount() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;       : side_data: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span> *)frame.raw()-&gt;side_data &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (frame)</div>
+<div class="line">                ++counter;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (it == data.end())</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Flush frames:\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line">            VideoFrame frame = vdec.decode(Packet(), ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (!frame)</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keyword">auto</span> ts = frame.pts();</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;  Frame: &quot;</span> &lt;&lt; frame.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; frame.height() &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; frame.size() &lt;&lt; <span class="stringliteral">&quot;, ts=&quot;</span> &lt;&lt; ts &lt;&lt; <span class="stringliteral">&quot;, tm: &quot;</span> &lt;&lt; ts.seconds() &lt;&lt; <span class="stringliteral">&quot;, tb: &quot;</span> &lt;&lt; frame.timeBase() &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; frame.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; frame.refCount() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">            ++counter;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;total frames: &quot;</span> &lt;&lt; counter &lt;&lt; endl;</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

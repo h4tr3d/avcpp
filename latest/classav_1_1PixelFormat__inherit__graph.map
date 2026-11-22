@@ -1,0 +1,5 @@
+<map id="av::PixelFormat" name="av::PixelFormat">
+<area shape="rect" id="Node000001" title="The PixelFormat class is a simple wrapper for AVPixelFormat that allow to acces it it properties." alt="" coords="43,293,190,519"/>
+<area shape="rect" id="Node000002" href="$structPixSampleFmtWrapper.html" title=" " alt="" coords="5,5,228,245"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,259,119,293,114,293,114,259"/>
+</map>

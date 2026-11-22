@@ -1,0 +1,5 @@
+<map id="av::Format&lt; T &gt;" name="av::Format&lt; T &gt;">
+<area shape="rect" id="Node000001" title="Common interface of input and output format descriptors." alt="" coords="5,259,148,444"/>
+<area shape="rect" id="Node000002" href="$structFFWrapperPtr.html" title="Base for wrappers that own a pointer to an FFmpeg object." alt="" coords="6,5,147,211"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="79,224,79,258,74,258,74,224"/>
+</map>

@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: Навигатор по API</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.1.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('api_nav.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Навигатор по API </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>Справочник API генерируется из комментариев в исходниках и существует только на английском: это осознанное решение, комментарии пишутся один раз и не переводятся. Эта страница — карта: какая задача какие типы требует и где именно они описаны.</p>
+<p>Ссылки ведут в английский справочник; русские руководства объясняют последовательность вызовов.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Нужно…  </th><th class="markdownTableHeadNone">Типы  </th><th class="markdownTableHeadNone">Справочник  </th><th class="markdownTableHeadNone">Руководство  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">инициализировать библиотеку  </td><td class="markdownTableBodyNone"><span class="tt">av::init()</span>  </td><td class="markdownTableBodyNone"><a href="../group__core.html">core</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_getting_started.html" title="Начало работы">Начало работы</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">открыть файл или поток  </td><td class="markdownTableBodyNone"><span class="tt">av::FormatContext</span>, <span class="tt">av::InputFormat</span>  </td><td class="markdownTableBodyNone"><a href="../group__avformat.html">avformat</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_getting_started.html" title="Начало работы">Начало работы</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">перечислить потоки  </td><td class="markdownTableBodyNone"><span class="tt">av::Stream</span>  </td><td class="markdownTableBodyNone"><a href="../group__avformat.html">avformat</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_getting_started.html" title="Начало работы">Начало работы</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">читать сжатые данные  </td><td class="markdownTableBodyNone"><span class="tt">av::Packet</span>  </td><td class="markdownTableBodyNone"><a href="../group__avformat.html">avformat</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_decode.html" title="Декодирование">Декодирование</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">декодировать видео  </td><td class="markdownTableBodyNone"><span class="tt">av::VideoDecoderContext</span>, <span class="tt">av::VideoFrame</span>  </td><td class="markdownTableBodyNone"><a href="../group__codec.html">codec</a>, <a href="../group__frame.html">frame</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_decode.html" title="Декодирование">Декодирование</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">декодировать аудио  </td><td class="markdownTableBodyNone"><span class="tt">av::AudioDecoderContext</span>, <span class="tt">av::AudioSamples</span>  </td><td class="markdownTableBodyNone"><a href="../group__codec.html">codec</a>, <a href="../group__frame.html">frame</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_decode.html" title="Декодирование">Декодирование</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">декодировать субтитры  </td><td class="markdownTableBodyNone"><span class="tt">av::SubtitleDecoderContext</span>, <span class="tt">av::SubtitleFrame</span>  </td><td class="markdownTableBodyNone"><a href="../group__subtitle.html">subtitle</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_subtitles.html" title="Субтитры">Субтитры</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">кодировать видео  </td><td class="markdownTableBodyNone"><span class="tt">av::VideoEncoderContext</span>  </td><td class="markdownTableBodyNone"><a href="../group__codec.html">codec</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">кодировать аудио  </td><td class="markdownTableBodyNone"><span class="tt">av::AudioEncoderContext</span>  </td><td class="markdownTableBodyNone"><a href="../group__codec.html">codec</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">писать контейнер  </td><td class="markdownTableBodyNone"><span class="tt">av::FormatContext</span>, <span class="tt">av::OutputFormat</span>  </td><td class="markdownTableBodyNone"><a href="../group__avformat.html">avformat</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">копировать потоки без декодирования  </td><td class="markdownTableBodyNone"><span class="tt">av::CodecParameters</span>  </td><td class="markdownTableBodyNone"><a href="../group__avformat.html">avformat</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_remux.html" title="Ремиксинг">Ремиксинг</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">фильтровать кадры  </td><td class="markdownTableBodyNone"><span class="tt">av::FilterGraph</span>, <span class="tt">av::BufferSrcFilterContext</span>, <span class="tt">av::BufferSinkFilterContext</span>  </td><td class="markdownTableBodyNone"><a href="../group__filter.html">filter</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_filters.html" title="Фильтры">Фильтры</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">масштабировать видео  </td><td class="markdownTableBodyNone"><span class="tt">av::VideoRescaler</span>  </td><td class="markdownTableBodyNone"><a href="../group__frame.html">frame</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_filters.html" title="Фильтры">Фильтры</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">ресемплировать аудио  </td><td class="markdownTableBodyNone"><span class="tt">av::AudioResampler</span>  </td><td class="markdownTableBodyNone"><a href="../group__frame.html">frame</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_filters.html" title="Фильтры">Фильтры</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">использовать GPU  </td><td class="markdownTableBodyNone"><span class="tt">av::hw::DeviceContext</span>, <span class="tt">av::hw::FramesContext</span>  </td><td class="markdownTableBodyNone"><a href="../group__hw.html">hw</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_hw_codecs.html" title="Аппаратное кодирование и декодирование">Аппаратное кодирование и декодирование</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">обрабатывать ошибки  </td><td class="markdownTableBodyNone"><span class="tt">av::OptionalErrorCode</span>, <span class="tt">av::Errors</span>, <span class="tt">av::Exception</span>  </td><td class="markdownTableBodyNone"><a href="../group__core.html">core</a>  </td><td class="markdownTableBodyNone"><a class="el" href="guide_errors.html" title="Обработка ошибок">Обработка ошибок</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">работать со временем  </td><td class="markdownTableBodyNone"><span class="tt">av::Timestamp</span>, <span class="tt">av::Rational</span>  </td><td class="markdownTableBodyNone"><a href="../group__core.html">core</a>  </td><td class="markdownTableBodyNone">—  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">хранить опции  </td><td class="markdownTableBodyNone"><span class="tt">av::Dictionary</span>, <span class="tt">av::DictionaryArray</span>  </td><td class="markdownTableBodyNone"><a href="../group__core.html">core</a>  </td><td class="markdownTableBodyNone">—  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">владеть сырыми данными  </td><td class="markdownTableBodyNone"><span class="tt">av::BufferRef</span>, <span class="tt">av::BufferRefView</span>  </td><td class="markdownTableBodyNone"><a href="../group__core.html">core</a>  </td><td class="markdownTableBodyNone">—  </td></tr>
+</table>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md0"></a>
+Четыре объекта, вокруг которых все построено</h2>
+<p>Почти любая операция двигает данные между четырьмя типами:</p>
+<ul>
+<li><b><span class="tt">av::Packet</span></b> — сжатые байты, один поток, одна метка времени.</li>
+<li><b><span class="tt">av::VideoFrame</span> / <span class="tt">av::AudioSamples</span></b> — несжатые данные плюс описание формата.</li>
+<li><b><span class="tt">av::CodecContext2</span> и наследники</b> — состояние, превращающее одно в другое.</li>
+<li><b><span class="tt">av::FormatContext</span></b> — контейнер, который хранит потоки, а значит и пакеты.</li>
+</ul>
+<p>Если вы знаете, какой из этих четырех типов функция принимает и возвращает, вы знаете, где находитесь в конвейере. Переходы разобраны в <a class="el" href="guide_decode.html" title="Декодирование">Декодирование</a> и <a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a>, а <a class="el" href="guide_remux.html" title="Ремиксинг">Ремиксинг</a> их вообще пропускает.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
+Соглашения об именах</h2>
+<ul>
+<li>Пары <span class="tt">setX()</span> / <span class="tt">x()</span> — прямой доступ к свойству; они не делают ввода-вывода и не падают.</li>
+<li><span class="tt">create()</span> возвращает значение и может завершиться ошибкой; конструкторов, которые могут упасть, в API намеренно нет.</li>
+<li>Типы <span class="tt">*Range</span>, <span class="tt">*View</span>, <span class="tt">*List</span> — невладеющие виды на память, которой владеет кто-то другой.</li>
+<li><span class="tt">raw()</span> возвращает указатель FFmpeg, когда нужно вызвать FFmpeg напрямую. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

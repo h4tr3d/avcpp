@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,31,151,56"/>
+<area shape="rect" id="Node000001" href="$classav_1_1AvcppCategory.html" title="The AvcppCategory class Describes internal AvCpp errors." alt="" coords="205,5,347,31"/>
+<area shape="poly" id="edge59_Node000000_Node000001" title=" " alt="" coords="164,30,204,24,205,30,165,35"/>
+<area shape="rect" id="Node000002" href="$classav_1_1FfmpegCategory.html" title="The FfmpegCategory class Describers FFmpeg internal errors." alt="" coords="199,55,353,80"/>
+<area shape="poly" id="edge60_Node000000_Node000002" title=" " alt="" coords="165,51,199,55,198,61,164,56"/>
+</map>

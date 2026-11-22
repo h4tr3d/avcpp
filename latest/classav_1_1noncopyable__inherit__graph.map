@@ -1,0 +1,23 @@
+<map id="av::noncopyable" name="av::noncopyable">
+<area shape="rect" id="Node000001" title="Base class that deletes copying and assignment." alt="" coords="653,5,775,111"/>
+<area shape="rect" id="Node000002" href="$classav_1_1AudioResampler.html" title="Converts audio between sample rates, sample formats and channel layouts." alt="" coords="243,549,401,1114"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="640,65,583,74,522,91,463,119,437,138,415,160,384,202,360,247,340,295,324,345,305,447,298,549,293,548,300,447,319,344,335,293,355,245,380,199,411,157,434,134,460,114,520,86,582,68,639,60"/>
+<area shape="rect" id="Node000003" href="$classav_1_1CodecContext2.html" title="Base class for audio and video codec contexts." alt="" coords="425,159,608,1504"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="648,123,623,160,610,187,606,185,618,157,643,120"/>
+<area shape="rect" id="Node000024" href="$classav_1_1CodecParameters.html" title="Owning codec parameters." alt="" coords="632,789,796,874"/>
+<area shape="poly" id="edge8_Node000001_Node000024" title=" " alt="" coords="717,125,717,789,711,789,711,125"/>
+<area shape="rect" id="Node000025" href="$classav_1_1FormatContext.html" title="Container context: the entry point for demuxing, muxing and seeking." alt="" coords="820,419,1085,1244"/>
+<area shape="poly" id="edge9_Node000001_Node000025" title=" " alt="" coords="784,119,811,157,840,219,866,284,904,418,899,419,861,286,836,221,806,160,780,122"/>
+<area shape="rect" id="Node000026" href="$classav_1_1VideoRescaler.html" title="Converts video frames between sizes and pixel formats." alt="" coords="1109,629,1252,1034"/>
+<area shape="poly" id="edge10_Node000001_Node000026" title=" " alt="" coords="789,66,874,80,966,99,1048,125,1079,140,1100,157,1137,208,1166,264,1188,323,1203,385,1212,448,1216,511,1214,628,1209,628,1211,511,1207,449,1198,386,1183,325,1162,266,1133,211,1096,161,1076,144,1046,130,965,104,873,85,788,71"/>
+<area shape="rect" id="Node000004" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="5,1552,185,1867"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="418,1502,414,1506,389,1527,362,1536,336,1539,310,1537,255,1534,227,1539,198,1554,187,1563,184,1558,195,1550,226,1534,255,1528,310,1531,336,1533,361,1531,386,1522,411,1502,414,1498"/>
+<area shape="rect" id="Node000006" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="209,1552,392,1867"/>
+<area shape="poly" id="edge4_Node000003_Node000006" title=" " alt="" coords="424,1479,415,1505,395,1556,390,1554,410,1503,419,1477"/>
+<area shape="rect" id="Node000008" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="416,1552,617,1867"/>
+<area shape="poly" id="edge5_Node000003_Node000008" title=" " alt="" coords="519,1518,519,1551,514,1551,514,1518"/>
+<area shape="rect" id="Node000010" href="$classav_1_1CodecContextBase.html" title="Base class that fixes the direction and media type of a codec context." alt="" coords="641,1552,803,1867"/>
+<area shape="poly" id="edge6_Node000003_Node000010" title=" " alt="" coords="614,1475,623,1503,644,1557,639,1559,618,1505,609,1476"/>
+<area shape="rect" id="Node000023" href="$classav_1_1GenericCodecContext.html" title="The GenericCodecContext class to copy contexts from input streams to output one." alt="" coords="827,1627,1007,1792"/>
+<area shape="poly" id="edge7_Node000003_Node000023" title=" " alt="" coords="619,1498,623,1502,645,1521,667,1529,690,1532,713,1531,763,1529,790,1535,817,1550,853,1584,882,1625,877,1628,849,1588,814,1554,788,1540,762,1535,713,1536,689,1537,666,1535,642,1525,619,1506,615,1502"/>
+</map>

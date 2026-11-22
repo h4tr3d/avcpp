@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: avcpp (Русский)</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.1.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('index.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">avcpp (Русский) </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p><b>Обёртка над FFmpeg для C++17, превращающая C-API в типы с конструкторами, деструкторами и кодами ошибок.</b></p>
+<p>FFmpeg — это набор C-библиотек с ручным управлением памятью, выходными параметрами и целочисленными кодами ошибок. avcpp сохраняет ту же модель — никаких скрытых копий и буферизации, о которой вы не просили, — но заворачивает её в RAII-типы в пространстве имён <span class="tt">av</span>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md84"></a>
+Что покрыто</h2>
+<ul>
+<li>контейнеры и контексты форматов: демуксинг, муксинг, позиционирование;</li>
+<li>кодеки и контексты кодеков: декодирование и кодирование, включая send/receive API;</li>
+<li>кадры, аудиосэмплы и субтитры, включая текстовые и ASS-вставки и растровые прямоугольники;</li>
+<li>графы фильтров: разбор из строки или сборка вручную;</li>
+<li>программный ресайз видео и ресемплинг аудио;</li>
+<li>аппаратное ускорение: устройства, аппаратные кадры, zero-copy декодирование и кодирование.</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md85"></a>
+Справочник API</h2>
+<p>Справочник API генерируется из комментариев в исходниках и существует <b>только на английском языке</b> — это осознанное решение: комментарии пишутся один раз, и переводить их пришлось бы при каждом изменении кода.</p>
+<ul>
+<li><a href="../index.html">Английский справочник API</a> — отсюда можно перейти к группам <span class="tt">core</span>, <span class="tt">avformat</span>, <span class="tt">codec</span>, <span class="tt">frame</span>, <span class="tt">filter</span>, <span class="tt">hw</span> и <span class="tt">subtitle</span>.</li>
+<li>Навигатор по API на русском — в планах (веха M2 плана документации).</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md86"></a>
+Руководства</h2>
+<ul>
+<li><a class="el" href="guide_getting_started.html" title="Начало работы">Начало работы</a> — минимальная программа, которая декодирует файл.</li>
+<li><a class="el" href="guide_decode.html" title="Декодирование">Декодирование</a> — пакеты в кадры, слив и метки времени.</li>
+<li><a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a> — кадры в пакеты и запись контейнера.</li>
+<li><a class="el" href="guide_remux.html" title="Ремиксинг">Ремиксинг</a> — смена контейнера без перекодирования.</li>
+<li><a class="el" href="guide_filters.html" title="Фильтры">Фильтры</a> — графы фильтров между декодером и кодировщиком.</li>
+<li><a class="el" href="guide_subtitles.html" title="Субтитры">Субтитры</a> — текстовые, ASS- и растровые субтитры.</li>
+<li><a class="el" href="guide_hw_codecs.html" title="Аппаратное кодирование и декодирование">Аппаратное кодирование и декодирование</a> — аппаратное декодирование, кодирование и нулевое копирование.</li>
+<li><a class="el" href="guide_errors.html" title="Обработка ошибок">Обработка ошибок</a> — договоренность <span class="tt">OptionalErrorCode</span> и категории ошибок.</li>
+<li><a class="el" href="api_nav.html" title="Навигатор по API">Навигатор по API</a> — какой тип для какой задачи, одной таблицей.</li>
+<li><a class="el" href="guide_building.html" title="Сборка и установка">Сборка и установка</a> — сборка, параметры конфигурации и интеграция.</li>
+<li><a class="el" href="guide_examples.html" title="Примеры">Примеры</a> — те же примеры, что и в английской версии, с исходным кодом.</li>
+</ul>
+<p>Группы справочника API (на английском): <a href="../group__core.html">core</a>, <a href="../group__avformat.html">avformat</a>, <a href="../group__codec.html">codec</a>, <a href="../group__frame.html">frame</a>, <a href="../group__filter.html">filter</a>, <a href="../group__hw.html">hw</a>, <a href="../group__subtitle.html">subtitle</a>.</p>
+<p>Остальные страницы справочника — только на английском: комментарии в коде не переводятся. </p>
+</div></div><!-- PageDoc -->
+<a href="doxygen_crawl.html"></a>
+</div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

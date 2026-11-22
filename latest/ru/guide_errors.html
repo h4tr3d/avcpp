@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: Обработка ошибок</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.1.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_errors.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Обработка ошибок </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>Каждая операция, которая может завершиться ошибкой, следует одной договоренности: последним параметром она принимает <span class="tt">OptionalErrorCode</span>. Это избавляет от двух перегрузок каждой функции и позволяет вызывающему выбирать между исключениями и кодами ошибок на каждом месте вызова, а не для всей библиотеки.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md23"></a>
+Два стиля</h2>
+<div class="fragment"><div class="line"><span class="comment">// Стиль с исключениями: по умолчанию.</span></div>
+<div class="line">av::Packet pkt = ictx.readPacket();          <span class="comment">// при ошибке бросит av::Exception</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Стиль с кодом ошибки: передайте свой std::error_code.</span></div>
+<div class="line">std::error_code ec;</div>
+<div class="line">av::Packet pkt = ictx.readPacket(ec);</div>
+<div class="line"><span class="keywordflow">if</span> (ec) {</div>
+<div class="line">    std::cerr &lt;&lt; ec.category().name() &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><span class="tt">av::throws()</span> — аргумент по умолчанию, и это <em>пустой</em> держатель: переменной нет, поэтому библиотека бросает <span class="tt">av::Exception</span>, а не записывает код. Если передать <span class="tt">std::error_code&amp;</span>, вы даете невладеющий вид на него: переменная должна жить дольше вызова, что и так верно в любом обычном сценарии.</p>
+<p>Внутри одного вызова стили взаимоисключающие. Смешивать их в программе нормально — выбирайте стиль по границам: исключения внутри приложения, коды ошибок на краю API, который должен остаться <span class="tt">noexcept</span>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md24"></a>
+Что значит пустой код</h2>
+<p>Проверка — <span class="tt">if (ec)</span>. <span class="tt">std::error_code</span>, который не устанавливали, равен <span class="tt">std::error_code{}</span>, а его <span class="tt">value()</span> равно <span class="tt">0</span>.</p>
+<p>Большинство функций вызывают <span class="tt">clear_if(ec)</span> на входе, поэтому код от предыдущего вызова не просачивается в следующий результат. Именно поэтому цикл может переиспользовать один <span class="tt">std::error_code</span> на весь конвейер, и поэтому <span class="tt">example/api2-samples/api2-send-receive.cpp</span> проверяет <span class="tt">ec</span> после каждого шага, не очищая его вручную.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md25"></a>
+Категории</h2>
+<p>Категорий две:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Категория  </th><th class="markdownTableHeadNone">Источник  </th><th class="markdownTableHeadNone">Примеры кодов  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">av::avcpp_category()</span>  </td><td class="markdownTableBodyNone">проверки самой библиотеки  </td><td class="markdownTableBodyNone"><span class="tt">Errors::CodecAlreadyOpened</span>, <span class="tt">Errors::FormatCodecUnsupported</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">av::ffmpeg_category()</span>  </td><td class="markdownTableBodyNone">возвращаемые значения вызовов FFmpeg  </td><td class="markdownTableBodyNone"><span class="tt">AVERROR(EAGAIN)</span>, <span class="tt">AVERROR(ENOSYS)</span>  </td></tr>
+</table>
+<p><span class="tt">av::Errors</span> — перечисление с адаптером <span class="tt">std::error_code</span>, поэтому сравнение прямое:</p>
+<div class="fragment"><div class="line"><span class="keywordflow">if</span> (ec == av::Errors::FormatCodecUnsupported) {</div>
+<div class="line">    <span class="comment">// муксер не умеет хранить этот кодек</span></div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Коды, которые встречаются на практике:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Код  </th><th class="markdownTableHeadNone">Значение  </th><th class="markdownTableHeadNone">Обычная реакция  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">CodecAlreadyOpened</span>  </td><td class="markdownTableBodyNone">настройку меняли после <span class="tt">open()</span>  </td><td class="markdownTableBodyNone">перенести настройку до <span class="tt">open()</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">CodecIsNotOpened</span>  </td><td class="markdownTableBodyNone">операции нужен открытый кодек  </td><td class="markdownTableBodyNone">сначала вызвать <span class="tt">open()</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">FormatCodecUnsupported</span>  </td><td class="markdownTableBodyNone">контейнер не может хранить кодек  </td><td class="markdownTableBodyNone">пропустить поток или перекодировать  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">FormatNoStreams</span>  </td><td class="markdownTableBodyNone">в выходном контексте нет потоков  </td><td class="markdownTableBodyNone">добавить потоки до <span class="tt">writeHeader()</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">FormatHeaderNotWriten</span>  </td><td class="markdownTableBodyNone">пакеты записаны до заголовка  </td><td class="markdownTableBodyNone">сначала вызвать <span class="tt">writeHeader()</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">FrameInvalid</span>  </td><td class="markdownTableBodyNone">операция над пустым кадром  </td><td class="markdownTableBodyNone">проверить <span class="tt">isValid()</span> до использования  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">HardwareTransferUnsupported</span>  </td><td class="markdownTableBodyNone">перенос невозможен  </td><td class="markdownTableBodyNone">см. <a class="el" href="guide_hw_codecs.html" title="Аппаратное кодирование и декодирование">Аппаратное кодирование и декодирование</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">ResamplerInputChanges</span>  </td><td class="markdownTableBodyNone">раскладка входа изменилась после инициализации  </td><td class="markdownTableBodyNone">создать новый ресемплер  </td></tr>
+</table>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md26"></a>
+Перехват</h2>
+<div class="fragment"><div class="line"><span class="keywordflow">try</span> {</div>
+<div class="line">    av::FormatContext ictx;</div>
+<div class="line">    ictx.openInput(path);</div>
+<div class="line">    ictx.findStreamInfo();</div>
+<div class="line">} <span class="keywordflow">catch</span> (<span class="keyword">const</span> av::Exception &amp;e) {</div>
+<div class="line">    std::cerr &lt;&lt; e.code().category().name() &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; e.what() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><span class="tt">av::Exception</span> наследуется от <span class="tt">std::system_error</span>, поэтому <span class="tt">code()</span> дает тот же <span class="tt">std::error_code</span>, который вернул бы стиль без исключений. Отдельного типа исключения на каждый сбой нет, и сопоставлять строки никогда не нужно.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md27"></a>
+Свои обертки</h2>
+<p>Договоренность достаточно мала, чтобы соблюдать ее в прикладном коде:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> check(av::OptionalErrorCode ec, <span class="keywordtype">int</span> err)</div>
+<div class="line">{</div>
+<div class="line">    av::throws_if(ec, err, av::avcpp_category()); <span class="comment">// или ffmpeg_category()</span></div>
+<div class="line">}</div>
+</div><!-- fragment --><p><span class="tt">throws_if()</span> бросит исключение или запишет код — в зависимости от того, что передал вызывающий, а <span class="tt">clear_if()</span> очистит код. Вместе они и составляют весь протокол; используя их, вы делаете свой код неотличимым от кода библиотеки.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md28"></a>
+Дальше</h2>
+<ul>
+<li><a class="el" href="guide_getting_started.html" title="Начало работы">Начало работы</a> — договоренность в законченной программе.</li>
+<li><a class="el" href="guide_hw_codecs.html" title="Аппаратное кодирование и декодирование">Аппаратное кодирование и декодирование</a> — коды, специфичные для аппаратного ускорения. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

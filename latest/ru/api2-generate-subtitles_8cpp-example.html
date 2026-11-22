@@ -1,0 +1,456 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: api2-generate-subtitles.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.1.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('api2-generate-subtitles_8cpp-example.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">api2-generate-subtitles.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<p>Генерация субтитров.</p>
+<p>Генерация субтитров.</p><div class="fragment"><div class="line">api2-generate-subtitles &lt;видео&gt; &lt;выходной файл&gt;</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="comment">// Generates ASS subtitles for a video and writes them to a playable file.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Every video frame produces two subtitle events: the zero-based frame number</span></div>
+<div class="line"><span class="comment">// in the bottom-left corner and the frame timestamp in the bottom-right</span></div>
+<div class="line"><span class="comment">// corner. ASS alignment tags ({\an1} and {\an3}) are used because SubRip and</span></div>
+<div class="line"><span class="comment">// other text subtitle formats cannot position events in a corner.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Video and audio packets are not decoded: they are copied from the input</span></div>
+<div class="line"><span class="comment">// container to the output one. The output extension selects the muxer:</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">//   *.mkv  - copied video and audio streams plus the generated ASS subtitles;</span></div>
+<div class="line"><span class="comment">//   *.ass  - subtitle-only file with the same events.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Usage: api2-generate-subtitles &lt;input video&gt; &lt;output.mkv|output.ass&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;cstdio&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/av.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codeccontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/formatcontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/packet.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/stream.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/subtitle.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span>{</div>
+<div class="line"> </div>
+<div class="line">std::string formatTimestamp(<span class="keywordtype">double</span> seconds)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keyword">auto</span> <span class="keyword">const</span> totalMilliseconds =</div>
+<div class="line">        <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(std::llround(seconds * 1000.0));</div>
+<div class="line">    <span class="keyword">auto</span> <span class="keyword">const</span> milliseconds = totalMilliseconds % 1000;</div>
+<div class="line">    <span class="keyword">auto</span> <span class="keyword">const</span> totalSeconds = totalMilliseconds / 1000;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">char</span> buffer[32];</div>
+<div class="line">    std::snprintf(buffer, <span class="keyword">sizeof</span>(buffer), <span class="stringliteral">&quot;%02lld:%02lld:%02lld.%03lld&quot;</span>,</div>
+<div class="line">                  <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">long</span><span class="keyword">&gt;</span>(totalSeconds / 3600),</div>
+<div class="line">                  <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">long</span><span class="keyword">&gt;</span>((totalSeconds / 60) % 60),</div>
+<div class="line">                  <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">long</span><span class="keyword">&gt;</span>(totalSeconds % 60),</div>
+<div class="line">                  <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">long</span><span class="keyword">&gt;</span>(milliseconds));</div>
+<div class="line">    <span class="keywordflow">return</span> buffer;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">std::string makeAssEvent(<span class="keywordtype">int</span> readOrder, std::string_view text,</div>
+<div class="line">                         <span class="keyword">const</span> <span class="keywordtype">char</span> *alignment)</div>
+<div class="line">{</div>
+<div class="line">    std::string <span class="keyword">event</span> = std::to_string(readOrder);</div>
+<div class="line">    <span class="keyword">event</span> += <span class="stringliteral">&quot;,0,Default,,0,0,0,,&quot;</span>;</div>
+<div class="line">    <span class="keyword">event</span> += alignment;</div>
+<div class="line">    <span class="keyword">event</span> += text;</div>
+<div class="line">    <span class="keywordflow">return</span> event;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">av::Packet encodeEvent(av::SubtitleEncoderContext &amp;enc,</div>
+<div class="line">                       <span class="keyword">const</span> std::string &amp;assEvent,</div>
+<div class="line">                       int64_t pts, <span class="keywordtype">int</span> durationMs,</div>
+<div class="line">                       av::OptionalErrorCode ec)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keyword">auto</span> frame = av::SubtitleFrame::fromAss(assEvent, ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec &amp;&amp; *ec)</div>
+<div class="line">        <span class="keywordflow">return</span> {};</div>
+<div class="line"> </div>
+<div class="line">    frame.setTimeBase(av::Rational(1, 100));</div>
+<div class="line">    frame.setPts(av::Timestamp(pts, av::Rational(1, 100)));</div>
+<div class="line">    frame.setStartDisplayTime(0);</div>
+<div class="line">    frame.setEndDisplayTime(<span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(durationMs));</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">return</span> enc.encode(frame, ec);</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">} <span class="comment">// namespace</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">if</span> (argc &lt; 3) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Usage: &quot;</span> &lt;&lt; argv[0] &lt;&lt; <span class="stringliteral">&quot; &lt;input video&gt; &lt;output.mkv|output.ass&gt;\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::init();</div>
+<div class="line"> </div>
+<div class="line">    std::error_code ec;</div>
+<div class="line"> </div>
+<div class="line">    av::FormatContext ictx;</div>
+<div class="line">    ictx.openInput(argv[1], ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open input: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    ictx.findStreamInfo(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t find streams: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::Stream vst;</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;&amp;st : ictx.streams()) {</div>
+<div class="line">        <span class="keywordflow">if</span> (st.mediaType() == AVMEDIA_TYPE_VIDEO) {</div>
+<div class="line">            vst = st;</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (!vst.isValid()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Video stream not found\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::Rational fps = vst.averageFrameRate();</div>
+<div class="line">    <span class="keywordflow">if</span> (!fps.getNumerator() || !fps.getDenominator())</div>
+<div class="line">        fps = vst.frameRate();</div>
+<div class="line">    <span class="keywordflow">if</span> (!fps.getNumerator() || !fps.getDenominator()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t determine the video frame rate\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">double</span> <span class="keyword">const</span> frameDuration = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(fps.getDenominator())</div>
+<div class="line">                                 / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(fps.getNumerator());</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">double</span> <span class="keyword">const</span> startTime = vst.startTime().isNoPts()</div>
+<div class="line">                                 ? 0.0</div>
+<div class="line">                                 : vst.startTime().seconds();</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">auto</span> codec = av::findEncodingCodec(AV_CODEC_ID_ASS);</div>
+<div class="line">    <span class="keywordflow">if</span> (codec.isNull()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;ASS encoder not found\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// The ASS encoder measures time in centiseconds, matching the ASS muxer.</span></div>
+<div class="line">    av::SubtitleEncoderContext enc{codec};</div>
+<div class="line">    enc.setTimeBase(av::Rational(1, 100));</div>
+<div class="line">    enc.setDefaultSubtitleHeader();</div>
+<div class="line">    enc.open(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open the subtitle encoder: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::FormatContext octx;</div>
+<div class="line">    octx.openOutput(argv[2], ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open output: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// The ASS muxer accepts a single subtitle stream and no media streams.</span></div>
+<div class="line">    <span class="comment">// Matroska and similar containers get the copied media streams as well.</span></div>
+<div class="line">    <span class="keywordtype">char</span> <span class="keyword">const</span> *formatName = octx.outputFormat().name();</div>
+<div class="line">    <span class="keywordtype">bool</span> <span class="keyword">const</span> subtitleOnly = formatName &amp;&amp; std::string_view(formatName) == <span class="stringliteral">&quot;ass&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">    std::vector&lt;int&gt; streamMap(ictx.streamsCount(), -1);</div>
+<div class="line">    <span class="keywordflow">if</span> (!subtitleOnly) {</div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;&amp;ist : ictx.streams()) {</div>
+<div class="line">            <span class="keywordflow">if</span> (ist.mediaType() != AVMEDIA_TYPE_VIDEO &amp;&amp;</div>
+<div class="line">                ist.mediaType() != AVMEDIA_TYPE_AUDIO)</div>
+<div class="line">                <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">            av::Stream ost = octx.addStream(ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t add an output stream: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            ost.setTimeBase(ist.timeBase());</div>
+<div class="line">            ost.setFrameRate(ist.frameRate());</div>
+<div class="line">            ost.setAverageFrameRate(ist.averageFrameRate());</div>
+<div class="line">            ost.codecParameters().copyFrom(ist.codecParameters(), ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t copy stream parameters: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            streamMap[ist.index()] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(ost.index());</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::Stream sst = octx.addStream(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t add a subtitle stream: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Copies the codec type, id and the ASS header (extradata) from the</span></div>
+<div class="line">    <span class="comment">// encoder, so the muxer can write the script header.</span></div>
+<div class="line">    sst.setTimeBase(av::Rational(1, 100));</div>
+<div class="line">    sst.codecParameters().copyFrom(enc, ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t copy codec parameters: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    octx.writeHeader(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t write the output header: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">int</span> <span class="keyword">const</span> durationMs = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::llround(frameDuration * 1000.0));</div>
+<div class="line">    <span class="keywordtype">int</span> readOrder = 0;</div>
+<div class="line">    std::int64_t nextFrame = 0;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">auto</span> emitFrame = [&amp;](std::int64_t frameIndex) {</div>
+<div class="line">        <span class="keywordtype">double</span> <span class="keyword">const</span> timestamp =</div>
+<div class="line">            startTime + <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(frameIndex) * frameDuration;</div>
+<div class="line">        <span class="keyword">auto</span> <span class="keyword">const</span> pts = <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(</div>
+<div class="line">            std::llround(timestamp * 100.0));</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// One ASS event holds a single rectangle, so each corner gets its own</span></div>
+<div class="line">        <span class="comment">// event with the same timing.</span></div>
+<div class="line">        <span class="keyword">auto</span> number = encodeEvent(enc,</div>
+<div class="line">                                  makeAssEvent(readOrder++,</div>
+<div class="line">                                               <span class="stringliteral">&quot;Frame &quot;</span> + std::to_string(frameIndex),</div>
+<div class="line">                                               <span class="stringliteral">&quot;{\\an1}&quot;</span>),</div>
+<div class="line">                                  pts, durationMs, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t encode the frame number: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> stamp = encodeEvent(enc,</div>
+<div class="line">                                 makeAssEvent(readOrder++,</div>
+<div class="line">                                              formatTimestamp(timestamp),</div>
+<div class="line">                                              <span class="stringliteral">&quot;{\\an3}&quot;</span>),</div>
+<div class="line">                                 pts, durationMs, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t encode the timestamp: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        number.setStreamIndex(sst.index());</div>
+<div class="line">        octx.writePacket(number, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t write the frame number: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        stamp.setStreamIndex(sst.index());</div>
+<div class="line">        octx.writePacket(stamp, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t write the timestamp: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">    };</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Subtitles are emitted while the input is read, so the muxer can</span></div>
+<div class="line">    <span class="comment">// interleave all streams instead of buffering the whole subtitle track.</span></div>
+<div class="line">    <span class="keyword">auto</span> emitUntil = [&amp;](<span class="keywordtype">double</span> seconds) {</div>
+<div class="line">        <span class="keywordflow">while</span> (startTime + <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nextFrame) * frameDuration</div>
+<div class="line">                   &lt;= seconds + 1e-9) {</div>
+<div class="line">            <span class="keywordflow">if</span> (!emitFrame(nextFrame))</div>
+<div class="line">                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">            ++nextFrame;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">    };</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">double</span> latestPts = -1.0;</div>
+<div class="line"> </div>
+<div class="line">    av::Packet pkt;</div>
+<div class="line">    <span class="keywordflow">while</span> ((pkt = ictx.readPacket(ec))) {</div>
+<div class="line">        <span class="keywordflow">if</span> (pkt.streamIndex() == vst.index() &amp;&amp; pkt.pts().isValid())</div>
+<div class="line">            latestPts = std::max(latestPts, pkt.pts().seconds());</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (!subtitleOnly) {</div>
+<div class="line">            <span class="keywordtype">int</span> <span class="keyword">const</span> dstIndex = streamMap[pkt.streamIndex()];</div>
+<div class="line">            <span class="keywordflow">if</span> (dstIndex &gt;= 0) {</div>
+<div class="line">                av::Packet out = pkt;</div>
+<div class="line">                out.setStreamIndex(dstIndex);</div>
+<div class="line">                octx.writePacket(out, ec);</div>
+<div class="line">                <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                    std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t copy a media packet: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">                    <span class="keywordflow">return</span> 1;</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (latestPts &gt;= 0.0 &amp;&amp; !emitUntil(latestPts))</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Read error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (!emitUntil(latestPts))</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line"> </div>
+<div class="line">    octx.writeTrailer(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t write the output trailer: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;Wrote &quot;</span> &lt;&lt; nextFrame &lt;&lt; <span class="stringliteral">&quot; frames at &quot;</span></div>
+<div class="line">              &lt;&lt; fps.getNumerator() &lt;&lt; <span class="charliteral">&#39;/&#39;</span> &lt;&lt; fps.getDenominator()</div>
+<div class="line">              &lt;&lt; <span class="stringliteral">&quot; fps to &quot;</span> &lt;&lt; argv[2] &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

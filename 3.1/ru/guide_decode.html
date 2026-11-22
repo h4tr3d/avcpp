@@ -1,0 +1,340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: Декодирование</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.1.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_decode.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Декодирование </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>Декодирование превращает сжатые пакеты в кадры. На входе — <span class="tt">av::Packet</span>, на выходе — <span class="tt">av::VideoFrame</span> или <span class="tt">av::AudioSamples</span>, а между ними стоит контекст декодера.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md11"></a>
+Форма цикла</h2>
+<p>У декодера есть входная очередь и выходная, и они не синхронны: один пакет может дать несколько кадров, а кадр может появиться спустя много времени после приема пакета. Контракт такой:</p>
+<ol type="1">
+<li><span class="tt">send(packet)</span> возвращает <span class="tt">true</span>, когда пакет принят, и <span class="tt">false</span>, когда декодер хочет, чтобы сначала осушили выход.</li>
+<li><span class="tt">receive()</span> возвращает кадр или пустое значение, когда читать сейчас нечего.</li>
+<li>В конце потока <span class="tt">flush()</span> переводит декодер в режим слива, а <span class="tt">receive()</span> продолжает отдавать кадры, пока не вернет пустое значение уже окончательно. После этого <span class="tt">isEof()</span> становится <span class="tt">true</span>.</li>
+</ol>
+<p>Эталон — <span class="tt">example/api2-samples/api2-send-receive.cpp</span>:</p>
+<div class="fragment"><div class="line">    <span class="keyword">auto</span> drain = [&amp;]() -&gt; <span class="keywordtype">bool</span> {</div>
+<div class="line">        <span class="keywordflow">for</span> (;;) {</div>
+<div class="line">            <span class="keyword">auto</span> frame = dec.receive(ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t receive a frame: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">if</span> (!frame)</div>
+<div class="line">                <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">            ++frames;</div>
+<div class="line">        }</div>
+<div class="line">    };</div>
+<div class="line"> </div>
+<div class="line">    av::Packet pkt;</div>
+<div class="line">    <span class="keywordflow">while</span> ((pkt = ictx.readPacket(ec))) {</div>
+<div class="line">        <span class="keywordflow">if</span> (pkt.streamIndex() != vst.index())</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">        ++packets;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">for</span> (;;) {</div>
+<div class="line">            <span class="keywordtype">bool</span> accepted = dec.send(pkt, ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t send a packet: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">// Drain what is available. A rejected send() means EAGAIN: the</span></div>
+<div class="line">            <span class="comment">// packet must be retried after the output queue is empty.</span></div>
+<div class="line">            <span class="keywordflow">if</span> (!drain())</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (accepted)</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Read error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+</div><!-- fragment --><p>Обратите внимание, чего цикл <em>не</em> предполагает: он не считает, что один пакет — это один кадр, и не считает пустой <span class="tt">receive()</span> ошибкой. Пустой результат означает «сейчас ничего нет», а не «конец потока».</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md12"></a>
+Настройка</h2>
+<div class="fragment"><div class="line">    av::FormatContext ictx;</div>
+<div class="line">    ictx.openInput(argv[1], ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open input: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    ictx.findStreamInfo(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t find streams: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::Stream vst;</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;&amp;st : ictx.streams()) {</div>
+<div class="line">        <span class="keywordflow">if</span> (st.mediaType() == AVMEDIA_TYPE_VIDEO) {</div>
+<div class="line">            vst = st;</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (!vst.isValid()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Video stream not found\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::VideoDecoderContext dec{vst};</div>
+<div class="line">    dec.open(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open codec: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+</div><!-- fragment --><p><span class="tt">VideoDecoderContext</span> создается либо из потока — тогда кодек берется из параметров потока, — либо из <span class="tt">Codec</span>, когда кодек надо выбрать явно (так делает аппаратное декодирование, см. <a class="el" href="guide_hw_codecs.html" title="Аппаратное кодирование и декодирование">Аппаратное кодирование и декодирование</a>).</p>
+<p>Две настройки стоит знать до <span class="tt">open()</span>:</p>
+<ul>
+<li><span class="tt">setRefCountedFrames(true)</span> заставляет декодер отдавать кадры со счетчиком ссылок. Такой кадр дешево копируется и остается валидным после следующего вызова <span class="tt">receive()</span>. Без этого буфер кадра принадлежит декодеру и переиспользуется.</li>
+<li><span class="tt">open()</span> принимает словарь опций: <span class="tt">dec.open({{"threads", "4"}}, av::Codec(), ec)</span> задает число потоков декодера, как это делает <span class="tt">example/api2-samples/api2-decode.cpp</span>.</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md13"></a>
+Слив</h2>
+<div class="fragment"><div class="line">    <span class="comment">// Switch the decoder to draining mode. flush() is idempotent and reports</span></div>
+<div class="line">    <span class="comment">// false only when the output queue must be drained before it is retried.</span></div>
+<div class="line">    <span class="keywordflow">if</span> (!dec.flush(ec)) {</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t flush the decoder: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">if</span> (!drain())</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        <span class="keywordflow">if</span> (!dec.flush(ec)) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t flush the decoder after draining\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (!drain())</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line"> </div>
+</div><!-- fragment --><p><span class="tt">flush()</span> возвращает <span class="tt">false</span>, когда выходную очередь надо осушить, прежде чем переключение в режим слива завершится; правильная реакция — вызвать лямбду <span class="tt">drain()</span> из примера и повторить <span class="tt">flush()</span>, он идемпотентен. Если слив пропустить, последние кадры каждого файла теряются молча, и это легко не заметить: кадров обычно немного.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md14"></a>
+Временные метки</h2>
+<p>Кадр несет метку показа (<span class="tt">pts()</span>) и базу времени (<span class="tt">timeBase()</span>). Метка задана в единицах базы времени, поэтому секунды — это <span class="tt">pts().seconds()</span>, а <span class="tt">pts()</span> — это <span class="tt">av::Timestamp</span>, который можно сравнивать, преобразовывать и печатать напрямую.</p>
+<p>Не смешивайте метки из разных контекстов: у декодера, кодировщика и каждого потока своя база времени. Передавая кадр в другой компонент, задайте базу времени явно: <span class="tt">frame.setTimeBase()</span>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md15"></a>
+Устаревший путь</h2>
+<p>Старый код использует <span class="tt">decode(packet)</span>, который возвращает не больше одного кадра за вызов, а остальное оставляет в декодере:</p>
+<div class="fragment"><div class="line">        <span class="keywordflow">while</span> (Packet pkt = ictx.readPacket(ec)) {</div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;Packet reading error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (pkt.streamIndex() != videoStream) {</div>
+<div class="line">                <span class="keywordflow">continue</span>;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keyword">auto</span> ts = pkt.ts();</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Read packet: &quot;</span> &lt;&lt; ts &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; ts.seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; pkt.timeBase() &lt;&lt; <span class="stringliteral">&quot; / st: &quot;</span> &lt;&lt; pkt.streamIndex() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#if AVCPP_HAS_PKT_SIDE_DATA</span></div>
+<div class="line">            <span class="keywordflow">for</span> (<span class="keyword">auto</span> side : pkt.sideData()) {</div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;  found packet side data: &quot;</span> &lt;&lt; side.name() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">if</span> (side.type() == AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL) {</div>
+<div class="line">                    assert(side.span().size() &gt;= <span class="keyword">sizeof</span>(uint64_t));</div>
+<div class="line"> </div>
+<div class="line">                    <span class="comment">// BE</span></div>
+<div class="line">                    uint64_t idType{};</div>
+<div class="line">                    memcpy(&amp;idType, side.span().data(), <span class="keyword">sizeof</span>(idType));</div>
+<div class="line">                    <span class="comment">//idType = std::endian::native == std::endian::little ? std::byteswap(idType) : idType;</span></div>
+<div class="line">                    idType = av_be2ne64(idType);</div>
+<div class="line"> </div>
+<div class="line">                    <span class="keyword">auto</span> payload = side.span().subspan(<span class="keyword">sizeof</span>(uint64_t));</div>
+<div class="line">                    clog &lt;&lt; <span class="stringliteral">&quot;    matroska block additions id type = &quot;</span> &lt;&lt; idType &lt;&lt; endl;</div>
+<div class="line">                    <span class="keywordflow">if</span> (!payload.empty() &amp;&amp; idType == 100 <span class="comment">/* vendor specific */</span>) {</div>
+<div class="line">                        clog &lt;&lt; <span class="stringliteral">&quot;      block additions data: &quot;</span> &lt;&lt; std::string_view{(<span class="keyword">const</span> <span class="keywordtype">char</span>*)payload.data(), payload.size()} &lt;&lt; endl;</div>
+<div class="line">                    }</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line"> </div>
+<div class="line">            VideoFrame frame = vdec.decode(pkt, ec);</div>
+<div class="line"> </div>
+<div class="line">            count++;</div>
+<div class="line">            <span class="comment">//if (count &gt; 100)</span></div>
+<div class="line">            <span class="comment">//    break;</span></div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!frame) {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Empty frame\n&quot;</span>;</div>
+<div class="line">                <span class="comment">//continue;</span></div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            ts = frame.pts();</div>
+<div class="line"> </div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;  Frame: &quot;</span> &lt;&lt; frame.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; frame.height() &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; frame.size() &lt;&lt; <span class="stringliteral">&quot;, ts=&quot;</span> &lt;&lt; ts &lt;&lt; <span class="stringliteral">&quot;, tm: &quot;</span> &lt;&lt; ts.seconds() &lt;&lt; <span class="stringliteral">&quot;, tb: &quot;</span> &lt;&lt; frame.timeBase() &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; frame.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; frame.refCount() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">        }</div>
+<div class="line"> </div>
+</div><!-- fragment --><p>Для программных декодеров это до сих пор работает, и именно это показывает <span class="tt">example/api2-samples/api2-decode.cpp</span>. Не используйте этот путь с асинхронными аппаратными декодерами: там кадр может появиться гораздо позже, и он потеряется. Везде используйте <span class="tt">send()</span>/<span class="tt">receive()</span>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md16"></a>
+Аудио</h2>
+<p>Аудио декодируется так же, только с <span class="tt">av::AudioDecoderContext</span> и <span class="tt">av::AudioSamples</span>. Сэмплы бывают planar и packed в зависимости от формата; <span class="tt">sampleFormat()</span>, <span class="tt">channelsCount()</span>, <span class="tt">sampleRate()</span> и <span class="tt">isPlanar()</span> описывают раскладку, а <span class="tt">av::AudioResampler</span> конвертирует между раскладками, когда потребителю нужно другое.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md17"></a>
+Дальше</h2>
+<ul>
+<li><a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a> — обратное направление.</li>
+<li><a class="el" href="guide_filters.html" title="Фильтры">Фильтры</a> — что делать с кадрами.</li>
+<li><a class="el" href="guide_hw_codecs.html" title="Аппаратное кодирование и декодирование">Аппаратное кодирование и декодирование</a> — декодирование на GPU. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>
