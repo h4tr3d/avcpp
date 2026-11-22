@@ -1,11 +1,23 @@
 #pragma once
 
+/**
+ * Conversions between time units and FFmpeg time bases.
+ *
+ * @file
+ * @ingroup core
+ */
+
 #include "ffmpeg.h"
 
 namespace av {
 
 /**
  * Get the current time in microseconds.
+ */
+/**
+ * Monotonic time source used by the library.
+ *
+ * @return the current time in milliseconds since an unspecified origin
  */
 int64_t gettime();
 

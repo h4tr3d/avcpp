@@ -1,0 +1,77 @@
+digraph architecture {
+    graph [
+        rankdir=LR,
+        fontname="DejaVu Sans",
+        fontsize=12,
+        nodesep=0.45,
+        ranksep=0.9,
+        bgcolor="white",
+        compound=true
+    ];
+    node [
+        shape=box,
+        style="rounded,filled",
+        fontname="DejaVu Sans",
+        fontsize=11,
+        fillcolor="#eef3fb",
+        color="#4a6fa5",
+        penwidth=1.2
+    ];
+    edge [
+        fontname="DejaVu Sans",
+        fontsize=9,
+        color="#4a6fa5"
+    ];
+
+    subgraph cluster_app {
+        label="Код приложения";
+        fontsize=12;
+        style="rounded,dashed";
+        color="#9aa7b8";
+        app_type       [label="DeviceType\nимя устройства"];
+        app_device     [label="DeviceContext\nвладение устройством"];
+        app_frames     [label="FramesContext\nвладение пулом кадров"];
+        app_ranges     [label="Range-типы\nбез выделения памяти", fillcolor="#f7f9fc"];
+        app_type -> app_device [style=dashed, label="create()"];
+        app_device -> app_frames [style=dashed, label="create()"];
+    }
+
+    subgraph cluster_avcpp {
+        label="avcpp";
+        fontsize=12;
+        style="rounded,dashed";
+        color="#9aa7b8";
+        av_decoder     [label="VideoDecoderContext\nдекодер"];
+        av_encoder     [label="VideoEncoderContext\nкодировщик"];
+        av_frame       [label="VideoFrame\nкадр"];
+        av_scaler      [label="VideoRescaler\nмасштабирование"];
+        av_decoder -> av_frame;
+        av_frame -> av_encoder;
+        av_frame -> av_scaler;
+        av_scaler -> av_frame;
+    }
+
+    subgraph cluster_ffmpeg {
+        label="FFmpeg (libavutil, libavcodec)";
+        fontsize=12;
+        style="rounded,dashed";
+        color="#9aa7b8";
+        ff_device      [label="AVHWDeviceContext\nустройство", fillcolor="#fdf3e7", color="#b07d3a"];
+        ff_frames      [label="AVHWFramesContext\nпул поверхностей", fillcolor="#fdf3e7", color="#b07d3a"];
+        ff_codec       [label="AVCodecContext\nсостояние кодека", fillcolor="#fdf3e7", color="#b07d3a"];
+        ff_frame       [label="AVFrame\nдескриптор кадра", fillcolor="#fdf3e7", color="#b07d3a"];
+        ff_device -> ff_frames [label="device_ref"];
+        ff_codec -> ff_device [label="hw_device_ctx"];
+        ff_codec -> ff_frames [label="hw_frames_ctx"];
+        ff_frame -> ff_frames [label="hw_frames_ctx"];
+    }
+
+    app_device -> av_decoder [label="setHwDeviceContext()", ltail=cluster_app];
+    app_frames -> av_encoder [label="configureHwEncoding()"];
+    av_decoder -> ff_codec [style=dashed, label="send/receive"];
+    av_encoder -> ff_codec [style=dashed, label="send/receive"];
+    av_frame -> ff_frame [style=dashed, label="обёртка"];
+    app_device -> ff_device [style=dotted, label="BufferRef"];
+    app_frames -> ff_frames [style=dotted, label="BufferRef"];
+    app_ranges -> ff_codec [style=dotted, label="чтение конфигураций"];
+}

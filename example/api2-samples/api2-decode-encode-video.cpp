@@ -1,3 +1,10 @@
+// Re-encodes the first video stream into a new file.
+//
+// Shows: decoding, encoder setup, frame time base and stream index handling,
+// draining the encoder and writing the trailer.
+//
+// Usage: api2-decode-encode-video <input file> <output file>
+
 #include <iostream>
 #include <set>
 #include <map>
@@ -81,6 +88,7 @@ int main(int argc, char **argv)
     //
     // OUTPUT
     //
+    //! [encoder_setup]
     OutputFormat  ofrmt;
     FormatContext octx;
 
@@ -118,6 +126,7 @@ int main(int argc, char **argv)
     octx.flush();
 
 
+    //! [encoder_setup]
     //
     // PROCESS
     //
@@ -142,6 +151,7 @@ int main(int argc, char **argv)
             flushDecoder = true;
         }
 
+    //! [encode_loop]
         do {
             // DECODING
             auto frame = vdec.decode(pkt, ec);
@@ -207,6 +217,7 @@ int main(int argc, char **argv)
 
         } while (flushDecoder);
 
+    //! [encode_loop]
         if (flushDecoder)
             break;
     }

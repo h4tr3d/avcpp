@@ -1,3 +1,9 @@
+// Re-encodes the first audio stream into a new file.
+//
+// Shows: decoding, encoder setup for audio, time base handling and muxing.
+//
+// Usage: api2-decode-encode-audio <input file> <output file>
+
 #include <iostream>
 #include <set>
 #include <map>

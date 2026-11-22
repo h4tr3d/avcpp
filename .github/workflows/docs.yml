@@ -1,23 +1,112 @@
-name: build documentation
+name: documentation
+
+# Builds the reference and the guides on every pull request, so documentation
+# regressions are visible before merge, and republishes the site from master and
+# from release tags. See docs/plan/documentation.md, section 9.
 
 on:
   push:
     branches:
       - master
+    tags:
+      - 'v*'
+  pull_request:
+  # Weekly documentation sync: the same checks, but enforcing. Debt accumulated
+  # during the week shows up here instead of blocking every pull request.
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: documentation-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned on purpose: docs/doxygen-baseline.txt is only meaningful when the
+  # warning output comes from a known doxygen version.
+  DOXYGEN_VERSION: 1.18.0
+  DOXYGEN_SHA256: 14fa81bdc34171edb5f1f02b1d60e74802f0439b77fa44e592565d517d72df90
+  DOXYGEN_URL: https://github.com/doxygen/doxygen/releases/download/Release_1_18_0/doxygen-1.18.0.linux.bin.tar.gz
 
 jobs:
-  doxygen:
-    runs-on: ubuntu-22.04
+  build:
+    name: build and check
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v1
-    - name: install dependencies
-      run: sudo apt-get install doxygen graphviz
-    - name: generate docs
-      run: doxygen
-    - name: Deploy docs to gh-pages
-      uses: s0/git-publish-subdir-action@master
-      env:
-        REPO: self
-        BRANCH: gh-pages
-        FOLDER: doc/html
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+
+      - name: Install graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends graphviz
+
+      - name: Restore doxygen
+        id: doxygen-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/doxygen-${{ env.DOXYGEN_VERSION }}
+          key: doxygen-${{ env.DOXYGEN_VERSION }}-${{ env.DOXYGEN_SHA256 }}
+
+      - name: Download doxygen
+        if: steps.doxygen-cache.outputs.cache-hit != 'true'
+        run: |
+          set -eu
+          curl -fsSL -o "$RUNNER_TEMP/doxygen.tar.gz" "$DOXYGEN_URL"
+          echo "$DOXYGEN_SHA256  $RUNNER_TEMP/doxygen.tar.gz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/doxygen-$DOXYGEN_VERSION"
+          tar -xzf "$RUNNER_TEMP/doxygen.tar.gz" \
+              -C "$RUNNER_TEMP/doxygen-$DOXYGEN_VERSION" --strip-components=1
+
+      - name: Put doxygen on PATH
+        run: echo "$RUNNER_TEMP/doxygen-$DOXYGEN_VERSION/bin" >> "$GITHUB_PATH"
+
+      - name: Show doxygen version
+        run: doxygen --version
+
+      - name: Report new doxygen warnings
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+              ./docs/check-warnings.sh --strict
+          else
+              ./docs/check-warnings.sh
+          fi
+
+      - name: Report the translation state
+        run: ./docs/check-translations.sh
+
+      - name: Build the site
+        run: ./docs/build.sh
+
+      # A local `act` run fails here: the action needs ACTIONS_RUNTIME_TOKEN,
+      # which only real Actions provides. Everything before this step is
+      # meaningful locally, this one is not.
+      - name: Upload the site
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-site
+          path: build/docs/site
+          retention-days: 7
+
+  deploy:
+    name: publish
+    needs: build
+    permissions:
+      contents: write
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the built site
+        uses: actions/download-artifact@v4
+        with:
+          name: documentation-site
+          path: ${{ runner.temp }}/site
+
+      - name: Publish to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./docs/publish.sh --site "$RUNNER_TEMP/site"

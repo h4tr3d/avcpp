@@ -1,3 +1,10 @@
+// Overlays a still image on a video and encodes the result.
+//
+// Shows: decoding two inputs, the overlay filter with its timeline, scaling the
+// overlay to the main picture, and encoding the filtered frames.
+//
+// Usage: api2-decode-overlay-encode <video> <image> <output file>
+
 #include <functional>
 #include <iostream>
 #include <map>

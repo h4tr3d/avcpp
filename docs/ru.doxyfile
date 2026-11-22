@@ -1,0 +1,15 @@
+# Doxyfile for avcpp — Russian build.
+#
+# Builds only the hand-written Russian pages (docs/ru). There is no Russian API
+# reference on purpose: the reference is generated once, in English, and the
+# Russian pages link into it. See docs/plan/documentation.md, decision D2.
+#
+# Run from the repository root:
+#   doxygen docs/ru.doxyfile
+
+@INCLUDE = Doxyfile
+
+OUTPUT_LANGUAGE = Russian
+INPUT           = docs/ru
+HTML_OUTPUT     = html-ru
+PROJECT_BRIEF   = "Обёртка над FFmpeg, упрощающая его использование в C++ проектах."

@@ -24,6 +24,7 @@ int main(int argc, char **argv)
 
     std::error_code ec;
 
+    //! [send_receive_setup]
     av::FormatContext ictx;
     ictx.openInput(argv[1], ec);
     if (ec) {
@@ -57,11 +58,13 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    //! [send_receive_setup]
     std::size_t packets = 0;
     std::size_t frames = 0;
 
     // receive() returns an empty frame for both EAGAIN and EOF. The loop ends
     // only when the decoder has no output left to produce.
+    //! [send_receive_loop]
     auto drain = [&]() -> bool {
         for (;;) {
             auto frame = dec.receive(ec);
@@ -104,6 +107,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    //! [send_receive_loop]
+    //! [send_receive_flush]
     // Switch the decoder to draining mode. flush() is idempotent and reports
     // false only when the output queue must be drained before it is retried.
     if (!dec.flush(ec)) {
@@ -122,6 +127,7 @@ int main(int argc, char **argv)
     if (!drain())
         return 1;
 
+    //! [send_receive_flush]
     if (!dec.isEof()) {
         std::cerr << "Decoder did not reach EOF after draining\n";
         return 1;

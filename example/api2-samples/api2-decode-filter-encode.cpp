@@ -1,3 +1,10 @@
+// Decodes a video, filters it and encodes the result.
+//
+// Shows: filter graph construction from a string, buffer source and sink,
+// pushing one frame and pulling many, and the EAGAIN case of a starved sink.
+//
+// Usage: api2-decode-filter-encode <input file> <output file> [filter chain]
+
 #include <functional>
 #include <iostream>
 #include <map>
@@ -142,6 +149,7 @@ int main(int argc, char **argv)
         octx.writeHeader();
         octx.flush();
 
+    //! [filter_graph]
         // Setup filter
         Filter filter_buffer_src{"buffer"};
         Filter filter_buffer_sink{"buffersink"};
@@ -190,6 +198,7 @@ int main(int argc, char **argv)
         BufferSrcFilterContext buffer_src{src_ctx};
         BufferSinkFilterContext buffer_sink{sink_ctx};
 
+    //! [filter_graph]
         while (Packet pkt = ictx.readPacket(ec))
         {
             if (ec)
@@ -224,6 +233,7 @@ int main(int argc, char **argv)
             frame.setStreamIndex(0);
             frame.setPictureType();
 
+    //! [filter_pump]
             // Push into the filter
             cout << "Pushing frame into filter: " << frame.width() << "x" << frame.height() << ", size=" << frame.size()
                  << ", ts=" << frame.pts() << ", tb: " << frame.timeBase() << endl;
@@ -265,6 +275,7 @@ int main(int argc, char **argv)
                     }
                 }
             }
+    //! [filter_pump]
             if (ec && ec.value() != -EAGAIN)
             {
                 clog << "Filter pull error: " << ec << ", " << ec.message() << endl;

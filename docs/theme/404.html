@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>avcpp documentation: page moved</title>
+<script>
+/*
+ * GitHub Pages cannot issue server-side redirects, so old URLs are handled
+ * here. Pages published before the versioned layout lived at the site root
+ * (/avcpp/classav_1_1Packet.html); they now live inside a version directory
+ * (/avcpp/latest/classav_1_1Packet.html). The rule is a rewrite, not a fixed
+ * table, so it also covers pages that did not exist when this file was written.
+ */
+(function () {
+    "use strict";
+
+    var parts = window.location.pathname.split("/").filter(function (part) {
+        return part.length > 0;
+    });
+
+    if (parts.length < 2) {
+        return;
+    }
+
+    var file = parts[parts.length - 1];
+    var base = parts.slice(0, -1);
+    var last = base[base.length - 1];
+
+    // Already versioned, or already inside the redirect target: do nothing.
+    if (last === "latest" || /^[0-9]+\.[0-9]+$/.test(last)) {
+        return;
+    }
+
+    window.location.replace("/" + base.join("/") + "/latest/" + file);
+}());
+</script>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+         max-width: 40rem; margin: 4rem auto; padding: 0 1.5rem; line-height: 1.5; }
+</style>
+</head>
+<body>
+<p>This page moved. <a href="latest/">Go to the current documentation</a>.</p>
+</body>
+</html>

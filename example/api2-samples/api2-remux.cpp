@@ -1,3 +1,13 @@
+// Copies streams from one container to another without re-encoding.
+//
+// Shows: copying codec parameters, mapping input streams to output ones,
+// rewriting packet stream indices and flushing the muxer before the trailer.
+//
+// Usage: api2-remux [options] <input> <output>
+//   -f format  force the input format
+//   -o format  force the output format
+//   -d seconds stop after the given duration
+
 #include <signal.h>
 
 #include <iostream>
@@ -110,6 +120,7 @@ int main(int argc, char **argv)
 
     octx.setFormat(oformat);
 
+    //! [remux_streams]
     // Copy streams
     for (size_t i = 0, ostIdx = 0; i < ictx.streamsCount(); ++i) {
         auto ist    = ictx.stream(i);
@@ -143,6 +154,7 @@ int main(int argc, char **argv)
         streamMapping[i] = ostIdx++;
     }
 
+    //! [remux_streams]
     octx.openOutput(out);
     octx.writeHeader();
     octx.dump();
@@ -150,6 +162,7 @@ int main(int argc, char **argv)
     //
     // PROCESS
     //
+    //! [remux_loop]
     while (true) {
         auto pkt = ictx.readPacket();
         if (!pkt)
@@ -176,6 +189,7 @@ int main(int argc, char **argv)
         }
     }
 
+    //! [remux_loop]
     // Flush output context
     octx.writePacket();
     //octx.flush();

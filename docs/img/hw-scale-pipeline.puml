@@ -1,0 +1,39 @@
+@startuml scale-pipeline
+skinparam backgroundColor white
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam sequenceMessageAlign left
+skinparam responseMessageBelowArrow true
+
+actor "Клиент" as App
+participant "VideoDecoderContext" as Dec
+participant "av::VideoFrame" as Frm
+participant "VideoRescaler" as Scaler
+participant "VideoEncoderContext" as Enc
+participant "FFmpeg" as FF
+
+App -> Dec : open() с hw_device_ctx
+App -> Dec : send(packet) + receive()
+Dec --> App : кадр на устройстве
+
+App -> Frm : toSystemMemory()
+Frm --> App : кадр в памяти системы
+
+App -> Scaler : rescale(frame)
+Scaler -> FF : sws_scale()
+FF --> Scaler : новый размер
+Scaler --> App : кадр в памяти системы
+
+App -> Enc : encode(scaled)
+Enc -> Frm : toHwFrame(frames) при автозагрузке
+Frm --> Enc : кадр на устройстве
+Enc -> FF : avcodec_send_frame()
+FF --> Enc : AVPacket
+Enc --> App : packet
+
+note over App, FF
+  Каждый переход между памятью системы
+  и устройством стоит времени.
+  Измеряйте оба пути.
+end note
+@enduml
