@@ -127,7 +127,7 @@ Requirements</h2>
 <li>libswresample &gt;= 3.x.x,</li>
 <li>libavdevice &gt;= 58.x.x (optional),</li>
 <li>libavfilter &gt;= 7.x.x (optional),</li>
-<li>libpostproc &gt;= 55.x.x (optional);</li>
+<li>libpostproc &gt;= 55.x.x (legacy and optional; removed in FFmpeg 8);</li>
 </ul>
 </li>
 <li>GCC &gt;= 9.0, Clang, or MSVC. C++17 is required;</li>
@@ -139,8 +139,9 @@ Installing FFmpeg</h2>
 <p>On Debian, Ubuntu 19.10+, or Linux Mint 20.x and newer:</p>
 <div class="fragment"><div class="line">sudo apt-get install libavformat-dev libavcodec-dev libavutil-dev \</div>
 <div class="line">                     libavfilter-dev libswscale-dev libswresample-dev \</div>
-<div class="line">                     libpostproc-dev libavdevice-dev</div>
-</div><!-- fragment --><p>On Ubuntu 18.04 and Linux Mint 19.x add the FFmpeg 4 PPA first:</p>
+<div class="line">                     libavdevice-dev</div>
+</div><!-- fragment --><p><span class="tt">libpostproc</span> is legacy: the library does not use it, and FFmpeg 8 removed it from the upstream tree, so newer distributions may not package it at all.</p>
+<p>On Ubuntu 18.04 and Linux Mint 19.x add the FFmpeg 4 PPA first:</p>
 <div class="fragment"><div class="line">sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y</div>
 <div class="line">sudo apt update &amp;&amp; sudo apt upgrade</div>
 </div><!-- fragment --><p>Then install the same packages.</p>

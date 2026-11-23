@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_building
 <li>libswresample &gt;= 3.x.x,</li>
 <li>libavdevice &gt;= 58.x.x (необязательно),</li>
 <li>libavfilter &gt;= 7.x.x (необязательно),</li>
-<li>libpostproc &gt;= 55.x.x (необязательно);</li>
+<li>libpostproc &gt;= 55.x.x (устаревшая и необязательная; удалена в FFmpeg 8);</li>
 </ul>
 </li>
 <li>GCC &gt;= 9.0, Clang или MSVC. Требуется C++17;</li>
@@ -139,8 +139,9 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_building
 <p>На Debian, Ubuntu 19.10+ или Linux Mint 20.x и новее:</p>
 <div class="fragment"><div class="line">sudo apt-get install libavformat-dev libavcodec-dev libavutil-dev \</div>
 <div class="line">                     libavfilter-dev libswscale-dev libswresample-dev \</div>
-<div class="line">                     libpostproc-dev libavdevice-dev</div>
-</div><!-- fragment --><p>На Ubuntu 18.04 и Linux Mint 19.x сначала добавьте PPA с FFmpeg 4:</p>
+<div class="line">                     libavdevice-dev</div>
+</div><!-- fragment --><p><span class="tt">libpostproc</span> — устаревшая библиотека: avcpp её не использует, а FFmpeg 8 удалил её из апстрима, поэтому в новых дистрибутивах пакета может не быть вовсе.</p>
+<p>На Ubuntu 18.04 и Linux Mint 19.x сначала добавьте PPA с FFmpeg 4:</p>
 <div class="fragment"><div class="line">sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y</div>
 <div class="line">sudo apt update &amp;&amp; sudo apt upgrade</div>
 </div><!-- fragment --><p>Затем установите те же пакеты.</p>
