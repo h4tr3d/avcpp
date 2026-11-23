@@ -24,7 +24,7 @@ You can read the full documentation [here](https://h4tr3d.github.io/avcpp/).
   - libavutil >= 56.x.x
   - libswscale >= 5.x.x
   - libswresample >= 3.x.x
-  - libpostproc >= 55.x.x
+  - libpostproc >= 55.x.x (legacy, optional; removed in FFmpeg 8)
 - GCC >= 9.0 (C++17 is required. [See](https://gcc.gnu.org/projects/cxx-status.html#cxx17), GCC from 6.0 may built code, but unchecked)
 - CMake (> 3.19)
 
@@ -46,9 +46,11 @@ sudo apt-get install libavformat-dev \
                      libavfilter-dev \
                      libswscale-dev \
                      libswresample-dev \
-                     libpostproc-dev \
                      libavdevice-dev
 ```
+
+`libpostproc` is legacy: the library does not use it, and FFmpeg 8 removed it
+from the upstream tree, so newer distributions may not package it at all.
 
 > [!NOTE]
 >

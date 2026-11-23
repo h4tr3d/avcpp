@@ -71,14 +71,31 @@ echo "Prepare FFmpeg"
     fi
 
     sudo apt-get update
-    sudo apt-get install -y libavcodec-dev \
-                            libavdevice-dev \
-                            libavfilter-dev \
-                            libavformat-dev \
-                            libavutil-dev \
-                            libpostproc-dev \
-                            libswscale-dev \
-                            libswresample-dev
+
+    # libpostproc is legacy and was removed in FFmpeg 8, so newer distributions
+    # (Ubuntu 26.04 among them) do not package libpostproc-dev at all. Install
+    # the components that exist and say which ones were skipped, instead of
+    # failing the whole job on the one that is gone.
+    packages=(
+        libavcodec-dev
+        libavdevice-dev
+        libavfilter-dev
+        libavformat-dev
+        libavutil-dev
+        libpostproc-dev
+        libswscale-dev
+        libswresample-dev
+    )
+    available=()
+    for package in "${packages[@]}"; do
+        if apt-cache show "$package" >/dev/null 2>&1; then
+            available+=("$package")
+        else
+            echo "Skipping $package: not packaged for this distribution"
+        fi
+    done
+    sudo apt-get install -y "${available[@]}"
+
     # fail silently
     sudo apt-get install -y libavresample-dev || true
 )

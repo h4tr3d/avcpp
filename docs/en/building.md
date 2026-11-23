@@ -12,7 +12,7 @@
   - libswresample >= 3.x.x,
   - libavdevice >= 58.x.x (optional),
   - libavfilter >= 7.x.x (optional),
-  - libpostproc >= 55.x.x (optional);
+  - libpostproc >= 55.x.x (legacy and optional; removed in FFmpeg 8);
 - GCC >= 9.0, Clang, or MSVC. C++17 is required;
 - CMake >= 3.19 for the recommended build.
 
@@ -26,8 +26,11 @@ On Debian, Ubuntu 19.10+, or Linux Mint 20.x and newer:
 ```sh
 sudo apt-get install libavformat-dev libavcodec-dev libavutil-dev \
                      libavfilter-dev libswscale-dev libswresample-dev \
-                     libpostproc-dev libavdevice-dev
+                     libavdevice-dev
 ```
+
+`libpostproc` is legacy: the library does not use it, and FFmpeg 8 removed it
+from the upstream tree, so newer distributions may not package it at all.
 
 On Ubuntu 18.04 and Linux Mint 19.x add the FFmpeg 4 PPA first:
 
