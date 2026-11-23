@@ -1,0 +1,5 @@
+<map id="av::FilterGraph" name="av::FilterGraph">
+<area shape="rect" id="Node000001" title="A filter graph: filters, the links between them, and their configuration." alt="" coords="47,199,187,604"/>
+<area shape="rect" id="Node000002" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,5,228,151"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,164,119,198,114,198,114,164"/>
+</map>

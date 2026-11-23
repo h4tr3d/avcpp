@@ -1,0 +1,65 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structFFWrapperPtr.html" title=" " alt="" coords="328,175,577,200"/>
+<area shape="rect" id="Node000001" href="$classav_1_1CodecContext2.html" title="Base class for audio and video codec contexts." alt="" coords="635,177,779,203"/>
+<area shape="poly" id="edge4_Node000000_Node000001" title=" " alt="" coords="591,186,635,187,635,192,591,191"/>
+<area shape="rect" id="Node000002" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="845,5,1033,60"/>
+<area shape="poly" id="edge5_Node000001_Node000002" title=" " alt="" coords="726,165,772,117,801,92,833,69,854,58,857,62,836,74,805,96,776,121,730,169"/>
+<area shape="rect" id="Node000004" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="844,84,1035,139"/>
+<area shape="poly" id="edge7_Node000001_Node000004" title=" " alt="" coords="758,170,857,136,859,141,760,175"/>
+<area shape="rect" id="Node000006" href="$classav_1_1CodecContextBase.html" title=" " alt="" coords="835,163,1044,217"/>
+<area shape="poly" id="edge9_Node000001_Node000006" title=" " alt="" coords="793,187,834,187,834,193,793,193"/>
+<area shape="rect" id="Node000008" href="$classav_1_1CodecContextBase.html" title="Base class that fixes the direction and media type of a codec context." alt="" coords="855,331,1023,385"/>
+<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="773,205,788,213,827,240,862,271,918,329,914,332,859,275,823,244,785,218,771,210"/>
+<area shape="rect" id="Node000021" href="$classav_1_1GenericCodecContext.html" title="The GenericCodecContext class to copy contexts from input streams to output one." alt="" coords="846,409,1033,435"/>
+<area shape="poly" id="edge24_Node000001_Node000021" title=" " alt="" coords="783,208,789,214,805,237,813,261,812,308,811,331,812,353,820,375,837,396,852,407,849,411,833,400,815,377,807,354,806,331,807,308,807,262,800,239,785,217,779,212"/>
+<area shape="rect" id="Node000003" href="$classav_1_1VideoCodecContext.html" title="Video&#45;specific parameters shared by video encoders and decoders." alt="" coords="1103,13,1277,53"/>
+<area shape="poly" id="edge6_Node000002_Node000003" title=" " alt="" coords="1047,30,1103,30,1103,35,1047,35"/>
+<area shape="rect" id="Node000005" href="$classav_1_1AudioCodecContext.html" title="Audio&#45;specific parameters shared by audio encoders and decoders." alt="" coords="1103,83,1277,123"/>
+<area shape="poly" id="edge8_Node000004_Node000005" title=" " alt="" coords="1049,105,1103,103,1103,109,1049,111"/>
+<area shape="rect" id="Node000007" href="$classav_1_1SubtitleCodecContext.html" title="Base class for subtitle codec contexts." alt="" coords="1097,147,1283,187"/>
+<area shape="poly" id="edge10_Node000006_Node000007" title=" " alt="" coords="1057,177,1096,173,1097,178,1058,182"/>
+<area shape="rect" id="Node000009" href="$classav_1_1AudioCodecContext.html" title=" " alt="" coords="1099,448,1281,503"/>
+<area shape="poly" id="edge12_Node000008_Node000009" title=" " alt="" coords="1033,389,1045,396,1070,415,1093,434,1115,446,1112,450,1091,439,1066,419,1043,400,1030,394"/>
+<area shape="rect" id="Node000011" href="$classav_1_1AudioCodecContext.html" title=" " alt="" coords="1099,527,1281,581"/>
+<area shape="poly" id="edge14_Node000008_Node000011" title=" " alt="" coords="1037,388,1046,396,1058,411,1065,427,1071,456,1076,485,1082,499,1094,513,1108,525,1104,529,1090,517,1078,502,1071,487,1065,457,1060,428,1054,414,1042,400,1033,392"/>
+<area shape="rect" id="Node000013" href="$classav_1_1SubtitleCodecContext.html" title=" " alt="" coords="1092,605,1288,660"/>
+<area shape="poly" id="edge16_Node000008_Node000013" title=" " alt="" coords="1036,387,1046,396,1063,422,1071,447,1072,472,1071,496,1069,520,1071,544,1078,568,1094,592,1106,603,1102,607,1090,596,1073,570,1065,545,1064,520,1065,496,1067,472,1066,448,1058,424,1042,400,1033,391"/>
+<area shape="rect" id="Node000015" href="$classav_1_1SubtitleCodecContext.html" title=" " alt="" coords="1093,212,1287,267"/>
+<area shape="poly" id="edge18_Node000008_Node000015" title=" " alt="" coords="1000,322,1091,276,1116,264,1119,269,1093,280,1002,327"/>
+<area shape="rect" id="Node000017" href="$classav_1_1VideoCodecContext.html" title=" " alt="" coords="1099,291,1281,345"/>
+<area shape="poly" id="edge20_Node000008_Node000017" title=" " alt="" coords="1036,340,1098,330,1099,335,1037,345"/>
+<area shape="rect" id="Node000019" href="$classav_1_1VideoCodecContext.html" title=" " alt="" coords="1099,369,1281,424"/>
+<area shape="poly" id="edge22_Node000008_Node000019" title=" " alt="" coords="1037,370,1099,380,1099,385,1036,376"/>
+<area shape="rect" id="Node000010" href="$classav_1_1AudioDecoderContext.html" title="Decodes audio packets into sample buffers." alt="" coords="1343,463,1529,488"/>
+<area shape="poly" id="edge13_Node000009_Node000010" title=" " alt="" coords="1295,473,1343,473,1343,478,1295,478"/>
+<area shape="rect" id="Node000012" href="$classav_1_1AudioEncoderContext.html" title="Encodes audio samples into packets." alt="" coords="1343,541,1529,567"/>
+<area shape="poly" id="edge15_Node000011_Node000012" title=" " alt="" coords="1294,551,1343,551,1343,557,1294,557"/>
+<area shape="rect" id="Node000014" href="$classav_1_1SubtitleDecoderContext.html" title="Decodes subtitle packets into subtitle frames." alt="" coords="1336,620,1536,645"/>
+<area shape="poly" id="edge17_Node000013_Node000014" title=" " alt="" coords="1302,630,1336,630,1336,635,1302,635"/>
+<area shape="rect" id="Node000016" href="$classav_1_1SubtitleEncoderContext.html" title="Encodes subtitle frames into packets." alt="" coords="1337,227,1535,252"/>
+<area shape="poly" id="edge19_Node000015_Node000016" title=" " alt="" coords="1301,237,1336,237,1336,242,1301,242"/>
+<area shape="rect" id="Node000018" href="$classav_1_1VideoDecoderContext.html" title="Decodes video packets into frames." alt="" coords="1343,305,1529,331"/>
+<area shape="poly" id="edge21_Node000017_Node000018" title=" " alt="" coords="1295,315,1343,315,1343,321,1295,321"/>
+<area shape="rect" id="Node000020" href="$classav_1_1VideoEncoderContext.html" title="Encodes video frames into packets." alt="" coords="1343,384,1529,409"/>
+<area shape="poly" id="edge23_Node000019_Node000020" title=" " alt="" coords="1294,394,1343,394,1343,399,1294,399"/>
+<area shape="rect" id="Node000027" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,224,277,249"/>
+<area shape="rect" id="Node000026" href="$classav_1_1CodecParametersView.html" title="The CodecParametersView class." alt="" coords="357,224,548,249"/>
+<area shape="poly" id="edge25_Node000027_Node000026" title=" " alt="" coords="291,234,357,234,357,239,291,239"/>
+<area shape="rect" id="Node000025" href="$classav_1_1CodecParameters.html" title="Owning codec parameters." alt="" coords="628,228,787,253"/>
+<area shape="poly" id="edge26_Node000026_Node000025" title=" " alt="" coords="562,236,628,237,628,242,562,241"/>
+<area shape="rect" id="Node000029" href="$structFFWrapperPtr.html" title=" " alt="" coords="325,323,580,348"/>
+<area shape="rect" id="Node000028" href="$classav_1_1FormatContext.html" title="Container context: the entry point for demuxing, muxing and seeking." alt="" coords="636,280,779,305"/>
+<area shape="poly" id="edge27_Node000029_Node000028" title=" " alt="" coords="542,318,635,302,636,307,543,323"/>
+<area shape="rect" id="Node000024" href="$structFFWrapperPtr.html" title=" " alt="" coords="345,372,561,397"/>
+<area shape="rect" id="Node000023" href="$classav_1_1AudioResampler.html" title="Converts audio between sample rates, sample formats and channel layouts." alt="" coords="631,336,783,361"/>
+<area shape="poly" id="edge28_Node000024_Node000023" title=" " alt="" coords="556,367,631,357,632,362,557,373"/>
+<area shape="rect" id="Node000031" href="$structFFWrapperPtr.html" title=" " alt="" coords="343,421,562,447"/>
+<area shape="rect" id="Node000030" href="$classav_1_1VideoRescaler.html" title="Converts video frames between sizes and pixel formats." alt="" coords="638,397,777,423"/>
+<area shape="poly" id="edge29_Node000031_Node000030" title=" " alt="" coords="576,420,638,414,638,419,576,425"/>
+<area shape="rect" id="Node000022" href="$classav_1_1noncopyable.html" title="Base class that deletes copying and assignment." alt="" coords="389,273,517,299"/>
+<area shape="poly" id="edge31_Node000022_Node000001" title=" " alt="" coords="530,275,579,258,593,248,602,237,612,225,627,213,654,200,657,205,629,218,615,229,606,240,597,252,581,263,531,280"/>
+<area shape="poly" id="edge32_Node000022_Node000025" title=" " alt="" coords="530,270,635,251,636,256,531,275"/>
+<area shape="poly" id="edge33_Node000022_Node000028" title=" " alt="" coords="531,285,636,288,636,293,530,291"/>
+<area shape="poly" id="edge30_Node000022_Node000023" title=" " alt="" coords="531,298,581,309,667,333,666,339,579,314,530,303"/>
+<area shape="poly" id="edge34_Node000022_Node000030" title=" " alt="" coords="531,290,557,297,581,309,598,324,607,340,615,356,630,372,670,395,668,400,626,376,611,359,603,343,594,328,579,314,555,302,529,295"/>
+</map>

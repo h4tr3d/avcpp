@@ -1,0 +1,418 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: api2-dict-basic.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('api2-dict-basic_8cpp-example.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">api2-dict-basic.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<p>Основы Dictionary.</p>
+<p>Основы Dictionary.</p><div class="fragment"><div class="line">api2-dict-basic</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="comment">// Exercises the dictionary API without touching any media.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Shows: creating dictionaries, setting and reading keys, iteration, copying,</span></div>
+<div class="line"><span class="comment">// serialising to a string and parsing one back.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Usage: api2-dict-basic</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/av.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/dictionary.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>std;</div>
+<div class="line"><span class="keyword">using namespace </span>av;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main()</div>
+<div class="line">{</div>
+<div class="line"><span class="preprocessor">#if 0</span></div>
+<div class="line">    {</div>
+<div class="line">        av::Dictionary dict;</div>
+<div class="line">    }</div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#if 1</span></div>
+<div class="line">    {</div>
+<div class="line">        av::Dictionary dict;</div>
+<div class="line">        dict.set(<span class="stringliteral">&quot;test1&quot;</span>, <span class="stringliteral">&quot;test value&quot;</span>);</div>
+<div class="line">        dict.set(<span class="stringliteral">&quot;test2&quot;</span>, 31337);</div>
+<div class="line"> </div>
+<div class="line">        cout &lt;&lt; dict.get(<span class="stringliteral">&quot;test1&quot;</span>) &lt;&lt; endl</div>
+<div class="line">             &lt;&lt; dict.get(<span class="stringliteral">&quot;test2&quot;</span>) &lt;&lt; endl;</div>
+<div class="line">             <span class="comment">//&lt;&lt; dict.get(&quot;test3&quot;) &lt;&lt; endl;</span></div>
+<div class="line"> </div>
+<div class="line">        {</div>
+<div class="line">            shared_ptr&lt;char&gt; sptr;</div>
+<div class="line">            {</div>
+<div class="line">                av::Dictionary::AvStringPtr ptr;</div>
+<div class="line">                ptr = dict.toRawStringPtr(<span class="charliteral">&#39;=&#39;</span>, <span class="charliteral">&#39;;&#39;</span>);</div>
+<div class="line">                cout &lt;&lt; ptr.get() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">                sptr = std::move(ptr);</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            cout &lt;&lt; sptr.get() &lt;&lt; endl;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        cout &lt;&lt; dict[1] &lt;&lt; endl;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">    {</div>
+<div class="line">        av::Dictionary dict;</div>
+<div class="line">        dict.set(<span class="stringliteral">&quot;test1&quot;</span>, <span class="stringliteral">&quot;test value&quot;</span>);</div>
+<div class="line">        dict.set(<span class="stringliteral">&quot;test2&quot;</span>, 31337);</div>
+<div class="line"> </div>
+<div class="line">        cout &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;ptr: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)dict.raw() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; dict.get(<span class="stringliteral">&quot;test1&quot;</span>) &lt;&lt; endl</div>
+<div class="line">             &lt;&lt; dict.get(<span class="stringliteral">&quot;test2&quot;</span>) &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">        av::Dictionary dict2 = dict;</div>
+<div class="line">        av::Dictionary dict3;</div>
+<div class="line">        cout &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;ptr: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)dict.raw() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; dict.get(<span class="stringliteral">&quot;test1&quot;</span>) &lt;&lt; endl</div>
+<div class="line">             &lt;&lt; dict.get(<span class="stringliteral">&quot;test2&quot;</span>) &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;ptr: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)dict2.raw() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; dict2.get(<span class="stringliteral">&quot;test1&quot;</span>) &lt;&lt; endl</div>
+<div class="line">             &lt;&lt; dict2.get(<span class="stringliteral">&quot;test2&quot;</span>) &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">        dict3 = dict;</div>
+<div class="line">        cout &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;ptr: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)dict.raw() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; dict.get(<span class="stringliteral">&quot;test1&quot;</span>) &lt;&lt; endl</div>
+<div class="line">             &lt;&lt; dict.get(<span class="stringliteral">&quot;test2&quot;</span>) &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;ptr: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)dict3.raw() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; dict3.get(<span class="stringliteral">&quot;test1&quot;</span>) &lt;&lt; endl</div>
+<div class="line">             &lt;&lt; dict3.get(<span class="stringliteral">&quot;test2&quot;</span>) &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">        av::Dictionary dict4 = std::move(dict2);</div>
+<div class="line">        av::Dictionary dict5;</div>
+<div class="line">        cout &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;ptr: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)dict2.raw() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;ptr: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)dict4.raw() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; dict4.get(<span class="stringliteral">&quot;test1&quot;</span>) &lt;&lt; endl</div>
+<div class="line">             &lt;&lt; dict4.get(<span class="stringliteral">&quot;test2&quot;</span>) &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">        dict5 = std::move(dict3);</div>
+<div class="line">        cout &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;ptr: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)dict3.raw() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;ptr: &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)dict5.raw() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; dict5.get(<span class="stringliteral">&quot;test1&quot;</span>) &lt;&lt; endl</div>
+<div class="line">             &lt;&lt; dict5.get(<span class="stringliteral">&quot;test2&quot;</span>) &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    {</div>
+<div class="line">        av::Dictionary dict;</div>
+<div class="line">        dict.set(<span class="stringliteral">&quot;test1&quot;</span>, <span class="stringliteral">&quot;test value&quot;</span>);</div>
+<div class="line">        dict.set(<span class="stringliteral">&quot;test2&quot;</span>, 31337);</div>
+<div class="line">        dict.set(<span class="stringliteral">&quot;test3&quot;</span>, <span class="stringliteral">&quot;other value&quot;</span>);</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span> &amp;i : dict)</div>
+<div class="line">        {</div>
+<div class="line">            cout &lt;&lt; i.key() &lt;&lt; <span class="stringliteral">&quot; -&gt; &quot;</span> &lt;&lt; i.value() &lt;&lt; endl;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> it = dict.begin();</div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != dict.end(); ++it, ++i)</div>
+<div class="line">        {</div>
+<div class="line">            cout &lt;&lt; (*it).key() &lt;&lt; <span class="stringliteral">&quot; -&gt; &quot;</span> &lt;&lt; (*it).value() &lt;&lt; endl;</div>
+<div class="line">            cout &lt;&lt; it-&gt;key() &lt;&lt; <span class="stringliteral">&quot; -&gt; &quot;</span> &lt;&lt; it-&gt;value() &lt;&lt; endl;</div>
+<div class="line">            it-&gt;set(to_string(i));</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        {</div>
+<div class="line">            <span class="keyword">auto</span> it = dict.cbegin();</div>
+<div class="line">            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != dict.cend(); ++it, ++i)</div>
+<div class="line">            {</div>
+<div class="line">                cout &lt;&lt; (*it).key() &lt;&lt; <span class="stringliteral">&quot; -&gt; &quot;</span> &lt;&lt; (*it).value() &lt;&lt; endl;</div>
+<div class="line">                cout &lt;&lt; it-&gt;key() &lt;&lt; <span class="stringliteral">&quot; -&gt; &quot;</span> &lt;&lt; it-&gt;value() &lt;&lt; endl;</div>
+<div class="line">                <span class="comment">//it-&gt;set(to_string(i)); // &lt;-- compilation error</span></div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;End\n&quot;</span>;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    {</div>
+<div class="line">        av::Dictionary dict = {</div>
+<div class="line">            {<span class="stringliteral">&quot;init1&quot;</span>, <span class="stringliteral">&quot;value1&quot;</span>},</div>
+<div class="line">            {<span class="stringliteral">&quot;init2&quot;</span>, <span class="stringliteral">&quot;value2&quot;</span>}</div>
+<div class="line">        };</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span> &amp;i : dict)</div>
+<div class="line">        {</div>
+<div class="line">            cout &lt;&lt; i.key() &lt;&lt; <span class="stringliteral">&quot; -&gt; &quot;</span> &lt;&lt; i.value() &lt;&lt; endl;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        dict = {</div>
+<div class="line">            {<span class="stringliteral">&quot;init3&quot;</span>, <span class="stringliteral">&quot;value3&quot;</span>},</div>
+<div class="line">            {<span class="stringliteral">&quot;init4&quot;</span>, <span class="stringliteral">&quot;value4&quot;</span>},</div>
+<div class="line">        };</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span> &amp;i : dict)</div>
+<div class="line">        {</div>
+<div class="line">            cout &lt;&lt; i.key() &lt;&lt; <span class="stringliteral">&quot; -&gt; &quot;</span> &lt;&lt; i.value() &lt;&lt; endl;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">    {</div>
+<div class="line">        av::DictionaryArray arr = {</div>
+<div class="line">            {</div>
+<div class="line">                {<span class="stringliteral">&quot;i1&quot;</span>, <span class="stringliteral">&quot;v1&quot;</span>},</div>
+<div class="line">                {<span class="stringliteral">&quot;i2&quot;</span>, <span class="stringliteral">&quot;v2&quot;</span>}</div>
+<div class="line">            },</div>
+<div class="line">            {</div>
+<div class="line">                {<span class="stringliteral">&quot;i3&quot;</span>, <span class="stringliteral">&quot;v3&quot;</span>},</div>
+<div class="line">                {<span class="stringliteral">&quot;i4&quot;</span>, <span class="stringliteral">&quot;v4&quot;</span>}</div>
+<div class="line">            }</div>
+<div class="line">        };</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> v = arr[0];</div>
+<div class="line">        v.set(<span class="stringliteral">&quot;i1&quot;</span>, <span class="stringliteral">&quot;change1&quot;</span>);</div>
+<div class="line">        <span class="keyword">auto</span> c = arr[0];</div>
+<div class="line">        c.set(<span class="stringliteral">&quot;i1&quot;</span>, <span class="stringliteral">&quot;change2&quot;</span>);</div>
+<div class="line">        <span class="keyword">auto</span> d = arr[0];</div>
+<div class="line"> </div>
+<div class="line">        cout &lt;&lt; v.get(<span class="stringliteral">&quot;i1&quot;</span>) &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; c.get(<span class="stringliteral">&quot;i1&quot;</span>) &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; d.get(<span class="stringliteral">&quot;i1&quot;</span>) &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span>&amp; e = arr[0];</div>
+<div class="line">        e.set(<span class="stringliteral">&quot;i1&quot;</span>, <span class="stringliteral">&quot;change3&quot;</span>);</div>
+<div class="line">        <span class="keyword">auto</span>&amp; f = arr[0];</div>
+<div class="line">        cout &lt;&lt; e.get(<span class="stringliteral">&quot;i1&quot;</span>) &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; f.get(<span class="stringliteral">&quot;i1&quot;</span>) &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    {</div>
+<div class="line">        Dictionary dict;</div>
+<div class="line">        dict.parseString(<span class="stringliteral">&quot;key1=val1;key2=val2&quot;</span>, <span class="stringliteral">&quot;=&quot;</span>, <span class="stringliteral">&quot;;&quot;</span>);</div>
+<div class="line">        dict.parseString(<span class="stringliteral">&quot;key3=val1;key4=val2&quot;</span>, <span class="keywordtype">string</span>(<span class="stringliteral">&quot;=&quot;</span>), <span class="keywordtype">string</span>(<span class="stringliteral">&quot;;&quot;</span>));</div>
+<div class="line"> </div>
+<div class="line">        error_code ec;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot; str: &quot;</span> &lt;&lt; dict.toString(<span class="charliteral">&#39;:&#39;</span>, <span class="charliteral">&#39;,&#39;</span>, ec) &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot; err: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot; str: &quot;</span> &lt;&lt; dict.toString(<span class="charliteral">&#39;:&#39;</span>, <span class="charliteral">&#39;\0&#39;</span>, ec) &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot; err: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> raw = dict.toRawStringPtr(<span class="charliteral">&#39;=&#39;</span>, <span class="charliteral">&#39;,&#39;</span>, ec);</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot; str: &quot;</span> &lt;&lt; raw.get() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot; err: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">    }</div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#if 1</span></div>
+<div class="line">    {</div>
+<div class="line"><span class="preprocessor">#if 0</span></div>
+<div class="line">        {</div>
+<div class="line">            AVDictionary *rdict = <span class="keyword">nullptr</span>;</div>
+<div class="line">            av_dict_set(&amp;rdict, <span class="stringliteral">&quot;rdict&quot;</span>, <span class="stringliteral">&quot;rvalue&quot;</span>, 0);</div>
+<div class="line"> </div>
+<div class="line">            av::Dictionary dict = {</div>
+<div class="line">                {<span class="stringliteral">&quot;dict&quot;</span>, <span class="stringliteral">&quot;val&quot;</span>}</div>
+<div class="line">            };</div>
+<div class="line"> </div>
+<div class="line">            dict.assign(rdict);</div>
+<div class="line">        }</div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#if 0</span></div>
+<div class="line">        {</div>
+<div class="line">            Dictionary dict;</div>
+<div class="line">            <span class="comment">//dict.set(&quot;test&quot;)</span></div>
+<div class="line">            dict[<span class="stringliteral">&quot;test&quot;</span>] = <span class="stringliteral">&quot;value&quot;</span>;</div>
+<div class="line">            dict[<span class="stringliteral">&quot;test2&quot;</span>] = <span class="stringliteral">&quot;fdsfdsfdsfdsfsdfsd&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keyword">auto</span> ptr  = dict.release();</div>
+<div class="line">            <span class="keyword">auto</span> ptr2 = dict.rawPtr();</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">//</span></div>
+<div class="line">            <span class="comment">// simulate external api</span></div>
+<div class="line">            <span class="comment">//</span></div>
+<div class="line">            <span class="comment">// {</span></div>
+<div class="line">            av_freep(ptr2);</div>
+<div class="line">            <span class="comment">//av_freep(dict.rawPtr());</span></div>
+<div class="line"> </div>
+<div class="line">            cout &lt;&lt; (<span class="keywordtype">void</span>*)dict.raw() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">            AVDictionary *rdict = <span class="keyword">nullptr</span>;</div>
+<div class="line">            av_dict_set(&amp;rdict, <span class="stringliteral">&quot;rdict&quot;</span>, <span class="stringliteral">&quot;rvalue&quot;</span>, 0);</div>
+<div class="line">            *ptr2 = rdict;</div>
+<div class="line">            <span class="comment">//</span></div>
+<div class="line">            <span class="comment">// }</span></div>
+<div class="line"> </div>
+<div class="line">            dict.assign(*ptr2);</div>
+<div class="line"> </div>
+<div class="line">        }</div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line"> </div>
+<div class="line">    }</div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#if 0</span></div>
+<div class="line">    {</div>
+<div class="line">        DictionaryArray arr = {</div>
+<div class="line">            {</div>
+<div class="line">                {<span class="stringliteral">&quot;key1&quot;</span>, <span class="stringliteral">&quot;val1&quot;</span>}</div>
+<div class="line">            },</div>
+<div class="line">            {</div>
+<div class="line">                {<span class="stringliteral">&quot;key2&quot;</span>, <span class="stringliteral">&quot;val2&quot;</span>}</div>
+<div class="line">            },</div>
+<div class="line">        };</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> arr2 = arr;</div>
+<div class="line">        <span class="keyword">auto</span> raw = arr2.raws();</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; arr2.size(); ++i)</div>
+<div class="line">        {</div>
+<div class="line">            <span class="keyword">auto</span> ptr1 = raw[i];</div>
+<div class="line">            <span class="keyword">auto</span> ptr2 = arr2[i].raw();</div>
+<div class="line">            <span class="keyword">auto</span> ptr3 = arr[i].raw();</div>
+<div class="line"> </div>
+<div class="line">            cout &lt;&lt; (<span class="keywordtype">void</span>*)ptr1 &lt;&lt; <span class="stringliteral">&quot; vs &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)ptr2 &lt;&lt; <span class="stringliteral">&quot; vs &quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)ptr3 &lt;&lt; endl;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

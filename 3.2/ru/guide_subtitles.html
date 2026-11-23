@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: Субтитры</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_subtitles.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Субтитры </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>Субтитры — единственная часть библиотеки, где не используется API кодеков send/receive. FFmpeg до сих пор предоставляет кодеки субтитров через устаревшие <span class="tt">avcodec_decode_subtitle2()</span> и <span class="tt">avcodec_encode_subtitle()</span>, и avcpp это повторяет: у <span class="tt">SubtitleCodecContext</span> поэтому нет <span class="tt">send()</span>, <span class="tt">receive()</span> и <span class="tt">flush()</span>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md81"></a>
+Декодирование</h2>
+<div class="fragment"><div class="line">    std::size_t packets = 0;</div>
+<div class="line">    std::size_t frames = 0;</div>
+<div class="line"> </div>
+<div class="line">    av::Packet pkt;</div>
+<div class="line">    <span class="keywordflow">while</span> ((pkt = ictx.readPacket(ec))) {</div>
+<div class="line">        <span class="keywordflow">if</span> (pkt.streamIndex() != sst.index())</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">        ++packets;</div>
+<div class="line"> </div>
+<div class="line">        std::size_t decodedBytes = 0;</div>
+<div class="line">        <span class="keyword">auto</span> frame = dec.decode(pkt, 0, decodedBytes, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t decode a subtitle: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// A packet can be consumed without producing a complete subtitle.</span></div>
+<div class="line">        <span class="keywordflow">if</span> (!frame)</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">        ++frames;</div>
+<div class="line"> </div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;subtitle &quot;</span> &lt;&lt; frames</div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot;: pts &quot;</span> &lt;&lt; frame.pts()</div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot; (&quot;</span> &lt;&lt; frame.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; s)&quot;</span></div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot;, display &quot;</span> &lt;&lt; frame.startDisplayTime()</div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot;..&quot;</span> &lt;&lt; frame.endDisplayTime() &lt;&lt; <span class="stringliteral">&quot; ms&quot;</span></div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot;, rects: &quot;</span> &lt;&lt; frame.numRects() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; frame.numRects(); ++i)</div>
+<div class="line">            printRect(frame.rect(i), i);</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+</div><!-- fragment --><p>Две детали отличаются от видео:</p>
+<ul>
+<li><span class="tt">decode()</span> принимает смещение и заполняет выходной параметр <span class="tt">decodedBytes</span>. Пакет может быть израсходован, не дав полного субтитра, и тогда возвращенный кадр пуст. Это нормально, а не ошибка, и цикл просто продолжается.</li>
+<li>Кадр несет <span class="tt">startDisplayTime()</span> и <span class="tt">endDisplayTime()</span> в миллисекундах относительно своего <span class="tt">pts()</span>. Оба значения беззнаковые и могут быть нулевыми, а <span class="tt">pts() + startDisplayTime()</span> — абсолютное время показа в базе времени кадра.</li>
+</ul>
+<p>В <span class="tt">av::SubtitleFrame</span> до <span class="tt">numRects()</span> прямоугольников. Каждый прямоугольник одного из трех видов:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Тип  </th><th class="markdownTableHeadNone">Содержимое  </th><th class="markdownTableHeadNone">Методы  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">SUBTITLE_TEXT</span>  </td><td class="markdownTableBodyNone">простой текст  </td><td class="markdownTableBodyNone"><span class="tt">text()</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">SUBTITLE_ASS</span>  </td><td class="markdownTableBodyNone">строка диалога ASS  </td><td class="markdownTableBodyNone"><span class="tt">ass()</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">SUBTITLE_BITMAP</span>  </td><td class="markdownTableBodyNone">растровое изображение с палитрой  </td><td class="markdownTableBodyNone"><span class="tt">width()</span>, <span class="tt">height()</span>, <span class="tt">x()</span>, <span class="tt">y()</span>, <span class="tt">nbColors()</span>  </td></tr>
+</table>
+<p><span class="tt">isForced()</span> помечает прямоугольники, которые показывают даже при выключенных субтитрах. У растровых прямоугольников есть и палитра; см. справочник <span class="tt">av::SubtitleRect</span>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md82"></a>
+Кодирование</h2>
+<p><span class="tt">SubtitleEncoderContext</span> строже декодера:</p>
+<ol type="1">
+<li>Вызовите <span class="tt">setSubtitleHeader()</span> (или <span class="tt">setDefaultSubtitleHeader()</span>) <b>до</b> <span class="tt">open()</span>.</li>
+<li>Передавайте только прямоугольники <span class="tt">SUBTITLE_ASS</span> с <span class="tt">startDisplayTime() == 0</span>. Текстовые и растровые кодировщики FFmpeg отклоняют все остальное, а ненулевое время начала — не то, чего ждет кодировщик: время несет метка кадра.</li>
+<li>Используйте один кадр на одно событие субтитра и задайте на нем <span class="tt">pts()</span> и базу времени.</li>
+</ol>
+<p>Практичен путь ASS: кодировщик вроде <span class="tt">ass</span> или <span class="tt">subrip</span> принимает строку диалога без тегов оформления, которые он не поддерживает. Если на входе SRT, а на выходе нужен ASS, декодируйте в прямоугольники <span class="tt">SUBTITLE_TEXT</span> и соберите строку ASS сами — автоматической конвертации в библиотеке нет.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md83"></a>
+Дальше</h2>
+<ul>
+<li><a class="el" href="guide_decode.html" title="Декодирование">Декодирование</a> — модель кадра, которую переиспользуют субтитры.</li>
+<li><a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a> — запись закодированных пакетов в контейнер. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: api2-hw-probe.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('api2-hw-probe_8cpp-example.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">api2-hw-probe.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<p>Проверка аппаратных устройств.</p>
+<p>Проверка аппаратных устройств.</p><div class="fragment"><div class="line">api2-hw-probe</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="comment">// Lists hardware device types, probes the devices and prints the H.264 and</span></div>
+<div class="line"><span class="comment">// H.265 hardware codec configurations.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Usage: api2-hw-probe [device]</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// The optional device string is backend-specific. For example, a VAAPI device</span></div>
+<div class="line"><span class="comment">// is usually &quot;/dev/dri/renderD128&quot; and a CUDA device is a numeric index.</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/av.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codec.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/hwcontext.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span>{</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">const</span> <span class="keywordtype">char</span>* codecName(<span class="keyword">const</span> av::Codec&amp; codec)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">return</span> codec.raw() ? codec.name() : <span class="stringliteral">&quot;none&quot;</span>;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">std::string pixelFormatName(AVPixelFormat format)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">if</span> (format == AV_PIX_FMT_NONE)</div>
+<div class="line">        <span class="keywordflow">return</span> <span class="stringliteral">&quot;none&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">    std::error_code ec;</div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span>* name = av::PixelFormat(format).name(ec);</div>
+<div class="line">    <span class="keywordflow">return</span> ec ? <span class="stringliteral">&quot;invalid&quot;</span> : name;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> printConfigs(<span class="keyword">const</span> av::Codec&amp; codec, <span class="keyword">const</span> <span class="keywordtype">char</span>* title)</div>
+<div class="line">{</div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;    &quot;</span> &lt;&lt; title &lt;&lt; <span class="stringliteral">&quot; (&quot;</span> &lt;&lt; codecName(codec) &lt;&lt; <span class="stringliteral">&quot;):&quot;</span>;</div>
+<div class="line">    <span class="keywordflow">if</span> (!codec.raw()) {</div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot; none\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span>;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">bool</span> first = <span class="keyword">true</span>;</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">const</span> AVCodecHWConfig&amp; config : av::hw::codecConfigs(codec)) {</div>
+<div class="line">        std::cout &lt;&lt; (first ? <span class="stringliteral">&quot; &quot;</span> : <span class="stringliteral">&quot;, &quot;</span>)</div>
+<div class="line">                  &lt;&lt; av::hw::DeviceType(config.device_type).name()</div>
+<div class="line">                  &lt;&lt; <span class="charliteral">&#39;/&#39;</span></div>
+<div class="line">                  &lt;&lt; pixelFormatName(config.pix_fmt);</div>
+<div class="line">        <span class="keywordflow">if</span> (config.methods &amp; AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX)</div>
+<div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;+device&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">if</span> (config.methods &amp; AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX)</div>
+<div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;+frames&quot;</span>;</div>
+<div class="line">        first = <span class="keyword">false</span>;</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">if</span> (first)</div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot; none&quot;</span>;</div>
+<div class="line">    std::cout &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> printCodecs(av::hw::DeviceType type)</div>
+<div class="line">{</div>
+<div class="line">    printConfigs(av::hw::findDecoder(AV_CODEC_ID_H264, type), <span class="stringliteral">&quot;h264 decoder&quot;</span>);</div>
+<div class="line">    printConfigs(av::hw::findEncoder(AV_CODEC_ID_H264, type), <span class="stringliteral">&quot;h264 encoder&quot;</span>);</div>
+<div class="line">    printConfigs(av::hw::findDecoder(AV_CODEC_ID_HEVC, type), <span class="stringliteral">&quot;hevc decoder&quot;</span>);</div>
+<div class="line">    printConfigs(av::hw::findEncoder(AV_CODEC_ID_HEVC, type), <span class="stringliteral">&quot;hevc encoder&quot;</span>);</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">} <span class="comment">// namespace</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv)</div>
+<div class="line">{</div>
+<div class="line">    av::init();</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span>* device = argc &gt; 1 ? argv[1] : <span class="keyword">nullptr</span>;</div>
+<div class="line"> </div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;Device types compiled into FFmpeg:&quot;</span>;</div>
+<div class="line">    <span class="keywordflow">for</span> (av::hw::DeviceType type : av::hw::allDeviceTypes())</div>
+<div class="line">        std::cout &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; type.name();</div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;\n\n&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">const</span> av::hw::DeviceProbe&amp; probe : av::hw::probeDevices(device)) {</div>
+<div class="line">        std::cout &lt;&lt; probe.type.name() &lt;&lt; <span class="stringliteral">&quot;: &quot;</span>;</div>
+<div class="line">        <span class="keywordflow">if</span> (!probe.available) {</div>
+<div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;unavailable (&quot;</span> &lt;&lt; probe.error.message() &lt;&lt; <span class="stringliteral">&quot;)\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line">        }</div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;available\n&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">        std::error_code ec;</div>
+<div class="line">        av::hw::DeviceContext context =</div>
+<div class="line">            av::hw::DeviceContext::create(probe.type, device, {}, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (!context.isValid()) {</div>
+<div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;  device creation failed: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        av::hw::FrameConstraints constraints =</div>
+<div class="line">            av::hw::FrameConstraints::query(context, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (constraints.isValid()) {</div>
+<div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;  hardware formats:&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">for</span> (av::PixelFormat format : constraints.hwFormats())</div>
+<div class="line">                std::cout &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; format.name();</div>
+<div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;\n  software formats:&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">for</span> (av::PixelFormat format : constraints.swFormats())</div>
+<div class="line">                std::cout &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; format.name();</div>
+<div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;\n  size: &quot;</span></div>
+<div class="line">                      &lt;&lt; constraints.minWidth() &lt;&lt; <span class="charliteral">&#39;x&#39;</span> &lt;&lt; constraints.minHeight()</div>
+<div class="line">                      &lt;&lt; <span class="stringliteral">&quot; .. &quot;</span></div>
+<div class="line">                      &lt;&lt; constraints.maxWidth() &lt;&lt; <span class="charliteral">&#39;x&#39;</span> &lt;&lt; constraints.maxHeight()</div>
+<div class="line">                      &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> {</div>
+<div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;  frame constraints: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        printCodecs(probe.type);</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

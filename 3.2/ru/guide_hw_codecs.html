@@ -1,0 +1,770 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: Аппаратное кодирование и декодирование</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_hw_codecs.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Аппаратное кодирование и декодирование </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h2 class="doxsection"><a class="anchor" id="autotoc_md39"></a>
+1. Назначение</h2>
+<p>Эта страница описывает API <span class="tt">av::hw</span> в avcpp. API даёт удобный и безопасный доступ к аппаратным кодекам FFmpeg.</p>
+<p>Страница отвечает на вопросы:</p>
+<ul>
+<li>как создать устройство и пул кадров;</li>
+<li>как включить аппаратный декодер;</li>
+<li>как включить аппаратный кодировщик;</li>
+<li>как передать кадр между памятью системы и устройством;</li>
+<li>как построить путь без копирования;</li>
+<li>как проверить доступность устройства без сбоя тестов;</li>
+<li>какие ограничения есть на разных платформах.</li>
+</ul>
+<p>Целевая аудитория: разработчики avcpp и авторы приложений на avcpp.</p>
+<p>Справочник по типам — <a href="../group__hw.html">группа hw</a>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md40"></a>
+2. Термины</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Термин  </th><th class="markdownTableHeadNone">Значение  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Устройство  </td><td class="markdownTableBodyNone">Аппаратный узел: GPU, медиаблок, видеокарта. В FFmpeg это <span class="tt">AVHWDeviceContext</span>.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Пул кадров  </td><td class="markdownTableBodyNone">Набор поверхностей одного размера и формата. В FFmpeg это <span class="tt">AVHWFramesContext</span>.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Поверхность  </td><td class="markdownTableBodyNone">Кадр в памяти устройства. Приложение не читает его напрямую.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Память системы  </td><td class="markdownTableBodyNone">Обычная оперативная память. Кадр доступен через указатели <span class="tt">data[]</span>.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Нулевое копирование  </td><td class="markdownTableBodyNone">Путь, при котором кадр не покидает память устройства.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Загрузка  </td><td class="markdownTableBodyNone">Перенос кадра из памяти системы в память устройства.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Чтение  </td><td class="markdownTableBodyNone">Перенос кадра из памяти устройства в память системы.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">DeviceType</span>  </td><td class="markdownTableBodyNone">Тип устройства: <span class="tt">vaapi</span>, <span class="tt">qsv</span>, <span class="tt">cuda</span>, <span class="tt">d3d11va</span> и другие.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">EncodingMode</span>  </td><td class="markdownTableBodyNone">Режим кодировщика: <span class="tt">Auto</span>, <span class="tt">Frames</span>, <span class="tt">Device</span>.  </td></tr>
+</table>
+<p>Правило: один термин означает одно понятие. Не используйте слово «буфер» для устройства, пула и кадра.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md41"></a>
+3. Слои FFmpeg</h2>
+<p>FFmpeg делит аппаратную работу на три слоя.</p>
+<ol type="1">
+<li><span class="tt">AVHWDeviceContext</span> описывает устройство. Он создаётся один раз.</li>
+<li><span class="tt">AVHWFramesContext</span> описывает пул поверхностей. Он связан с устройством.</li>
+<li><span class="tt">AVCodecContext</span> использует устройство или пул. Поле <span class="tt">hw_device_ctx</span> задаёт устройство. Поле <span class="tt">hw_frames_ctx</span> задаёт пул.</li>
+</ol>
+<p>Слой <span class="tt">AVFrame</span> хранит дескриптор кадра. Если поле <span class="tt">frame-&gt;hw_frames_ctx</span> не пусто, кадр находится в памяти устройства.</p>
+<p>Схема слоёв и соответствие типам avcpp:</p>
+<div class="image">
+<object type="image/svg+xml" data="hw-architecture.svg" style="pointer-events: none;"></object>
+<div class="caption">
+Архитектура API</div></div>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md42"></a>
+4. Владение объектами</h2>
+<p><span class="tt">av::hw::DeviceContext</span> и <span class="tt">av::hw::FramesContext</span> владеют объектами FFmpeg. Внутри лежит <span class="tt">BufferRef</span>. Копирование объекта добавляет ссылку. Уничтожение объекта снимает ссылку.</p>
+<p><span class="tt">VideoFrame</span> не владеет устройством. Кадр хранит ссылку на пул через <span class="tt">hw_frames_ctx</span>. Пул хранит ссылку на устройство через <span class="tt">device_ref</span>.</p>
+<p>Схема владения:</p>
+<div class="image">
+<object type="image/svg+xml" data="hw-ownership.svg" style="pointer-events: none;"></object>
+<div class="caption">
+Владение объектами</div></div>
+<p>Правила:</p>
+<ul>
+<li>Создавайте устройство раньше пула. Уничтожайте пул раньше устройства. Счётчик ссылок допускает другой порядок, но явный порядок проще читать.</li>
+<li>Не освобождайте <span class="tt">AVBufferRef*</span> вручную. Передайте его в <span class="tt">wrap()</span>. <span class="tt">wrap()</span> добавляет ссылку.</li>
+<li>Не храните <span class="tt">AVHWDeviceContext*</span> после уничтожения <span class="tt">DeviceContext</span>.</li>
+<li>Все <span class="tt">*Range</span> типы не владеют памятью. Не сохраняйте диапазон дольше его владельца.</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md43"></a>
+5. Типы API</h2>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md44"></a>
+5.1. <span class="tt">DeviceType</span></h3>
+<p><span class="tt">DeviceType</span> — тонкая обёртка над <span class="tt">AVHWDeviceType</span>.</p>
+<div class="fragment"><div class="line">av::hw::DeviceType type = av::hw::DeviceType::fromName(<span class="stringliteral">&quot;vaapi&quot;</span>);</div>
+<div class="line"><span class="keywordflow">if</span> (type.isNone()) {</div>
+<div class="line">    <span class="comment">// FFmpeg не знает такой тип или тип не собран</span></div>
+<div class="line">}</div>
+<div class="line"><span class="keyword">const</span> <span class="keywordtype">char</span>* name = type.name(); <span class="comment">// &quot;vaapi&quot; или &quot;none&quot;</span></div>
+</div><!-- fragment --><p>Поиск идёт по имени. Код не зависит от числовых значений перечисления. Это важно для старых версий FFmpeg.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md45"></a>
+5.2. <span class="tt">DeviceContext</span></h3>
+<p><span class="tt">DeviceContext</span> создаётся фабрикой. Конструктор не используется: создание устройства может завершиться ошибкой.</p>
+<div class="fragment"><div class="line">std::error_code ec;</div>
+<div class="line">av::hw::DeviceContext device =</div>
+<div class="line">    av::hw::DeviceContext::create(type, <span class="stringliteral">&quot;/dev/dri/renderD128&quot;</span>, {}, ec);</div>
+<div class="line"><span class="keywordflow">if</span> (!device.isValid()) {</div>
+<div class="line">    <span class="comment">// ec содержит причину</span></div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Перегрузки:</p>
+<div class="fragment"><div class="line"><span class="keyword">static</span> DeviceContext create(DeviceType type,</div>
+<div class="line">                            <span class="keyword">const</span> <span class="keywordtype">char</span>* device = <span class="keyword">nullptr</span>,</div>
+<div class="line">                            <span class="keyword">const</span> Dictionary&amp; options = {},</div>
+<div class="line">                            OptionalErrorCode ec = <span class="keywordflow">throws</span>());</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">static</span> DeviceContext create(DeviceType type,</div>
+<div class="line">                            <span class="keyword">const</span> std::string&amp; device,</div>
+<div class="line">                            <span class="keyword">const</span> Dictionary&amp; options = {},</div>
+<div class="line">                            OptionalErrorCode ec = <span class="keywordflow">throws</span>());</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">static</span> DeviceContext derive(<span class="keyword">const</span> DeviceContext&amp; source,</div>
+<div class="line">                            DeviceType type,</div>
+<div class="line">                            <span class="keyword">const</span> Dictionary&amp; options = {},</div>
+<div class="line">                            OptionalErrorCode ec = <span class="keywordflow">throws</span>());</div>
+</div><!-- fragment --><p>Метод <span class="tt">derive()</span> создаёт производное устройство. Пример: устройство OpenCL из устройства VAAPI. Для QSV производное устройство не используйте. Оно может привести к сбою.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md46"></a>
+5.3. Строка устройства, а не путь</h3>
+<p>Параметр <span class="tt">device</span> имеет тип <span class="tt">const char*</span> или <span class="tt">std::string</span>. Это сделано намеренно. Устройство не всегда является файлом.</p>
+<p>Значение зависит от backend:</p>
+<ul>
+<li>VAAPI и DRM: путь к файлу, например <span class="tt">/dev/dri/renderD128</span>;</li>
+<li>CUDA: номер устройства, например <span class="tt">"1"</span>;</li>
+<li>D3D11VA: имя адаптера;</li>
+<li>VideoToolbox: имя или пустая строка;</li>
+<li>по умолчанию: <span class="tt">nullptr</span> или пустая строка.</li>
+</ul>
+<p><span class="tt">std::filesystem::path</span> подразумевает файл. Такой тип не может выразить номер или имя адаптера. Поэтому API использует строку.</p>
+<p>Перегрузка с <span class="tt">const char*</span> не копирует строку. Вызывающий код держит строку живой. Перегрузка с <span class="tt">const std::string&amp;</span> хранит копию внутри диапазона.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md47"></a>
+5.4. <span class="tt">FramesContext</span></h3>
+<div class="fragment"><div class="line">av::hw::FramesContext frames =</div>
+<div class="line">    av::hw::FramesContext::create(device,</div>
+<div class="line">                                  av::hw::hwPixelFormat(type),</div>
+<div class="line">                                  AV_PIX_FMT_NV12,</div>
+<div class="line">                                  1920, 1080,</div>
+<div class="line">                                  0,</div>
+<div class="line">                                  ec);</div>
+</div><!-- fragment --><p>Параметр <span class="tt">initialPoolSize = 0</span> означает размер пула по умолчанию. FFmpeg выбирает размер сам.</p>
+<p>Методы:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">bool</span> isValid() <span class="keyword">const</span>;</div>
+<div class="line">DeviceType device() <span class="keyword">const</span>; <span class="comment">// копия владельца устройства</span></div>
+<div class="line">PixelFormat format() <span class="keyword">const</span>;    <span class="comment">// формат поверхности</span></div>
+<div class="line">PixelFormat swFormat() <span class="keyword">const</span>;  <span class="comment">// формат для загрузки и чтения</span></div>
+<div class="line"><span class="keywordtype">int</span> width() <span class="keyword">const</span>;</div>
+<div class="line"><span class="keywordtype">int</span> height() <span class="keyword">const</span>;</div>
+<div class="line">PixelFormatList transferFormats(AVHWFrameTransferDirection direction,</div>
+<div class="line">                                OptionalErrorCode ec = <span class="keywordflow">throws</span>()) <span class="keyword">const</span>;</div>
+</div><!-- fragment --><p>Формат <span class="tt">swFormat</span> — это формат кадра в памяти системы. Не все устройства поддерживают <span class="tt">NV12</span>. Проверяйте <span class="tt">FrameConstraints::swFormats()</span>.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md48"></a>
+5.5. Диапазоны без выделения памяти</h3>
+<p>API возвращает диапазоны. Диапазон не выделяет память и не копирует массив.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Функция  </th><th class="markdownTableHeadNone">Тип  </th><th class="markdownTableHeadNone">Владелец памяти  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">allDeviceTypes()</span>  </td><td class="markdownTableBodyNone"><span class="tt">DeviceTypeRange</span>  </td><td class="markdownTableBodyNone">FFmpeg  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">probeDevices(device)</span>  </td><td class="markdownTableBodyNone"><span class="tt">DeviceProbeRange</span>  </td><td class="markdownTableBodyNone">FFmpeg, проверка при обходе  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">frameConstraints(device, ec)</span>  </td><td class="markdownTableBodyNone"><span class="tt">FrameConstraints</span>  </td><td class="markdownTableBodyNone">объект-владелец  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">FrameConstraints::hwFormats()</span>  </td><td class="markdownTableBodyNone"><span class="tt">PixelFormatRange</span>  </td><td class="markdownTableBodyNone"><span class="tt">FrameConstraints</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">FrameConstraints::swFormats()</span>  </td><td class="markdownTableBodyNone"><span class="tt">PixelFormatRange</span>  </td><td class="markdownTableBodyNone"><span class="tt">FrameConstraints</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">codecConfigs(codec)</span>  </td><td class="markdownTableBodyNone"><span class="tt">CodecConfigRange</span>  </td><td class="markdownTableBodyNone">FFmpeg  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">findDecoders(id, type)</span>  </td><td class="markdownTableBodyNone"><span class="tt">CodecRange</span>  </td><td class="markdownTableBodyNone">FFmpeg  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">findEncoders(id, type)</span>  </td><td class="markdownTableBodyNone"><span class="tt">CodecRange</span>  </td><td class="markdownTableBodyNone">FFmpeg  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">FramesContext::transferFormats()</span>  </td><td class="markdownTableBodyNone"><span class="tt">PixelFormatList</span>  </td><td class="markdownTableBodyNone">объект-владелец  </td></tr>
+</table>
+<p><span class="tt">PixelFormatList</span> владеет массивом <span class="tt">AVPixelFormat*</span>. Метод <span class="tt">range()</span> возвращает невладеющий вид. Сам список можно обходить напрямую.</p>
+<p>Пример:</p>
+<div class="fragment"><div class="line"><span class="keywordflow">for</span> (av::hw::DeviceType type : av::hw::allDeviceTypes()) {</div>
+<div class="line">    std::cout &lt;&lt; type.name() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keyword">const</span> av::hw::DeviceProbe&amp; probe : av::hw::probeDevices()) {</div>
+<div class="line">    std::cout &lt;&lt; probe.type.name() &lt;&lt; <span class="stringliteral">&quot;: &quot;</span></div>
+<div class="line">              &lt;&lt; (probe.available ? <span class="stringliteral">&quot;available&quot;</span> : probe.error.message())</div>
+<div class="line">              &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><span class="tt">probeDevices()</span> создаёт временное устройство для каждого типа. Это единственная надёжная проверка. <span class="tt">av_hwdevice_iterate_types()</span> перечисляет собранные backend, а не присутствующее железо.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md49"></a>
+5.6. Конфигурации кодека</h3>
+<p><span class="tt">codecConfigs(codec)</span> возвращает список <span class="tt">AVCodecHWConfig</span>. Каждая запись говорит, какой тип устройства и какой формат поддерживает кодек.</p>
+<p><span class="tt">findCodecConfig(codec, type, methodsMask)</span> возвращает первую подходящую запись.</p>
+<p><span class="tt">findDecoder(id, type)</span> и <span class="tt">findEncoder(id, type)</span> ищут кодек по идентификатору и типу устройства. Функция просматривает все кодеки с этим идентификатором. Это важно для QSV. Общий кодек <span class="tt">h264</span> не поддерживает QSV. Нужен <span class="tt">h264_qsv</span>.</p>
+<p><span class="tt">findDecoders()</span> и <span class="tt">findEncoders()</span> возвращают ленивый диапазон. Диапазон не выделяет память.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md50"></a>
+5.7. Ограничения кадров</h3>
+<div class="fragment"><div class="line">av::hw::FrameConstraints constraints =</div>
+<div class="line">    av::hw::FrameConstraints::query(device, ec);</div>
+<div class="line"><span class="keywordflow">if</span> (constraints.isValid()) {</div>
+<div class="line">    <span class="keywordflow">for</span> (av::PixelFormat format : constraints.swFormats())</div>
+<div class="line">        std::cout &lt;&lt; format.name() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"> </div>
+<div class="line">    std::cout &lt;&lt; constraints.maxWidth() &lt;&lt; <span class="charliteral">&#39;x&#39;</span> &lt;&lt; constraints.maxHeight() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><span class="tt">FrameConstraints</span> владеет структурой FFmpeg. Методы <span class="tt">hwFormats()</span> и <span class="tt">swFormats()</span> возвращают невладеющие виды.</p>
+<p>Некоторые backend сообщают широкие границы: от <span class="tt">0x0</span> до <span class="tt">INT_MAX</span>. Не считайте эти числа точным ограничением железа.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md51"></a>
+6. Декодирование</h2>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md52"></a>
+6.1. Порядок вызовов</h3>
+<ol type="1">
+<li>Создайте <span class="tt">DeviceContext</span>.</li>
+<li>Создайте <span class="tt">VideoDecoderContext</span>. Передайте кодек, найденный через <span class="tt">findDecoder()</span>.</li>
+<li>Вызовите <span class="tt">setHwDeviceContext(device)</span> до <span class="tt">open()</span>.</li>
+<li>При необходимости вызовите <span class="tt">setHwTransferToSystem(true)</span>.</li>
+<li>Вызовите <span class="tt">open()</span>.</li>
+<li>Передавайте пакеты через <span class="tt">send()</span> и читайте кадры через <span class="tt">receive()</span>.</li>
+<li>После конца потока вызовите <span class="tt">flush()</span> и дочитайте кадры.</li>
+</ol>
+<p>Схема:</p>
+<div class="image">
+<object type="image/svg+xml" data="hw-decode.svg" style="pointer-events: none;"></object>
+<div class="caption">
+Последовательность декодирования</div></div>
+<p>Пример:</p>
+<div class="fragment"><div class="line">av::Codec codec = av::hw::findDecoder(AV_CODEC_ID_H264, type);</div>
+<div class="line">av::VideoDecoderContext decoder(vst, codec);</div>
+<div class="line">decoder.setHwDeviceContext(device, ec);</div>
+<div class="line">decoder.setHwTransferToSystem(transferToSystem);</div>
+<div class="line">decoder.open(av::Codec(), ec);</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">while</span> ((packet = ictx.readPacket(ec))) {</div>
+<div class="line">    <span class="keywordflow">if</span> (packet.streamIndex() != vst.index())</div>
+<div class="line">        <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">for</span> (;;) {</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">bool</span> accepted = decoder.send(packet, ec);</div>
+<div class="line">        <span class="keywordflow">for</span> (;;) {</div>
+<div class="line">            av::VideoFrame frame = decoder.receive(ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (!frame.isValid())</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line">            consume(frame);</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">if</span> (accepted)</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Не используйте устаревший <span class="tt">decode()</span> для аппаратного декодера, если нужны все кадры. Асинхронные backend, например QSV, могут вернуть кадр позже. Путь <span class="tt">send()</span> и <span class="tt">receive()</span> забирает все кадры. Не забудьте <span class="tt">flush()</span>.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md53"></a>
+6.2. Автоматическое чтение в память системы</h3>
+<p>По умолчанию аппаратный декодер возвращает кадры на устройстве. Это включает нулевое копирование.</p>
+<p>Если приложению нужны указатели <span class="tt">data[]</span>, включите автоперенос:</p>
+<div class="fragment"><div class="line">decoder.setHwTransferToSystem(<span class="keyword">true</span>);</div>
+</div><!-- fragment --><p>Тогда <span class="tt">receive()</span> вернёт кадр в памяти системы. Один и тот же декодер нельзя переключать между режимами на середине потока. Выберите режим до <span class="tt">open()</span>.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md54"></a>
+6.3. <span class="tt">get_format</span></h3>
+<p>Декодер задаёт только <span class="tt">hw_device_ctx</span>. Статический <span class="tt">get_format</span> читает это поле и выводит тип устройства. Поле <span class="tt">AVCodecContext::opaque</span> не используется. Приложение может свободно применять <span class="tt">opaque</span> для своих целей.</p>
+<p>Некоторые декодеры, например QSV в FFmpeg 4.x, объявляют только метод <span class="tt">AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX</span>. avcpp создаёт для них пул кадров до <span class="tt">open()</span>. Размер берётся из <span class="tt">coded_width</span> и <span class="tt">coded_height</span>, формат — из ограничений устройства. Без пула FFmpeg 4.x тихо уходит в память системы.</p>
+<p>Тихого перехода на программный декодер нет. Если аппаратный путь невозможен, API возвращает ошибку. Так приложение узнаёт о проблеме сразу.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md55"></a>
+7. Кодирование</h2>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md56"></a>
+7.1. Режимы</h3>
+<p><span class="tt">EncodingMode</span> задаёт способ передачи кадров кодировщику.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Режим  </th><th class="markdownTableHeadNone">Значение  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">Auto</span>  </td><td class="markdownTableBodyNone">Сначала пул кадров. Если пул создать нельзя, используется устройство.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">Frames</span>  </td><td class="markdownTableBodyNone">Только пул кадров. Требуется <span class="tt">AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX</span>.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">Device</span>  </td><td class="markdownTableBodyNone">Только устройство. Требуется <span class="tt">AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX</span>.  </td></tr>
+</table>
+<p><span class="tt">Auto</span> — рекомендуемый режим для нового кода.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md57"></a>
+7.2. Порядок вызовов</h3>
+<ol type="1">
+<li>Создайте кодировщик.</li>
+<li>Задайте ширину, высоту, время, частоту кадров и битрейт.</li>
+<li>Вызовите <span class="tt">configureHwEncoding()</span>.</li>
+<li>Вызовите <span class="tt">open()</span>.</li>
+<li>Передавайте кадры через <span class="tt">encode()</span>.</li>
+<li>Вызовите <span class="tt">encode()</span> без кадра для слива.</li>
+</ol>
+<p>Схема:</p>
+<div class="image">
+<object type="image/svg+xml" data="hw-encode.svg" style="pointer-events: none;"></object>
+<div class="caption">
+Последовательность кодирования</div></div>
+<p>Пример:</p>
+<div class="fragment"><div class="line">av::Codec codec = av::hw::findEncoder(AV_CODEC_ID_H264, type);</div>
+<div class="line">av::VideoEncoderContext encoder(codec);</div>
+<div class="line">encoder.setWidth(1920);</div>
+<div class="line">encoder.setHeight(1080);</div>
+<div class="line">encoder.setTimeBase(av::Rational{1, 25});</div>
+<div class="line">encoder.setFrameRate(av::Rational{25, 1});</div>
+<div class="line">encoder.setBitRate(4&#39;000&#39;000);</div>
+<div class="line"> </div>
+<div class="line">encoder.configureHwEncoding(device, av::hw::EncodingMode::Auto,</div>
+<div class="line">                            AV_PIX_FMT_NONE, ec);</div>
+<div class="line">encoder.open(av::Codec(), ec);</div>
+</div><!-- fragment --><p>Параметр <span class="tt">swFormat = AV_PIX_FMT_NONE</span> включает выбор формата. Порядок выбора:</p>
+<ol type="1">
+<li>запрошенный формат;</li>
+<li>текущий <span class="tt">pix_fmt</span> кодека;</li>
+<li><span class="tt">NV12</span> из ограничений устройства;</li>
+<li><span class="tt">YUV420P</span> из ограничений;</li>
+<li>первый формат из ограничений.</li>
+</ol>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md58"></a>
+7.3. Автоматическая загрузка</h3>
+<p>Автозагрузка включена по умолчанию. Если на вход приходит кадр в памяти системы, <span class="tt">encode()</span> сначала загружает его в пул. Затем кадр уходит в кодировщик.</p>
+<p>Отключить автозагрузку:</p>
+<div class="fragment"><div class="line">encoder.setHwAutoUpload(<span class="keyword">false</span>);</div>
+</div><!-- fragment --><p>Отключайте автозагрузку только для явного пути без копирования. Иначе кодировщик получит кадр неверного типа.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md59"></a>
+7.4. Частота кадров</h3>
+<p>Некоторым кодировщикам нужна частота кадров до <span class="tt">open()</span>. Пример: QSV. Без неё QSV возвращает ошибку «Current frame rate is unsupported».</p>
+<div class="fragment"><div class="line">encoder.setFrameRate(av::Rational{25, 1});</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md60"></a>
+8. Нулевое копирование</h2>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md61"></a>
+8.1. Идея</h3>
+<p>Декодер создаёт пул поверхностей. Кодировщик использует тот же пул. Кадр не покидает устройство.</p>
+<p>Этот подход применяет официальный пример FFmpeg <span class="tt">vaapi_transcode.c</span>. Он работает для VAAPI, QSV и CUDA.</p>
+<div class="fragment"><div class="line">av::VideoFrame first = receiveFirstHardwareFrame();</div>
+<div class="line">av::hw::FramesContext frames = first.hwFramesContext();</div>
+<div class="line"> </div>
+<div class="line">encoder.configureHwEncoding(frames, ec); <span class="comment">// автозагрузка выключена</span></div>
+<div class="line">encoder.open(av::Codec(), ec);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Далее каждый кадр передаётся в encode() без переноса.</span></div>
+</div><!-- fragment --><p>Схема:</p>
+<div class="image">
+<object type="image/svg+xml" data="hw-transcode-zero-copy.svg" style="pointer-events: none;"></object>
+<div class="caption">
+Нулевое копирование</div></div>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md62"></a>
+8.2. Почему не <span class="tt">av_hwframe_map</span></h3>
+<p><span class="tt">av_hwframe_map()</span> не является надёжным путём между разными контекстами. Некоторые backend возвращают <span class="tt">ENOSYS</span>. Производный пул QSV может привести к сбою.</p>
+<p>Правильный путь: взять пул из первого кадра декодера и передать его кодировщику.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md63"></a>
+8.3. Запасной путь</h3>
+<p>Если пул недоступен, используйте режим с копированием:</p>
+<ol type="1">
+<li><span class="tt">frame.toSystemMemory()</span>;</li>
+<li><span class="tt">encoder.configureHwEncoding(device, Auto)</span>;</li>
+<li><span class="tt">encoder.encode(softwareFrame)</span> с включённой автозагрузкой.</li>
+</ol>
+<p>Пример <span class="tt">api2-hw-transcode</span> делает этот выбор автоматически.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md64"></a>
+9. Масштабирование</h2>
+<p><span class="tt">VideoRescaler</span> работает с памятью системы. Полный аппаратный конвейер с изменением размера требует промежуточного чтения.</p>
+<p>Путь:</p>
+<ol type="1">
+<li>аппаратное декодирование;</li>
+<li><span class="tt">toSystemMemory()</span>;</li>
+<li><span class="tt">VideoRescaler::rescale()</span>;</li>
+<li><span class="tt">toHwFrame()</span> или автозагрузка;</li>
+<li>аппаратное кодирование.</li>
+</ol>
+<p>Схема:</p>
+<div class="image">
+<object type="image/svg+xml" data="hw-scale-pipeline.svg" style="pointer-events: none;"></object>
+<div class="caption">
+Конвейер масштабирования</div></div>
+<p>Пример: <span class="tt">api2-hw-scale</span>.</p>
+<p>Важно: перенос между памятью системы и устройством стоит времени. Измеряйте оба пути на целевом железе. Иногда программный конвейер быстрее из-за малого размера кадра.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md65"></a>
+10. Передача кадров</h2>
+<p><span class="tt">VideoFrame</span> предоставляет четыре операции.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Метод  </th><th class="markdownTableHeadNone">Направление  </th><th class="markdownTableHeadNone">Примечание  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">toSystemMemory(format, ec)</span>  </td><td class="markdownTableBodyNone">устройство → система  </td><td class="markdownTableBodyNone"><span class="tt">format = AV_PIX_FMT_NONE</span> выбирает формат автоматически  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">toHwFrame(frames, ec)</span>  </td><td class="markdownTableBodyNone">система → устройство  </td><td class="markdownTableBodyNone">Сначала вызывает <span class="tt">av_hwframe_get_buffer()</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">mapTo(frames, flags, ec)</span>  </td><td class="markdownTableBodyNone">отображение  </td><td class="markdownTableBodyNone">Зависит от backend, может вернуть <span class="tt">ENOSYS</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">hwFramesContext()</span>  </td><td class="markdownTableBodyNone">чтение  </td><td class="markdownTableBodyNone">Возвращает пул кадра  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">hwDeviceContext()</span>  </td><td class="markdownTableBodyNone">чтение  </td><td class="markdownTableBodyNone">Возвращает устройство пула  </td></tr>
+</table>
+<p><span class="tt">toHwFrame()</span> сначала выделяет поверхность в пуле. Затем вызывает <span class="tt">av_hwframe_transfer_data()</span>. Прямой вызов <span class="tt">av_hwframe_transfer_data()</span> без поверхности возвращает <span class="tt">EINVAL</span> на некоторых backend.</p>
+<p><span class="tt">VideoFrame::clone()</span> не клонирует аппаратный кадр. Метод возвращает <span class="tt">HardwareTransferUnsupported</span>. Копирование поверхности не является дешёвой операцией. Если нужен второй владелец, используйте копирование объекта <span class="tt">VideoFrame</span>. Копия добавляет ссылку на <span class="tt">AVFrame</span>.</p>
+<p>После переноса или масштабирования назначьте время и индекс потока явно. Новый объект не всегда наследует <span class="tt">m_timeBase</span> обёртки avcpp.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md66"></a>
+11. Выбор устройства</h2>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md67"></a>
+11.1. Порядок выбора</h3>
+<ol type="1">
+<li>Получите список собранных типов: <span class="tt">allDeviceTypes()</span>.</li>
+<li>Проверьте наличие: <span class="tt">isDeviceAvailable(type)</span> или <span class="tt">probeDevices()</span>.</li>
+<li>Найдите декодер: <span class="tt">findDecoder(codecId, type)</span>.</li>
+<li>Найдите кодировщик: <span class="tt">findEncoder(codecId, type)</span>.</li>
+<li>Проверьте конфигурации: <span class="tt">findCodecConfig()</span>.</li>
+<li>Создайте устройство: <span class="tt">DeviceContext::create()</span>.</li>
+<li>Проверьте форматы: <span class="tt">frameConstraints()</span>.</li>
+</ol>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md68"></a>
+11.2. Платформы</h3>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Платформа  </th><th class="markdownTableHeadNone">Основные типы  </th><th class="markdownTableHeadNone">Только проверка  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Linux  </td><td class="markdownTableBodyNone"><span class="tt">vaapi</span>, <span class="tt">qsv</span>, <span class="tt">cuda</span>, <span class="tt">vdpau</span>  </td><td class="markdownTableBodyNone"><span class="tt">opencl</span>, <span class="tt">vulkan</span>, <span class="tt">drm</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Windows  </td><td class="markdownTableBodyNone"><span class="tt">d3d11va</span>, <span class="tt">dxva2</span>, <span class="tt">qsv</span>, <span class="tt">cuda</span>, <span class="tt">amf</span>  </td><td class="markdownTableBodyNone"><span class="tt">opencl</span>, <span class="tt">vulkan</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">macOS  </td><td class="markdownTableBodyNone"><span class="tt">videotoolbox</span>  </td><td class="markdownTableBodyNone">—  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Android  </td><td class="markdownTableBodyNone"><span class="tt">mediacodec</span>  </td><td class="markdownTableBodyNone">—  </td></tr>
+</table>
+<p>«Только проверка» означает, что тип полезен для проверки устройства или пула. Аппаратный кодек для него не тестируется.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md69"></a>
+11.3. QSV</h3>
+<p>QSV требует отдельный кодек. Общий <span class="tt">h264</span> не подходит.</p>
+<div class="fragment"><div class="line">av::Codec decoder = av::hw::findDecoder(AV_CODEC_ID_H264, qsvType);</div>
+</div><!-- fragment --><p>Кодировщик QSV требует <span class="tt">setFrameRate()</span> до <span class="tt">open()</span>. Декодер QSV может отдать первые кадры позже. Используйте <span class="tt">send()</span> и <span class="tt">receive()</span>.</p>
+<p>QSV с FFmpeg 4.x работает через libmfx. В <span class="tt">ubuntu:22.04</span> эта связка неполная:</p>
+<ul>
+<li>декодер работает, но кадры остаются в памяти системы; кадры на устройстве отдаёт только устаревший путь <span class="tt">-hwaccel qsv</span>;</li>
+<li><span class="tt">av_hwframe_transfer_data()</span> к пулу QSV не возвращает управление; драйвер бесконечно создаёт потоки;</li>
+<li><span class="tt">MFXVideoENCODE_Init()</span> отклоняет любые параметры, <span class="tt">open()</span> возвращает <span class="tt">AVERROR(ENOSYS)</span>.</li>
+</ul>
+<p>Те же команды в <span class="tt">ffmpeg(1)</span> ведут себя так же. Поэтому это ограничение среды, а не avcpp. Тесты пропускают такие шаги и печатают предупреждение. Для проверки Intel на FFmpeg 4.x используйте VAAPI. Начиная с FFmpeg 5.0 QSV работает через oneVPL и этих ограничений не имеет.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md70"></a>
+12. Ошибки</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Код  </th><th class="markdownTableHeadNone">Причина  </th><th class="markdownTableHeadNone">Действие  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">HardwareDeviceUnavailable</span>  </td><td class="markdownTableBodyNone">Устройство не создаётся  </td><td class="markdownTableBodyNone">Проверить драйвер и имя устройства  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">HardwareDeviceInvalid</span>  </td><td class="markdownTableBodyNone">Пустой или неверный <span class="tt">DeviceContext</span>  </td><td class="markdownTableBodyNone">Создать устройство заново  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">HardwareConfigNotFound</span>  </td><td class="markdownTableBodyNone">Кодек не поддерживает устройство  </td><td class="markdownTableBodyNone">Выбрать другой кодек или режим  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">HardwareFramesInvalid</span>  </td><td class="markdownTableBodyNone">Пул не создан  </td><td class="markdownTableBodyNone">Проверить формат, размер и ограничения  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">HardwareTransferUnsupported</span>  </td><td class="markdownTableBodyNone">Перенос невозможен  </td><td class="markdownTableBodyNone">Использовать память системы  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">HardwareCodecNotFound</span>  </td><td class="markdownTableBodyNone">Нет аппаратного кодека  </td><td class="markdownTableBodyNone">Использовать программный кодек  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">CodecAlreadyOpened</span>  </td><td class="markdownTableBodyNone">Настройка после <span class="tt">open()</span>  </td><td class="markdownTableBodyNone">Настроить кодек до <span class="tt">open()</span>  </td></tr>
+</table>
+<p>Все функции принимают <span class="tt">OptionalErrorCode</span>. По умолчанию ошибка вызывает исключение. Передайте <span class="tt">std::error_code</span>, если нужен возврат кода.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md71"></a>
+13. Соответствие FFmpeg и avcpp</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">FFmpeg  </th><th class="markdownTableHeadNone">avcpp  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">AVHWDeviceType</span>  </td><td class="markdownTableBodyNone"><span class="tt">av::hw::DeviceType</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">AVHWDeviceContext</span>  </td><td class="markdownTableBodyNone"><span class="tt">av::hw::DeviceContext</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">AVHWFramesContext</span>  </td><td class="markdownTableBodyNone"><span class="tt">av::hw::FramesContext</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">AVHWFramesConstraints</span>  </td><td class="markdownTableBodyNone"><span class="tt">av::hw::FrameConstraints</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">AVCodecHWConfig</span>  </td><td class="markdownTableBodyNone"><span class="tt">av::hw::codecConfigs()</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">av_hwdevice_iterate_types()</span>  </td><td class="markdownTableBodyNone"><span class="tt">av::hw::allDeviceTypes()</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">av_hwdevice_ctx_create()</span>  </td><td class="markdownTableBodyNone"><span class="tt">DeviceContext::create()</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">av_hwdevice_ctx_create_derived_opts()</span>  </td><td class="markdownTableBodyNone"><span class="tt">DeviceContext::derive()</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">av_hwframe_ctx_alloc()</span> + <span class="tt">av_hwframe_ctx_init()</span>  </td><td class="markdownTableBodyNone"><span class="tt">FramesContext::create()</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">av_hwframe_transfer_get_formats()</span>  </td><td class="markdownTableBodyNone"><span class="tt">FramesContext::transferFormats()</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">av_hwframe_get_buffer()</span> + <span class="tt">av_hwframe_transfer_data()</span>  </td><td class="markdownTableBodyNone"><span class="tt">VideoFrame::toHwFrame()</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">av_hwframe_transfer_data()</span> в систему  </td><td class="markdownTableBodyNone"><span class="tt">VideoFrame::toSystemMemory()</span>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">av_hwframe_map()</span>  </td><td class="markdownTableBodyNone"><span class="tt">VideoFrame::mapTo()</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">avcodec_get_hw_config()</span>  </td><td class="markdownTableBodyNone"><span class="tt">av::hw::codecConfigs()</span>  </td></tr>
+</table>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md72"></a>
+14. Совместимость FFmpeg</h2>
+<p>Минимальная версия — FFmpeg 4.0.</p>
+<ul>
+<li><span class="tt">AVCPP_HAS_HWCONTEXT</span> показывает, доступен ли API.</li>
+<li><span class="tt">av_hwdevice_ctx_create_derived_opts()</span> появился в FFmpeg 4.3. Для старых версий есть запасной путь.</li>
+<li>Декодеры, которые объявляют только <span class="tt">AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX</span>, получают пул кадров от avcpp. Это касается QSV в FFmpeg 4.x.</li>
+<li>Типы устройств и форматы ищутся по имени. Код не зависит от новых значений перечисления.</li>
+<li>Сборка <span class="tt">AV_DISABLE_AVFORMAT=ON</span> не содержит аппаратных тестов и примеров с демультиплексором. Библиотека при этом собирается.</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md73"></a>
+15. Проверка</h2>
+<p>Тесты находятся в <span class="tt">tests/Hardware.cpp</span> и <span class="tt">tests/Fixtures.cpp</span>. Тесты не должны падать на машине без железа.</p>
+<p>Правило:</p>
+<ul>
+<li>нет устройства или кодека → <span class="tt">SKIP</span>;</li>
+<li>устройство есть, но не создаётся → <span class="tt">FAIL</span>.</li>
+</ul>
+<p>Переменные окружения:</p>
+<div class="fragment"><div class="line">AVCPP_HW_DEVICES=vaapi,qsv   # ограничить набор, включая фикстуры</div>
+<div class="line">AVCPP_HW_SKIP=cuda           # исключить backend</div>
+</div><!-- fragment --><p>Переменные действуют и на тесты с фикстурами.</p>
+<p>Набор по умолчанию:</p>
+<ul>
+<li>Linux: VAAPI, QSV, CUDA, VDPAU;</li>
+<li>Windows: D3D11VA, DXVA2, QSV, CUDA, AMF;</li>
+<li>macOS: VideoToolbox;</li>
+<li>Android: MediaCodec.</li>
+</ul>
+<p>Команды:</p>
+<div class="fragment"><div class="line">cmake -B build -DCMAKE_BUILD_TYPE=Debug</div>
+<div class="line">cmake --build build -j</div>
+<div class="line">ctest --test-dir build --output-on-failure</div>
+<div class="line"> </div>
+<div class="line">./build/tests/test_executor &#39;[hw]&#39;</div>
+<div class="line">./build/tests/test_executor &#39;*Hardware fixtures*&#39;</div>
+</div><!-- fragment --><p>Проверено:</p>
+<ul>
+<li>FFmpeg 9.x на Linux: VAAPI, QSV, CUDA — все аппаратные тесты и фикстуры проходят;</li>
+<li>FFmpeg 4.4 в <span class="tt">ubuntu:22.04</span> с проброшенным Intel (VAAPI): все 91 утверждение <span class="tt">[hw]</span> и обе фикстуры с переносом кадров;</li>
+<li>FFmpeg 4.4 в <span class="tt">ubuntu:22.04</span> с проброшенным Intel (QSV): 60 утверждений <span class="tt">[hw]</span>; QSV пропускает перенос, кодировщик и кадры на устройстве;</li>
+<li>FFmpeg 4.4 в <span class="tt">ubuntu:22.04</span> с проброшенной NVIDIA (CUDA): 96 утверждений <span class="tt">[hw]</span> и обе фикстуры, включая нулевое копирование;</li>
+<li>сборка без <span class="tt">libavformat</span>: 49 тестов;</li>
+<li>сборка библиотеки на C++17;</li>
+<li>Meson: сборка и тесты;</li>
+<li>Valgrind: нет ошибок памяти в коде avcpp. Отчёты содержат только кэши драйверов NVIDIA, CUDA, OpenCL и DBus.</li>
+</ul>
+<p>Проверка в Docker:</p>
+<div class="fragment"><div class="line"># Intel (VAAPI и QSV)</div>
+<div class="line">docker run --rm --memory=3g --device /dev/dri:/dev/dri \</div>
+<div class="line">    -e LIBVA_DRIVER_NAME=iHD -e AVCPP_HW_DEVICES=vaapi,qsv \</div>
+<div class="line">    -v &quot;$PWD&quot;:/src:ro -w /src IMAGE bash -lc \</div>
+<div class="line">    &#39;cmake -B /tmp/b -DAVCPP_TEST_DATA=ON ... &amp;&amp; cmake --build /tmp/b -j &amp;&amp; /tmp/b/tests/test_executor &quot;[hw]&quot;&#39;</div>
+<div class="line"> </div>
+<div class="line"># NVIDIA (CUDA): проброс устройств и библиотек драйвера</div>
+<div class="line">docker run --rm --memory=4g \</div>
+<div class="line">    --device /dev/nvidia0 --device /dev/nvidiactl --device /dev/nvidia-uvm \</div>
+<div class="line">    --device /dev/nvidia-uvm-tools --device /dev/nvidia-modeset \</div>
+<div class="line">    -v /dev/nvidia-caps:/dev/nvidia-caps -v /path/to/nvidia-libs:/nvidia:ro \</div>
+<div class="line">    -e LD_LIBRARY_PATH=/nvidia -e AVCPP_HW_DEVICES=cuda \</div>
+<div class="line">    -v &quot;$PWD&quot;:/src:ro -w /src IMAGE bash -lc \</div>
+<div class="line">    &#39;cmake -B /tmp/b ... &amp;&amp; /tmp/b/tests/test_executor &quot;*Hardware fixtures*&quot;&#39;</div>
+</div><!-- fragment --><p>Без <span class="tt">nvidia-container-toolkit</span> флаг <span class="tt">--gpus all</span> не работает. Пробросьте устройства и библиотеки драйвера вручную.</p>
+<p>Ограничьте память контейнера и задайте <span class="tt">timeout</span>. Тест QSV на FFmpeg 4.x без этих мер исчерпывает память.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md74"></a>
+16. Примеры</h2>
+<p>В каталоге <span class="tt">example/api2-samples</span>:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Пример  </th><th class="markdownTableHeadNone">Назначение  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">api2-hw-probe</span>  </td><td class="markdownTableBodyNone">Список устройств, ограничений и конфигураций кодеков  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">api2-hw-decode</span>  </td><td class="markdownTableBodyNone">Аппаратное декодирование, режим с переносом и без  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">api2-hw-encode</span>  </td><td class="markdownTableBodyNone">Синтетические кадры и аппаратный кодировщик  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">api2-hw-transcode</span>  </td><td class="markdownTableBodyNone">Транскодирование без копирования и запасной путь  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">api2-hw-scale</span>  </td><td class="markdownTableBodyNone">Аппаратное декодирование, масштабирование, кодирование  </td></tr>
+</table>
+<p>Запуск:</p>
+<div class="fragment"><div class="line">./build/example/api2-samples/api2-hw-probe</div>
+<div class="line">./build/example/api2-samples/api2-hw-decode vaapi input.mp4 --to-system</div>
+<div class="line">./build/example/api2-samples/api2-hw-transcode vaapi input.mp4 output.mkv</div>
+<div class="line">./build/example/api2-samples/api2-hw-scale vaapi input.mp4 scaled.mkv</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md75"></a>
+17. Ограничения</h2>
+<ul>
+<li>API не выбирает устройство автоматически. Приложение задаёт тип и имя.</li>
+<li>API не делает тихий переход на программный кодек. Это решение приложения.</li>
+<li><span class="tt">VideoRescaler</span> не работает с поверхностями напрямую.</li>
+<li><span class="tt">VideoFrame::clone()</span> не копирует аппаратный кадр.</li>
+<li><span class="tt">mapTo()</span> зависит от backend.</li>
+<li>Производный пул QSV не используется.</li>
+<li>VideoToolbox в FFmpeg 4.x не создаёт пул для ручного frames-контекста и не отдаёт ограничения. Работают только пути через кодек: декодер и кодировщик создают пул сами.</li>
+<li>QSV в FFmpeg 4.x: нет переноса кадров, нет кодировщика, декодер отдаёт кадры в памяти системы. Подробности в разделе 11.3.</li>
+<li>Устройство CUDA может стать недоступным после сна или смены драйвера. Проверяйте его заново.</li>
+<li>Набор форматов и ограничений зависит от драйвера.</li>
+<li>Аппаратный путь не всегда быстрее. Измеряйте результат.</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md76"></a>
+18. Чек-лист</h2>
+<ul class="check">
+<li class="unchecked">Вызван <span class="tt">av::init()</span> до работы с библиотекой.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Тип устройства получен через <span class="tt">DeviceType::fromName()</span>.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Устройство создано через <span class="tt">DeviceContext::create()</span>.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Ошибки проверяются через <span class="tt">std::error_code</span>.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Декодер настроен до <span class="tt">open()</span>.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Для QSV найден отдельный кодек через <span class="tt">findDecoder()</span>.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Для QSV задана частота кадров до <span class="tt">open()</span>.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Режим переноса выбран до <span class="tt">open()</span>.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Для нулевого копирования используется пул из первого кадра.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Автозагрузка выключена только для нулевого копирования.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Время и индекс потока заданы после переноса.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Пул уничтожается раньше устройства.</li>
+</ul>
+<ul class="check">
+<li class="unchecked">Тесты без железа дают <span class="tt">SKIP</span>, а не <span class="tt">FAIL</span>.</li>
+</ul>
+<ul class="check">
+<li class="unchecked"><span class="tt">docs/</span> и <span class="tt">PLAN.md</span> не добавлены в Git. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

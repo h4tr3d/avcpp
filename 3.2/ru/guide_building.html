@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: Сборка и установка</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_building.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Сборка и установка </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h2 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
+Требования</h2>
+<ul>
+<li>FFmpeg &gt;= 4.0:<ul>
+<li>libavformat &gt;= 58.x.x,</li>
+<li>libavcodec &gt;= 58.x.x,</li>
+<li>libavutil &gt;= 56.x.x,</li>
+<li>libswscale &gt;= 5.x.x,</li>
+<li>libswresample &gt;= 3.x.x,</li>
+<li>libavdevice &gt;= 58.x.x (необязательно),</li>
+<li>libavfilter &gt;= 7.x.x (необязательно),</li>
+<li>libpostproc &gt;= 55.x.x (устаревшая и необязательная; удалена в FFmpeg 8);</li>
+</ul>
+</li>
+<li>GCC &gt;= 9.0, Clang или MSVC. Требуется C++17;</li>
+<li>CMake &gt;= 3.19 для рекомендуемой сборки.</li>
+</ul>
+<p>Более старые FFmpeg (вплоть до 2.0) и GCC (вплоть до 6.0) могут работать, но не проверялись. Самая старая версия Ubuntu в CI — 22.04.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
+Установка FFmpeg</h2>
+<p>На Debian, Ubuntu 19.10+ или Linux Mint 20.x и новее:</p>
+<div class="fragment"><div class="line">sudo apt-get install libavformat-dev libavcodec-dev libavutil-dev \</div>
+<div class="line">                     libavfilter-dev libswscale-dev libswresample-dev \</div>
+<div class="line">                     libavdevice-dev</div>
+</div><!-- fragment --><p><span class="tt">libpostproc</span> — устаревшая библиотека: avcpp её не использует, а FFmpeg 8 удалил её из апстрима, поэтому в новых дистрибутивах пакета может не быть вовсе.</p>
+<p>На Ubuntu 18.04 и Linux Mint 19.x сначала добавьте PPA с FFmpeg 4:</p>
+<div class="fragment"><div class="line">sudo add-apt-repository ppa:jonathonf/ffmpeg-4 -y</div>
+<div class="line">sudo apt update &amp;&amp; sudo apt upgrade</div>
+</div><!-- fragment --><p>Затем установите те же пакеты.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
+Сборка с CMake</h2>
+<div class="fragment"><div class="line">git clone https://github.com/h4tr3d/avcpp.git avcpp-git</div>
+<div class="line">cd avcpp-git</div>
+<div class="line">cmake -B build</div>
+<div class="line">cmake --build build -j</div>
+</div><!-- fragment --><p>Тесты включены по умолчанию; Catch2 скачивается на этапе конфигурации, поэтому подмодули не нужны. Если FFmpeg установлен в нестандартное место:</p>
+<div class="fragment"><div class="line">cmake -B build -DPC_FFMPEG_LIBRARY_DIRS=&lt;path&gt; -DPC_FFMPEG_INCLUDE_DIRS=&lt;path&gt;</div>
+</div><!-- fragment --><p>Установка в префикс:</p>
+<div class="fragment"><div class="line">cmake -B build -DCMAKE_INSTALL_PREFIX=/usr</div>
+<div class="line">cmake --build build -j</div>
+<div class="line">sudo cmake --install build</div>
+</div><!-- fragment --><p>Для пакетирования используйте <span class="tt">DESTDIR</span>:</p>
+<div class="fragment"><div class="line">sudo cmake --install build --prefix /usr --strip</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
+Параметры конфигурации</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">параметр  </th><th class="markdownTableHeadNone">по умолчанию  </th><th class="markdownTableHeadNone">значение  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">AV_ENABLE_STATIC</span>  </td><td class="markdownTableBodyNone"><span class="tt">On</span>  </td><td class="markdownTableBodyNone">собирать статическую библиотеку  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">AV_ENABLE_SHARED</span>  </td><td class="markdownTableBodyNone"><span class="tt">On</span>  </td><td class="markdownTableBodyNone">собирать разделяемую библиотеку  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">AV_BUILD_EXAMPLES</span>  </td><td class="markdownTableBodyNone"><span class="tt">On</span>  </td><td class="markdownTableBodyNone">собирать <span class="tt">example/api2-samples</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">AVCPP_ENABLE_TESTS</span>  </td><td class="markdownTableBodyNone"><span class="tt">On</span>  </td><td class="markdownTableBodyNone">собирать набор тестов Catch2  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">AVCPP_TEST_DATA</span>  </td><td class="markdownTableBodyNone"><span class="tt">Off</span>  </td><td class="markdownTableBodyNone">включить тесты, которым нужны бинарные фикстуры из <span class="tt">avcpp-test-data</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">AV_DISABLE_AVFORMAT</span>  </td><td class="markdownTableBodyNone"><span class="tt">Off</span>  </td><td class="markdownTableBodyNone">не использовать libavformat; также отключает libavfilter и libavdevice  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">AV_DISABLE_AVFILTER</span>  </td><td class="markdownTableBodyNone"><span class="tt">Off</span>  </td><td class="markdownTableBodyNone">не использовать libavfilter; также отключает libavdevice  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">AV_DISABLE_AVDEVICE</span>  </td><td class="markdownTableBodyNone"><span class="tt">Off</span>  </td><td class="markdownTableBodyNone">не использовать libavdevice  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">AVCPP_ENABLE_DOCS</span>  </td><td class="markdownTableBodyNone"><span class="tt">Off</span>  </td><td class="markdownTableBodyNone">добавить цели <span class="tt">docs</span>, <span class="tt">docs-check</span>, <span class="tt">docs-translations</span> и <span class="tt">docs-serve</span>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">CMAKE_CXX_STANDARD</span>  </td><td class="markdownTableBodyNone">новейший поддерживаемый  </td><td class="markdownTableBodyNone">переопределить стандарт C++; документированный минимум — C++17  </td></tr>
+</table>
+<p>Устаревшее: <span class="tt">AV_BUILD_TESTS</span> — псевдоним <span class="tt">AVCPP_ENABLE_TESTS</span>.</p>
+<p>Параметры поиска FFmpeg:</p>
+<ul>
+<li><span class="tt">FFMPEG_PKG_CONFIG_SUFFIX</span> — суффикс, добавляемый к именам пакетов pkg-config;</li>
+<li><span class="tt">PC_&lt;component&gt;_LIBRARY_DIRS</span>, <span class="tt">PC_&lt;component&gt;_INCLUDE_DIRS</span> — подсказки для одного компонента;</li>
+<li><span class="tt">PC_FFMPEG_LIBRARY_DIRS</span>, <span class="tt">PC_FFMPEG_INCLUDE_DIRS</span> — подсказки для всех компонентов.</li>
+</ul>
+<p><span class="tt">&lt;component&gt;</span> — один из <span class="tt">AVCODEC</span>, <span class="tt">AVDEVICE</span>, <span class="tt">AVFORMAT</span>, <span class="tt">AVFILTER</span>, <span class="tt">AVUTIL</span>, <span class="tt">POSTPROC</span>, <span class="tt">SWSCALE</span>, <span class="tt">SWRESAMPLE</span>.</p>
+<p>Чтобы конфигурировать без сети, укажите <span class="tt">FETCHCONTENT_SOURCE_DIR_CATCH2</span> с локальной копией Catch2.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
+Интеграция как git-подмодуль</h2>
+<div class="fragment"><div class="line">git submodule add https://github.com/h4tr3d/avcpp.git 3rdparty/avcpp</div>
+</div><!-- fragment --><div class="fragment"><div class="line">add_subdirectory(3rdparty/avcpp)</div>
+<div class="line">target_link_libraries(prog PRIVATE avcpp::avcpp)</div>
+</div><!-- fragment --><p>avcpp определяет, что он не корневой проект, и пропускает установку.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
+Интеграция через FetchContent</h2>
+<div class="fragment"><div class="line">include(FetchContent)</div>
+<div class="line"> </div>
+<div class="line">FetchContent_Declare(</div>
+<div class="line">    avcpp</div>
+<div class="line">    GIT_REPOSITORY https://github.com/h4tr3d/avcpp.git</div>
+<div class="line">    GIT_TAG        v3.1.0</div>
+<div class="line">)</div>
+<div class="line">set(AV_ENABLE_STATIC On)</div>
+<div class="line">set(AV_ENABLE_SHARED Off)</div>
+<div class="line">FetchContent_MakeAvailable(avcpp)</div>
+<div class="line"> </div>
+<div class="line">target_link_libraries(prog PRIVATE avcpp::avcpp)</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
+Установка через vcpkg</h2>
+<div class="fragment"><div class="line">{</div>
+<div class="line">    &quot;$schema&quot;: &quot;https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json&quot;,</div>
+<div class="line">    &quot;dependencies&quot;: [</div>
+<div class="line">        &quot;avcpp&quot;</div>
+<div class="line">    ],</div>
+<div class="line">    &quot;name&quot;: &quot;your-app-name&quot;,</div>
+<div class="line">    &quot;version-string&quot;: &quot;0.0.1&quot;</div>
+<div class="line">}</div>
+</div><!-- fragment --><div class="fragment"><div class="line">find_package(avcpp CONFIG REQUIRED)</div>
+<div class="line">target_link_libraries(prog PRIVATE avcpp::avcpp)</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
+Сборка с Meson</h2>
+<dl class="section warning"><dt>Предупреждения</dt><dd>Поддерживается CMake. У сборки на Meson нет мейнтейнера, и она не входит в CI.</dd></dl>
+<div class="fragment"><div class="line">meson setup build</div>
+<div class="line">meson compile -C build</div>
+<div class="line">meson test -C build</div>
+<div class="line">meson install -C build</div>
+</div><!-- fragment --><p><span class="tt">-Dbuild_tests=false</span> и <span class="tt">-Dbuild_samples=false</span> соответствуют <span class="tt">AVCPP_ENABLE_TESTS</span> и <span class="tt">AV_BUILD_EXAMPLES</span>; <span class="tt">-Dtest_data=true</span> соответствует <span class="tt">AVCPP_TEST_DATA</span>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
+Сборка документации</h2>
+<div class="fragment"><div class="line">cmake -B build -DAVCPP_ENABLE_DOCS=ON</div>
+<div class="line">cmake --build build --target docs        # английская и русская версии в build/docs/site</div>
+<div class="line">cmake --build build --target docs-serve  # то же плюс сервер на localhost:8000</div>
+</div><!-- fragment --><p><span class="tt">docs-check</span> собирает справочник и сравнивает предупреждения с <span class="tt">docs/doxygen-baseline.txt</span>; сейчас база пуста, поэтому любое новое предупреждение останавливает сборку. Те же команды без CMake — <span class="tt">docs/build.sh</span> и <span class="tt">docs/check-warnings.sh</span>. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

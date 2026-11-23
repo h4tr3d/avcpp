@@ -1,0 +1,7 @@
+<map id="av::VideoEncoderContext" name="av::VideoEncoderContext">
+<area shape="rect" id="Node000001" title="Encodes video frames into packets." alt="" coords="5,911,196,1336"/>
+<area shape="rect" id="Node000002" href="$classav_1_1VideoCodecContext.html" title=" " alt="" coords="8,368,193,863"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,876,103,910,98,910,98,876"/>
+<area shape="rect" id="Node000003" href="$classav_1_1CodecContextBase.html" title="Base class that fixes the direction and media type of a codec context." alt="" coords="20,5,181,320"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="103,334,103,368,98,368,98,334"/>
+</map>

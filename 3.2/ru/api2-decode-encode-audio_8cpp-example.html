@@ -1,0 +1,486 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: api2-decode-encode-audio.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('api2-decode-encode-audio_8cpp-example.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">api2-decode-encode-audio.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<p>Перекодирование аудио.</p>
+<p>Перекодирование аудио.</p><div class="fragment"><div class="line">api2-decode-encode-audio &lt;входной файл&gt; &lt;выходной файл&gt;</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="comment">// Re-encodes the first audio stream into a new file.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Shows: decoding, encoder setup for audio, time base handling and muxing.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Usage: api2-decode-encode-audio &lt;input file&gt; &lt;output file&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/av.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/ffmpeg.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codec.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/packet.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/videorescaler.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/audioresampler.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/avutils.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// API2</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/format.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/formatcontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codec.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codeccontext.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>std;</div>
+<div class="line"><span class="keyword">using namespace </span>av;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">if</span> (argc &lt; 3)</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line"> </div>
+<div class="line">    av::init();</div>
+<div class="line">    av::setFFmpegLoggingLevel(AV_LOG_TRACE);</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">string</span> uri (argv[1]);</div>
+<div class="line">    <span class="keywordtype">string</span> out (argv[2]);</div>
+<div class="line"> </div>
+<div class="line">    ssize_t      audioStream = -1;</div>
+<div class="line">    AudioDecoderContext adec;</div>
+<div class="line">    Stream       ast;</div>
+<div class="line">    error_code   ec;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">int</span> count = 0;</div>
+<div class="line"> </div>
+<div class="line">    {</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        <span class="comment">// INPUT</span></div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        FormatContext ictx;</div>
+<div class="line"> </div>
+<div class="line">        ictx.openInput(uri, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open input\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        ictx.findStreamInfo();</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ictx.streamsCount(); ++i) {</div>
+<div class="line">            <span class="keyword">auto</span> st = ictx.stream(i);</div>
+<div class="line">            <span class="keywordflow">if</span> (st.isAudio()) {</div>
+<div class="line">                audioStream = i;</div>
+<div class="line">                ast = st;</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        cerr &lt;&lt; audioStream &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (ast.isNull()) {</div>
+<div class="line">            cerr &lt;&lt; <span class="stringliteral">&quot;Audio stream not found\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (ast.isValid()) {</div>
+<div class="line">            adec = AudioDecoderContext(ast);</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">//Codec codec = findDecodingCodec(adec.raw()-&gt;codec_id);</span></div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">//adec.setCodec(codec);</span></div>
+<div class="line">            <span class="comment">//adec.setRefCountedFrames(true);</span></div>
+<div class="line"> </div>
+<div class="line">            adec.open(ec);</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open codec\n&quot;</span>;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        <span class="comment">// OUTPUT</span></div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        OutputFormat  ofmt;</div>
+<div class="line">        FormatContext octx;</div>
+<div class="line"> </div>
+<div class="line">        ofmt = av::guessOutputFormat(out, out);</div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Output format: &quot;</span> &lt;&lt; ofmt.name() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; ofmt.longName() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        octx.setFormat(ofmt);</div>
+<div class="line"> </div>
+<div class="line">        Codec ocodec = av::findEncodingCodec(ofmt, <span class="keyword">false</span>);</div>
+<div class="line">        AudioEncoderContext enc (ocodec);</div>
+<div class="line"> </div>
+<div class="line">        clog &lt;&lt; ocodec.name() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; ocodec.longName() &lt;&lt; <span class="stringliteral">&quot;, audio: &quot;</span> &lt;&lt; (ocodec.type()==AVMEDIA_TYPE_AUDIO) &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> sampleFmts  = ocodec.supportedSampleFormats();</div>
+<div class="line">        <span class="keyword">auto</span> sampleRates = ocodec.supportedSamplerates();</div>
+<div class="line">        <span class="keyword">auto</span> layouts     = ocodec.supportedChannelLayouts();</div>
+<div class="line"> </div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Supported sample formats:\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;fmt : sampleFmts) {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;  &quot;</span> &lt;&lt; av_get_sample_fmt_name(fmt) &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Supported sample rates:\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;rate : sampleRates) {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;  &quot;</span> &lt;&lt; rate &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Supported sample layouts:\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;lay : layouts) {</div>
+<div class="line">            <span class="keywordtype">char</span> buf[128] = {0};</div>
+<div class="line">            <span class="comment">// FIXME: Add AVChannelLayout API</span></div>
+<div class="line"><span class="preprocessor">#if AVCPP_API_NEW_CHANNEL_LAYOUT</span></div>
+<div class="line">            AVChannelLayout layout{};</div>
+<div class="line">            av_channel_layout_from_mask(&amp;layout, lay);</div>
+<div class="line">            av_channel_layout_describe(&amp;layout, buf, <span class="keyword">sizeof</span>(buf));</div>
+<div class="line"><span class="preprocessor">#else</span></div>
+<div class="line">            av_get_channel_layout_string(buf,</div>
+<div class="line">                                         <span class="keyword">sizeof</span>(buf),</div>
+<div class="line">                                         av_get_channel_layout_nb_channels(lay),</div>
+<div class="line">                                         lay);</div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line"> </div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;  &quot;</span> &lt;&lt; buf &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">//return 0;</span></div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Settings</span></div>
+<div class="line"><span class="preprocessor">#if 1</span></div>
+<div class="line">        enc.setSampleRate(48000);</div>
+<div class="line">        enc.setSampleFormat(sampleFmts[0]);</div>
+<div class="line">        <span class="comment">// Layout</span></div>
+<div class="line">        <span class="comment">//enc.setChannelLayout(adec.channelLayout());</span></div>
+<div class="line">        enc.setChannelLayout(AV_CH_LAYOUT_STEREO);</div>
+<div class="line">        <span class="comment">//enc.setChannelLayout(AV_CH_LAYOUT_MONO);</span></div>
+<div class="line">        enc.setTimeBase(Rational(1, enc.sampleRate()));</div>
+<div class="line">        enc.setBitRate(adec.bitRate());</div>
+<div class="line"><span class="preprocessor">#else</span></div>
+<div class="line">        enc.setSampleRate(adec.sampleRate());</div>
+<div class="line">        enc.setSampleFormat(adec.sampleFormat());</div>
+<div class="line">        enc.setChannelLayout(adec.channelLayout());</div>
+<div class="line">        enc.setTimeBase(adec.timeBase());</div>
+<div class="line">        enc.setBitRate(adec.bitRate());</div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line"> </div>
+<div class="line">        enc.open(ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open encoder\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        Stream ost = octx.addStream(enc);</div>
+<div class="line">        octx.openOutput(out, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open output\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Encoder frame size: &quot;</span> &lt;&lt; enc.frameSize() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"> </div>
+<div class="line">        octx.dump();</div>
+<div class="line">        octx.writeHeader();</div>
+<div class="line">        octx.flush();</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        <span class="comment">// RESAMPLER</span></div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        AudioResampler resampler(enc.channelLayout(),  enc.sampleRate(),  enc.sampleFormat(),</div>
+<div class="line">                                 adec.channelLayout(), adec.sampleRate(), adec.sampleFormat());</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        <span class="comment">// PROCESS</span></div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line">            Packet pkt = ictx.readPacket(ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec)</div>
+<div class="line">            {</div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;Packet reading error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (pkt &amp;&amp; pkt.streamIndex() != audioStream) {</div>
+<div class="line">                <span class="keywordflow">continue</span>;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Read packet: isNull=&quot;</span> &lt;&lt; (bool)!pkt &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; pkt.pts() &lt;&lt; <span class="stringliteral">&quot;(nopts:&quot;</span> &lt;&lt; pkt.pts().isNoPts() &lt;&lt; <span class="stringliteral">&quot;)&quot;</span> &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; pkt.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; pkt.timeBase() &lt;&lt; <span class="stringliteral">&quot; / st: &quot;</span> &lt;&lt; pkt.streamIndex() &lt;&lt; endl;</div>
+<div class="line"><span class="preprocessor">#if 0</span></div>
+<div class="line">            <span class="keywordflow">if</span> (pkt.pts() == av::NoPts &amp;&amp; pkt.timeBase() == Rational())</div>
+<div class="line">            {</div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;Skip invalid timestamp packet: data=&quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)pkt.data()</div>
+<div class="line">                     &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; pkt.size()</div>
+<div class="line">                     &lt;&lt; <span class="stringliteral">&quot;, flags=&quot;</span> &lt;&lt; pkt.flags() &lt;&lt; <span class="stringliteral">&quot; (corrupt:&quot;</span> &lt;&lt; (pkt.flags() &amp; AV_PKT_FLAG_CORRUPT) &lt;&lt; <span class="stringliteral">&quot;;key:&quot;</span> &lt;&lt; (pkt.flags() &amp; AV_PKT_FLAG_KEY) &lt;&lt; <span class="stringliteral">&quot;)&quot;</span></div>
+<div class="line">                     &lt;&lt; <span class="stringliteral">&quot;, side_data=&quot;</span> &lt;&lt; (<span class="keywordtype">void</span>*)pkt.raw()-&gt;side_data</div>
+<div class="line">                     &lt;&lt; <span class="stringliteral">&quot;, side_data_count=&quot;</span> &lt;&lt; pkt.raw()-&gt;side_data_elems</div>
+<div class="line">                     &lt;&lt; endl;</div>
+<div class="line">                <span class="comment">//continue;</span></div>
+<div class="line">            }</div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line"> </div>
+<div class="line">            <span class="keyword">auto</span> samples = adec.decode(pkt, ec);</div>
+<div class="line">            count++;</div>
+<div class="line">            <span class="comment">//if (count &gt; 200)</span></div>
+<div class="line">            <span class="comment">//    break;</span></div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Decode error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!samples) {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Empty samples set\n&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">                <span class="comment">//if (!pkt) // decoder flushed here</span></div>
+<div class="line">                <span class="comment">//   break;</span></div>
+<div class="line">                <span class="comment">//continue;</span></div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;  Samples [in]: &quot;</span> &lt;&lt; samples.samplesCount()</div>
+<div class="line">                 &lt;&lt; <span class="stringliteral">&quot;, ch: &quot;</span> &lt;&lt; samples.channelsCount()</div>
+<div class="line">                 &lt;&lt; <span class="stringliteral">&quot;, freq: &quot;</span> &lt;&lt; samples.sampleRate()</div>
+<div class="line">                 &lt;&lt; <span class="stringliteral">&quot;, name: &quot;</span> &lt;&lt; samples.channelsLayoutString()</div>
+<div class="line">                 &lt;&lt; <span class="stringliteral">&quot;, pts: &quot;</span> &lt;&lt; samples.pts().seconds()</div>
+<div class="line">                 &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; samples.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; samples.refCount()</div>
+<div class="line">                 &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">// Empty samples set should not be pushed to the resampler, but it is valid case for the</span></div>
+<div class="line">            <span class="comment">// end of reading: during samples empty, some cached data can be stored at the resampler</span></div>
+<div class="line">            <span class="comment">// internal buffer, so we should consume it.</span></div>
+<div class="line">            <span class="keywordflow">if</span> (samples)</div>
+<div class="line">            {</div>
+<div class="line">                resampler.push(samples, ec);</div>
+<div class="line">                <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                    clog &lt;&lt; <span class="stringliteral">&quot;Resampler push error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, text: &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                    <span class="keywordflow">continue</span>;</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">// Pop resampler data</span></div>
+<div class="line">            <span class="keywordtype">bool</span> getAll = !samples;</div>
+<div class="line">            <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line">                AudioSamples ouSamples(enc.sampleFormat(),</div>
+<div class="line">                                       enc.frameSize(),</div>
+<div class="line">                                       enc.channelLayout(),</div>
+<div class="line">                                       enc.sampleRate());</div>
+<div class="line"> </div>
+<div class="line">                <span class="comment">// Resample:</span></div>
+<div class="line">                <span class="keywordtype">bool</span> hasFrame = resampler.pop(ouSamples, getAll, ec);</div>
+<div class="line">                <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                    clog &lt;&lt; <span class="stringliteral">&quot;Resampling status: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, text: &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                    <span class="keywordflow">break</span>;</div>
+<div class="line">                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!hasFrame) {</div>
+<div class="line">                    <span class="keywordflow">break</span>;</div>
+<div class="line">                } <span class="keywordflow">else</span></div>
+<div class="line">                    clog &lt;&lt; <span class="stringliteral">&quot;  Samples [ou]: &quot;</span> &lt;&lt; ouSamples.samplesCount()</div>
+<div class="line">                         &lt;&lt; <span class="stringliteral">&quot;, ch: &quot;</span> &lt;&lt; ouSamples.channelsCount()</div>
+<div class="line">                         &lt;&lt; <span class="stringliteral">&quot;, freq: &quot;</span> &lt;&lt; ouSamples.sampleRate()</div>
+<div class="line">                         &lt;&lt; <span class="stringliteral">&quot;, name: &quot;</span> &lt;&lt; ouSamples.channelsLayoutString()</div>
+<div class="line">                         &lt;&lt; <span class="stringliteral">&quot;, pts: &quot;</span> &lt;&lt; ouSamples.pts().seconds()</div>
+<div class="line">                         &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; ouSamples.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; ouSamples.refCount()</div>
+<div class="line">                         &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">                <span class="comment">// ENCODE</span></div>
+<div class="line">                ouSamples.setStreamIndex(0);</div>
+<div class="line">                ouSamples.setTimeBase(enc.timeBase());</div>
+<div class="line"> </div>
+<div class="line">                Packet opkt = enc.encode(ouSamples, ec);</div>
+<div class="line">                <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                    cerr &lt;&lt; <span class="stringliteral">&quot;Encoding error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                    <span class="keywordflow">return</span> 1;</div>
+<div class="line">                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!opkt) {</div>
+<div class="line">                    <span class="comment">//cerr &lt;&lt; &quot;Empty packet\n&quot;;</span></div>
+<div class="line">                    <span class="keywordflow">continue</span>;</div>
+<div class="line">                }</div>
+<div class="line"> </div>
+<div class="line">                opkt.setStreamIndex(0);</div>
+<div class="line"> </div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;Write packet: pts=&quot;</span> &lt;&lt; opkt.pts() &lt;&lt; <span class="stringliteral">&quot;, dts=&quot;</span> &lt;&lt; opkt.dts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; opkt.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; opkt.timeBase() &lt;&lt; <span class="stringliteral">&quot; / st: &quot;</span> &lt;&lt; opkt.streamIndex() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">                octx.writePacket(opkt, ec);</div>
+<div class="line">                <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                    cerr &lt;&lt; <span class="stringliteral">&quot;Error write packet: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                    <span class="keywordflow">return</span> 1;</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">// For the first packets samples can be empty: decoder caching</span></div>
+<div class="line">            <span class="keywordflow">if</span> (!pkt &amp;&amp; !samples)</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        <span class="comment">// Is resampler flushed?</span></div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        cerr &lt;&lt; <span class="stringliteral">&quot;Delay: &quot;</span> &lt;&lt; resampler.delay() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        <span class="comment">// Flush encoder queue</span></div>
+<div class="line">        <span class="comment">//</span></div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Flush encoder:\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line">            AudioSamples null(<span class="keyword">nullptr</span>);</div>
+<div class="line">            Packet        opkt = enc.encode(null, ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec || !opkt)</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line"> </div>
+<div class="line">            opkt.setStreamIndex(0);</div>
+<div class="line"> </div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Write packet: pts=&quot;</span> &lt;&lt; opkt.pts() &lt;&lt; <span class="stringliteral">&quot;, dts=&quot;</span> &lt;&lt; opkt.dts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; opkt.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; opkt.timeBase() &lt;&lt; <span class="stringliteral">&quot; / st: &quot;</span> &lt;&lt; opkt.streamIndex() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">            octx.writePacket(opkt, ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Error write packet: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        octx.flush();</div>
+<div class="line">        octx.writeTrailer();</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+</div><!-- fragment --> </div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: api2-decode-overlay-encode.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('api2-decode-overlay-encode_8cpp-example.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">api2-decode-overlay-encode.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<p>Наложение изображения и кодирование.</p>
+<p>Наложение изображения и кодирование.</p><div class="fragment"><div class="line">api2-decode-overlay-encode &lt;видео&gt; &lt;изображение&gt; &lt;выходной файл&gt;</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="comment">// Overlays a still image on a video and encodes the result.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Shows: decoding two inputs, the overlay filter with its timeline, scaling the</span></div>
+<div class="line"><span class="comment">// overlay to the main picture, and encoding the filtered frames.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Usage: api2-decode-overlay-encode &lt;video&gt; &lt;image&gt; &lt;output file&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &quot;audioresampler.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;av.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avutils.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;codec.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;ffmpeg.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;packet.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;videorescaler.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// API2</span></div>
+<div class="line"><span class="preprocessor">#include &quot;codec.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;codeccontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;filters/buffersink.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;filters/buffersrc.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;filters/filtergraph.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;format.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;formatcontext.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>std;</div>
+<div class="line"><span class="keyword">using namespace </span>av;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">if</span> (argc &lt; 3)</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line"> </div>
+<div class="line">    av::init();</div>
+<div class="line">    av::setFFmpegLoggingLevel(AV_LOG_DEBUG);</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">string</span> uri{argv[1]};</div>
+<div class="line">    <span class="keywordtype">string</span> image{argv[2]};</div>
+<div class="line">    <span class="keywordtype">string</span> out{argv[3]};</div>
+<div class="line"> </div>
+<div class="line">    error_code ec;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    <span class="comment">// INPUT</span></div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    FormatContext ictx;</div>
+<div class="line">    ssize_t videoStream = -1;</div>
+<div class="line">    VideoDecoderContext vdec;</div>
+<div class="line">    Stream vst;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">int</span> count = 0;</div>
+<div class="line"> </div>
+<div class="line">    ictx.openInput(uri, ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec)</div>
+<div class="line">    {</div>
+<div class="line">        cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open input\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    ictx.findStreamInfo();</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ictx.streamsCount(); ++i)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keyword">auto</span> st = ictx.stream(i);</div>
+<div class="line">        <span class="keywordflow">if</span> (st.mediaType() == AVMEDIA_TYPE_VIDEO)</div>
+<div class="line">        {</div>
+<div class="line">            videoStream = i;</div>
+<div class="line">            vst = st;</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (vst.isNull())</div>
+<div class="line">    {</div>
+<div class="line">        cerr &lt;&lt; <span class="stringliteral">&quot;Video stream not found\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (vst.isValid())</div>
+<div class="line">    {</div>
+<div class="line">        vdec = VideoDecoderContext(vst);</div>
+<div class="line">        vdec.setRefCountedFrames(<span class="keyword">true</span>);</div>
+<div class="line"> </div>
+<div class="line">        vdec.open(Codec(), ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">        {</div>
+<div class="line">            cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open codec\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    <span class="comment">// STATIC IMAGE (more or less identical to INPUT)</span></div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    FormatContext static_image_ctx;</div>
+<div class="line">    ssize_t imageStream = -1;</div>
+<div class="line">    VideoDecoderContext static_image_dec;</div>
+<div class="line">    Stream image_st;</div>
+<div class="line"> </div>
+<div class="line">    static_image_ctx.openInput(image, ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec)</div>
+<div class="line">    {</div>
+<div class="line">        cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open static image\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    static_image_ctx.findStreamInfo();</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; static_image_ctx.streamsCount(); ++i)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keyword">auto</span> st = static_image_ctx.stream(i);</div>
+<div class="line">        <span class="comment">// An image is still a video stream in the ffmpeg world</span></div>
+<div class="line">        <span class="keywordflow">if</span> (st.mediaType() == AVMEDIA_TYPE_VIDEO)</div>
+<div class="line">        {</div>
+<div class="line">            imageStream = i;</div>
+<div class="line">            image_st = st;</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (image_st.isNull())</div>
+<div class="line">    {</div>
+<div class="line">        cerr &lt;&lt; <span class="stringliteral">&quot;Image stream not found\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (image_st.isValid())</div>
+<div class="line">    {</div>
+<div class="line">        static_image_dec = VideoDecoderContext(image_st);</div>
+<div class="line">        static_image_dec.setRefCountedFrames(<span class="keyword">true</span>);</div>
+<div class="line"> </div>
+<div class="line">        static_image_dec.open(Codec(), ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">        {</div>
+<div class="line">            cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open codec\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    <span class="comment">// OUTPUT</span></div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    OutputFormat ofrmt;</div>
+<div class="line">    FormatContext octx;</div>
+<div class="line"> </div>
+<div class="line">    ofrmt.setFormat(<span class="keywordtype">string</span>(), out);</div>
+<div class="line">    octx.setFormat(ofrmt);</div>
+<div class="line"> </div>
+<div class="line">    Codec ocodec = findEncodingCodec(ofrmt);</div>
+<div class="line">    VideoEncoderContext encoder{ocodec};</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Settings</span></div>
+<div class="line">    encoder.setWidth(vdec.width());</div>
+<div class="line">    encoder.setHeight(vdec.height());</div>
+<div class="line">    <span class="keywordflow">if</span> (vdec.pixelFormat() &gt; -1)</div>
+<div class="line">        encoder.setPixelFormat(vdec.pixelFormat());</div>
+<div class="line">    encoder.setTimeBase(Rational{1, 1000});</div>
+<div class="line">    encoder.setBitRate(vdec.bitRate());</div>
+<div class="line"> </div>
+<div class="line">    encoder.open(Codec(), ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec)</div>
+<div class="line">    {</div>
+<div class="line">        cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t opent encodec\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    Stream ost = octx.addStream(encoder);</div>
+<div class="line">    ost.setFrameRate(vst.frameRate());</div>
+<div class="line"> </div>
+<div class="line">    octx.openOutput(out, ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec)</div>
+<div class="line">    {</div>
+<div class="line">        cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open output\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    octx.dump();</div>
+<div class="line">    octx.writeHeader();</div>
+<div class="line">    octx.flush();</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// FILTER (OVERLAY)</span></div>
+<div class="line">    FilterGraph filter_graph;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Construct the filter descriptor</span></div>
+<div class="line">    stringstream filter_desc;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// * for the video input</span></div>
+<div class="line">    filter_desc &lt;&lt; <span class="stringliteral">&quot;buffer@in=video_size=&quot;</span> &lt;&lt; vdec.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; vdec.height() &lt;&lt; <span class="stringliteral">&quot;:pix_fmt=&quot;</span> &lt;&lt; vdec.pixelFormat()</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;:time_base=&quot;</span> &lt;&lt; encoder.timeBase() &lt;&lt; <span class="stringliteral">&quot;:pixel_aspect=&quot;</span> &lt;&lt; vdec.sampleAspectRatio() &lt;&lt; <span class="stringliteral">&quot; [in];  &quot;</span>;</div>
+<div class="line">    <span class="comment">// * for the fixed image input</span></div>
+<div class="line">    filter_desc &lt;&lt; <span class="stringliteral">&quot;buffer@image=video_size=&quot;</span> &lt;&lt; static_image_dec.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; static_image_dec.height()</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;:pix_fmt=&quot;</span> &lt;&lt; static_image_dec.pixelFormat() &lt;&lt; <span class="stringliteral">&quot;:time_base=&quot;</span> &lt;&lt; encoder.timeBase()</div>
+<div class="line">                &lt;&lt; <span class="stringliteral">&quot;:pixel_aspect=&quot;</span> &lt;&lt; static_image_dec.sampleAspectRatio() &lt;&lt; <span class="stringliteral">&quot; [image_unscaled];  &quot;</span>;</div>
+<div class="line">    filter_desc &lt;&lt; <span class="stringliteral">&quot;[image_unscaled] scale=&quot;</span> &lt;&lt; vdec.width() / 4 &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; vdec.height() / 4 &lt;&lt; <span class="stringliteral">&quot; [image];  &quot;</span>;</div>
+<div class="line">    <span class="comment">// * for the output</span></div>
+<div class="line">    filter_desc &lt;&lt; <span class="stringliteral">&quot;[in][image] overlay=x=50:y=50:repeatlast=1 [out];  &quot;</span>;</div>
+<div class="line">    filter_desc &lt;&lt; <span class="stringliteral">&quot;[out] buffersink@out&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Setup the filter chain</span></div>
+<div class="line">    clog &lt;&lt; <span class="stringliteral">&quot;Filter descriptor: &quot;</span> &lt;&lt; filter_desc.str() &lt;&lt; endl;</div>
+<div class="line">    filter_graph.parse(filter_desc.str(), ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec)</div>
+<div class="line">    {</div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Error parsing filter chain: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line">    filter_graph.config(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec)</div>
+<div class="line">    {</div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Error configuring filter chain: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Setup the entry/exit points</span></div>
+<div class="line">    BufferSrcFilterContext buffer_video_src{filter_graph.filter(<span class="stringliteral">&quot;buffer@in&quot;</span>)};</div>
+<div class="line">    BufferSrcFilterContext buffer_image_src{filter_graph.filter(<span class="stringliteral">&quot;buffer@image&quot;</span>)};</div>
+<div class="line">    BufferSinkFilterContext buffer_sink{filter_graph.filter(<span class="stringliteral">&quot;buffersink@out&quot;</span>)};</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Load the static image into buffer_image_src, it won&#39;t change</span></div>
+<div class="line">    {</div>
+<div class="line">        <span class="keyword">auto</span> image_pkt = static_image_ctx.readPacket(ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">        {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Image reading error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keyword">auto</span> image_frame = static_image_dec.decode(image_pkt, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">        {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Image decoding error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">        image_frame.setTimeBase(encoder.timeBase());</div>
+<div class="line">        image_frame.setStreamIndex(0);</div>
+<div class="line">        image_frame.setPictureType();</div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Frame for overlaying: pts=&quot;</span> &lt;&lt; image_frame.pts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; image_frame.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span></div>
+<div class="line">             &lt;&lt; image_frame.timeBase() &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; image_frame.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; image_frame.height()</div>
+<div class="line">             &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; image_frame.size() &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; image_frame.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span></div>
+<div class="line">             &lt;&lt; image_frame.refCount() &lt;&lt; <span class="stringliteral">&quot; / type: &quot;</span> &lt;&lt; image_frame.pictureType() &lt;&lt; endl;</div>
+<div class="line">        buffer_image_src.addVideoFrame(image_frame, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">        {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Image processing error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="comment">// Very important! Signal that there are no more frames after this one!</span></div>
+<div class="line">        <span class="comment">// ffmpeg expects a full video, this will allow the repeatlast=1 in</span></div>
+<div class="line">        <span class="comment">// overlay to kick in</span></div>
+<div class="line">        buffer_image_src.writeVideoFrame(VideoFrame::null());</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    <span class="comment">// PROCESS</span></div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
+<div class="line">    {</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// READING</span></div>
+<div class="line">        Packet pkt = ictx.readPacket(ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">        {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Packet reading error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordtype">bool</span> flushDecoder = <span class="keyword">false</span>;</div>
+<div class="line">        <span class="comment">// !EOF</span></div>
+<div class="line">        <span class="keywordflow">if</span> (pkt)</div>
+<div class="line">        {</div>
+<div class="line">            <span class="keywordflow">if</span> (pkt.streamIndex() != videoStream)</div>
+<div class="line">            {</div>
+<div class="line">                <span class="keywordflow">continue</span>;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Read packet: pts=&quot;</span> &lt;&lt; pkt.pts() &lt;&lt; <span class="stringliteral">&quot;, dts=&quot;</span> &lt;&lt; pkt.dts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; pkt.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span></div>
+<div class="line">                 &lt;&lt; pkt.timeBase() &lt;&lt; <span class="stringliteral">&quot; / st: &quot;</span> &lt;&lt; pkt.streamIndex() &lt;&lt; endl;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span></div>
+<div class="line">        {</div>
+<div class="line">            flushDecoder = <span class="keyword">true</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">do</span></div>
+<div class="line">        {</div>
+<div class="line">            <span class="comment">// DECODING</span></div>
+<div class="line">            <span class="keyword">auto</span> frame = vdec.decode(pkt, ec);</div>
+<div class="line"> </div>
+<div class="line">            count++;</div>
+<div class="line">            <span class="comment">// if (count &gt; 200)</span></div>
+<div class="line">            <span class="comment">//     break;</span></div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordtype">bool</span> flushEncoder = <span class="keyword">false</span>;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (ec)</div>
+<div class="line">            {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Decoding error: &quot;</span> &lt;&lt; ec &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!frame)</div>
+<div class="line">            {</div>
+<div class="line">                <span class="keywordflow">if</span> (flushDecoder)</div>
+<div class="line">                {</div>
+<div class="line">                    flushEncoder = <span class="keyword">true</span>;</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (frame)</div>
+<div class="line">            {</div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;Frame from decoder: pts=&quot;</span> &lt;&lt; frame.pts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; frame.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span></div>
+<div class="line">                     &lt;&lt; frame.timeBase() &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; frame.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; frame.height() &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; frame.size()</div>
+<div class="line">                     &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; frame.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; frame.refCount()</div>
+<div class="line">                     &lt;&lt; <span class="stringliteral">&quot; / type: &quot;</span> &lt;&lt; frame.pictureType() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">                frame.setTimeBase(encoder.timeBase());</div>
+<div class="line">                frame.setStreamIndex(0);</div>
+<div class="line">                frame.setPictureType();</div>
+<div class="line"> </div>
+<div class="line">                <span class="comment">// Push into the filter</span></div>
+<div class="line">                buffer_video_src.addVideoFrame(frame, ec);</div>
+<div class="line">                <span class="keywordflow">if</span> (ec)</div>
+<div class="line">                {</div>
+<div class="line">                    clog &lt;&lt; <span class="stringliteral">&quot;Filter push error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                    <span class="keywordflow">return</span> 1;</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">// Pull from the filter until there are no more incoming frames</span></div>
+<div class="line">            VideoFrame filtered;</div>
+<div class="line">            <span class="keywordflow">while</span> (buffer_sink.getVideoFrame(filtered, ec))</div>
+<div class="line">            {</div>
+<div class="line">                <span class="comment">// Change timebase</span></div>
+<div class="line">                filtered.setTimeBase(encoder.timeBase());</div>
+<div class="line">                filtered.setStreamIndex(0);</div>
+<div class="line">                filtered.setPictureType();</div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;Frame from filter: pts=&quot;</span> &lt;&lt; filtered.pts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; filtered.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span></div>
+<div class="line">                     &lt;&lt; filtered.timeBase() &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; filtered.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; filtered.height()</div>
+<div class="line">                     &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; filtered.size() &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; filtered.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span></div>
+<div class="line">                     &lt;&lt; filtered.refCount() &lt;&lt; <span class="stringliteral">&quot; / type: &quot;</span> &lt;&lt; filtered.pictureType() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">                <span class="keywordflow">if</span> (filtered || flushEncoder)</div>
+<div class="line">                {</div>
+<div class="line">                    <span class="keywordflow">do</span></div>
+<div class="line">                    {</div>
+<div class="line">                        <span class="comment">// Encode</span></div>
+<div class="line">                        Packet opkt = filtered ? encoder.encode(filtered, ec) : encoder.encode(ec);</div>
+<div class="line">                        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">                        {</div>
+<div class="line">                            cerr &lt;&lt; <span class="stringliteral">&quot;Encoding error: &quot;</span> &lt;&lt; ec &lt;&lt; endl;</div>
+<div class="line">                            <span class="keywordflow">return</span> 1;</div>
+<div class="line">                        }</div>
+<div class="line">                        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!opkt)</div>
+<div class="line">                        {</div>
+<div class="line">                            <span class="comment">// cerr &lt;&lt; &quot;Empty packet\n&quot;;</span></div>
+<div class="line">                            <span class="comment">// continue;</span></div>
+<div class="line">                            <span class="keywordflow">break</span>;</div>
+<div class="line">                        }</div>
+<div class="line"> </div>
+<div class="line">                        <span class="comment">// Only one output stream</span></div>
+<div class="line">                        opkt.setStreamIndex(0);</div>
+<div class="line"> </div>
+<div class="line">                        clog &lt;&lt; <span class="stringliteral">&quot;Write packet: pts=&quot;</span> &lt;&lt; opkt.pts() &lt;&lt; <span class="stringliteral">&quot;, dts=&quot;</span> &lt;&lt; opkt.dts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span></div>
+<div class="line">                             &lt;&lt; opkt.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; opkt.timeBase() &lt;&lt; <span class="stringliteral">&quot; / st: &quot;</span> &lt;&lt; opkt.streamIndex()</div>
+<div class="line">                             &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">                        octx.writePacket(opkt, ec);</div>
+<div class="line">                        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">                        {</div>
+<div class="line">                            cerr &lt;&lt; <span class="stringliteral">&quot;Error write packet: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                            <span class="keywordflow">return</span> 1;</div>
+<div class="line">                        }</div>
+<div class="line">                    } <span class="keywordflow">while</span> (flushEncoder);</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">if</span> (ec &amp;&amp; ec.value() != -EAGAIN)</div>
+<div class="line">            {</div>
+<div class="line">                cerr &lt;&lt; <span class="stringliteral">&quot;Error reading frame from the filter chain: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">if</span> (flushEncoder)</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line"> </div>
+<div class="line">        } <span class="keywordflow">while</span> (flushDecoder);</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (flushDecoder)</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    clog &lt;&lt; <span class="stringliteral">&quot;done&quot;</span> &lt;&lt; endl;</div>
+<div class="line">    octx.writeTrailer();</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

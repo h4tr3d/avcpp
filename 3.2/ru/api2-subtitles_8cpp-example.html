@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: api2-subtitles.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('api2-subtitles_8cpp-example.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">api2-subtitles.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<p>Декодирование субтитров.</p>
+<p>Декодирование субтитров.</p><div class="fragment"><div class="line">api2-subtitles &lt;входной файл&gt;</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="comment">// Decodes the first subtitle stream and prints the decoded subtitle frames.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Subtitle codecs use the legacy avcodec_decode_subtitle2() API, so</span></div>
+<div class="line"><span class="comment">// SubtitleDecoderContext::decode() is called once per packet instead of the</span></div>
+<div class="line"><span class="comment">// send/receive pair.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Usage: api2-subtitles &lt;input file&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/av.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codeccontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/formatcontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/packet.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/stream.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/subtitle.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span>{</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> printRect(<span class="keyword">const</span> av::SubtitleRect &amp;rect, std::size_t index)</div>
+<div class="line">{</div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;  rect &quot;</span> &lt;&lt; index &lt;&lt; <span class="stringliteral">&quot;: &quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">switch</span> (rect.type()) {</div>
+<div class="line">    <span class="keywordflow">case</span> SUBTITLE_TEXT:</div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;text: &quot;</span> &lt;&lt; rect.text();</div>
+<div class="line">        <span class="keywordflow">break</span>;</div>
+<div class="line">    <span class="keywordflow">case</span> SUBTITLE_ASS:</div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;ass: &quot;</span> &lt;&lt; rect.ass();</div>
+<div class="line">        <span class="keywordflow">break</span>;</div>
+<div class="line">    <span class="keywordflow">case</span> SUBTITLE_BITMAP:</div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;bitmap: &quot;</span> &lt;&lt; rect.width() &lt;&lt; <span class="charliteral">&#39;x&#39;</span> &lt;&lt; rect.height()</div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot;, colors: &quot;</span> &lt;&lt; rect.nbColors()</div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot;, x: &quot;</span> &lt;&lt; rect.x() &lt;&lt; <span class="stringliteral">&quot;, y: &quot;</span> &lt;&lt; rect.y();</div>
+<div class="line">        <span class="keywordflow">break</span>;</div>
+<div class="line">    <span class="keywordflow">default</span>:</div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;type: &quot;</span> &lt;&lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(rect.type());</div>
+<div class="line">        <span class="keywordflow">break</span>;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (rect.isForced())</div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot; (forced)&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">    std::cout &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">} <span class="comment">// namespace</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">if</span> (argc &lt; 2) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Usage: &quot;</span> &lt;&lt; argv[0] &lt;&lt; <span class="stringliteral">&quot; &lt;input file&gt;\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::init();</div>
+<div class="line"> </div>
+<div class="line">    std::error_code ec;</div>
+<div class="line"> </div>
+<div class="line">    av::FormatContext ictx;</div>
+<div class="line">    ictx.openInput(argv[1], ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open input: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    ictx.findStreamInfo(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t find streams: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::Stream sst;</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;&amp;st : ictx.streams()) {</div>
+<div class="line">        <span class="keywordflow">if</span> (st.mediaType() == AVMEDIA_TYPE_SUBTITLE) {</div>
+<div class="line">            sst = st;</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (!sst.isValid()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Subtitle stream not found\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::SubtitleDecoderContext dec{sst};</div>
+<div class="line">    dec.open(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open codec: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    std::size_t packets = 0;</div>
+<div class="line">    std::size_t frames = 0;</div>
+<div class="line"> </div>
+<div class="line">    av::Packet pkt;</div>
+<div class="line">    <span class="keywordflow">while</span> ((pkt = ictx.readPacket(ec))) {</div>
+<div class="line">        <span class="keywordflow">if</span> (pkt.streamIndex() != sst.index())</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">        ++packets;</div>
+<div class="line"> </div>
+<div class="line">        std::size_t decodedBytes = 0;</div>
+<div class="line">        <span class="keyword">auto</span> frame = dec.decode(pkt, 0, decodedBytes, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t decode a subtitle: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// A packet can be consumed without producing a complete subtitle.</span></div>
+<div class="line">        <span class="keywordflow">if</span> (!frame)</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">        ++frames;</div>
+<div class="line"> </div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;subtitle &quot;</span> &lt;&lt; frames</div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot;: pts &quot;</span> &lt;&lt; frame.pts()</div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot; (&quot;</span> &lt;&lt; frame.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; s)&quot;</span></div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot;, display &quot;</span> &lt;&lt; frame.startDisplayTime()</div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot;..&quot;</span> &lt;&lt; frame.endDisplayTime() &lt;&lt; <span class="stringliteral">&quot; ms&quot;</span></div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot;, rects: &quot;</span> &lt;&lt; frame.numRects() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; frame.numRects(); ++i)</div>
+<div class="line">            printRect(frame.rect(i), i);</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Read error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;packets: &quot;</span> &lt;&lt; packets &lt;&lt; <span class="stringliteral">&quot;, subtitles: &quot;</span> &lt;&lt; frames &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

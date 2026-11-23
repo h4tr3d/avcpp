@@ -1,0 +1,7 @@
+<map id="av::VideoRescaler" name="av::VideoRescaler">
+<area shape="rect" id="Node000001" title="Converts video frames between sizes and pixel formats." alt="" coords="134,199,277,604"/>
+<area shape="rect" id="Node000002" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,5,216,151"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="138,163,148,197,143,199,133,165"/>
+<area shape="rect" id="Node000003" href="$classav_1_1noncopyable.html" title="Base class that deletes copying and assignment." alt="" coords="241,25,362,131"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="285,144,268,199,263,198,280,143"/>
+</map>

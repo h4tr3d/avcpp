@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: Начало работы</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_getting_started.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Начало работы </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>Здесь собирается минимальная полезная программа: открыть файл, найти видеопоток, декодировать его и напечатать по строке на кадр. Это основа, на которую опираются все остальные руководства.</p>
+<p>Что нужно: FFmpeg 4.0 или новее и компилятор с C++17. Если библиотека еще не установлена, см. <a href="../guide_building.html">руководство по сборке</a>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md34"></a>
+Программа</h2>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/av.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codeccontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/formatcontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/packet.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/stream.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">if</span> (argc &lt; 2) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Usage: &quot;</span> &lt;&lt; argv[0] &lt;&lt; <span class="stringliteral">&quot; &lt;input file&gt;\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::init();</div>
+<div class="line"> </div>
+<div class="line">    std::error_code ec;</div>
+<div class="line">    av::FormatContext ictx;</div>
+<div class="line">    ictx.openInput(argv[1], ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open input: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    ictx.findStreamInfo(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t find streams: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::Stream vst;</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;&amp;st : ictx.streams()) {</div>
+<div class="line">        <span class="keywordflow">if</span> (st.mediaType() == AVMEDIA_TYPE_VIDEO) {</div>
+<div class="line">            vst = st;</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (!vst.isValid()) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Video stream not found\n&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    av::VideoDecoderContext dec{vst};</div>
+<div class="line">    dec.open(ec);</div>
+<div class="line">    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open codec: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">for</span> (;;) {</div>
+<div class="line">        av::Packet pkt = ictx.readPacket(ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Read error: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">if</span> (!pkt)</div>
+<div class="line">            <span class="keywordflow">break</span>; <span class="comment">// конец файла</span></div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (pkt.streamIndex() != vst.index())</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (!dec.send(pkt, ec)) {</div>
+<div class="line">            std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t send a packet: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">for</span> (;;) {</div>
+<div class="line">            av::VideoFrame frame = dec.receive(ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                std::cerr &lt;&lt; <span class="stringliteral">&quot;Can&#39;t receive a frame: &quot;</span> &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">if</span> (!frame)</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line"> </div>
+<div class="line">            std::cout &lt;&lt; frame.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; s, &quot;</span></div>
+<div class="line">                      &lt;&lt; frame.width() &lt;&lt; <span class="charliteral">&#39;x&#39;</span> &lt;&lt; frame.height()</div>
+<div class="line">                      &lt;&lt; <span class="stringliteral">&quot;, format &quot;</span> &lt;&lt; frame.pixelFormat().name() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md35"></a>
+Что делает каждый шаг</h2>
+<p><b><span class="tt">av::init()</span></b> регистрирует кодеки и форматы FFmpeg. Вызывайте ее один раз, до любого другого вызова avcpp или FFmpeg. До нее все остальное небезопасно.</p>
+<p><b><span class="tt">av::FormatContext</span></b> владеет входом. <span class="tt">openInput()</span> определяет контейнер, <span class="tt">findStreamInfo()</span> читает параметры потоков. Второй вызов пропускать нельзя: параметры кодека часто неизвестны, пока файл не прочитан.</p>
+<p><b><span class="tt">av::Stream</span></b> — дескриптор одного потока внутри контекста. Его можно копировать, это дешево; уничтожение копии не уничтожает поток. <span class="tt">mediaType()</span>, <span class="tt">index()</span> и <span class="tt">timeBase()</span> — те методы, которые нужны чаще всего.</p>
+<p><b><span class="tt">av::VideoDecoderContext</span></b> создается из потока и берет кодек из параметров потока. <span class="tt">open()</span> без аргументов — обычный случай; остальные аргументы нужны для явного выбора кодека и опций.</p>
+<p><b><span class="tt">send()</span> / <span class="tt">receive()</span></b> — современный API кодеков FFmpeg и единственный корректный для асинхронных декодеров. Пакет обычно дает ноль, один или несколько кадров; кадр может появиться через много пакетов, а отклоненный <span class="tt">send()</span> означает «осушите декодер и повторите». Подробно контракт разобран в <a class="el" href="guide_decode.html" title="Декодирование">Декодирование</a>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md36"></a>
+Ошибки</h2>
+<p>Любой вызов, который может завершиться ошибкой, принимает <span class="tt">OptionalErrorCode</span>. По умолчанию это <span class="tt">throws()</span>, то есть исключение <span class="tt">av::Exception</span> (наследник <span class="tt">std::system_error</span>). Если передать <span class="tt">std::error_code&amp;</span>, вызов перестает бросать и записывает ошибку туда. Поэтому в программе выше объявлен один <span class="tt">std::error_code ec</span> и переиспользуется.</p>
+<p>Внутри одного вызова стили не смешиваются: либо вы получаете код, либо исключение. Категории и полный список кодов — в <a class="el" href="guide_errors.html" title="Обработка ошибок">Обработка ошибок</a>.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md37"></a>
+Линковка</h2>
+<div class="fragment"><div class="line">add_executable(probe main.cpp)</div>
+<div class="line">target_link_libraries(probe PRIVATE avcpp::avcpp)</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md38"></a>
+Дальше</h2>
+<ul>
+<li><a class="el" href="guide_decode.html" title="Декодирование">Декодирование</a> — время кадров, слив и почему <span class="tt">receive()</span> возвращает пустые значения.</li>
+<li><a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a> — запись кадров обратно в контейнер.</li>
+<li><a class="el" href="guide_errors.html" title="Обработка ошибок">Обработка ошибок</a> — модель ошибок целиком.</li>
+<li><a class="el" href="guide_hw_codecs.html" title="Аппаратное кодирование и декодирование">Аппаратное кодирование и декодирование</a> — тот же сценарий на GPU. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

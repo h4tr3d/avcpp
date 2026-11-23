@@ -1,0 +1,7 @@
+<map id="av::SubtitleEncoderContext" name="av::SubtitleEncoderContext">
+<area shape="rect" id="Node000001" title="Encodes subtitle frames into packets." alt="" coords="11,631,203,796"/>
+<area shape="rect" id="Node000002" href="$classav_1_1SubtitleCodecContext.html" title=" " alt="" coords="5,368,209,583"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="110,596,110,630,105,630,105,596"/>
+<area shape="rect" id="Node000003" href="$classav_1_1CodecContextBase.html" title="Base class that fixes the direction and media type of a codec context." alt="" coords="27,5,188,320"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="110,334,110,368,105,368,105,334"/>
+</map>

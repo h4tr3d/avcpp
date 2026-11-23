@@ -1,0 +1,7 @@
+<map id="av::BufferRef" name="av::BufferRef">
+<area shape="rect" id="Node000001" title="Light weight wrapper for the FFmpeg AVBufferRef functionality." alt="" coords="46,592,175,1057"/>
+<area shape="rect" id="Node000002" href="$classav_1_1BufferRefView.html" title="Non&#45;owning view for the nested AVBufferRef." alt="" coords="45,199,177,544"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,558,113,592,108,592,108,558"/>
+<area shape="rect" id="Node000003" href="$structFFWrapperPtr.html" title=" " alt="" coords="5,5,216,151"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="113,164,113,198,108,198,108,164"/>
+</map>

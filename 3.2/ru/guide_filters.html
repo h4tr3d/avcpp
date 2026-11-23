@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: Фильтры</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('guide_filters.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Фильтры </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>Граф фильтров стоит между декодером и кодировщиком: кадры входят через источник, проходят через любое число фильтров, описанных строкой, и выходят через сток.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md29"></a>
+Сборка графа</h2>
+<div class="fragment"><div class="line">        <span class="comment">// Setup filter</span></div>
+<div class="line">        Filter filter_buffer_src{<span class="stringliteral">&quot;buffer&quot;</span>};</div>
+<div class="line">        Filter filter_buffer_sink{<span class="stringliteral">&quot;buffersink&quot;</span>};</div>
+<div class="line">        FilterGraph filter_graph;</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Input and ouput contexts</span></div>
+<div class="line">        std::stringstream src_args;</div>
+<div class="line">        src_args &lt;&lt; <span class="stringliteral">&quot;video_size=&quot;</span> &lt;&lt; vdec.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; vdec.height() &lt;&lt; <span class="stringliteral">&quot;:pix_fmt=&quot;</span> &lt;&lt; vdec.pixelFormat()</div>
+<div class="line">                 &lt;&lt; <span class="stringliteral">&quot;:time_base=&quot;</span> &lt;&lt; vdec.timeBase() &lt;&lt; <span class="stringliteral">&quot;:pixel_aspect=&quot;</span> &lt;&lt; vdec.sampleAspectRatio();</div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;Input arguments: &quot;</span> &lt;&lt; src_args.str() &lt;&lt; endl;</div>
+<div class="line">        FilterContext src_ctx = filter_graph.createFilter(filter_buffer_src, <span class="stringliteral">&quot;in&quot;</span>, src_args.str(), ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">        {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Error creating filter source context: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">        FilterContext sink_ctx = filter_graph.createFilter(filter_buffer_sink, <span class="stringliteral">&quot;out&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">        {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Error creating filter sink context: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Setup the filter chain</span></div>
+<div class="line">        <span class="keywordtype">string</span> filterChain;</div>
+<div class="line">        <span class="keywordflow">if</span> (argc &gt; 3) {</div>
+<div class="line">            filterChain = argv[3];</div>
+<div class="line">        } <span class="keywordflow">else</span> {</div>
+<div class="line">            filterChain = <span class="stringliteral">&quot;scale=320x200:-1:flags=lanczos,split [s0][s1]; &quot;</span></div>
+<div class="line">                <span class="stringliteral">&quot;[s0] palettegen [p]; [s1][p] paletteuse[f]; &quot;</span>;</div>
+<div class="line">        }</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;Filter: &quot;</span> &lt;&lt; filterChain &lt;&lt; endl;</div>
+<div class="line">        filter_graph.parse(filterChain, src_ctx, sink_ctx, ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Error parsing filter chain: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">        filter_graph.config(ec);</div>
+<div class="line">        <span class="keywordflow">if</span> (ec)</div>
+<div class="line">        {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Error configuring filter chain: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">            <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Setup the entry/exit points</span></div>
+<div class="line">        BufferSrcFilterContext buffer_src{src_ctx};</div>
+<div class="line">        BufferSinkFilterContext buffer_sink{sink_ctx};</div>
+<div class="line"> </div>
+</div><!-- fragment --><p>Четыре шага:</p>
+<ol type="1">
+<li><b>Назвать концы.</b> <span class="tt">Filter{"buffer"}</span> и <span class="tt">Filter{"buffersink"}</span> — стандартные фильтры входа и выхода любого графа. В строку цепочки они не входят.</li>
+<li><b>Описать вход.</b> Аргументы источника должны совпадать с кадрами, которые будут подаваться: размер, формат пикселей, база времени и соотношение сторон. Несовпадение проявится на <span class="tt">config()</span> или, хуже, даст молча неверный граф.</li>
+<li><b>Разобрать цепочку.</b> <span class="tt">parse(chain, source, sink)</span> разрешает имена фильтров и связывает граф. Синтаксис цепочки — собственный синтаксис FFmpeg: <span class="tt">scale=320x200:-1:flags=lanczos,split [s0][s1]; ...</span>.</li>
+<li><b>Сконфигурировать.</b> <span class="tt">config()</span> согласует форматы и выделяет фильтры. До него подавать кадры нельзя.</li>
+</ol>
+<p><span class="tt">BufferSrcFilterContext</span> и <span class="tt">BufferSinkFilterContext</span> — типизированные дескрипторы двух концов. Стройте их после <span class="tt">config()</span>, из тех же контекстов.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md30"></a>
+Подача и чтение</h2>
+<div class="fragment"><div class="line">            <span class="comment">// Push into the filter</span></div>
+<div class="line">            cout &lt;&lt; <span class="stringliteral">&quot;Pushing frame into filter: &quot;</span> &lt;&lt; frame.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; frame.height() &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; frame.size()</div>
+<div class="line">                 &lt;&lt; <span class="stringliteral">&quot;, ts=&quot;</span> &lt;&lt; frame.pts() &lt;&lt; <span class="stringliteral">&quot;, tb: &quot;</span> &lt;&lt; frame.timeBase() &lt;&lt; endl;</div>
+<div class="line">            buffer_src.addVideoFrame(frame, AV_BUFFERSRC_FLAG_KEEP_REF, ec);</div>
+<div class="line">            <span class="keywordflow">if</span> (ec)</div>
+<div class="line">            {</div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;Filter push error: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="comment">// Pull until there are no more incoming frames</span></div>
+<div class="line">            VideoFrame filtered;</div>
+<div class="line">            <span class="keywordflow">while</span> (buffer_sink.getVideoFrame(filtered, ec))</div>
+<div class="line">            {</div>
+<div class="line">                filtered.setTimeBase(encoder.timeBase());</div>
+<div class="line">                <span class="keyword">auto</span> ts = filtered.pts();</div>
+<div class="line"> </div>
+<div class="line">                clog &lt;&lt; <span class="stringliteral">&quot;  filtered: &quot;</span> &lt;&lt; filtered.width() &lt;&lt; <span class="stringliteral">&quot;x&quot;</span> &lt;&lt; filtered.height() &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; filtered.size()</div>
+<div class="line">                     &lt;&lt; <span class="stringliteral">&quot;, ts=&quot;</span> &lt;&lt; ts &lt;&lt; <span class="stringliteral">&quot;, tm: &quot;</span> &lt;&lt; ts.seconds() &lt;&lt; <span class="stringliteral">&quot;, tb: &quot;</span> &lt;&lt; filtered.timeBase()</div>
+<div class="line">                     &lt;&lt; <span class="stringliteral">&quot;, ref=&quot;</span> &lt;&lt; filtered.isReferenced() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; filtered.refCount() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">                <span class="comment">// Encode</span></div>
+<div class="line">                Packet opkt = filtered ? encoder.encode(filtered, ec) : encoder.encode(ec);</div>
+<div class="line">                <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                    cerr &lt;&lt; <span class="stringliteral">&quot;Encoding error: &quot;</span> &lt;&lt; ec &lt;&lt; endl;</div>
+<div class="line">                    <span class="keywordflow">return</span> 1;</div>
+<div class="line">                }</div>
+<div class="line"> </div>
+<div class="line">                <span class="keywordflow">if</span> (opkt) {</div>
+<div class="line">                    <span class="comment">// Only one output stream</span></div>
+<div class="line">                    opkt.setStreamIndex(0);</div>
+<div class="line"> </div>
+<div class="line">                    clog &lt;&lt; <span class="stringliteral">&quot;Write packet: pts=&quot;</span> &lt;&lt; opkt.pts() &lt;&lt; <span class="stringliteral">&quot;, dts=&quot;</span> &lt;&lt; opkt.dts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; opkt.pts().seconds() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; opkt.timeBase() &lt;&lt; <span class="stringliteral">&quot; / st: &quot;</span> &lt;&lt; opkt.streamIndex() &lt;&lt; endl;</div>
+<div class="line"> </div>
+<div class="line">                    octx.writePacket(opkt, ec);</div>
+<div class="line">                    <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">                        cerr &lt;&lt; <span class="stringliteral">&quot;Error write packet: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                        <span class="keywordflow">return</span> 1;</div>
+<div class="line">                    }</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+</div><!-- fragment --><p>Один поданный кадр не означает один кадр на выходе: <span class="tt">split</span>, <span class="tt">fps</span> и фильтры с таймлайном меняют соотношение, а сток может вернуть несколько кадров после одной подачи. Внутренний цикл вызывает <span class="tt">getVideoFrame()</span>, пока тот не вернет <span class="tt">false</span>, и этот <span class="tt">false</span> — нормальный случай «больше выхода сейчас нет».</p>
+<p><span class="tt">AV_BUFFERSRC_FLAG_KEEP_REF</span> сохраняет поданный кадр валидным после вызова — это нужно примеру, потому что он дальше использует кадр декодера. Если кадр больше не нужен, флаг можно не ставить.</p>
+<p><span class="tt">EAGAIN</span> от стока — не ошибка: пример явно проверяет <span class="tt">ec.value() != -EAGAIN</span>, потому что сток сообщает его как значение, пока графу не хватает входа.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md31"></a>
+Временные метки</h2>
+<p>Отфильтрованные кадры несут собственные метки, полученные из базы времени входа. Если у кодировщика другая база времени, задайте ее на каждом отфильтрованном кадре перед кодированием — точно так же, как для обычных декодированных кадров.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md32"></a>
+Текст и аудио</h2>
+<p>Тот же граф работает для аудио с <span class="tt">buffer</span>/<span class="tt">abuffersink</span>, <span class="tt">addAudioSamples()</span> и <span class="tt">getAudioSamples()</span> (последний принимает количество сэмплов). Текстовые фильтры (например <span class="tt">subtitles=</span>) настраиваются строкой цепочки и цикла по кадрам не требуют.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md33"></a>
+Дальше</h2>
+<ul>
+<li><a class="el" href="guide_encode.html" title="Кодирование">Кодирование</a> — куда идут отфильтрованные кадры.</li>
+<li><a class="el" href="guide_hw_codecs.html" title="Аппаратное кодирование и декодирование">Аппаратное кодирование и декодирование</a> — фильтрация вокруг аппаратного конвейера. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>

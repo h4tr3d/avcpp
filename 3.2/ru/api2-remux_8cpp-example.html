@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.18.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avcpp: api2-remux.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="codefolding.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">avcpp<span id="projectnumber">&#160;3.2.0</span>
+   </div>
+   <div id="projectbrief">Обёртка над FFmpeg, упрощающая его использование в C++ проектах.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.18.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="application/json" id="doxygen-config">
+{
+  "relPath": "",
+  "generateTreeView": true,
+  "searchEngine": true,
+  "serverBasedSearch": false,
+  "disableIndex": false,
+  "dynamicMenus": true,
+  "fullSidebar": false
+}
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Поиск" accesskey="S"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('api2-remux_8cpp-example.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">api2-remux.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<p>Ремиксинг.</p>
+<p>Ремиксинг.</p><div class="fragment"><div class="line">api2-remux [параметры] &lt;вход&gt; &lt;выход&gt;</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="comment">// Copies streams from one container to another without re-encoding.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Shows: copying codec parameters, mapping input streams to output ones,</span></div>
+<div class="line"><span class="comment">// rewriting packet stream indices and flushing the muxer before the trailer.</span></div>
+<div class="line"><span class="comment">//</span></div>
+<div class="line"><span class="comment">// Usage: api2-remux [options] &lt;input&gt; &lt;output&gt;</span></div>
+<div class="line"><span class="comment">//   -f format  force the input format</span></div>
+<div class="line"><span class="comment">//   -o format  force the output format</span></div>
+<div class="line"><span class="comment">//   -d seconds stop after the given duration</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;signal.h&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// getopt</span></div>
+<div class="line"><span class="preprocessor">#include &lt;unistd.h&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/av.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/ffmpeg.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codec.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/packet.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/videorescaler.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/audioresampler.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/avutils.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// API2</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/format.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/formatcontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codec.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/codeccontext.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;avcpp/videorescaler.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>std;</div>
+<div class="line"><span class="keyword">using namespace </span>av;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> usage(<span class="keywordtype">int</span> <span class="comment">/*argc*/</span>, <span class="keywordtype">char</span> **argv, ostream &amp;ost)</div>
+<div class="line">{</div>
+<div class="line">    ost &lt;&lt; <span class="stringliteral">&quot;Usage: &quot;</span> &lt;&lt; argv[0] &lt;&lt; <span class="stringliteral">&quot; [arguments] input_stream output_stream\n&quot;</span></div>
+<div class="line">           <span class="stringliteral">&quot;  -f format     force input format\n&quot;</span></div>
+<div class="line">           <span class="stringliteral">&quot;  -o format     force output format\n&quot;</span></div>
+<div class="line">           <span class="stringliteral">&quot;  -d duration   duration for transmuxing (double, seconds)&quot;</span>;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">const</span> <span class="keyword">static</span> <span class="keywordtype">char</span> opts[] = <span class="stringliteral">&quot;f:o:d:h&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordtype">string</span> uri;</div>
+<div class="line">    <span class="keywordtype">string</span> out;</div>
+<div class="line">    <span class="keywordtype">string</span> iformatName;</div>
+<div class="line">    <span class="keywordtype">string</span> oformatName;</div>
+<div class="line">    Timestamp duration;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line">        <span class="keywordtype">int</span> opt = getopt(argc, argv, opts);</div>
+<div class="line">        <span class="keywordflow">if</span> (opt &lt; 0)</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">switch</span> (opt) {</div>
+<div class="line">            <span class="keywordflow">case</span> <span class="charliteral">&#39;f&#39;</span>:</div>
+<div class="line">                iformatName = optarg;</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">case</span> <span class="charliteral">&#39;o&#39;</span>:</div>
+<div class="line">                oformatName = optarg;</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">case</span> <span class="charliteral">&#39;d&#39;</span>:</div>
+<div class="line">            {</div>
+<div class="line">                <span class="keywordtype">double</span> val = stod(optarg);</div>
+<div class="line">                duration = Timestamp(val * AV_TIME_BASE, AV_TIME_BASE_Q);</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">case</span> <span class="charliteral">&#39;h&#39;</span>:</div>
+<div class="line">                usage(argc, argv, cout);</div>
+<div class="line">                <span class="keywordflow">return</span> 0;</div>
+<div class="line"> </div>
+<div class="line">            <span class="keywordflow">default</span>:</div>
+<div class="line">                usage(argc, argv, cerr);</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (optind &gt; argc-2) {</div>
+<div class="line">        usage(argc, argv, cerr);</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    uri = argv[optind + 0];</div>
+<div class="line">    out = argv[optind + 1];</div>
+<div class="line"> </div>
+<div class="line">    av::init();</div>
+<div class="line">    av::set_logging_level(AV_LOG_DEBUG);</div>
+<div class="line"> </div>
+<div class="line">    error_code ec;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    <span class="comment">// INPUT</span></div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    InputFormat   iformat(iformatName);</div>
+<div class="line">    FormatContext ictx;</div>
+<div class="line"> </div>
+<div class="line">    ictx.openInput(uri, iformat);</div>
+<div class="line">    ictx.findStreamInfo();</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    <span class="comment">// OUTPUT</span></div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    OutputFormat oformat(oformatName, out);</div>
+<div class="line">    FormatContext octx;</div>
+<div class="line"> </div>
+<div class="line">    map&lt;size_t, size_t&gt; streamMapping;</div>
+<div class="line"> </div>
+<div class="line">    octx.setFormat(oformat);</div>
+<div class="line"></div>
+<div class="line">    <span class="comment">// Copy streams</span></div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0, ostIdx = 0; i &lt; ictx.streamsCount(); ++i) {</div>
+<div class="line">        <span class="keyword">auto</span> ist    = ictx.stream(i);</div>
+<div class="line">        <span class="keyword">auto</span> icodecpar = ist.codecParameters();</div>
+<div class="line">        <span class="keyword">auto</span> ocodec = icodecpar.decodingCodec();</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Source codec can be unsupprted by the target format. Transcoding required or simple skip.</span></div>
+<div class="line">        <span class="keywordflow">if</span> (!octx.outputFormat().codecSupported(ocodec)) {</div>
+<div class="line">            clog &lt;&lt; <span class="stringliteral">&quot;Input stream &quot;</span> &lt;&lt; i &lt;&lt; <span class="stringliteral">&quot; codec &#39;&quot;</span> &lt;&lt; ocodec.name() &lt;&lt;</div>
+<div class="line">                    <span class="stringliteral">&quot;&#39; does not supported by the output format &#39;&quot;</span> &lt;&lt; oformat.name() &lt;&lt; <span class="stringliteral">&quot;&#39;\n&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> ost = octx.addStream(ec);</div>
+<div class="line">        ost.setCodecParameters(icodecpar);</div>
+<div class="line">        ost.codecParameters().codecTag(0);</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// We can omit codec checking above and got error FormatCodecUnsupported (error code or exception)</span></div>
+<div class="line">        <span class="keywordflow">if</span> (ec) {</div>
+<div class="line">            <span class="keywordflow">if</span> (ec == Errors::FormatCodecUnsupported) {</div>
+<div class="line">                <span class="keywordflow">continue</span>;</div>
+<div class="line">            } <span class="keywordflow">else</span> {</div>
+<div class="line">                cerr &lt;&lt; ec.category().name() &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; ec.message() &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">return</span> 1;</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        ost.setTimeBase(ist.timeBase());</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// setup mapping</span></div>
+<div class="line">        streamMapping[i] = ostIdx++;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    octx.openOutput(out);</div>
+<div class="line">    octx.writeHeader();</div>
+<div class="line">    octx.dump();</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    <span class="comment">// PROCESS</span></div>
+<div class="line">    <span class="comment">//</span></div>
+<div class="line">    <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line">        <span class="keyword">auto</span> pkt = ictx.readPacket();</div>
+<div class="line">        <span class="keywordflow">if</span> (!pkt)</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">auto</span> it = streamMapping.find(pkt.streamIndex());</div>
+<div class="line">        <span class="keywordtype">string</span> skip;</div>
+<div class="line">        <span class="keywordflow">if</span> (it == streamMapping.end()) {</div>
+<div class="line">            skip = <span class="stringliteral">&quot; [skip]&quot;</span>;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        clog &lt;&lt; <span class="stringliteral">&quot;pkt[&quot;</span> &lt;&lt; pkt.streamIndex() &lt;&lt; <span class="stringliteral">&quot;]: tm=&quot;</span> &lt;&lt; pkt.pts() &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; pkt.pts().seconds() &lt;&lt; skip &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (it == streamMapping.end())</div>
+<div class="line">            <span class="keywordflow">continue</span>;</div>
+<div class="line"> </div>
+<div class="line">        pkt.setStreamIndex(it-&gt;second);</div>
+<div class="line"> </div>
+<div class="line">        octx.writePacket(pkt);</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (duration) {</div>
+<div class="line">            <span class="keywordflow">if</span> (pkt.pts() &gt; duration)</div>
+<div class="line">                <span class="keywordflow">break</span>;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="comment">// Flush output context</span></div>
+<div class="line">    octx.writePacket();</div>
+<div class="line">    <span class="comment">//octx.flush();</span></div>
+<div class="line">    octx.writeTrailer();</div>
+<div class="line">}</div>
+<div class="line"> </div>
+</div><!-- fragment --> </div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- HTML footer for avcpp, based on the doxygen 1.18 template. -->
+<!-- The only addition is the script block that enables doxygen-awesome-css
+     extensions: HTML_EXTRA_FILES only copies the files into the output, it
+     does not reference them. Keeping this template minimal on purpose: the
+     fewer doxygen tokens it uses, the less it breaks on doxygen upgrades. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Создано системой <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.18.0 </li>
+  </ul>
+</div>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="site-nav.js"></script>
+<script type="text/javascript">
+  if (window.DoxygenAwesomeDarkModeToggle) { DoxygenAwesomeDarkModeToggle.init(); }
+  if (window.DoxygenAwesomeFragmentCopyButton) { DoxygenAwesomeFragmentCopyButton.init(); }
+  if (window.DoxygenAwesomeParagraphLink) { DoxygenAwesomeParagraphLink.init(); }
+  if (window.DoxygenAwesomeInteractiveToc) { DoxygenAwesomeInteractiveToc.init(); }
+</script>
+</body>
+</html>
