@@ -27,7 +27,7 @@ var searchData=
   ['timestamps_24',['Timestamps',['../guide_decode.html#autotoc_md14',1,'Timestamps'],['../guide_filters.html#autotoc_md31',1,'Timestamps']]],
   ['to_20go_20next_25',['Where to go next',['../index.html#autotoc_md87',1,'']]],
   ['to_20system_20memory_26',['6.2. Automatic transfer to system memory',['../guide_hw_codecs.html#autotoc_md53',1,'']]],
-  ['toduration_27',['toDuration',['../classav_1_1Timestamp.html#abf1ac3358bca678193d68278a292c675',1,'av::Timestamp']]],
+  ['toduration_27',['toDuration',['../classav_1_1Timestamp.html#a643e4de40b929a766f15fb2615448529',1,'av::Timestamp']]],
   ['tohwframe_28',['toHwFrame',['../classav_1_1VideoFrame.html#a091bb040edd35a116db77088444d0133',1,'av::VideoFrame']]],
   ['torawstringptr_29',['toRawStringPtr',['../classav_1_1Dictionary.html#a0a43888f3ef694fccd572417c73e60a1',1,'av::Dictionary']]],
   ['tostring_30',['toString',['../classav_1_1Dictionary.html#a4d46443f2b57dbb78ef382d2ada8b78f',1,'av::Dictionary']]],

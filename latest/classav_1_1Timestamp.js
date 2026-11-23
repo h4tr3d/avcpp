@@ -16,5 +16,5 @@ var classav_1_1Timestamp =
     [ "timebase", "classav_1_1Timestamp.html#aab382d706bbe7464b54b5f845cd37340", null ],
     [ "timestamp", "classav_1_1Timestamp.html#a40aa289b7b626c6b5f19a0e666770d87", null ],
     [ "timestamp", "classav_1_1Timestamp.html#a289dad12e932c3dc0da53a2540e5ec1e", null ],
-    [ "toDuration", "classav_1_1Timestamp.html#abf1ac3358bca678193d68278a292c675", null ]
+    [ "toDuration", "classav_1_1Timestamp.html#a643e4de40b929a766f15fb2615448529", null ]
 ];

@@ -8,7 +8,7 @@ var searchData=
   ['timebase_5',['timebase',['../classav_1_1Timestamp.html#aab382d706bbe7464b54b5f845cd37340',1,'av::Timestamp']]],
   ['timestamp_6',['Timestamp',['../classav_1_1Timestamp.html#a65180ecb4caa480ea4912959dc7f874b',1,'av::Timestamp::Timestamp(int64_t timestamp, const Rational &amp;timebase) noexcept'],['../classav_1_1Timestamp.html#a505000a93ca77a7fd4bbe1e7264b317c',1,'av::Timestamp::Timestamp(const Duration &amp;duration)'],['../classav_1_1Timestamp.html#a93709d6e456d6ada74bc4668325e2bf4',1,'av::Timestamp::Timestamp(const Duration &amp;duration, PrecisionPeriod)'],['../classav_1_1Timestamp.html#afeb62ec6f8184523cbdf08931302ae54',1,'av::Timestamp::Timestamp(const Duration &amp;duration, const Rational &amp;timebase)']]],
   ['timestamp_7',['timestamp',['../classav_1_1Timestamp.html#a40aa289b7b626c6b5f19a0e666770d87',1,'av::Timestamp::timestamp() const noexcept'],['../classav_1_1Timestamp.html#a289dad12e932c3dc0da53a2540e5ec1e',1,'av::Timestamp::timestamp(const Rational &amp;timebase) const noexcept']]],
-  ['toduration_8',['toDuration',['../classav_1_1Timestamp.html#abf1ac3358bca678193d68278a292c675',1,'av::Timestamp']]],
+  ['toduration_8',['toDuration',['../classav_1_1Timestamp.html#a643e4de40b929a766f15fb2615448529',1,'av::Timestamp']]],
   ['tohwframe_9',['toHwFrame',['../classav_1_1VideoFrame.html#a091bb040edd35a116db77088444d0133',1,'av::VideoFrame']]],
   ['torawstringptr_10',['toRawStringPtr',['../classav_1_1Dictionary.html#a0a43888f3ef694fccd572417c73e60a1',1,'av::Dictionary']]],
   ['tostring_11',['toString',['../classav_1_1Dictionary.html#a4d46443f2b57dbb78ef382d2ada8b78f',1,'av::Dictionary']]],
