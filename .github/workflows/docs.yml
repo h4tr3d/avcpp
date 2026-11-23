@@ -36,7 +36,7 @@ jobs:
     name: build and check
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install graphviz
         run: |
@@ -45,7 +45,7 @@ jobs:
 
       - name: Restore doxygen
         id: doxygen-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ runner.temp }}/doxygen-${{ env.DOXYGEN_VERSION }}
           key: doxygen-${{ env.DOXYGEN_VERSION }}-${{ env.DOXYGEN_SHA256 }}
@@ -84,7 +84,7 @@ jobs:
       # which only real Actions provides. Everything before this step is
       # meaningful locally, this one is not.
       - name: Upload the site
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: documentation-site
           path: build/docs/site
@@ -98,10 +98,10 @@ jobs:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Download the built site
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: documentation-site
           path: ${{ runner.temp }}/site

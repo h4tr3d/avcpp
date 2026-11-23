@@ -57,13 +57,13 @@ jobs:
       CONFIGURE_ARGS: ${{ matrix.configure_args }}
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Dump environment variables
       run: echo "OS_NAME=$OS_NAME, BUILD_TYPE=$BUILD_TYPE, SKIP_MESON=$SKIP_MESON, CONFIGURE_ARGS=$CONFIGURE_ARGS"
 
     - name: Cache Catch2 sources
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: |
           ${{github.workspace}}/build/_deps/catch2-src
