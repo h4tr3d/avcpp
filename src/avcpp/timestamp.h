@@ -176,7 +176,11 @@ public:
      * @return the timestamp as that duration; integral durations are rescaled,
      *         floating point ones are computed directly
      */
+#if AVCPP_CXX_STANDARD >= 23
     constexpr Duration toDuration() const
+#else
+    Duration toDuration() const
+#endif
     {
         using ValueType = typename Duration::rep;
         using Ratio = typename Duration::period;
