@@ -115,6 +115,10 @@ if (AVCPP_NOT_SUBPROJECT)
         PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/avcpp
         PUBLIC_HEADER DESTINATION  ${CMAKE_INSTALL_INCLUDEDIR}/avcpp)
 
+    install(DIRECTORY avcpp/filters
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/avcpp
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
     #cmake_policy(SET CMP0022 OLD)
     install(EXPORT avcpp-targets
         FILE avcpp-targets.cmake
@@ -148,7 +152,7 @@ if (AVCPP_NOT_SUBPROJECT)
         foreach (LIB ${TOTAL_LIBS})
             if (IS_ABSOLUTE ${LIB} AND EXISTS ${LIB})
                 string(REPLACE
-                    "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}"
+                    "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
                     "\${libdir}"
                     LIB_OUT
                     ${LIB})
@@ -158,6 +162,7 @@ if (AVCPP_NOT_SUBPROJECT)
                 if (LIB_BEGIN STREQUAL "-l")
                     list(APPEND PLIBLIST "${LIB}")
                 else()
+                    string(REGEX REPLACE "\\.[Ll][Ii][Bb]$" "" LIB "${LIB}")
                     list(APPEND PLIBLIST "-l${LIB}")
                 endif()
             endif()
