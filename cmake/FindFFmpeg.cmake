@@ -228,6 +228,7 @@ if (TRUE)
   setup_component(SWRESAMPLE libswresample swresample libswresample/swresample.h)
 
   # Check if the required components were found and add their stuff to the FFMPEG_* vars.
+  set(FFMPEG_PKGCONFIG_MODULES)
   foreach (_component ${FFmpeg_FIND_COMPONENTS})
     # find only requested componsnts
     find_component(${_component} ${_${_component}_PKGCONFIG_NAME} ${_${_component}_LIBRARY_NAME} ${_${_component}_HEADER_NAME})
@@ -239,6 +240,9 @@ if (TRUE)
       set(FFMPEG_DEFINITIONS  ${FFMPEG_DEFINITIONS}  ${${_component}_DEFINITIONS})
 
       list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
+      if (PC_${_component}_FOUND)
+        list(APPEND FFMPEG_PKGCONFIG_MODULES ${_${_component}_PKGCONFIG_NAME})
+      endif()
 
       string(TOLOWER ${_component} _lowerComponent)
       if (NOT TARGET FFmpeg::${_lowerComponent})
@@ -246,7 +250,7 @@ if (TRUE)
         set_target_properties(FFmpeg::${_lowerComponent} PROPERTIES
             INTERFACE_COMPILE_OPTIONS "${${_component}_DEFINITIONS}"
             INTERFACE_INCLUDE_DIRECTORIES ${${_component}_INCLUDE_DIRS}
-            INTERFACE_LINK_LIBRARIES "${${_component}_LIBRARY}" "${${_component}_LIBRARIES}" "${PC_${_component}_LIBRARIES}"
+            INTERFACE_LINK_LIBRARIES "${${_component}_LIBRARY};${${_component}_LIBRARIES};${PC_${_component}_LINK_LIBRARIES}"
             IMPORTED_LINK_INTERFACE_MULTIPLICITY 3)
       endif()
     else()
@@ -266,12 +270,20 @@ if (TRUE)
 
 endif ()
 
+if (PKG_CONFIG_FOUND AND FFMPEG_PKGCONFIG_MODULES)
+  pkg_check_modules(AVCPP_FFMPEG IMPORTED_TARGET ${FFMPEG_PKGCONFIG_MODULES})
+endif()
+
 if (NOT TARGET FFmpeg::FFmpeg)
   add_library(FFmpeg INTERFACE)
-  set_target_properties(FFmpeg PROPERTIES
-      INTERFACE_COMPILE_OPTIONS "${FFMPEG_DEFINITIONS}"
-      INTERFACE_INCLUDE_DIRECTORIES "${FFMPEG_INCLUDE_DIRS}"
-      INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}")
+  if (TARGET PkgConfig::AVCPP_FFMPEG)
+    target_link_libraries(FFmpeg INTERFACE PkgConfig::AVCPP_FFMPEG)
+  else()
+    set_target_properties(FFmpeg PROPERTIES
+        INTERFACE_COMPILE_OPTIONS "${FFMPEG_DEFINITIONS}"
+        INTERFACE_INCLUDE_DIRECTORIES "${FFMPEG_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${FFMPEG_LIBRARIES}")
+  endif()
   add_library(FFmpeg::FFmpeg ALIAS FFmpeg)
 endif()
 
